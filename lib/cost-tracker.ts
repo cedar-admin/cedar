@@ -3,6 +3,7 @@ import type { Json } from './db/types'
 
 export type CostService =
   | 'claude'
+  | 'gov_api'      // free public APIs — tracked at $0 for audit/rate-limit visibility
   | 'oxylabs'
   | 'browserbase'
   | 'docling'

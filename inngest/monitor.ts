@@ -81,7 +81,9 @@ export const monitorSource = inngest.createFunction(
       const result = await dispatchFetch(
         source as Parameters<typeof dispatchFetch>[0],
         sourceUrl.url as string,
-        sourceUrlId
+        sourceUrlId,
+        // Pass last-successful method so dispatcher skips failed methods on retry
+        { preferredMethod: (sourceUrl.last_fetch_method as 'gov_api' | 'oxylabs' | 'browserbase' | undefined) ?? undefined }
       )
       return {
         sourceId: result.sourceId,
@@ -92,6 +94,8 @@ export const monitorSource = inngest.createFunction(
         fetchedAt: result.fetchedAt,
         fetchMethod: result.fetchMethod,
         mimeType: result.mimeType,
+        escalated: result.escalated,
+        escalationReason: result.escalationReason,
       }
     })
 
@@ -105,7 +109,10 @@ export const monitorSource = inngest.createFunction(
       await step.run('update-fetched-at', async () => {
         await supabase
           .from('source_urls')
-          .update({ last_fetched_at: new Date().toISOString() })
+          .update({
+            last_fetched_at: new Date().toISOString(),
+            last_fetch_method: fetchResult.fetchMethod,
+          })
           .eq('id', sourceUrlId)
       })
       return { changed: false, sourceId, sourceUrlId }
@@ -139,7 +146,7 @@ export const monitorSource = inngest.createFunction(
       await step.run('update-hash-after-skip', async () => {
         await supabase
           .from('source_urls')
-          .update({ last_hash: currentHash, last_fetched_at: new Date().toISOString() })
+          .update({ last_hash: currentHash, last_fetched_at: new Date().toISOString(), last_fetch_method: fetchResult.fetchMethod })
           .eq('id', sourceUrlId)
       })
       return { changed: false, skipped: true, magnitude: diff.magnitude, sourceId }
@@ -161,7 +168,7 @@ export const monitorSource = inngest.createFunction(
       await step.run('update-hash-irrelevant', async () => {
         await supabase
           .from('source_urls')
-          .update({ last_hash: currentHash, last_fetched_at: new Date().toISOString() })
+          .update({ last_hash: currentHash, last_fetched_at: new Date().toISOString(), last_fetch_method: fetchResult.fetchMethod })
           .eq('id', sourceUrlId)
       })
       return { changed: true, relevant: false, relevanceScore: relevance.relevanceScore, sourceId }
@@ -226,11 +233,17 @@ export const monitorSource = inngest.createFunction(
       })
     })
 
-    // ── Step 10: Update source_url with new hash ──────────────────────────
+    // ── Step 10: Update source_url with new hash + effective fetch method ───
+    // Persisting last_fetch_method enables the dispatcher to skip failed methods
+    // on subsequent runs (e.g. if oxylabs escalated to browserbase, remember browserbase).
     await step.run('update-source-url', async () => {
       await supabase
         .from('source_urls')
-        .update({ last_hash: currentHash, last_fetched_at: new Date().toISOString() })
+        .update({
+          last_hash: currentHash,
+          last_fetched_at: new Date().toISOString(),
+          last_fetch_method: fetchResult.fetchMethod,
+        })
         .eq('id', sourceUrlId)
     })
 

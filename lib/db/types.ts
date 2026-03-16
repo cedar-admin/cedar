@@ -315,6 +315,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_fetch_method: string | null
           last_fetched_at: string | null
           last_hash: string | null
           source_id: string
@@ -323,6 +324,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          last_fetch_method?: string | null
           last_fetched_at?: string | null
           last_hash?: string | null
           source_id: string
@@ -331,6 +333,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          last_fetch_method?: string | null
           last_fetched_at?: string | null
           last_hash?: string | null
           source_id?: string
