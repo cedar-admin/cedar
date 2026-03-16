@@ -1,9 +1,8 @@
 import { authkitMiddleware } from '@workos-inc/authkit-nextjs'
 
-export default authkitMiddleware({
-  // Redirect unauthenticated users to /sign-in
-  redirectUri: '/sign-in',
-})
+// redirectUri is the OAuth callback URL — read from NEXT_PUBLIC_WORKOS_REDIRECT_URI env var.
+// Do NOT pass a relative path here; authkit-nextjs calls `new URL(redirectUri)` which throws.
+export default authkitMiddleware()
 
 export const config = {
   // Run middleware on all routes except:
