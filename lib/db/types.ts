@@ -99,6 +99,334 @@ export type Database = {
           },
         ]
       }
+      classification_overrides: {
+        Row: {
+          change_id: string | null
+          created_at: string
+          entity_id: string | null
+          field_changed: string
+          id: string
+          new_result_id: string | null
+          new_value: Json
+          old_value: Json
+          overridden_by: string
+          previous_result_id: string | null
+          reason: string
+        }
+        Insert: {
+          change_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          field_changed: string
+          id?: string
+          new_result_id?: string | null
+          new_value: Json
+          old_value: Json
+          overridden_by: string
+          previous_result_id?: string | null
+          reason: string
+        }
+        Update: {
+          change_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          field_changed?: string
+          id?: string
+          new_result_id?: string | null
+          new_value?: Json
+          old_value?: Json
+          overridden_by?: string
+          previous_result_id?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_overrides_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_new_result_id_fkey"
+            columns: ["new_result_id"]
+            isOneToOne: false
+            referencedRelation: "classification_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_new_result_id_fkey"
+            columns: ["new_result_id"]
+            isOneToOne: false
+            referencedRelation: "v_classification_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_previous_result_id_fkey"
+            columns: ["previous_result_id"]
+            isOneToOne: false
+            referencedRelation: "classification_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_overrides_previous_result_id_fkey"
+            columns: ["previous_result_id"]
+            isOneToOne: false
+            referencedRelation: "v_classification_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classification_results: {
+        Row: {
+          agent_name: string | null
+          agent_version: string | null
+          change_id: string | null
+          classification_method: string
+          confidence: number | null
+          created_at: string
+          created_by: string
+          domain_slugs: string[] | null
+          entity_id: string | null
+          entity_type_slug: string | null
+          id: string
+          is_current: boolean
+          model: string | null
+          raw_output: Json | null
+          reasoning: string | null
+          rule_id: string | null
+          severity: string | null
+          superseded_by: string | null
+        }
+        Insert: {
+          agent_name?: string | null
+          agent_version?: string | null
+          change_id?: string | null
+          classification_method: string
+          confidence?: number | null
+          created_at?: string
+          created_by?: string
+          domain_slugs?: string[] | null
+          entity_id?: string | null
+          entity_type_slug?: string | null
+          id?: string
+          is_current?: boolean
+          model?: string | null
+          raw_output?: Json | null
+          reasoning?: string | null
+          rule_id?: string | null
+          severity?: string | null
+          superseded_by?: string | null
+        }
+        Update: {
+          agent_name?: string | null
+          agent_version?: string | null
+          change_id?: string | null
+          classification_method?: string
+          confidence?: number | null
+          created_at?: string
+          created_by?: string
+          domain_slugs?: string[] | null
+          entity_id?: string | null
+          entity_type_slug?: string | null
+          id?: string
+          is_current?: boolean
+          model?: string | null
+          raw_output?: Json | null
+          reasoning?: string | null
+          rule_id?: string | null
+          severity?: string | null
+          superseded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_results_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "kg_entity_types"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["entity_type_slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["parent_slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "classification_results_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "classification_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "v_active_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "classification_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "v_classification_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classification_rule_sets: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      classification_rules: {
+        Row: {
+          action: Json
+          conditions: Json
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean
+          last_matched_at: string | null
+          name: string
+          priority: number
+          rule_set_id: string | null
+          rule_type: string
+          stop_on_match: boolean
+          times_matched: number
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          action?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          last_matched_at?: string | null
+          name: string
+          priority?: number
+          rule_set_id?: string | null
+          rule_type?: string
+          stop_on_match?: boolean
+          times_matched?: number
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          action?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          last_matched_at?: string | null
+          name?: string
+          priority?: number
+          rule_set_id?: string | null
+          rule_type?: string
+          stop_on_match?: boolean
+          times_matched?: number
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_rule_set"
+            columns: ["rule_set_id"]
+            isOneToOne: false
+            referencedRelation: "classification_rule_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cost_events: {
         Row: {
           context: Json | null
@@ -155,6 +483,602 @@ export type Database = {
           tier?: string
         }
         Relationships: []
+      }
+      kg_domains: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_domains_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "kg_domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entities: {
+        Row: {
+          change_id: string | null
+          classification_confidence: number | null
+          created_at: string
+          current_classification_id: string | null
+          description: string | null
+          effective_date: string | null
+          entity_type: string
+          entity_type_id: string | null
+          external_url: string | null
+          id: string
+          identifier: string | null
+          jurisdiction: string
+          last_classified_at: string | null
+          metadata: Json | null
+          name: string
+          source_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          change_id?: string | null
+          classification_confidence?: number | null
+          created_at?: string
+          current_classification_id?: string | null
+          description?: string | null
+          effective_date?: string | null
+          entity_type: string
+          entity_type_id?: string | null
+          external_url?: string | null
+          id?: string
+          identifier?: string | null
+          jurisdiction?: string
+          last_classified_at?: string | null
+          metadata?: Json | null
+          name: string
+          source_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          change_id?: string | null
+          classification_confidence?: number | null
+          created_at?: string
+          current_classification_id?: string | null
+          description?: string | null
+          effective_date?: string | null
+          entity_type?: string
+          entity_type_id?: string | null
+          external_url?: string | null
+          id?: string
+          identifier?: string | null
+          jurisdiction?: string
+          last_classified_at?: string | null
+          metadata?: Json | null
+          name?: string
+          source_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entities_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entities_current_classification_id_fkey"
+            columns: ["current_classification_id"]
+            isOneToOne: false
+            referencedRelation: "classification_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entities_current_classification_id_fkey"
+            columns: ["current_classification_id"]
+            isOneToOne: false
+            referencedRelation: "v_classification_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entities_entity_type_id_fkey"
+            columns: ["entity_type_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entities_entity_type_id_fkey"
+            columns: ["entity_type_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entities_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_domains: {
+        Row: {
+          assigned_by: string
+          confidence: number | null
+          created_at: string
+          domain_id: string
+          entity_id: string
+        }
+        Insert: {
+          assigned_by?: string
+          confidence?: number | null
+          created_at?: string
+          domain_id: string
+          entity_id: string
+        }
+        Update: {
+          assigned_by?: string
+          confidence?: number | null
+          created_at?: string
+          domain_id?: string
+          entity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_domains_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "kg_domains"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_domains_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_domains_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_jurisdictions: {
+        Row: {
+          created_at: string
+          entity_id: string
+          is_primary: boolean
+          jurisdiction_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          is_primary?: boolean
+          jurisdiction_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          is_primary?: boolean
+          jurisdiction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_jurisdictions_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_jurisdictions_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_jurisdictions_jurisdiction_id_fkey"
+            columns: ["jurisdiction_id"]
+            isOneToOne: false
+            referencedRelation: "kg_jurisdictions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_merges: {
+        Row: {
+          created_at: string
+          id: string
+          merge_reason: string
+          merge_strategy: string
+          merged_by: string
+          merged_entity_id: string
+          merged_entity_snapshot: Json
+          surviving_entity_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          merge_reason: string
+          merge_strategy?: string
+          merged_by: string
+          merged_entity_id: string
+          merged_entity_snapshot: Json
+          surviving_entity_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          merge_reason?: string
+          merge_strategy?: string
+          merged_by?: string
+          merged_entity_id?: string
+          merged_entity_snapshot?: Json
+          surviving_entity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_merges_merged_entity_id_fkey"
+            columns: ["merged_entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_merges_merged_entity_id_fkey"
+            columns: ["merged_entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_merges_surviving_entity_id_fkey"
+            columns: ["surviving_entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_merges_surviving_entity_id_fkey"
+            columns: ["surviving_entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_types: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          depth: number
+          description: string | null
+          distinguishing_criteria: string | null
+          example_documents: string[] | null
+          id: string
+          is_active: boolean
+          is_system: boolean
+          name: string
+          parent_id: string | null
+          path: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          depth?: number
+          description?: string | null
+          distinguishing_criteria?: string | null
+          example_documents?: string[] | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          name: string
+          parent_id?: string | null
+          path?: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          depth?: number
+          description?: string | null
+          distinguishing_criteria?: string | null
+          example_documents?: string[] | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          name?: string
+          parent_id?: string | null
+          path?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_types_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_types_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_versions: {
+        Row: {
+          change_id: string | null
+          created_at: string
+          entity_id: string
+          id: string
+          snapshot: Json
+          version_number: number
+        }
+        Insert: {
+          change_id?: string | null
+          created_at?: string
+          entity_id: string
+          id?: string
+          snapshot: Json
+          version_number: number
+        }
+        Update: {
+          change_id?: string | null
+          created_at?: string
+          entity_id?: string
+          id?: string
+          snapshot?: Json
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_versions_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_versions_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_versions_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_jurisdictions: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          jurisdiction_type: string
+          name: string
+          parent_code: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          jurisdiction_type: string
+          name: string
+          parent_code?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          jurisdiction_type?: string
+          name?: string
+          parent_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_jurisdictions_parent_code_fkey"
+            columns: ["parent_code"]
+            isOneToOne: false
+            referencedRelation: "kg_jurisdictions"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      kg_relationship_types: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          forward_label: string
+          id: string
+          inverse_label: string
+          is_active: boolean
+          is_exclusive: boolean
+          is_system: boolean
+          is_temporal: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          valid_from_types: string[] | null
+          valid_to_types: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          forward_label: string
+          id?: string
+          inverse_label: string
+          is_active?: boolean
+          is_exclusive?: boolean
+          is_system?: boolean
+          is_temporal?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          valid_from_types?: string[] | null
+          valid_to_types?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          forward_label?: string
+          id?: string
+          inverse_label?: string
+          is_active?: boolean
+          is_exclusive?: boolean
+          is_system?: boolean
+          is_temporal?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          valid_from_types?: string[] | null
+          valid_to_types?: string[] | null
+        }
+        Relationships: []
+      }
+      kg_relationships: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          relationship_type: string
+          relationship_type_id: string | null
+          source_change_id: string | null
+          source_entity_id: string
+          target_entity_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          relationship_type: string
+          relationship_type_id?: string | null
+          source_change_id?: string | null
+          source_entity_id: string
+          target_entity_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          relationship_type?: string
+          relationship_type_id?: string | null
+          source_change_id?: string | null
+          source_entity_id?: string
+          target_entity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_relationships_relationship_type_id_fkey"
+            columns: ["relationship_type_id"]
+            isOneToOne: false
+            referencedRelation: "kg_relationship_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_relationships_source_change_id_fkey"
+            columns: ["source_change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_relationships_source_entity_id_fkey"
+            columns: ["source_entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_relationships_source_entity_id_fkey"
+            columns: ["source_entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_relationships_target_entity_id_fkey"
+            columns: ["target_entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_relationships_target_entity_id_fkey"
+            columns: ["target_entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       practice_acknowledgments: {
         Row: {
@@ -409,9 +1333,197 @@ export type Database = {
         }
         Relationships: []
       }
+      taxonomy_changelog: {
+        Row: {
+          action: string
+          changed_by: string
+          created_at: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          reason: string | null
+          record_id: string
+          table_name: string
+        }
+        Insert: {
+          action: string
+          changed_by: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          reason?: string | null
+          record_id: string
+          table_name: string
+        }
+        Update: {
+          action?: string
+          changed_by?: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          reason?: string | null
+          record_id?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      v_active_rules: {
+        Row: {
+          action: Json | null
+          conditions: Json | null
+          description: string | null
+          id: string | null
+          last_matched_at: string | null
+          name: string | null
+          priority: number | null
+          rule_set_name: string | null
+          rule_type: string | null
+          times_matched: number | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      v_classification_history: {
+        Row: {
+          agent_name: string | null
+          agent_version: string | null
+          change_id: string | null
+          classification_method: string | null
+          confidence: number | null
+          created_at: string | null
+          created_by: string | null
+          domain_slugs: string[] | null
+          entity_id: string | null
+          entity_type_slug: string | null
+          id: string | null
+          is_current: boolean | null
+          reasoning: string | null
+          severity: string | null
+        }
+        Insert: {
+          agent_name?: string | null
+          agent_version?: string | null
+          change_id?: string | null
+          classification_method?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          domain_slugs?: string[] | null
+          entity_id?: string | null
+          entity_type_slug?: string | null
+          id?: string | null
+          is_current?: boolean | null
+          reasoning?: string | null
+          severity?: string | null
+        }
+        Update: {
+          agent_name?: string | null
+          agent_version?: string | null
+          change_id?: string | null
+          classification_method?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          domain_slugs?: string[] | null
+          entity_id?: string | null
+          entity_type_slug?: string | null
+          id?: string | null
+          is_current?: boolean | null
+          reasoning?: string | null
+          severity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_results_change_id_fkey"
+            columns: ["change_id"]
+            isOneToOne: false
+            referencedRelation: "changes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "kg_entity_types"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["entity_type_slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["parent_slug"]
+          },
+          {
+            foreignKeyName: "classification_results_entity_type_slug_fkey"
+            columns: ["entity_type_slug"]
+            isOneToOne: false
+            referencedRelation: "v_entity_types_flat"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      v_entity_details: {
+        Row: {
+          classification_confidence: number | null
+          created_at: string | null
+          description: string | null
+          domain_names: string[] | null
+          domain_slugs: string[] | null
+          effective_date: string | null
+          entity_type_name: string | null
+          entity_type_path: string | null
+          entity_type_slug: string | null
+          id: string | null
+          jurisdiction: string | null
+          jurisdiction_codes: string[] | null
+          name: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      v_entity_types_flat: {
+        Row: {
+          depth: number | null
+          description: string | null
+          entity_count: number | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          parent_name: string | null
+          parent_slug: string | null
+          path: string | null
+          slug: string | null
+          sort_order: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
