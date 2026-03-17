@@ -7,6 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -141,7 +149,7 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Subscription */}
-          <Card>
+          <Card id="billing">
             <CardHeader className="pb-3">
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Subscription
@@ -190,22 +198,127 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Notifications */}
-          <Card>
+          <Card id="notifications">
             <CardHeader className="pb-3">
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Notifications
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-center gap-2.5 text-sm text-foreground">
-                <i className="ri-mail-check-line text-primary shrink-0" />
-                Email alerts enabled for{' '}
-                <span className="font-semibold">Critical</span> and{' '}
-                <span className="font-semibold">High</span> severity changes
+            <CardContent className="space-y-4">
+              {/* Email alerts row */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Email alerts</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Receive email for Critical &amp; High severity changes
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-5 bg-primary relative cursor-pointer" title="Enabled">
+                    <span className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary-foreground block" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">On</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                <i className="ri-robot-line shrink-0" />
-                Medium, Low, and Informational changes auto-approved (no email)
+              <Separator />
+              {/* Severity threshold row */}
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Email threshold</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Only send alerts at or above this severity
+                  </p>
+                </div>
+                <Select defaultValue="high">
+                  <SelectTrigger className="w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="critical">Critical only</SelectItem>
+                    <SelectItem value="high">High &amp; above</SelectItem>
+                    <SelectItem value="medium">Medium &amp; above</SelectItem>
+                    <SelectItem value="all">All changes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Separator />
+              {/* Weekly digest row */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Weekly digest</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Summary email every Monday morning
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-5 bg-muted border border-border relative cursor-pointer" title="Disabled">
+                    <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-muted-foreground/50 block" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">Off</span>
+                </div>
+              </div>
+              <div className="pt-1">
+                <p className="text-xs text-muted-foreground">
+                  <i className="ri-information-line mr-1" />
+                  Notification preferences are applied account-wide. Per-user settings coming soon.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Team Members */}
+          <Card id="team">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Team Members
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Invite row */}
+              <div>
+                <p className="text-sm font-medium text-foreground mb-2">Invite a team member</p>
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="colleague@practice.com"
+                    className="flex-1"
+                  />
+                  <Select defaultValue="monitor">
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monitor">Monitor</SelectItem>
+                      <SelectItem value="intelligence">Intelligence</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm" disabled>
+                    <i className="ri-mail-send-line" />
+                    Invite
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Team invitations are available on the Intelligence plan.
+                </p>
+              </div>
+              <Separator />
+              {/* Current members */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Current members</p>
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 bg-primary/10 flex items-center justify-center shrink-0">
+                      <i className="ri-user-line text-primary text-sm" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {(practice as any).owner_email}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Owner</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs">Owner</Badge>
+                </div>
               </div>
             </CardContent>
           </Card>

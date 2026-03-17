@@ -15,12 +15,16 @@ export async function createPractice(formData: FormData) {
     .eq('owner_email', user.email)
     .maybeSingle()
 
-  if (existing) redirect('/changes')
+  if (existing) redirect('/home')
 
   const name          = (formData.get('name') as string).trim()
   const owner_name    = (formData.get('owner_name') as string).trim()
   const practice_type = (formData.get('practice_type') as string).trim()
   const phone         = (formData.get('phone') as string).trim()
+  const tier          = (formData.get('tier') as string | null)?.trim() ?? 'monitor'
+
+  // Validate tier value
+  const validTier = tier === 'intelligence' ? 'intelligence' : 'monitor'
 
   const { error } = await supabase
     .from('practices')
@@ -30,15 +34,15 @@ export async function createPractice(formData: FormData) {
       owner_name,
       practice_type,
       phone,
-      tier:                'monitor',
+      tier:                validTier,
       subscription_status: 'active',
     })
 
   if (error) {
     // 23505 = unique_violation — race condition, practice was just created
-    if (error.code === '23505') redirect('/changes')
+    if (error.code === '23505') redirect('/home')
     throw new Error(`Failed to create practice: ${error.message}`)
   }
 
-  redirect('/changes')
+  redirect('/home')
 }

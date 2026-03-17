@@ -4,7 +4,7 @@ import { createServerClient } from '../../../../lib/db/client'
 import type { DiffBlock } from '../../../../lib/changes/diff'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { LegalDisclaimer } from '@/components/LegalDisclaimer'
 
 // ── Severity helpers ───────────────────────────────────────────────────────────
 
@@ -212,15 +212,7 @@ export default async function ChangeDetailPage({ params }: Props) {
             </CardContent>
           </Card>
 
-          {/* Disclaimer */}
-          <Alert>
-            <i className="ri-scales-3-line text-base" />
-            <AlertDescription>
-              <strong className="font-semibold">Not legal advice.</strong> This summary was generated
-              by AI and may not reflect the full scope or legal effect of the regulatory change.
-              Consult a licensed attorney before acting on any regulatory change.
-            </AlertDescription>
-          </Alert>
+          <LegalDisclaimer />
         </div>
 
         {/* Metadata sidebar */}
