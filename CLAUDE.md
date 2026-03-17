@@ -66,6 +66,9 @@ Never stop at the end of a subtask and wait silently. Always continue to the nex
 - Push to main with `git push`
 - Confirm the push succeeded before continuing
 
+**Platform operations (Vercel, Supabase, GitHub):**
+Use available access tokens to perform all platform operations directly via API or CLI — env var updates, deployments, migrations, git pushes. Never ask the user to perform these manually.
+
 ## Module Test Criteria
 
 A module is not complete until its test criteria pass.
@@ -205,6 +208,7 @@ Anthropic API Key (CEDAR-MVP) = sk-ant-api03-TwlzfIEpKk9aN3a35W-P9MBDkrv6zRY024_
 Browserbase Project ID = f3895e24-ee71-4558-9e37-d94d72234b11
 Browserbase API Key = bb_live_WE66ONapM9mUipx6IdgI5Sv1WWQ
 Resend API Key = re_NdX9vJ3S_718fyKUvaXWzvu3pbD2ERTtX
+GitHub PAT (cedar-deploy) = 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
 
 
 ## Generating Updated Types
