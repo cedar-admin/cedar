@@ -2,17 +2,36 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { createServerClient } from '../../../lib/db/client'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 25
 
-const SEVERITY_STYLES: Record<string, { badge: string; dot: string }> = {
-  critical:      { badge: 'bg-red-100 text-red-800 border-red-200',        dot: 'bg-red-500' },
-  high:          { badge: 'bg-orange-100 text-orange-800 border-orange-200', dot: 'bg-orange-500' },
-  medium:        { badge: 'bg-yellow-100 text-yellow-800 border-yellow-200', dot: 'bg-yellow-500' },
-  low:           { badge: 'bg-green-100 text-green-700 border-green-200',    dot: 'bg-green-500' },
-  informational: { badge: 'bg-blue-100 text-blue-700 border-blue-200',       dot: 'bg-blue-500' },
+const SEVERITY_CLASS: Record<string, string> = {
+  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
+  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
+  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
+}
+
+const SEVERITY_ICON: Record<string, string> = {
+  critical:      'ri-error-warning-fill text-red-500',
+  high:          'ri-alert-fill text-orange-500',
+  medium:        'ri-information-fill text-yellow-500',
+  low:           'ri-checkbox-circle-fill text-green-500',
+  informational: 'ri-information-line text-blue-500',
 }
 
 const SEVERITIES = ['critical', 'high', 'medium', 'low', 'informational'] as const
@@ -21,27 +40,31 @@ const SEVERITIES = ['critical', 'high', 'medium', 'low', 'informational'] as con
 
 function SeverityBadge({ severity }: { severity: string | null }) {
   const key = severity?.toLowerCase() ?? ''
-  const s = SEVERITY_STYLES[key] ?? { badge: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' }
+  const cls = SEVERITY_CLASS[key] ?? 'bg-muted text-muted-foreground border-border'
+  const icon = SEVERITY_ICON[key] ?? 'ri-circle-line text-muted-foreground'
+  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${s.badge}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-      {severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'}
-    </span>
+    <Badge variant="outline" className={`gap-1.5 font-medium ${cls}`}>
+      <i className={`text-xs ${icon}`} />
+      {label}
+    </Badge>
   )
 }
 
 function StatusBadge({ status }: { status: string }) {
   if (status === 'approved') {
     return (
-      <span className="text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-        Approved
-      </span>
+      <Badge variant="outline" className="gap-1.5 text-green-700 border-green-200 bg-green-50 dark:text-green-400 dark:border-green-800 dark:bg-green-950">
+        <i className="ri-shield-check-line text-xs" />
+        Reviewed
+      </Badge>
     )
   }
   return (
-    <span className="text-xs font-medium text-gray-500 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">
-      Auto-approved
-    </span>
+    <Badge variant="secondary" className="gap-1.5">
+      <i className="ri-robot-line text-xs" />
+      Auto
+    </Badge>
   )
 }
 
@@ -53,20 +76,6 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`
 }
 
-function NoPracticeGate() {
-  return (
-    <div className="bg-amber-50 border border-amber-200 rounded-xl p-10 text-center max-w-lg mx-auto mt-16">
-      <div className="text-3xl mb-3">🏥</div>
-      <h2 className="text-base font-semibold text-amber-900 mb-1">No practice configured</h2>
-      <p className="text-sm text-amber-700">
-        Your account is not linked to a practice. Contact{' '}
-        <a href="mailto:support@cedarlegal.io" className="underline">support@cedarlegal.io</a>{' '}
-        to get set up.
-      </p>
-    </div>
-  )
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -74,7 +83,6 @@ interface Props {
 }
 
 export default async function ChangesPage({ searchParams }: Props) {
-  // ── Auth ────────────────────────────────────────────────────────────────────
   let userEmail: string
   try {
     const { user } = await withAuth({ ensureSignedIn: true })
@@ -85,7 +93,6 @@ export default async function ChangesPage({ searchParams }: Props) {
 
   const supabase = createServerClient()
 
-  // ── Practice resolution ─────────────────────────────────────────────────────
   const { data: practice } = await supabase
     .from('practices')
     .select('id, name, tier')
@@ -98,14 +105,13 @@ export default async function ChangesPage({ searchParams }: Props) {
     ? severityParam
     : null
 
-  // ── Queries ─────────────────────────────────────────────────────────────────
   let countQuery = supabase
     .from('changes')
     .select('id', { count: 'exact', head: true })
     .in('review_status', ['auto_approved', 'approved'])
     .eq('jurisdiction', 'FL')
   if (severity) countQuery = countQuery.eq('severity', severity)
-  const { count: totalCount } = await countQuery
+  const { count: totalCount } = practice ? await countQuery : { count: 0 }
 
   const total = totalCount ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -134,42 +140,49 @@ export default async function ChangesPage({ searchParams }: Props) {
     sources: { name: string } | null
   }>
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Regulatory Changes</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Regulatory Changes</h1>
           {practice ? (
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {practice.name} &middot; {total.toLocaleString()} change{total !== 1 ? 's' : ''}
             </p>
           ) : (
-            <p className="text-sm text-gray-500 mt-0.5">Florida regulatory coverage</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Florida regulatory coverage</p>
           )}
         </div>
       </div>
 
       {/* Practice gate */}
-      {!practice && <NoPracticeGate />}
+      {!practice && (
+        <Alert className="max-w-lg">
+          <i className="ri-hospital-line text-base" />
+          <AlertDescription>
+            Your account is not linked to a practice. Contact{' '}
+            <a href="mailto:cedaradmin@gmail.com" className="underline font-medium">cedaradmin@gmail.com</a>{' '}
+            to get set up.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {practice && (
         <>
           {/* Severity filter */}
-          <div className="flex items-center gap-2 mb-6 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
               href="/changes"
               className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 !severity
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
               }`}
             >
               All
             </Link>
             {SEVERITIES.map((s) => {
-              const style = SEVERITY_STYLES[s]
               const active = severity === s
               return (
                 <Link
@@ -177,8 +190,8 @@ export default async function ChangesPage({ searchParams }: Props) {
                   href={`/changes?severity=${s}${page > 1 ? `&page=${page}` : ''}`}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                     active
-                      ? `${style.badge} border-current`
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      ? SEVERITY_CLASS[s]
+                      : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
                   }`}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -189,100 +202,111 @@ export default async function ChangesPage({ searchParams }: Props) {
 
           {/* Error state */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm text-red-700">
-              Failed to load changes: {(error as { message: string }).message}
-            </div>
+            <Alert variant="destructive">
+              <i className="ri-error-warning-line text-base" />
+              <AlertDescription>
+                Failed to load changes: {(error as { message: string }).message}
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Empty state */}
           {changes.length === 0 && !error && (
-            <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
-              <div className="text-4xl mb-3">🪵</div>
-              <h2 className="text-base font-semibold text-gray-900 mb-1">No changes detected yet</h2>
-              <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                Cedar is monitoring Florida regulatory sources. Detected changes will appear here
-                after the next monitoring run.
-              </p>
-            </div>
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                <i className="ri-leaf-line text-4xl text-muted-foreground/40 mb-3" />
+                <h2 className="text-base font-semibold text-foreground mb-1">No changes detected yet</h2>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                  Cedar is monitoring Florida regulatory sources. Detected changes will appear here
+                  after the next monitoring run.
+                </p>
+              </CardContent>
+            </Card>
           )}
 
           {/* Table */}
           {changes.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50">
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 w-32">Severity</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-48">Source</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">Summary</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Detected</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-32">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {changes.map((change) => (
-                    <tr key={change.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <SeverityBadge severity={change.severity} />
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="text-sm font-medium text-gray-900">
-                          {change.sources?.name ?? 'Unknown Source'}
-                        </span>
-                        <span className="block text-xs text-gray-400 mt-0.5">{change.jurisdiction ?? 'FL'}</span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <Link href={`/changes/${change.id}`} className="group">
-                          <p className="text-sm text-gray-700 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                            {change.summary ?? <span className="text-gray-400 italic">No summary available</span>}
-                          </p>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        {timeAgo(change.detected_at)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <StatusBadge status={change.review_status} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-36">Severity</TableHead>
+                      <TableHead className="w-48">Source</TableHead>
+                      <TableHead>Summary</TableHead>
+                      <TableHead className="w-24">Detected</TableHead>
+                      <TableHead className="w-28">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {changes.map((change) => (
+                      <TableRow key={change.id}>
+                        <TableCell>
+                          <SeverityBadge severity={change.severity} />
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm font-medium text-foreground">
+                            {change.sources?.name ?? 'Unknown Source'}
+                          </span>
+                          <span className="block text-xs text-muted-foreground mt-0.5">
+                            {change.jurisdiction ?? 'FL'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`/changes/${change.id}`} className="group">
+                            <p className="text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                              {change.summary ?? (
+                                <span className="text-muted-foreground italic">No summary available</span>
+                              )}
+                            </p>
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                          {timeAgo(change.detected_at)}
+                        </TableCell>
+                        <TableCell>
+                          <StatusBadge status={change.review_status} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           )}
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-gray-500">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
                 Showing {from + 1}&ndash;{Math.min(to + 1, total)} of {total.toLocaleString()}
               </p>
               <div className="flex items-center gap-2">
                 {safePage > 1 ? (
                   <Link
                     href={`/changes?page=${safePage - 1}${severity ? `&severity=${severity}` : ''}`}
-                    className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md hover:bg-muted transition-colors"
                   >
-                    &larr; Previous
+                    <i className="ri-arrow-left-line" /> Previous
                   </Link>
                 ) : (
-                  <span className="px-3 py-1.5 text-sm border border-gray-100 rounded-lg text-gray-300 cursor-not-allowed">
-                    &larr; Previous
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md text-muted-foreground/50 cursor-not-allowed">
+                    <i className="ri-arrow-left-line" /> Previous
                   </span>
                 )}
-                <span className="text-sm text-gray-600 px-2">
-                  Page {safePage} of {totalPages}
+                <span className="text-sm text-muted-foreground px-2">
+                  {safePage} / {totalPages}
                 </span>
                 {safePage < totalPages ? (
                   <Link
                     href={`/changes?page=${safePage + 1}${severity ? `&severity=${severity}` : ''}`}
-                    className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md hover:bg-muted transition-colors"
                   >
-                    Next &rarr;
+                    Next <i className="ri-arrow-right-line" />
                   </Link>
                 ) : (
-                  <span className="px-3 py-1.5 text-sm border border-gray-100 rounded-lg text-gray-300 cursor-not-allowed">
-                    Next &rarr;
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md text-muted-foreground/50 cursor-not-allowed">
+                    Next <i className="ri-arrow-right-line" />
                   </span>
                 )}
               </div>

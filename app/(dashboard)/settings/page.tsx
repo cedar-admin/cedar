@@ -2,28 +2,35 @@ import { withAuth } from '@workos-inc/authkit-nextjs'
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
 import { createBillingPortalSession } from '../../actions/billing'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function TierBadge({ tier }: { tier: string }) {
-  const map: Record<string, string> = {
-    monitor:      'bg-gray-100 text-gray-700 border-gray-200',
-    intelligence: 'bg-purple-50 text-purple-700 border-purple-200',
-  }
-  const cls = map[tier.toLowerCase()] ?? map.monitor
-  const label = tier.charAt(0).toUpperCase() + tier.slice(1)
+  const isIntelligence = tier.toLowerCase() === 'intelligence'
   return (
-    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cls}`}>
-      {label}
-    </span>
+    <Badge
+      variant="outline"
+      className={
+        isIntelligence
+          ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800'
+          : ''
+      }
+    >
+      {tier.charAt(0).toUpperCase() + tier.slice(1)}
+    </Badge>
   )
 }
 
-function SubscriptionStatusBadge({ status }: { status: string | null }) {
+function SubscriptionStatus({ status }: { status: string | null }) {
   const s = status ?? 'inactive'
   if (s === 'active' || s === 'trialing') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700">
+      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
         <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
         {s === 'trialing' ? 'Trialing' : 'Active'}
       </span>
@@ -31,7 +38,7 @@ function SubscriptionStatusBadge({ status }: { status: string | null }) {
   }
   if (s === 'past_due') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-yellow-700">
+      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-yellow-700 dark:text-yellow-400">
         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
         Past due
       </span>
@@ -39,16 +46,15 @@ function SubscriptionStatusBadge({ status }: { status: string | null }) {
   }
   if (s === 'canceled') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700">
+      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700 dark:text-red-400">
         <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
         Canceled
       </span>
     )
   }
-  // inactive / unpaid / incomplete / unknown
   return (
-    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500">
-      <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
       {s === 'inactive' ? 'No subscription' : s.charAt(0).toUpperCase() + s.slice(1)}
     </span>
   )
@@ -80,122 +86,145 @@ export default async function SettingsPage() {
     .maybeSingle()
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-        <p className="text-gray-500 text-sm mt-1">Account, notifications, and billing</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+        <p className="text-muted-foreground text-sm mt-1">Account, notifications, and billing</p>
       </div>
 
       {!practice && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center max-w-lg mx-auto">
-          <p className="text-sm text-amber-800">
+        <Alert className="max-w-lg">
+          <i className="ri-hospital-line text-base" />
+          <AlertDescription>
             No practice configured. Contact{' '}
-            <a href="mailto:support@cedarlegal.io" className="underline">support@cedarlegal.io</a>{' '}
+            <a href="mailto:cedaradmin@gmail.com" className="underline font-medium">
+              cedaradmin@gmail.com
+            </a>{' '}
             to get set up.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
 
       {practice && (
         <div className="grid grid-cols-1 gap-5 max-w-2xl">
           {/* Practice Info */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Practice</h2>
-            <dl className="space-y-3">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Practice
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Name</dt>
-                <dd className="text-sm font-medium text-gray-900">{(practice as any).name}</dd>
+                <span className="text-sm text-muted-foreground">Name</span>
+                <span className="text-sm font-medium text-foreground">{(practice as any).name}</span>
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Owner Email</dt>
-                <dd className="text-sm font-medium text-gray-900">{(practice as any).owner_email}</dd>
+                <span className="text-sm text-muted-foreground">Owner Email</span>
+                <span className="text-sm font-medium text-foreground">{(practice as any).owner_email}</span>
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Plan</dt>
-                <dd><TierBadge tier={(practice as any).tier ?? 'monitor'} /></dd>
+                <span className="text-sm text-muted-foreground">Plan</span>
+                <TierBadge tier={(practice as any).tier ?? 'monitor'} />
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Member Since</dt>
-                <dd className="text-sm text-gray-700">
+                <span className="text-sm text-muted-foreground">Member Since</span>
+                <span className="text-sm text-foreground">
                   {new Date((practice as any).created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-                </dd>
+                </span>
               </div>
-            </dl>
-          </section>
+            </CardContent>
+          </Card>
 
           {/* Subscription */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Subscription</h2>
-            <dl className="space-y-3">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Subscription
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Status</dt>
-                <dd><SubscriptionStatusBadge status={(practice as any).subscription_status} /></dd>
+                <span className="text-sm text-muted-foreground">Status</span>
+                <SubscriptionStatus status={(practice as any).subscription_status} />
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Renewal</dt>
-                <dd className="text-sm text-gray-700">{formatRenewal((practice as any).current_period_end)}</dd>
+                <span className="text-sm text-muted-foreground">Renewal</span>
+                <span className="text-sm text-foreground">{formatRenewal((practice as any).current_period_end)}</span>
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Stripe Customer</dt>
-                <dd className="text-sm font-mono text-gray-500">{mask((practice as any).stripe_customer_id)}</dd>
+                <span className="text-sm text-muted-foreground">Stripe Customer</span>
+                <span className="text-sm font-mono text-muted-foreground">{mask((practice as any).stripe_customer_id)}</span>
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-500">Stripe Subscription</dt>
-                <dd className="text-sm font-mono text-gray-500">{mask((practice as any).stripe_subscription_id)}</dd>
+                <span className="text-sm text-muted-foreground">Stripe Subscription</span>
+                <span className="text-sm font-mono text-muted-foreground">{mask((practice as any).stripe_subscription_id)}</span>
               </div>
-            </dl>
 
-            {/* Billing actions */}
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              {(practice as any).stripe_customer_id ? (
-                <form action={createBillingPortalSession}>
-                  <button
-                    type="submit"
-                    className="text-sm font-medium text-gray-700 bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Manage Billing
-                  </button>
-                </form>
-              ) : (
-                <Link
-                  href="/pricing"
-                  className="inline-block text-sm font-medium text-purple-700 bg-purple-50 border border-purple-200 px-4 py-2 rounded-lg hover:bg-purple-100 transition-colors"
-                >
-                  Upgrade Plan
-                </Link>
-              )}
-            </div>
-          </section>
+              {/* Billing actions */}
+              <div className="pt-2">
+                {(practice as any).stripe_customer_id ? (
+                  <form action={createBillingPortalSession}>
+                    <Button type="submit" variant="outline" size="sm">
+                      <i className="ri-bank-card-line" />
+                      Manage Billing
+                    </Button>
+                  </form>
+                ) : (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/pricing">
+                      <i className="ri-arrow-up-circle-line" />
+                      Upgrade Plan
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Notifications */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Notifications</h2>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-sm text-gray-700">
-                <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Email alerts enabled for <strong className="font-semibold ml-1">Critical</strong> and{' '}
-                <strong className="font-semibold ml-1">High</strong> severity changes
-              </li>
-              <li className="flex items-center gap-2 text-sm text-gray-500">
-                <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex items-center gap-2.5 text-sm text-foreground">
+                <i className="ri-mail-check-line text-primary shrink-0" />
+                Email alerts enabled for{' '}
+                <span className="font-semibold">Critical</span> and{' '}
+                <span className="font-semibold">High</span> severity changes
+              </div>
+              <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                <i className="ri-robot-line shrink-0" />
                 Medium, Low, and Informational changes auto-approved (no email)
-              </li>
-            </ul>
-          </section>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Jurisdictions */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Jurisdictions</h2>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-sm font-medium text-gray-900">Florida (FL)</span>
-              <span className="text-xs text-gray-400 ml-1">— 10 sources monitored</span>
-            </div>
-          </section>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Jurisdictions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2.5">
+                <i className="ri-map-pin-2-line text-primary" />
+                <span className="text-sm font-medium text-foreground">Florida (FL)</span>
+                <span className="text-xs text-muted-foreground">— 10 sources monitored</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

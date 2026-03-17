@@ -1,5 +1,16 @@
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -15,21 +26,22 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
-const SEVERITY_STYLES: Record<string, string> = {
-  critical:      'bg-red-100 text-red-700',
-  high:          'bg-orange-100 text-orange-700',
-  medium:        'bg-yellow-100 text-yellow-700',
-  low:           'bg-green-100 text-green-700',
-  informational: 'bg-blue-100 text-blue-700',
+const SEVERITY_CLASS: Record<string, string> = {
+  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
+  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
+  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
 }
 
-function SeverityPill({ severity }: { severity: string | null }) {
+function SeverityBadge({ severity }: { severity: string | null }) {
   const key = severity?.toLowerCase() ?? ''
-  const cls = SEVERITY_STYLES[key] ?? 'bg-gray-100 text-gray-600'
+  const cls = SEVERITY_CLASS[key] ?? ''
+  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : '—'
   return (
-    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-      {severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : '—'}
-    </span>
+    <Badge variant="outline" className={`font-medium ${cls}`}>
+      {label}
+    </Badge>
   )
 }
 
@@ -38,7 +50,6 @@ function SeverityPill({ severity }: { severity: string | null }) {
 export default async function AuditPage() {
   const supabase = createServerClient()
 
-  // Parallel queries
   const [{ data: validationLogs }, { data: auditChanges }] = await Promise.all([
     supabase
       .from('validation_log')
@@ -80,126 +91,144 @@ export default async function AuditPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Audit Trail</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-foreground">Audit Trail</h1>
+          <p className="text-muted-foreground text-sm mt-1">
             Tamper-evident, timestamped record of all detected changes and hash chain integrity
           </p>
         </div>
-        <Link
-          href="/audit/export"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Export PDF
-        </Link>
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/audit/export" target="_blank" rel="noopener noreferrer">
+            <i className="ri-download-line" />
+            Export PDF
+          </Link>
+        </Button>
       </div>
 
       {/* Section 1: Chain Validation Runs */}
-      <section>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Chain Validation Runs</h2>
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-foreground">Chain Validation Runs</h2>
         {logs.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-            <p className="text-sm text-gray-400">No validation runs yet. The weekly cron runs every Sunday at 3 AM UTC.</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <i className="ri-shield-check-line text-3xl text-muted-foreground/40 mb-2" />
+              <p className="text-sm text-muted-foreground">
+                No validation runs yet. The weekly cron runs every Sunday at 3 AM UTC.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">Run At</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Sources</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Valid</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Broken</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Changes</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">Summary</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3 text-sm text-gray-700 whitespace-nowrap">
-                      {formatDate(log.run_at)}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 text-center">{log.sources_checked}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="text-sm font-medium text-green-700">{log.chains_valid}</span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {log.chains_broken > 0 ? (
-                        <span className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
-                          {log.chains_broken}
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Run At</TableHead>
+                    <TableHead className="w-24 text-center">Sources</TableHead>
+                    <TableHead className="w-24 text-center">Valid</TableHead>
+                    <TableHead className="w-24 text-center">Broken</TableHead>
+                    <TableHead className="w-24 text-center">Changes</TableHead>
+                    <TableHead>Summary</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {logs.map((log) => (
+                    <TableRow key={log.id}>
+                      <TableCell className="text-sm text-foreground whitespace-nowrap">
+                        {formatDate(log.run_at)}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground text-center">
+                        {log.sources_checked}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                          {log.chains_valid}
                         </span>
-                      ) : (
-                        <span className="text-sm text-gray-400">0</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 text-center">{log.total_changes}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500 max-w-xs truncate">
-                      {log.summary ?? '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {log.chains_broken > 0 ? (
+                          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800">
+                            {log.chains_broken}
+                          </Badge>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">0</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground text-center">
+                        {log.total_changes}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                        {log.summary ?? '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         )}
       </section>
 
       {/* Section 2: Audit Trail */}
-      <section>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">
-          Change Audit Trail
-          <span className="ml-2 text-xs font-normal text-gray-400">(most recent 50 records)</span>
-        </h2>
+      <section className="space-y-3">
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-sm font-semibold text-foreground">Change Audit Trail</h2>
+          <span className="text-xs text-muted-foreground">most recent 50 records</span>
+        </div>
         {changes.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-            <p className="text-sm text-gray-400">No changes with hash chain data yet.</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <i className="ri-list-check-3 text-3xl text-muted-foreground/40 mb-2" />
+              <p className="text-sm text-muted-foreground">No changes with hash chain data yet.</p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 w-20">Seq #</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-40">Source</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Severity</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">Summary</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Detected</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-32">Hash</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {changes.map((c) => (
-                  <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3 text-sm font-mono text-gray-400">
-                      #{c.chain_sequence}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">
-                      {c.sources?.name ?? '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <SeverityPill severity={c.severity} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link href={`/changes/${c.id}`} className="text-sm text-gray-700 hover:text-blue-600 line-clamp-1 transition-colors">
-                        {c.summary ?? <span className="text-gray-400 italic">No summary</span>}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">
-                      {timeAgo(c.detected_at)}
-                    </td>
-                    <td className="px-4 py-3 text-xs font-mono text-gray-400">
-                      {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Card>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-20">Seq #</TableHead>
+                    <TableHead className="w-40">Source</TableHead>
+                    <TableHead className="w-28">Severity</TableHead>
+                    <TableHead>Summary</TableHead>
+                    <TableHead className="w-24">Detected</TableHead>
+                    <TableHead className="w-32">Hash</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {changes.map((c) => (
+                    <TableRow key={c.id}>
+                      <TableCell className="text-sm font-mono text-muted-foreground">
+                        #{c.chain_sequence}
+                      </TableCell>
+                      <TableCell className="text-sm text-foreground">
+                        {c.sources?.name ?? '—'}
+                      </TableCell>
+                      <TableCell>
+                        <SeverityBadge severity={c.severity} />
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/changes/${c.id}`}
+                          className="text-sm text-foreground hover:text-primary line-clamp-1 transition-colors"
+                        >
+                          {c.summary ?? (
+                            <span className="text-muted-foreground italic">No summary</span>
+                          )}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {timeAgo(c.detected_at)}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono text-muted-foreground">
+                        {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         )}
       </section>
     </div>

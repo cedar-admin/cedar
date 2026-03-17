@@ -1,41 +1,50 @@
 import { createServerClient } from '../../../lib/db/client'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const TIER_STYLES: Record<string, string> = {
-  critical: 'bg-red-50 text-red-700 border border-red-200',
-  standard: 'bg-blue-50 text-blue-700 border border-blue-200',
-  low:      'bg-gray-50 text-gray-600 border border-gray-200',
-}
-
-function TierBadge({ tier }: { tier: string | null }) {
+function MonitoringTierBadge({ tier }: { tier: string | null }) {
   const key = tier?.toLowerCase() ?? 'standard'
-  const cls = TIER_STYLES[key] ?? TIER_STYLES.standard
+  const cls =
+    key === 'critical'
+      ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800'
+      : key === 'low'
+      ? ''
+      : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800'
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
+    <Badge variant="outline" className={`font-medium ${cls}`}>
       {tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : 'Standard'}
-    </span>
+    </Badge>
   )
 }
 
-function StatusDot({ lastFetchedAt }: { lastFetchedAt: string | null }) {
+function FreshnessIndicator({ lastFetchedAt }: { lastFetchedAt: string | null }) {
   if (!lastFetchedAt) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-gray-400">
-        <span className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" />
         Never checked
       </span>
     )
   }
-  const ageMs = Date.now() - new Date(lastFetchedAt).getTime()
-  const ageH  = ageMs / 3_600_000
-  let dotColor = 'bg-gray-300'
-  let label    = 'Stale'
-  if (ageH < 25)      { dotColor = 'bg-green-500'; label = 'Fresh' }
+  const ageH = (Date.now() - new Date(lastFetchedAt).getTime()) / 3_600_000
+  let dotColor = 'bg-muted-foreground/30'
+  let label = 'Stale'
+  if (ageH < 25)       { dotColor = 'bg-green-500'; label = 'Fresh' }
   else if (ageH < 168) { dotColor = 'bg-yellow-400'; label = 'Aging' }
 
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
       <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
       {label}
     </span>
@@ -75,7 +84,6 @@ export default async function SourcesPage() {
     }>
   }>
 
-  // For status dot and "last checked": use the most recently fetched URL per source
   const withMeta = sources.map((s) => {
     const urls = s.source_urls ?? []
     const latestFetch = urls
@@ -91,61 +99,76 @@ export default async function SourcesPage() {
   })
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Source Library</h1>
-        <p className="text-gray-500 text-sm mt-1">
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">Source Library</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           {sources.length} active source{sources.length !== 1 ? 's' : ''} &mdash; Florida regulatory coverage
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm text-red-700">
-          Failed to load sources: {error.message}
-        </div>
+        <Alert variant="destructive">
+          <i className="ri-error-warning-line text-base" />
+          <AlertDescription>
+            Failed to load sources: {error.message}
+          </AlertDescription>
+        </Alert>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50">
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">Source</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-24">Tier</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-36">Fetch Method</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-16">URLs</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-28">Last Checked</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-28">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {withMeta.map((source) => (
-              <tr key={source.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{source.name}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{source.jurisdiction ?? 'FL'}</div>
-                </td>
-                <td className="px-4 py-4">
-                  <TierBadge tier={source.tier} />
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-500">{source.fetchMethod}</td>
-                <td className="px-4 py-4 text-sm text-gray-500 text-center">{source.urlCount}</td>
-                <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  {timeAgo(source.latestFetchedAt)}
-                </td>
-                <td className="px-4 py-4">
-                  <StatusDot lastFetchedAt={source.latestFetchedAt} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {sources.length === 0 && !error && (
-          <div className="p-12 text-center">
-            <p className="text-sm text-gray-400">No active sources found.</p>
-          </div>
-        )}
-      </div>
+      {sources.length === 0 && !error ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <i className="ri-database-2-line text-3xl text-muted-foreground/40 mb-2" />
+            <p className="text-sm text-muted-foreground">No active sources found.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Source</TableHead>
+                  <TableHead className="w-28">Tier</TableHead>
+                  <TableHead className="w-36">Fetch Method</TableHead>
+                  <TableHead className="w-16 text-center">URLs</TableHead>
+                  <TableHead className="w-28">Last Checked</TableHead>
+                  <TableHead className="w-28">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {withMeta.map((source) => (
+                  <TableRow key={source.id}>
+                    <TableCell>
+                      <div className="text-sm font-medium text-foreground">{source.name}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        {source.jurisdiction ?? 'FL'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <MonitoringTierBadge tier={source.tier} />
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {source.fetchMethod}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground text-center">
+                      {source.urlCount}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {timeAgo(source.latestFetchedAt)}
+                    </TableCell>
+                    <TableCell>
+                      <FreshnessIndicator lastFetchedAt={source.latestFetchedAt} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
