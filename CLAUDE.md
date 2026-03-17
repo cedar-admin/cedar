@@ -63,11 +63,58 @@ Never stop at the end of a subtask and wait silently. Always continue to the nex
 **After completing any module or subtask that modifies files:**
 - Stage all changed files with `git add -A`
 - Commit with a descriptive message (e.g., `feat: Module 9 dashboard live data queries`)
-- Push to main with `git push`
+- Push to main using the deploy procedure below
 - Confirm the push succeeded before continuing
 
 **Platform operations (Vercel, Supabase, GitHub):**
 Use available access tokens to perform all platform operations directly via API or CLI — env var updates, deployments, migrations, git pushes. Never ask the user to perform these manually.
+
+## Git Push & Vercel Deploy Procedure
+
+Vercel is connected to the `cedar-admin/cedar` GitHub repo and auto-deploys on every push to `main`. The CLI deploy path (`vercel deploy --prod`) is unreliable on this account — always use the GitHub push path instead.
+
+**Every push to production must follow these exact steps:**
+
+```bash
+# 1. Stage and commit (standard)
+git add -A
+git commit -m "feat: ..."
+
+# 2. Push using PAT (HTTPS auth is not cached — must embed PAT in URL)
+PAT="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"
+git remote set-url origin "https://${PAT}@github.com/cedar-admin/cedar.git"
+git push origin main
+git remote set-url origin "https://github.com/cedar-admin/cedar.git"   # reset — never leave PAT in remote URL
+
+# 3. Verify Vercel picked it up (wait ~10s then poll)
+sleep 10s && curl -s "https://api.vercel.com/v6/deployments?projectId=prj_YykyqY89BoocNV2xV3MUWcDjpdxv&limit=1" \
+  -H "Authorization: Bearer vcp_3ZBv8xhuHEFpY9VOOQmG0WpRMZkvH7J9iUkd4c6XpxKHM9XhgX1KYbv9" \
+  | jq '.deployments[0] | {id: .uid, state, url}'
+
+# 4. If state is BUILDING, poll again after 30s until READY or ERROR
+# 5. If state is READY — done. cedar-beta.vercel.app is live.
+# 6. If state is ERROR — check build logs before retrying
+```
+
+**Why the CLI path fails:** `vercel deploy --prod` (CLI) returns "Unexpected error" immediately on this account — builds complete in 0ms with no logs. Root cause is unknown (likely a Vercel Hobby plan + CLI auth combination). The GitHub push → auto-deploy path works reliably every time.
+
+**Author identity must be `cedar-admin`:** The global git config must be set to match the GitHub account. If commits are authored with a different identity, Vercel may not associate them correctly.
+
+```bash
+git config --global user.email "cedaradmin@gmail.com"
+git config --global user.name "cedar-admin"
+```
+
+If the identity ever gets reset, re-amend the last commit before pushing:
+```bash
+git commit --amend --reset-author --no-edit
+# then push with PAT as above (use --force if already pushed)
+```
+
+**Vercel project details:**
+- Project ID: `prj_YykyqY89BoocNV2xV3MUWcDjpdxv`
+- Production URL: `cedar-beta.vercel.app`
+- GitHub repo: `cedar-admin/cedar` (main branch → production)
 
 ## Module Test Criteria
 
