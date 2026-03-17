@@ -257,6 +257,36 @@ Browserbase API Key = bb_live_WE66ONapM9mUipx6IdgI5Sv1WWQ
 Resend API Key = re_NdX9vJ3S_718fyKUvaXWzvu3pbD2ERTtX
 GitHub PAT (cedar-deploy) = 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
 
+## Design System
+
+Cedar uses shadcn/ui with a custom preset. All UI must conform to these rules:
+
+### Components
+- Use shadcn/ui components from `components/ui/` exclusively
+- No raw HTML buttons, inputs, selects, textareas, or form elements
+- If a needed component is missing, add it: `pnpm dlx shadcn@latest add [name]`
+
+### Styling
+- Colors via CSS variables only — no hardcoded hex, rgb, or hsl values
+- No inline styles
+- No arbitrary Tailwind values (e.g. no `w-[347px]`, `text-[13px]`)
+- Spacing and sizing via Tailwind scale only
+
+### Icons
+- Remix Icon only (`<i className="ri-[name]"></i>`)
+- No other icon libraries (no lucide-react, no heroicons)
+
+### Typography
+- Font: Geist (already configured via preset)
+- Sizes via Tailwind scale only (`text-sm`, `text-base`, `text-lg`, etc.)
+
+### Dark Mode
+- Always implement both light and dark variants for any new UI
+- Use `dark:` Tailwind prefix — never hardcode for one theme only
+
+### Theming
+- All visual tokens live in `globals.css` — that is the single source of truth
+- Do not modify `globals.css` CSS variables without explicit instruction
 
 ## Generating Updated Types
 
