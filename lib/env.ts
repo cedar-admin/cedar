@@ -19,9 +19,14 @@ const serverEnvSchema = z.object({
   // (getEnv() Zod validation has Turbopack step-callback issues with this key)
   ANTHROPIC_API_KEY: z.string().optional(),
 
-  // Optional at MVP — required for 1.0 Launch
-  STRIPE_SECRET_KEY: z.string().optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  // App URL — used in email links. Falls back to cedar-beta.vercel.app if not set.
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+
+  // Stripe — required for billing
+  STRIPE_SECRET_KEY: z.string().min(1),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  STRIPE_MONITOR_PRICE_ID: z.string().min(1),
+  STRIPE_INTELLIGENCE_PRICE_ID: z.string().min(1),
   RESEND_API_KEY: z.string().optional(),
   OXYLABS_USERNAME: z.string().optional(),
   OXYLABS_PASSWORD: z.string().optional(),
@@ -52,12 +57,15 @@ function validateServerEnv() {
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_MONITOR_PRICE_ID: process.env.STRIPE_MONITOR_PRICE_ID,
+    STRIPE_INTELLIGENCE_PRICE_ID: process.env.STRIPE_INTELLIGENCE_PRICE_ID,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     OXYLABS_USERNAME: process.env.OXYLABS_USERNAME,
     OXYLABS_PASSWORD: process.env.OXYLABS_PASSWORD,
     BROWSERBASE_API_KEY: process.env.BROWSERBASE_API_KEY,
     RAILWAY_DOCLING_URL: process.env.RAILWAY_DOCLING_URL,
     ONESIGNAL_API_KEY: process.env.ONESIGNAL_API_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   })
   if (!parsed.success) {
     console.error('❌ Invalid server environment variables:')

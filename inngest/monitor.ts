@@ -5,7 +5,7 @@ import { inngest } from './client'
 import { createServerClient } from '../lib/db/client'
 import { dispatchFetch } from '../lib/fetchers/dispatcher'
 import { hashContent, computeChainHash } from '../lib/changes/hash'
-import { generateDiff, changeMagnitude } from '../lib/changes/diff'
+import { generateStructuredDiff, changeMagnitude } from '../lib/changes/diff'
 import { runRelevanceFilter } from '../lib/intelligence/relevance-filter'
 import { runClassifier } from '../lib/intelligence/classifier'
 import { recordChange } from '../lib/audit/record'
@@ -134,7 +134,7 @@ export const monitorSource = inngest.createFunction(
         before = lastChange?.content_after ?? ''
       }
       return {
-        diff: generateDiff(before, fetchResult.content),
+        structuredDiff: generateStructuredDiff(before, fetchResult.content),
         magnitude: changeMagnitude(before, fetchResult.content),
         before,
       }
@@ -154,7 +154,9 @@ export const monitorSource = inngest.createFunction(
 
     // ── Step 5: Run relevance filter (Agent 1) ────────────────────────────
     const relevance = await step.run('relevance-filter', async () => {
-      const contentForAgent = diff.diff ?? fetchResult.content.slice(0, 4000)
+      const contentForAgent = diff.structuredDiff
+        ? diff.structuredDiff.map(b => b.content).join('\n')
+        : fetchResult.content.slice(0, 4000)
       return runRelevanceFilter(
         contentForAgent,
         source.name as string,
@@ -176,7 +178,9 @@ export const monitorSource = inngest.createFunction(
 
     // ── Step 6: Run classifier (Agent 2) ─────────────────────────────────
     const classification = await step.run('classify', async () => {
-      const contentForAgent = diff.diff ?? fetchResult.content.slice(0, 4000)
+      const contentForAgent = diff.structuredDiff
+        ? diff.structuredDiff.map(b => b.content).join('\n')
+        : fetchResult.content.slice(0, 4000)
       return runClassifier(
         contentForAgent,
         source.name as string,
@@ -185,18 +189,24 @@ export const monitorSource = inngest.createFunction(
       )
     })
 
-    // ── Step 7: Get previous chain_hash for tamper-evident chain ──────────
-    const chainHash = await step.run('compute-chain-hash', async () => {
+    // ── Step 7: Compute chain hash + sequence for tamper-evident audit trail ─
+    const chain = await step.run('compute-chain-hash', async () => {
       const { data: lastChange } = await supabase
         .from('changes')
-        .select('chain_hash')
+        .select('chain_hash, chain_sequence')
         .eq('source_id', sourceId)
-        .order('created_at', { ascending: false })
+        .order('chain_sequence', { ascending: false, nullsFirst: false })
         .limit(1)
         .single()
 
-      const previousChainHash = lastChange ? (lastChange as { chain_hash: string | null }).chain_hash : null
-      return computeChainHash(previousChainHash, currentHash)
+      const lc = lastChange as { chain_hash: string | null; chain_sequence: number | null } | null
+      const prevChainHash = lc?.chain_hash ?? null
+      const prevSequence  = lc?.chain_sequence ?? 0
+      return {
+        chainHash:     computeChainHash(prevChainHash, currentHash),
+        prevChainHash,
+        chainSequence: prevSequence + 1,
+      }
     })
 
     // ── Step 8: Determine review status from review_rules ─────────────────
@@ -207,9 +217,11 @@ export const monitorSource = inngest.createFunction(
         .eq('severity', classification.severity)
         .single()
 
-      if (!rule) return 'pending' as const
+      // No matching rule = no HITL requirement → auto-proceed
+      if (!rule) return 'auto_approved' as const
       const r = rule as { auto_approve: boolean; route_to_hitl: boolean }
       if (r.auto_approve) return 'auto_approved' as const
+      // route_to_hitl = true → hold for attorney review
       return 'pending' as const
     })
 
@@ -221,9 +233,11 @@ export const monitorSource = inngest.createFunction(
         jurisdiction: (source.jurisdiction as string) ?? 'FL',
         content_before: diff.before || null,
         content_after: fetchResult.content,
-        diff: diff.diff,
+        normalized_diff: diff.structuredDiff ?? null,
         hash: currentHash,
-        chain_hash: chainHash,
+        chain_hash: chain.chainHash,
+        prev_chain_hash: chain.prevChainHash,
+        chain_sequence: chain.chainSequence,
         agent_version: relevance.agentVersion,
         relevance_score: relevance.relevanceScore,
         severity: classification.severity,
@@ -233,7 +247,76 @@ export const monitorSource = inngest.createFunction(
       })
     })
 
-    // ── Step 10: Update source_url with new hash + effective fetch method ───
+    // ── Step 10: Write KG entity + version snapshot ───────────────────────────
+    // Non-fatal: KG write failure must not block delivery.
+    await step.run('write-kg-entity', async () => {
+      try {
+        const rawClass = classification.rawClassification as Record<string, unknown>
+        const entityTypeSlug =
+          typeof rawClass.entity_type === 'string' ? rawClass.entity_type : 'regulation'
+
+        // Look up entity_type_id from the taxonomy (nullable FK — null if slug not found)
+        const { data: entityType } = await supabase
+          .from('kg_entity_types')
+          .select('id')
+          .eq('slug', entityTypeSlug)
+          .maybeSingle()
+
+        const name = classification.summary.slice(0, 150).trim()
+
+        const { data: entity, error: entityErr } = await supabase
+          .from('kg_entities')
+          .insert({
+            name,
+            description:               classification.summary,
+            entity_type:               entityTypeSlug,
+            entity_type_id:            entityType?.id ?? null,
+            jurisdiction:              (source.jurisdiction as string) ?? 'FL',
+            source_id:                 sourceId,
+            change_id:                 changeId,
+            classification_confidence: relevance.relevanceScore,
+            metadata: {
+              severity:                classification.severity,
+              regulatory_domains:      classification.regulatoryDomains,
+              affected_practice_types: classification.affectedPracticeTypes,
+              effective_date:          classification.effectiveDate,
+              action_items:            classification.actionItems,
+            },
+          })
+          .select('id')
+          .single()
+
+        if (entityErr) {
+          logger.warn(`[monitor] KG entity write failed (non-fatal): ${entityErr.message}`)
+          return null
+        }
+
+        // Append-only version snapshot (version_number 1 for new entities)
+        await supabase.from('kg_entity_versions').insert({
+          entity_id:      entity.id,
+          version_number: 1,
+          change_id:      changeId,
+          snapshot: {
+            name,
+            entity_type:        entityTypeSlug,
+            severity:           classification.severity,
+            summary:            classification.summary,
+            jurisdiction:       (source.jurisdiction as string) ?? 'FL',
+            regulatory_domains: classification.regulatoryDomains,
+            captured_at:        new Date().toISOString(),
+          },
+        })
+
+        return entity.id
+      } catch (err) {
+        logger.warn(
+          `[monitor] KG entity step error (non-fatal): ${err instanceof Error ? err.message : String(err)}`
+        )
+        return null
+      }
+    })
+
+    // ── Step 11: Update source_url with new hash + effective fetch method ───
     // Persisting last_fetch_method enables the dispatcher to skip failed methods
     // on subsequent runs (e.g. if oxylabs escalated to browserbase, remember browserbase).
     await step.run('update-source-url', async () => {

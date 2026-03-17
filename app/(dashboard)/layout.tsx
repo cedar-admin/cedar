@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { withAuth } from '@workos-inc/authkit-nextjs'
 
 const NAV_ITEMS = [
   { href: '/changes', label: 'Changes' },
@@ -7,7 +8,8 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Settings' },
 ]
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  await withAuth({ ensureSignedIn: true })
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200">

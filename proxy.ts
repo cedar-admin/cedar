@@ -10,6 +10,6 @@ export const config = {
   // - /api/inngest — Inngest webhooks must be publicly accessible (no auth)
   // - /callback — WorkOS auth callback must be publicly accessible
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/inngest|callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/inngest|api/webhooks|callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

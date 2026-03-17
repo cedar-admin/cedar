@@ -1,27 +1,32 @@
 // Module 5: Diff generation between normalized content versions
 
-import { createPatch, diffWords } from 'diff'
+import { diffLines, diffWords } from 'diff'
 
 /**
- * Generate a unified diff between old and new normalized content.
- * Returns null if content is identical.
- * Used for: storing in changes.diff, sending to AI agents as context
+ * A single block in a structured diff.
+ * Stored as JSONB in changes.normalized_diff for red/green UI rendering.
  */
-export function generateDiff(before: string, after: string): string | null {
+export type DiffBlock = {
+  type: 'added' | 'removed' | 'unchanged'
+  content: string
+}
+
+/**
+ * Generate a structured diff between old and new normalized content.
+ * Returns an array of DiffBlock objects, or null if content is identical.
+ * Stored in changes.normalized_diff as JSONB.
+ */
+export function generateStructuredDiff(before: string, after: string): DiffBlock[] | null {
   if (before === after) return null
 
-  const patch = createPatch(
-    'content',
-    before,
-    after,
-    'previous',
-    'current',
-    { context: 3 }
-  )
+  const parts = diffLines(before, after)
+  const blocks: DiffBlock[] = parts.map(part => ({
+    type: part.added ? 'added' : part.removed ? 'removed' : 'unchanged',
+    content: part.value.replace(/\n$/, ''),
+  }))
 
-  // createPatch always returns something — return null if there are no real changes
-  const hasChanges = patch.includes('\n+') || patch.includes('\n-')
-  return hasChanges ? patch : null
+  const hasRealChange = blocks.some(b => b.type !== 'unchanged')
+  return hasRealChange ? blocks : null
 }
 
 /**

@@ -5,6 +5,7 @@ import { inngest } from './client'
 import { createServerClient } from '../lib/db/client'
 import { sendChangeAlert } from '../lib/delivery/email'
 import { trackCost } from '../lib/cost-tracker'
+import type { DiffBlock } from '../lib/changes/diff'
 
 export interface DeliverChangeAlertEvent {
   data: {
@@ -33,7 +34,7 @@ export const deliverChangeAlert = inngest.createFunction(
     const { change, source } = await step.run('load-change', async () => {
       const { data: change, error: chErr } = await supabase
         .from('changes')
-        .select('id, source_id, summary, severity, review_status, jurisdiction')
+        .select('id, source_id, summary, severity, review_status, jurisdiction, normalized_diff')
         .eq('id', changeId)
         .single()
       if (chErr || !change) throw new Error(`Change not found: ${changeId}`)
@@ -84,6 +85,7 @@ export const deliverChangeAlert = inngest.createFunction(
           sourceName: source.name,
           sourceUrl: source.url,
           changeId,
+          normalizedDiff: (change.normalized_diff as DiffBlock[] | null) ?? null,
         })
       })
 

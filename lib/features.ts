@@ -42,6 +42,29 @@ export async function isFeatureEnabled(flagName: string, tier: Tier): Promise<bo
 }
 
 /**
+ * Check whether a feature flag is enabled for a practice, accounting for
+ * live subscription status. Practices that are past_due, canceled, or inactive
+ * are treated as Monitor tier regardless of their recorded tier field.
+ *
+ * Pass a practice object fetched from the DB — callers already have it,
+ * so there's no extra query cost here.
+ *
+ * @example
+ * const canUseQA = await isFeatureEnabledForPractice('conversational_qa', practice)
+ */
+export async function isFeatureEnabledForPractice(
+  flagName: string,
+  practice: { tier: string; subscription_status: string | null }
+): Promise<boolean> {
+  const status = practice.subscription_status ?? 'inactive'
+  const isActive = status === 'active' || status === 'trialing'
+  const effectiveTier = isActive
+    ? (practice.tier as Tier)
+    : 'monitor'
+  return isFeatureEnabled(flagName, effectiveTier)
+}
+
+/**
  * Invalidate a specific flag from the cache (call after admin updates a flag).
  */
 export function invalidateFeatureFlag(flagName: string, tier: Tier) {

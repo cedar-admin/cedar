@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           agent_version: string | null
           chain_hash: string | null
+          chain_sequence: number | null
           content_after: string | null
           content_before: string | null
           created_at: string
@@ -26,6 +27,8 @@ export type Database = {
           hash: string
           id: string
           jurisdiction: string
+          normalized_diff: Json | null
+          prev_chain_hash: string | null
           raw_classification: Json | null
           relevance_score: number | null
           review_status: string
@@ -38,6 +41,7 @@ export type Database = {
         Insert: {
           agent_version?: string | null
           chain_hash?: string | null
+          chain_sequence?: number | null
           content_after?: string | null
           content_before?: string | null
           created_at?: string
@@ -46,6 +50,8 @@ export type Database = {
           hash: string
           id?: string
           jurisdiction?: string
+          normalized_diff?: Json | null
+          prev_chain_hash?: string | null
           raw_classification?: Json | null
           relevance_score?: number | null
           review_status?: string
@@ -58,6 +64,7 @@ export type Database = {
         Update: {
           agent_version?: string | null
           chain_hash?: string | null
+          chain_sequence?: number | null
           content_after?: string | null
           content_before?: string | null
           created_at?: string
@@ -66,6 +73,8 @@ export type Database = {
           hash?: string
           id?: string
           jurisdiction?: string
+          normalized_diff?: Json | null
+          prev_chain_hash?: string | null
           raw_classification?: Json | null
           relevance_score?: number | null
           review_status?: string
@@ -459,6 +468,125 @@ export type Database = {
           tokens_out?: number | null
         }
         Relationships: []
+      }
+      crawl_templates: {
+        Row: {
+          changelog: Json | null
+          created_at: string
+          created_by: string
+          default_config: Json
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          source_count: number
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          changelog?: Json | null
+          created_at?: string
+          created_by?: string
+          default_config?: Json
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          source_count?: number
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          changelog?: Json | null
+          created_at?: string
+          created_by?: string
+          default_config?: Json
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          source_count?: number
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      discovery_runs: {
+        Row: {
+          agent_cost_usd: number | null
+          completed_at: string | null
+          created_at: string
+          entities_created: number | null
+          errors: Json | null
+          fetch_cost_usd: number | null
+          id: string
+          items_changed: number | null
+          items_classified: number | null
+          items_extracted: number | null
+          items_new: number | null
+          items_queued: number | null
+          items_scanned: number | null
+          nav_changed: boolean | null
+          patterns_discovered: Json | null
+          run_type: string
+          source_url_id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          agent_cost_usd?: number | null
+          completed_at?: string | null
+          created_at?: string
+          entities_created?: number | null
+          errors?: Json | null
+          fetch_cost_usd?: number | null
+          id?: string
+          items_changed?: number | null
+          items_classified?: number | null
+          items_extracted?: number | null
+          items_new?: number | null
+          items_queued?: number | null
+          items_scanned?: number | null
+          nav_changed?: boolean | null
+          patterns_discovered?: Json | null
+          run_type: string
+          source_url_id: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          agent_cost_usd?: number | null
+          completed_at?: string | null
+          created_at?: string
+          entities_created?: number | null
+          errors?: Json | null
+          fetch_cost_usd?: number | null
+          id?: string
+          items_changed?: number | null
+          items_classified?: number | null
+          items_extracted?: number | null
+          items_new?: number | null
+          items_queued?: number | null
+          items_scanned?: number | null
+          nav_changed?: boolean | null
+          patterns_discovered?: Json | null
+          run_type?: string
+          source_url_id?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discovery_runs_source_url_id_fkey"
+            columns: ["source_url_id"]
+            isOneToOne: false
+            referencedRelation: "source_urls"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feature_flags: {
         Row: {
@@ -1242,6 +1370,7 @@ export type Database = {
           last_fetch_method: string | null
           last_fetched_at: string | null
           last_hash: string | null
+          scrape_config: Json | null
           source_id: string
           url: string
         }
@@ -1251,6 +1380,7 @@ export type Database = {
           last_fetch_method?: string | null
           last_fetched_at?: string | null
           last_hash?: string | null
+          scrape_config?: Json | null
           source_id: string
           url: string
         }
@@ -1260,6 +1390,7 @@ export type Database = {
           last_fetch_method?: string | null
           last_fetched_at?: string | null
           last_hash?: string | null
+          scrape_config?: Json | null
           source_id?: string
           url?: string
         }
@@ -1366,6 +1497,45 @@ export type Database = {
           reason?: string | null
           record_id?: string
           table_name?: string
+        }
+        Relationships: []
+      }
+      validation_log: {
+        Row: {
+          chains_broken: number
+          chains_valid: number
+          created_at: string
+          errors: Json
+          id: string
+          run_at: string
+          run_type: string
+          sources_checked: number
+          summary: string | null
+          total_changes: number
+        }
+        Insert: {
+          chains_broken?: number
+          chains_valid?: number
+          created_at?: string
+          errors?: Json
+          id?: string
+          run_at?: string
+          run_type?: string
+          sources_checked?: number
+          summary?: string | null
+          total_changes?: number
+        }
+        Update: {
+          chains_broken?: number
+          chains_valid?: number
+          created_at?: string
+          errors?: Json
+          id?: string
+          run_at?: string
+          run_type?: string
+          sources_checked?: number
+          summary?: string | null
+          total_changes?: number
         }
         Relationships: []
       }
@@ -1526,7 +1696,7 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      each: { Args: { hs: unknown }; Returns: Record<string, unknown>[] }
     }
     Enums: {
       [_ in never]: never

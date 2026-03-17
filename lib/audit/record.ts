@@ -3,6 +3,7 @@
 
 import { createServerClient } from '../db/client'
 import type { Json } from '../db/types'
+import type { DiffBlock } from '../changes/diff'
 
 export interface ChangeInsert {
   source_id: string
@@ -11,8 +12,11 @@ export interface ChangeInsert {
   content_before?: string | null
   content_after?: string | null
   diff?: string | null
+  normalized_diff?: DiffBlock[] | null  // structured {type, content} blocks for UI rendering
   hash: string
   chain_hash?: string | null
+  prev_chain_hash?: string | null   // chain_hash of the prior record in this source's chain
+  chain_sequence?: number | null    // 1-based position within this source's chain
   agent_version?: string | null
   relevance_score?: number | null
   severity?: string | null

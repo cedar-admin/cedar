@@ -60,6 +60,12 @@ Never stop at the end of a subtask and wait silently. Always continue to the nex
 - State what you need to resolve it (a decision, a credential, a clarification)
 - Do not proceed past the blocker — ask for what you need
 
+**After completing any module or subtask that modifies files:**
+- Stage all changed files with `git add -A`
+- Commit with a descriptive message (e.g., `feat: Module 9 dashboard live data queries`)
+- Push to main with `git push`
+- Confirm the push succeeded before continuing
+
 ## Module Test Criteria
 
 A module is not complete until its test criteria pass.
@@ -190,6 +196,16 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 ```
 
 This unsets the shell variable so `.env.local` takes precedence. Without this, Claude API calls in intelligence agents will fail with authentication errors.
+
+## Access Tokens and API Keys
+
+Supabase Access Token (CLAUDE) = sbp_2451d7e72db7e49fab1b6591dd7bbceb821ed564
+Vercel Access Token (cedar-deploy) = vcp_3ZBv8xhuHEFpY9VOOQmG0WpRMZkvH7J9iUkd4c6XpxKHM9XhgX1KYbv9
+Anthropic API Key (CEDAR-MVP) = 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
+Browserbase Project ID = f3895e24-ee71-4558-9e37-d94d72234b11
+Browserbase API Key = bb_live_WE66ONapM9mUipx6IdgI5Sv1WWQ
+Resend API Key = re_NdX9vJ3S_718fyKUvaXWzvu3pbD2ERTtX
+
 
 ## Generating Updated Types
 
