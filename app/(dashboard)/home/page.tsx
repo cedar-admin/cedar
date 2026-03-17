@@ -130,24 +130,22 @@ export default async function HomePage() {
                 <p className="text-sm text-muted-foreground">No critical or high alerts this week</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-border">
                 {criticalAlerts.map((c) => {
                   const src = c.sources as { name: string } | null
                   const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
                   return (
-                    <Link key={c.id} href={`/changes/${c.id}`}>
-                      <div className="flex items-start gap-3 p-3 hover:bg-muted/40 transition-colors border border-border">
-                        <Badge variant="outline" className={`text-xs shrink-0 ${cls}`}>
-                          {c.severity}
-                        </Badge>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-muted-foreground">{src?.name ?? '—'}</p>
-                          <p className="text-sm text-foreground line-clamp-1 mt-0.5">
-                            {c.summary ?? 'No summary available'}
-                          </p>
-                        </div>
-                        <span className="text-xs text-muted-foreground shrink-0">{timeAgo(c.detected_at)}</span>
+                    <Link key={c.id} href={`/changes/${c.id}`} className="flex items-start gap-3 px-1 py-3 hover:bg-muted/40 transition-colors">
+                      <Badge variant="outline" className={`text-xs shrink-0 w-[5.5rem] justify-center ${cls}`}>
+                        {c.severity}
+                      </Badge>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-muted-foreground">{src?.name ?? '—'}</p>
+                        <p className="text-sm text-foreground line-clamp-1 mt-0.5">
+                          {c.summary ?? 'No summary available'}
+                        </p>
                       </div>
+                      <span className="text-xs text-muted-foreground shrink-0">{timeAgo(c.detected_at)}</span>
                     </Link>
                   )
                 })}
@@ -226,7 +224,7 @@ export default async function HomePage() {
                 const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
                 return (
                   <Link key={c.id} href={`/changes/${c.id}`} className="flex items-center gap-3 py-3 hover:bg-muted/30 transition-colors px-1">
-                    <Badge variant="outline" className={`text-xs shrink-0 ${cls}`}>
+                    <Badge variant="outline" className={`text-xs shrink-0 w-[5.5rem] justify-center ${cls}`}>
                       {c.severity ?? '—'}
                     </Badge>
                     <span className="text-sm text-foreground flex-1 truncate">

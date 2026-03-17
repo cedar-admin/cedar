@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { useTheme } from 'next-themes'
 import { SidebarLink } from './SidebarLink'
 import { SignOutButton } from './SignOutButton'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -37,18 +35,13 @@ function tierBadgeLabel(role: UserRole, tier: string): string {
   return tier.charAt(0).toUpperCase() + tier.slice(1)
 }
 
+// CSS-based dark/light switch — avoids useTheme() hydration flash
 function CedarLogo() {
-  const { resolvedTheme } = useTheme()
-  const src = resolvedTheme === 'dark' ? '/cedar-logo-dark.svg' : '/cedar-logo-light.svg'
   return (
-    <Image
-      src={src}
-      alt="Cedar"
-      width={88}
-      height={25}
-      priority
-      className="h-6 w-auto"
-    />
+    <>
+      <img src="/cedar-logo-light.svg" alt="Cedar" className="h-6 w-auto dark:hidden" />
+      <img src="/cedar-logo-dark.svg"  alt="Cedar" className="h-6 w-auto hidden dark:block" />
+    </>
   )
 }
 
@@ -60,24 +53,25 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
       ? `${user.firstName} ${user.lastName}`
       : user.firstName ?? user.email.split('@')[0]
 
-  /* ── Collapsed state: thin edge strip with expand trigger ── */
-  if (collapsed) {
-    return (
-      <div className="relative shrink-0 w-0">
-        <button
-          onClick={() => setCollapsed(false)}
-          aria-label="Expand sidebar"
-          className="fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
-        >
-          <i className="ri-arrow-right-s-line text-sm" />
-        </button>
-      </div>
-    )
-  }
-
-  /* ── Expanded sidebar ── */
   return (
-    <aside className="flex flex-col w-60 shrink-0 h-screen border-r border-sidebar-border bg-sidebar overflow-y-auto">
+    <>
+      {/* Expand trigger — visible only when collapsed, hugs left edge */}
+      <button
+        onClick={() => setCollapsed(false)}
+        aria-label="Expand sidebar"
+        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground transition-opacity duration-200 ${
+          collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <i className="ri-arrow-right-s-line text-sm" />
+      </button>
+
+      {/* Sidebar — always rendered, width animated */}
+      <aside
+        className={`flex flex-col shrink-0 h-screen border-r border-sidebar-border bg-sidebar transition-all duration-200 ease-in-out ${
+          collapsed ? 'w-0 overflow-hidden border-r-0' : 'w-60 overflow-y-auto'
+        }`}
+      >
 
       {/* Logo + collapse button */}
       <div className="flex items-center justify-between px-4 h-14 shrink-0 border-b border-sidebar-border">
@@ -152,5 +146,6 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
         </div>
       </div>
     </aside>
+    </>
   )
 }
