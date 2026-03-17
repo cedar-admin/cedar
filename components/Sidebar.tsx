@@ -1,3 +1,9 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
 import { SidebarLink } from './SidebarLink'
 import { SignOutButton } from './SignOutButton'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -6,23 +12,19 @@ import { Separator } from '@/components/ui/separator'
 import type { UserRole } from '@/lib/layout-data'
 
 const MAIN_NAV = [
-  { href: '/home',    label: 'Home',               icon: 'ri-home-4-line' },
-  { href: '/changes', label: 'Changes',             icon: 'ri-pulse-line' },
-  { href: '/library', label: 'Regulation Library',  icon: 'ri-book-2-line' },
-  { href: '/faq',     label: 'FAQ',                 icon: 'ri-question-answer-line' },
-  { href: '/sources', label: 'Sources',             icon: 'ri-database-2-line' },
-  { href: '/audit',   label: 'Audit Trail',         icon: 'ri-shield-check-line' },
-  { href: '/settings',label: 'Settings',            icon: 'ri-settings-3-line' },
+  { href: '/home',     label: 'Home',               icon: 'ri-home-4-line' },
+  { href: '/changes',  label: 'Changes',             icon: 'ri-pulse-line' },
+  { href: '/library',  label: 'Regulation Library',  icon: 'ri-book-2-line' },
+  { href: '/faq',      label: 'FAQ',                 icon: 'ri-question-answer-line' },
+  { href: '/sources',  label: 'Sources',             icon: 'ri-database-2-line' },
+  { href: '/audit',    label: 'Audit Trail',         icon: 'ri-shield-check-line' },
+  { href: '/settings', label: 'Settings',            icon: 'ri-settings-3-line' },
 ]
 
 const ADMIN_NAV = [
-  { href: '/reviews', label: 'Review Queue',  icon: 'ri-clipboard-check-line' },
+  { href: '/reviews', label: 'Review Queue',  icon: 'ri-inbox-line' },
   { href: '/system',  label: 'System Health', icon: 'ri-server-line' },
 ]
-
-function tierLabel(tier: string): string {
-  return tier.charAt(0).toUpperCase() + tier.slice(1)
-}
 
 interface SidebarProps {
   user: { email: string; firstName: string | null; lastName: string | null }
@@ -30,18 +32,65 @@ interface SidebarProps {
   role: UserRole
 }
 
+function tierBadgeLabel(role: UserRole, tier: string): string {
+  if (role === 'admin') return 'Admin'
+  return tier.charAt(0).toUpperCase() + tier.slice(1)
+}
+
+function CedarLogo() {
+  const { resolvedTheme } = useTheme()
+  const src = resolvedTheme === 'dark' ? '/cedar-logo-dark.svg' : '/cedar-logo-light.svg'
+  return (
+    <Image
+      src={src}
+      alt="Cedar"
+      width={88}
+      height={25}
+      priority
+      className="h-6 w-auto"
+    />
+  )
+}
+
 export function Sidebar({ user, practice, role }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false)
+
   const displayName =
     user.firstName && user.lastName
       ? `${user.firstName} ${user.lastName}`
       : user.firstName ?? user.email.split('@')[0]
 
+  /* ── Collapsed state: thin edge strip with expand trigger ── */
+  if (collapsed) {
+    return (
+      <div className="relative shrink-0 w-0">
+        <button
+          onClick={() => setCollapsed(false)}
+          aria-label="Expand sidebar"
+          className="fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+        >
+          <i className="ri-arrow-right-s-line text-sm" />
+        </button>
+      </div>
+    )
+  }
+
+  /* ── Expanded sidebar ── */
   return (
     <aside className="flex flex-col w-60 shrink-0 h-screen border-r border-sidebar-border bg-sidebar overflow-y-auto">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 h-14 shrink-0 border-b border-sidebar-border">
-        <i className="ri-leaf-line text-primary text-lg" />
-        <span className="text-base font-semibold tracking-tight text-sidebar-foreground">Cedar</span>
+
+      {/* Logo + collapse button */}
+      <div className="flex items-center justify-between px-4 h-14 shrink-0 border-b border-sidebar-border">
+        <Link href="/home" className="flex items-center">
+          <CedarLogo />
+        </Link>
+        <button
+          onClick={() => setCollapsed(true)}
+          aria-label="Collapse sidebar"
+          className="flex items-center justify-center w-6 h-6 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
+        >
+          <i className="ri-arrow-left-s-line text-base" />
+        </button>
       </div>
 
       {/* Main nav */}
@@ -78,7 +127,7 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
               variant="outline"
               className="mt-1 text-xs border-sidebar-border text-sidebar-foreground/70"
             >
-              {tierLabel(practice.tier)}
+              {tierBadgeLabel(role, practice.tier)}
             </Badge>
           </div>
         )}
