@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Providers } from './providers'
 import './globals.css'
 
 const geistSans = Geist({
@@ -9,7 +9,7 @@ const geistSans = Geist({
 })
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+  variable: '--font-mono',
   subsets: ['latin'],
 })
 
@@ -24,11 +24,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <TooltipProvider>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
+        <Providers>
           {children}
-        </TooltipProvider>
+        </Providers>
       </body>
     </html>
   )

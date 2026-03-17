@@ -174,7 +174,7 @@ export default async function ChangesPage({ searchParams }: Props) {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href="/changes"
-              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              className={`px-3 py-1.5 text-sm font-medium border transition-colors ${
                 !severity
                   ? 'bg-foreground text-background border-foreground'
                   : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
@@ -188,7 +188,7 @@ export default async function ChangesPage({ searchParams }: Props) {
                 <Link
                   key={s}
                   href={`/changes?severity=${s}${page > 1 ? `&page=${page}` : ''}`}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                  className={`px-3 py-1.5 text-sm font-medium border transition-colors ${
                     active
                       ? SEVERITY_CLASS[s]
                       : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'

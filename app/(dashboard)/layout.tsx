@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 const NAV_ITEMS = [
   { href: '/changes', label: 'Changes' },
@@ -33,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                    className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -41,8 +42,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </nav>
             </div>
 
-            {/* Right: jurisdiction */}
-            <div className="flex items-center gap-3">
+            {/* Right: theme toggle + jurisdiction */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Separator orientation="vertical" className="h-4" />
               <Badge variant="outline" className="text-xs font-medium gap-1">
                 <i className="ri-map-pin-2-line text-primary" />
                 FL
