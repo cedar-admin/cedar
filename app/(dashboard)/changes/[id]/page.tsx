@@ -2,41 +2,62 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createServerClient } from '../../../../lib/db/client'
 import type { DiffBlock } from '../../../../lib/changes/diff'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Severity helpers ───────────────────────────────────────────────────────────
 
-const SEVERITY_STYLES: Record<string, { badge: string; dot: string }> = {
-  critical:      { badge: 'bg-red-100 text-red-800 border-red-200',        dot: 'bg-red-500' },
-  high:          { badge: 'bg-orange-100 text-orange-800 border-orange-200', dot: 'bg-orange-500' },
-  medium:        { badge: 'bg-yellow-100 text-yellow-800 border-yellow-200', dot: 'bg-yellow-500' },
-  low:           { badge: 'bg-green-100 text-green-700 border-green-200',    dot: 'bg-green-500' },
-  informational: { badge: 'bg-blue-100 text-blue-700 border-blue-200',       dot: 'bg-blue-500' },
+const SEVERITY_CLASS: Record<string, string> = {
+  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
+  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
+  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
+}
+
+const SEVERITY_DOT: Record<string, string> = {
+  critical:      'bg-red-500',
+  high:          'bg-orange-500',
+  medium:        'bg-yellow-500',
+  low:           'bg-green-500',
+  informational: 'bg-blue-500',
 }
 
 function SeverityBadge({ severity }: { severity: string | null }) {
   const key = severity?.toLowerCase() ?? ''
-  const s = SEVERITY_STYLES[key] ?? { badge: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' }
+  const cls = SEVERITY_CLASS[key] ?? ''
+  const dot = SEVERITY_DOT[key] ?? 'bg-muted-foreground/50'
+  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold border ${s.badge}`}>
-      <span className={`w-2 h-2 rounded-full ${s.dot}`} />
-      {severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'}
-    </span>
+    <Badge variant="outline" className={`gap-1.5 text-sm px-3 py-1 font-semibold ${cls}`}>
+      <span className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
+      {label}
+    </Badge>
   )
 }
 
+const STATUS_CLASS: Record<string, string> = {
+  approved:      'text-green-700 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800',
+  auto_approved: '',
+  pending:       'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950 dark:border-yellow-800',
+  rejected:      'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800',
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  approved:      'Approved',
+  auto_approved: 'Auto-approved',
+  pending:       'Pending',
+  rejected:      'Rejected',
+}
+
 function ReviewStatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    approved:     'text-green-700 bg-green-50 border-green-200',
-    auto_approved: 'text-gray-600 bg-gray-50 border-gray-200',
-    pending:      'text-amber-700 bg-amber-50 border-amber-200',
-    rejected:     'text-red-700 bg-red-50 border-red-200',
-  }
-  const cls = map[status] ?? 'text-gray-600 bg-gray-50 border-gray-200'
-  const label = status === 'auto_approved' ? 'Auto-approved' : status.charAt(0).toUpperCase() + status.slice(1)
+  const cls = STATUS_CLASS[status] ?? ''
+  const label = STATUS_LABEL[status] ?? status
   return (
-    <span className={`inline-block text-xs font-medium border px-2 py-0.5 rounded-full ${cls}`}>
+    <Badge variant="outline" className={cls}>
       {label}
-    </span>
+    </Badge>
   )
 }
 
@@ -52,21 +73,29 @@ function timeAgo(iso: string): string {
 
 function DiffViewer({ blocks }: { blocks: DiffBlock[] }) {
   return (
-    <div className="font-mono text-xs rounded-lg border border-gray-200 overflow-auto max-h-96 bg-white">
+    <div className="font-mono text-xs border border-border overflow-auto max-h-96 bg-card">
       {blocks.map((block, i) => {
         const lines = block.content.split('\n')
         return lines.map((line, j) => {
-          let bg = 'bg-white'
-          let text = 'text-gray-600'
+          let rowCls = 'bg-card text-muted-foreground'
+          let gutterCls = 'text-muted-foreground border-r border-border'
           let prefix = ' '
-          if (block.type === 'added')   { bg = 'bg-green-50'; text = 'text-green-800'; prefix = '+' }
-          if (block.type === 'removed') { bg = 'bg-red-50';   text = 'text-red-800';   prefix = '-' }
+          if (block.type === 'added') {
+            rowCls = 'bg-green-50 dark:bg-green-950/40'
+            gutterCls = 'text-green-600 dark:text-green-400 border-r border-green-200 dark:border-green-800'
+            prefix = '+'
+          }
+          if (block.type === 'removed') {
+            rowCls = 'bg-red-50 dark:bg-red-950/40'
+            gutterCls = 'text-red-600 dark:text-red-400 border-r border-red-200 dark:border-red-800'
+            prefix = '-'
+          }
           return (
-            <div key={`${i}-${j}`} className={`flex ${bg}`}>
-              <span className={`select-none w-6 shrink-0 text-center ${text} opacity-60 border-r border-gray-100`}>
+            <div key={`${i}-${j}`} className={`flex ${rowCls}`}>
+              <span className={`select-none w-6 shrink-0 text-center opacity-70 ${gutterCls}`}>
                 {prefix}
               </span>
-              <span className={`px-3 py-0.5 whitespace-pre-wrap break-all ${text}`}>
+              <span className={`px-3 py-0.5 whitespace-pre-wrap break-all ${rowCls}`}>
                 {line}
               </span>
             </div>
@@ -117,11 +146,9 @@ export default async function ChangeDetailPage({ params }: Props) {
       {/* Back */}
       <Link
         href="/changes"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
+        <i className="ri-arrow-left-line" />
         All changes
       </Link>
 
@@ -130,12 +157,12 @@ export default async function ChangeDetailPage({ params }: Props) {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <SeverityBadge severity={c.severity} />
-            <span className="text-sm text-gray-500">{timeAgo(c.detected_at)}</span>
+            <span className="text-sm text-muted-foreground">{timeAgo(c.detected_at)}</span>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-foreground">
             {c.sources?.name ?? 'Unknown Source'}
           </h1>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             Change detected {new Date(c.detected_at).toLocaleString('en-US', {
               dateStyle: 'long',
               timeStyle: 'short',
@@ -148,83 +175,112 @@ export default async function ChangeDetailPage({ params }: Props) {
         {/* Main content */}
         <div className="col-span-2 space-y-6">
           {/* AI Summary */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">AI Summary</h2>
-            {c.summary ? (
-              <p className="text-sm text-gray-800 leading-relaxed">{c.summary}</p>
-            ) : (
-              <p className="text-sm text-gray-400 italic">No AI summary available for this change.</p>
-            )}
-          </section>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                AI Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {c.summary ? (
+                <p className="text-sm text-foreground leading-relaxed">{c.summary}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  No AI summary available for this change.
+                </p>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Diff Viewer */}
-          <section className="bg-white rounded-xl border border-gray-200 p-5">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Detected Changes</h2>
-            {blocks && blocks.length > 0 ? (
-              <DiffViewer blocks={blocks} />
-            ) : (
-              <div className="rounded-lg border border-dashed border-gray-200 p-8 text-center">
-                <p className="text-sm text-gray-500">Full text change detected &mdash; no structured diff available.</p>
-              </div>
-            )}
-          </section>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Detected Changes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {blocks && blocks.length > 0 ? (
+                <DiffViewer blocks={blocks} />
+              ) : (
+                <div className="border border-dashed border-border p-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Full text change detected &mdash; no structured diff available.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Disclaimer */}
-          <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
-            <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
-            <p className="text-xs text-amber-800 leading-relaxed">
-              <strong className="font-semibold">Not legal advice.</strong> This summary was generated by AI and may not reflect the full scope or legal effect of the regulatory change.
+          <Alert>
+            <i className="ri-scales-3-line text-base" />
+            <AlertDescription>
+              <strong className="font-semibold">Not legal advice.</strong> This summary was generated
+              by AI and may not reflect the full scope or legal effect of the regulatory change.
               Consult a licensed attorney before acting on any regulatory change.
-            </p>
-          </div>
+            </AlertDescription>
+          </Alert>
         </div>
 
         {/* Metadata sidebar */}
         <aside className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Details</h3>
-            <dl className="space-y-3">
-              <div>
-                <dt className="text-xs text-gray-400">Jurisdiction</dt>
-                <dd className="text-sm font-medium text-gray-900 mt-0.5">{c.jurisdiction ?? 'FL'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-gray-400">Review Status</dt>
-                <dd className="mt-0.5">
-                  <ReviewStatusBadge status={c.review_status} />
-                </dd>
-              </div>
-              {c.chain_sequence !== null && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <dl className="space-y-3">
                 <div>
-                  <dt className="text-xs text-gray-400">Chain Sequence</dt>
-                  <dd className="text-sm font-medium text-gray-900 mt-0.5">#{c.chain_sequence}</dd>
-                </div>
-              )}
-              {c.hash && (
-                <div>
-                  <dt className="text-xs text-gray-400">Content Hash</dt>
-                  <dd className="text-xs font-mono text-gray-500 mt-0.5 break-all">{c.hash.slice(0, 16)}&hellip;</dd>
-                </div>
-              )}
-              {c.sources?.url && (
-                <div>
-                  <dt className="text-xs text-gray-400">Source URL</dt>
-                  <dd className="mt-0.5">
-                    <a
-                      href={c.sources.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all"
-                    >
-                      {c.sources.url.length > 50 ? c.sources.url.slice(0, 50) + '…' : c.sources.url}
-                    </a>
+                  <dt className="text-xs text-muted-foreground">Jurisdiction</dt>
+                  <dd className="text-sm font-medium text-foreground mt-0.5">
+                    {c.jurisdiction ?? 'FL'}
                   </dd>
                 </div>
-              )}
-            </dl>
-          </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Review Status</dt>
+                  <dd className="mt-0.5">
+                    <ReviewStatusBadge status={c.review_status} />
+                  </dd>
+                </div>
+                {c.chain_sequence !== null && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Chain Sequence</dt>
+                    <dd className="text-sm font-medium text-foreground mt-0.5">
+                      #{c.chain_sequence}
+                    </dd>
+                  </div>
+                )}
+                {c.hash && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Content Hash</dt>
+                    <dd className="text-xs font-mono text-muted-foreground mt-0.5 break-all">
+                      {c.hash.slice(0, 16)}&hellip;
+                    </dd>
+                  </div>
+                )}
+                {c.sources?.url && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Source URL</dt>
+                    <dd className="mt-0.5">
+                      <a
+                        href={c.sources.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:text-primary/80 underline break-all transition-colors"
+                      >
+                        {c.sources.url.length > 50
+                          ? c.sources.url.slice(0, 50) + '…'
+                          : c.sources.url}
+                      </a>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </CardContent>
+          </Card>
         </aside>
       </div>
     </div>

@@ -1,21 +1,45 @@
 import { createServerClient } from '../../../lib/db/client'
 import ReviewActions from './ReviewActions'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
-const SEVERITY_STYLES: Record<string, { badge: string; dot: string }> = {
-  critical:      { badge: 'bg-red-100 text-red-800 border-red-200',       dot: 'bg-red-500' },
-  high:          { badge: 'bg-orange-100 text-orange-800 border-orange-200', dot: 'bg-orange-500' },
-  medium:        { badge: 'bg-yellow-100 text-yellow-800 border-yellow-200', dot: 'bg-yellow-500' },
-  low:           { badge: 'bg-green-100 text-green-700 border-green-200',    dot: 'bg-green-500' },
-  informational: { badge: 'bg-blue-100 text-blue-700 border-blue-200',      dot: 'bg-blue-500' },
+// ── Severity ──────────────────────────────────────────────────────────────────
+
+const SEVERITY_CLASS: Record<string, string> = {
+  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
+  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
+  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
+}
+
+const SEVERITY_DOT: Record<string, string> = {
+  critical:      'bg-red-500',
+  high:          'bg-orange-500',
+  medium:        'bg-yellow-500',
+  low:           'bg-green-500',
+  informational: 'bg-blue-500',
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const s = SEVERITY_STYLES[severity?.toLowerCase()] ?? { badge: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' }
+  const key = severity?.toLowerCase() ?? ''
+  const cls = SEVERITY_CLASS[key] ?? ''
+  const dot = SEVERITY_DOT[key] ?? 'bg-muted-foreground/50'
+  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${s.badge}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-      {severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'}
-    </span>
+    <Badge variant="outline" className={`gap-1.5 font-semibold ${cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+      {label}
+    </Badge>
   )
 }
 
@@ -26,6 +50,8 @@ function timeAgo(iso: string): string {
   if (h < 24) return `${h}h ago`
   return `${Math.floor(h / 24)}d ago`
 }
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function ReviewQueuePage() {
   const supabase = createServerClient()
@@ -54,118 +80,125 @@ export default async function ReviewQueuePage() {
     sources: { name: string; url: string } | null
   }>
 
-  // Group by severity for SLA awareness
   const criticalCount = changes.filter(c => c.severity === 'critical').length
   const highCount = changes.filter(c => c.severity === 'high').length
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Review Queue</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-foreground">Review Queue</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Changes requiring attorney review before delivery to practices
           </p>
         </div>
         <div className="flex items-center gap-3">
           {criticalCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 bg-red-100 text-red-800 border border-red-200 text-sm font-semibold px-3 py-1 rounded-full">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <Badge variant="outline" className="gap-1.5 bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800">
+              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
               {criticalCount} Critical — 4h SLA
-            </span>
+            </Badge>
           )}
           {highCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 bg-orange-100 text-orange-800 border border-orange-200 text-sm font-semibold px-3 py-1 rounded-full">
+            <Badge variant="outline" className="gap-1.5 bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
               {highCount} High — 24h SLA
-            </span>
+            </Badge>
           )}
-          <span className="text-sm text-gray-500">
-            {changes.length} pending
-          </span>
+          <span className="text-sm text-muted-foreground">{changes.length} pending</span>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm text-red-700">
-          Failed to load queue: {error.message}
-        </div>
+        <Alert variant="destructive">
+          <i className="ri-error-warning-line text-base" />
+          <AlertDescription>Failed to load queue: {error.message}</AlertDescription>
+        </Alert>
       )}
 
       {/* Empty state */}
       {changes.length === 0 && !error && (
-        <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 className="text-base font-semibold text-gray-900 mb-1">Queue is clear</h3>
-          <p className="text-sm text-gray-500">No changes are awaiting review. Check back after the next monitoring run.</p>
-        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-12 h-12 bg-green-50 dark:bg-green-950 flex items-center justify-center mx-auto mb-4">
+              <i className="ri-checkbox-circle-fill text-2xl text-green-600 dark:text-green-400" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1">Queue is clear</h3>
+            <p className="text-sm text-muted-foreground">
+              No changes are awaiting review. Check back after the next monitoring run.
+            </p>
+          </CardContent>
+        </Card>
       )}
 
       {/* Queue table */}
       {changes.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 w-28">Severity</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">Source</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">AI Summary</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 w-28">Detected</th>
-                <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 w-48">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {changes.map((change) => {
-                const sourceName = change.sources?.name ?? 'Unknown Source'
-                const sourceUrl  = change.sources?.url  ?? '#'
-                return (
-                  <tr key={change.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <SeverityBadge severity={change.severity ?? 'unknown'} />
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-sm font-medium text-gray-900">{sourceName}</div>
-                      <a
-                        href={sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-gray-400 hover:text-blue-600 truncate block max-w-[200px]"
-                      >
-                        {sourceUrl}
-                      </a>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm text-gray-700 line-clamp-2 max-w-xl">
-                        {change.summary ?? <span className="text-gray-400 italic">No summary available</span>}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">{change.jurisdiction ?? 'FL'}</p>
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {timeAgo(change.detected_at)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <ReviewActions changeId={change.id} sourceName={sourceName} />
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-28">Severity</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>AI Summary</TableHead>
+                  <TableHead className="w-28">Detected</TableHead>
+                  <TableHead className="w-48 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {changes.map((change) => {
+                  const sourceName = change.sources?.name ?? 'Unknown Source'
+                  const sourceUrl  = change.sources?.url  ?? '#'
+                  return (
+                    <TableRow key={change.id}>
+                      <TableCell>
+                        <SeverityBadge severity={change.severity ?? 'unknown'} />
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm font-medium text-foreground">{sourceName}</div>
+                        <a
+                          href={sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-muted-foreground hover:text-primary truncate block max-w-[200px] transition-colors"
+                        >
+                          {sourceUrl}
+                        </a>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-foreground line-clamp-2 max-w-xl">
+                          {change.summary ?? (
+                            <span className="text-muted-foreground italic">No summary available</span>
+                          )}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {change.jurisdiction ?? 'FL'}
+                        </p>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {timeAgo(change.detected_at)}
+                      </TableCell>
+                      <TableCell>
+                        <ReviewActions changeId={change.id} sourceName={sourceName} />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
 
       {/* Review rules reference */}
-      <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg px-5 py-4">
-        <p className="text-xs font-semibold text-amber-800 mb-1">Review Rules (configured in review_rules)</p>
-        <p className="text-xs text-amber-700">
-          <strong>Critical &amp; High</strong> → attorney review required before delivery.&nbsp;
+      <Alert>
+        <i className="ri-information-line text-base" />
+        <AlertDescription>
+          <strong className="font-semibold">Review Rules:</strong>{' '}
+          <strong>Critical &amp; High</strong> → attorney review required before delivery.{' '}
           <strong>Medium, Low, Informational</strong> → auto-approved and delivered without review.
-        </p>
-      </div>
+        </AlertDescription>
+      </Alert>
     </div>
   )
 }

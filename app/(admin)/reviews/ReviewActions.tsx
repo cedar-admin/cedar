@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 
 interface ReviewActionsProps {
   changeId: string
@@ -59,29 +61,34 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
   if (showRejectDialog) {
     return (
       <div className="flex flex-col gap-2 min-w-[220px]">
-        <textarea
-          className="w-full text-sm border border-gray-300 rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-1 focus:ring-gray-400"
+        <Textarea
           placeholder="Reason for rejection (optional)"
           rows={2}
           value={notes}
           onChange={e => setNotes(e.target.value)}
           autoFocus
+          className="resize-none"
         />
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && (
+          <p className="text-xs text-destructive">{error}</p>
+        )}
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="destructive"
+            size="sm"
             onClick={handleReject}
             disabled={loading === 'reject'}
-            className="flex-1 text-sm font-medium bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded transition-colors disabled:opacity-50"
+            className="flex-1"
           >
             {loading === 'reject' ? 'Rejecting…' : 'Confirm Reject'}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => { setShowRejectDialog(false); setNotes(''); setError(null) }}
-            className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1.5"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -89,22 +96,27 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
 
   return (
     <div className="flex flex-col gap-2 items-end">
-      {error && <p className="text-xs text-red-600 text-right">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive text-right">{error}</p>
+      )}
       <div className="flex gap-2">
-        <button
+        <Button
+          variant="default"
+          size="sm"
           onClick={handleApprove}
           disabled={loading !== null}
-          className="text-sm font-medium bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded transition-colors disabled:opacity-50"
         >
           {loading === 'approve' ? 'Approving…' : 'Approve'}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowRejectDialog(true)}
           disabled={loading !== null}
-          className="text-sm font-medium border border-red-300 text-red-700 hover:bg-red-50 px-4 py-1.5 rounded transition-colors disabled:opacity-50"
+          className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
         >
           Reject
-        </button>
+        </Button>
       </div>
     </div>
   )

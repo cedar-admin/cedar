@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
 
 const ADMIN_NAV = [
   { href: '/reviews',      label: 'Review Queue' },
@@ -11,21 +12,21 @@ const ADMIN_NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-gray-900 border-b border-gray-700">
+    <div className="min-h-screen bg-background">
+      <nav className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-3">
-                <span className="font-semibold text-white text-lg">Cedar</span>
-                <span className="text-xs font-medium bg-amber-500 text-white px-2 py-0.5 rounded">Admin</span>
+                <span className="font-semibold text-foreground text-lg">Cedar</span>
+                <Badge variant="default" className="text-xs">Admin</Badge>
               </div>
               <div className="flex items-center gap-1">
                 {ADMIN_NAV.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
+                    className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -34,9 +35,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <Link
               href="/changes"
-              className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Dashboard
+              <i className="ri-arrow-left-line" />
+              Dashboard
             </Link>
           </div>
         </div>
