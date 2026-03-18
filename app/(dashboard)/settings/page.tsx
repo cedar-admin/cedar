@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -18,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { capitalize } from '@/lib/format'
+import { NotificationsForm } from '@/components/NotificationsForm'
+import type { NotificationPreferences } from '@/app/actions/settings'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -93,7 +93,7 @@ export default async function SettingsPage() {
   const supabase = createServerClient()
   const { data: practice } = await supabase
     .from('practices')
-    .select('id, name, owner_email, tier, stripe_customer_id, stripe_subscription_id, subscription_status, current_period_end, created_at')
+    .select('id, name, owner_email, tier, stripe_customer_id, stripe_subscription_id, subscription_status, current_period_end, created_at, notification_preferences')
     .eq('owner_email', user.email)
     .maybeSingle()
 
@@ -235,59 +235,18 @@ export default async function SettingsPage() {
                 Notifications
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Email alerts row */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="email-alerts" className="text-sm font-medium text-foreground">
-                    Email alerts
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Receive email for Critical &amp; High severity changes
-                  </p>
-                </div>
-                <Switch id="email-alerts" defaultChecked />
-              </div>
-              <Separator />
-              {/* Severity threshold row */}
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Email threshold</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Only send alerts at or above this severity
-                  </p>
-                </div>
-                <Select defaultValue="high">
-                  <SelectTrigger className="w-36">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="critical">Critical only</SelectItem>
-                    <SelectItem value="high">High &amp; above</SelectItem>
-                    <SelectItem value="medium">Medium &amp; above</SelectItem>
-                    <SelectItem value="all">All changes</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Separator />
-              {/* Weekly digest row */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="weekly-digest" className="text-sm font-medium text-foreground">
-                    Weekly digest
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Summary email every Monday morning
-                  </p>
-                </div>
-                <Switch id="weekly-digest" />
-              </div>
-              <div className="pt-1">
-                <p className="text-xs text-muted-foreground">
-                  <i className="ri-information-line mr-1" />
-                  Notification preferences are applied account-wide. Per-user settings coming soon.
-                </p>
-              </div>
+            <CardContent>
+              {(() => {
+                const rawPrefs = practice.notification_preferences as Record<string, unknown> | null
+                const initialPrefs: NotificationPreferences = {
+                  email_alerts:    typeof rawPrefs?.email_alerts === 'boolean'   ? rawPrefs.email_alerts   : true,
+                  email_threshold: ['critical','high','medium','all'].includes(rawPrefs?.email_threshold as string)
+                                     ? (rawPrefs!.email_threshold as NotificationPreferences['email_threshold'])
+                                     : 'high',
+                  weekly_digest:   typeof rawPrefs?.weekly_digest === 'boolean'  ? rawPrefs.weekly_digest  : false,
+                }
+                return <NotificationsForm initial={initialPrefs} />
+              })()}
             </CardContent>
           </Card>
 

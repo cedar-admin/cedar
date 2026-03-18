@@ -1253,6 +1253,7 @@ export type Database = {
           current_period_end: string | null
           id: string
           name: string
+          notification_preferences: Json
           owner_email: string
           owner_name: string | null
           phone: string | null
@@ -1267,6 +1268,7 @@ export type Database = {
           current_period_end?: string | null
           id?: string
           name: string
+          notification_preferences?: Json
           owner_email: string
           owner_name?: string | null
           phone?: string | null
@@ -1281,6 +1283,7 @@ export type Database = {
           current_period_end?: string | null
           id?: string
           name?: string
+          notification_preferences?: Json
           owner_email?: string
           owner_name?: string | null
           phone?: string | null
