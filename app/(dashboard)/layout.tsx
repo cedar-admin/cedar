@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar user={user} practice={practice} role={role} />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto ml-60">
         <div className="max-w-5xl mx-auto px-8 py-8">
           <BreadcrumbNav />
           {children}

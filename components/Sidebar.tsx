@@ -92,12 +92,12 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
         <i className="ri-arrow-right-s-line text-sm" />
       </Button>
 
-      {/* Sidebar — always rendered, width animated */}
+      {/* Sidebar — fixed position, slides off-screen with translateX */}
       <aside
-        className={`flex flex-col shrink-0 h-screen border-r border-sidebar-border bg-sidebar ${
-          collapsed ? 'w-0 overflow-hidden border-r-0' : 'w-60 overflow-y-auto'
+        className={`fixed inset-y-0 left-0 z-[40] flex flex-col w-60 h-screen overflow-y-auto border-r border-sidebar-border bg-sidebar ${
+          collapsed ? '-translate-x-full' : 'translate-x-0'
         }`}
-        style={{ transition: 'all var(--duration-base) var(--ease-standard)' }}
+        style={{ transition: 'transform var(--duration-base) var(--ease-standard)' }}
       >
 
       {/* Logo + collapse button */}
