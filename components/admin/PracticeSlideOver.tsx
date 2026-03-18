@@ -81,13 +81,13 @@ export function PracticeSlideOver({
     <>
       {/* Scrim */}
       <div
-        className="fixed inset-0 z-40 bg-scrim animate-scrim-in"
+        className="fixed inset-0 z-40 bg-scrim animate-scrim-in !m-0"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col animate-panel-in-right">
+      <div className="fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col animate-panel-in-right !m-0">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <h2 className="text-base font-semibold text-foreground truncate pr-4">
