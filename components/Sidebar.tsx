@@ -20,8 +20,9 @@ const MAIN_NAV = [
 ]
 
 const ADMIN_NAV = [
-  { href: '/reviews', label: 'Review Queue',  icon: 'ri-inbox-line' },
-  { href: '/system',  label: 'System Health', icon: 'ri-server-line' },
+  { href: '/practices', label: 'Practices',     icon: 'ri-building-line' },
+  { href: '/reviews',   label: 'Review Queue',  icon: 'ri-inbox-line' },
+  { href: '/system',    label: 'System Health', icon: 'ri-server-line' },
 ]
 
 interface SidebarProps {

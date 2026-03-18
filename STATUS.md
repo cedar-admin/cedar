@@ -24,7 +24,7 @@ Last updated: March 18, 2026 by Sonnet Session 5
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 5 (Sonnet) was a credentials and tooling session. Added GITHUB_PAT, SUPABASE_ACCESS_TOKEN, and VERCEL_TOKEN to the local credential store. Confirmed and applied migration 017 (notification_preferences) to production Supabase. Created the `/close-out` slash command at `.claude/commands/close-out.md` to standardize session wrap-up. Updated STATUS.md credential status. No PRP was active. No module-level code was changed.
+Session 6 (Sonnet) built the admin practices management page. Created `app/(admin)/practices/page.tsx` — a read-only server component that queries all rows from the `practices` table using `createServerClient()` (service role, bypasses RLS) and renders them in a shadcn/ui Table. Displays: practice name, owner name + email, practice type, tier (styled badge — purple for Intelligence), subscription status (color-coded badge), phone, billing period end, and created date. Null fields render as em dashes. Added "Practices" (`ri-building-line`) as the first entry in `ADMIN_NAV` in `components/Sidebar.tsx`. Build: ✅ Clean.
 
 ## Next Session Priority
 1. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
