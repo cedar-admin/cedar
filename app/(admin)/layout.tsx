@@ -1,9 +1,14 @@
 import { getLayoutData } from '@/lib/layout-data'
 import { Sidebar } from '@/components/Sidebar'
 import { BreadcrumbNav } from '@/components/BreadcrumbNav'
+import { redirect } from 'next/navigation'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, practice, role } = await getLayoutData()
+
+  if (role !== 'admin') {
+    redirect('/home')
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

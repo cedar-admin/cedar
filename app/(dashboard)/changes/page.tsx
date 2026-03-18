@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { createServerClient } from '../../../lib/db/client'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
@@ -13,68 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SeverityBadge } from '@/components/SeverityBadge'
+import { StatusBadge } from '@/components/StatusBadge'
+import { SEVERITY_CLASS, SEVERITIES } from '@/lib/ui-constants'
+import { timeAgo } from '@/lib/format'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 25
-
-const SEVERITY_CLASS: Record<string, string> = {
-  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
-  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
-  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
-}
-
-const SEVERITY_ICON: Record<string, string> = {
-  critical:      'ri-error-warning-fill text-red-500',
-  high:          'ri-alert-fill text-orange-500',
-  medium:        'ri-information-fill text-yellow-500',
-  low:           'ri-checkbox-circle-fill text-green-500',
-  informational: 'ri-information-line text-blue-500',
-}
-
-const SEVERITIES = ['critical', 'high', 'medium', 'low', 'informational'] as const
-
-// ── Helper components ──────────────────────────────────────────────────────────
-
-function SeverityBadge({ severity }: { severity: string | null }) {
-  const key = severity?.toLowerCase() ?? ''
-  const cls = SEVERITY_CLASS[key] ?? 'bg-muted text-muted-foreground border-border'
-  const icon = SEVERITY_ICON[key] ?? 'ri-circle-line text-muted-foreground'
-  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'
-  return (
-    <Badge variant="outline" className={`gap-1.5 font-medium ${cls}`}>
-      <i className={`text-xs ${icon}`} />
-      {label}
-    </Badge>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  if (status === 'approved') {
-    return (
-      <Badge variant="outline" className="gap-1.5 text-green-700 border-green-200 bg-green-50 dark:text-green-400 dark:border-green-800 dark:bg-green-950">
-        <i className="ri-shield-check-line text-xs" />
-        Reviewed
-      </Badge>
-    )
-  }
-  return (
-    <Badge variant="secondary" className="gap-1.5">
-      <i className="ri-robot-line text-xs" />
-      Auto
-    </Badge>
-  )
-}
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -147,11 +92,11 @@ export default async function ChangesPage({ searchParams }: Props) {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Regulatory Changes</h1>
           {practice ? (
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-sm text-muted-foreground mt-1">
               {practice.name} &middot; {total.toLocaleString()} change{total !== 1 ? 's' : ''}
             </p>
           ) : (
-            <p className="text-sm text-muted-foreground mt-0.5">Florida regulatory coverage</p>
+            <p className="text-sm text-muted-foreground mt-1">Florida regulatory coverage</p>
           )}
         </div>
       </div>

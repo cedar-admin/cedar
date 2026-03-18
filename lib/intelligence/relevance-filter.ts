@@ -56,18 +56,27 @@ export async function runRelevanceFilter(
     context,
   })
 
+  if (!response.content?.[0]) {
+    throw new Error('Relevance filter returned empty content array')
+  }
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
 
-  // Extract JSON from response (handle markdown code blocks)
-  const jsonMatch = text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) {
-    throw new Error(`Relevance filter returned unparseable response: ${text}`)
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]) as {
-    is_relevant: boolean
-    relevance_score: number
-    reasoning: string
+  // Parse JSON from response — try direct parse first, fall back to regex extraction
+  let parsed: { is_relevant: boolean; relevance_score: number; reasoning: string }
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error(`Relevance filter returned unparseable response: ${text.slice(0, 500)}`)
+    }
+    try {
+      parsed = JSON.parse(jsonMatch[0])
+    } catch (parseErr) {
+      throw new Error(
+        `Relevance filter JSON parse failed: ${parseErr instanceof Error ? parseErr.message : 'unknown'}. Raw: ${text.slice(0, 500)}`
+      )
+    }
   }
 
   return {

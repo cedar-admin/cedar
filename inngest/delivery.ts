@@ -80,6 +80,7 @@ export const deliverChangeAlert = inngest.createFunction(
         return sendChangeAlert({
           to: practice.owner_email,
           practiceName: practice.name,
+          practiceId: practice.id,
           changeSummary: change.summary ?? 'A regulatory change was detected.',
           severity: change.severity ?? severity,
           sourceName: source.name,

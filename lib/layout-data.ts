@@ -46,7 +46,7 @@ export async function getLayoutData(): Promise<LayoutData> {
 
   const role = resolveRole(
     user.email,
-    (practice as any)?.tier ?? null
+    practice?.tier ?? null
   )
 
   return {
@@ -57,9 +57,9 @@ export async function getLayoutData(): Promise<LayoutData> {
     },
     practice: practice
       ? {
-          name: (practice as any).name,
-          tier: (practice as any).tier ?? 'monitor',
-          subscription_status: (practice as any).subscription_status ?? null,
+          name: practice.name,
+          tier: practice.tier ?? 'monitor',
+          subscription_status: practice.subscription_status ?? null,
         }
       : null,
     role,

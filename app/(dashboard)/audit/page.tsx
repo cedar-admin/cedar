@@ -11,39 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
-}
-
-const SEVERITY_CLASS: Record<string, string> = {
-  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
-  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
-  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
-}
-
-function SeverityBadge({ severity }: { severity: string | null }) {
-  const key = severity?.toLowerCase() ?? ''
-  const cls = SEVERITY_CLASS[key] ?? ''
-  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : '—'
-  return (
-    <Badge variant="outline" className={`font-medium ${cls}`}>
-      {label}
-    </Badge>
-  )
-}
+import { SeverityBadge } from '@/components/SeverityBadge'
+import { timeAgo, formatDate } from '@/lib/format'
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -87,7 +56,7 @@ export default async function AuditPage() {
   }>
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

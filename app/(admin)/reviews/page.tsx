@@ -1,62 +1,40 @@
+import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
-import ReviewActions from './ReviewActions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { SeverityBadge } from '@/components/SeverityBadge'
+import { StatusBadge } from '@/components/StatusBadge'
+import { SEVERITY_CLASS, SEVERITY_DOT } from '@/lib/ui-constants'
+import { timeAgo } from '@/lib/format'
 
-// ── Severity ──────────────────────────────────────────────────────────────────
+// ── Types ────────────────────────────────────────────────────────────────────
 
-const SEVERITY_CLASS: Record<string, string> = {
-  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
-  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
-  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
-}
+type FilterTab = 'pending' | 'approved' | 'rejected' | 'all'
 
-const SEVERITY_DOT: Record<string, string> = {
-  critical:      'bg-red-500',
-  high:          'bg-orange-500',
-  medium:        'bg-yellow-500',
-  low:           'bg-green-500',
-  informational: 'bg-blue-500',
-}
-
-function SeverityBadge({ severity }: { severity: string }) {
-  const key = severity?.toLowerCase() ?? ''
-  const cls = SEVERITY_CLASS[key] ?? ''
-  const dot = SEVERITY_DOT[key] ?? 'bg-muted-foreground/50'
-  const label = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : 'Unknown'
-  return (
-    <Badge variant="outline" className={`gap-1.5 font-semibold ${cls}`}>
-      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
-      {label}
-    </Badge>
-  )
-}
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
+const TABS: { value: FilterTab; label: string }[] = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'all', label: 'All' },
+]
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default async function ReviewQueuePage() {
+interface Props {
+  searchParams: Promise<{ filter?: string }>
+}
+
+export default async function ReviewQueuePage({ searchParams }: Props) {
+  const sp = await searchParams
+  const filter: FilterTab =
+    sp.filter === 'approved' || sp.filter === 'rejected' || sp.filter === 'all'
+      ? sp.filter
+      : 'pending'
+
   const supabase = createServerClient()
 
-  const { data: pending, error } = await supabase
+  let query = supabase
     .from('changes')
     .select(`
       id,
@@ -64,24 +42,32 @@ export default async function ReviewQueuePage() {
       summary,
       jurisdiction,
       detected_at,
+      review_status,
       source_id,
       sources ( name, url )
     `)
-    .eq('review_status', 'pending')
     .order('detected_at', { ascending: false })
 
-  const changes = (pending ?? []) as Array<{
+  if (filter !== 'all') {
+    query = query.eq('review_status', filter)
+  }
+
+  const { data: rows, error } = await query
+
+  const changes = (rows ?? []) as Array<{
     id: string
     severity: string | null
     summary: string | null
     jurisdiction: string | null
     detected_at: string
+    review_status: string
     source_id: string
     sources: { name: string; url: string } | null
   }>
 
-  const criticalCount = changes.filter(c => c.severity === 'critical').length
-  const highCount = changes.filter(c => c.severity === 'high').length
+  // SLA counters (only relevant for pending view)
+  const criticalCount = filter === 'pending' ? changes.filter(c => c.severity === 'critical').length : 0
+  const highCount = filter === 'pending' ? changes.filter(c => c.severity === 'high').length : 0
 
   return (
     <div className="space-y-6">
@@ -95,18 +81,37 @@ export default async function ReviewQueuePage() {
         </div>
         <div className="flex items-center gap-3">
           {criticalCount > 0 && (
-            <Badge variant="outline" className="gap-1.5 bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800">
-              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+            <Badge variant="outline" className={`gap-1.5 ${SEVERITY_CLASS['critical']}`}>
+              <span className={`w-1.5 h-1.5 ${SEVERITY_DOT['critical']} rounded-full animate-pulse`} />
               {criticalCount} Critical — 4h SLA
             </Badge>
           )}
           {highCount > 0 && (
-            <Badge variant="outline" className="gap-1.5 bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
+            <Badge variant="outline" className={`gap-1.5 ${SEVERITY_CLASS['high']}`}>
               {highCount} High — 24h SLA
             </Badge>
           )}
-          <span className="text-sm text-muted-foreground">{changes.length} pending</span>
         </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="flex items-center gap-1 border-b border-border">
+        {TABS.map((tab) => (
+          <Link
+            key={tab.value}
+            href={tab.value === 'pending' ? '/reviews' : `/reviews?filter=${tab.value}`}
+            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              filter === tab.value
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
+            }`}
+          >
+            {tab.label}
+            {filter === tab.value && (
+              <span className="ml-2 text-xs text-muted-foreground">({changes.length})</span>
+            )}
+          </Link>
+        ))}
       </div>
 
       {error && (
@@ -123,69 +128,53 @@ export default async function ReviewQueuePage() {
             <div className="w-12 h-12 bg-green-50 dark:bg-green-950 flex items-center justify-center mx-auto mb-4">
               <i className="ri-checkbox-circle-fill text-2xl text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="text-base font-semibold text-foreground mb-1">Queue is clear</h3>
+            <h3 className="text-base font-semibold text-foreground mb-1">
+              {filter === 'pending' ? 'Queue is clear' : `No ${filter} changes`}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              No changes are awaiting review. Check back after the next monitoring run.
+              {filter === 'pending'
+                ? 'No changes are awaiting review. Check back after the next monitoring run.'
+                : `No changes with status "${filter}" found.`}
             </p>
           </CardContent>
         </Card>
       )}
 
-      {/* Queue table */}
+      {/* Queue list — each row links to detail page */}
       {changes.length > 0 && (
         <Card>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-28">Severity</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>AI Summary</TableHead>
-                  <TableHead className="w-28">Detected</TableHead>
-                  <TableHead className="w-48 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {changes.map((change) => {
-                  const sourceName = change.sources?.name ?? 'Unknown Source'
-                  const sourceUrl  = change.sources?.url  ?? '#'
-                  return (
-                    <TableRow key={change.id}>
-                      <TableCell>
-                        <SeverityBadge severity={change.severity ?? 'unknown'} />
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm font-medium text-foreground">{sourceName}</div>
-                        <a
-                          href={sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-muted-foreground hover:text-primary truncate block max-w-[200px] transition-colors"
-                        >
-                          {sourceUrl}
-                        </a>
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-foreground line-clamp-2 max-w-xl">
-                          {change.summary ?? (
-                            <span className="text-muted-foreground italic">No summary available</span>
-                          )}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {change.jurisdiction ?? 'FL'}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                        {timeAgo(change.detected_at)}
-                      </TableCell>
-                      <TableCell>
-                        <ReviewActions changeId={change.id} sourceName={sourceName} />
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <div className="divide-y divide-border">
+              {changes.map((change) => {
+                const sourceName = change.sources?.name ?? 'Unknown Source'
+                return (
+                  <Link
+                    key={change.id}
+                    href={`/reviews/${change.id}`}
+                    className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
+                  >
+                    <SeverityBadge severity={change.severity} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground line-clamp-1">
+                        {change.summary ?? (
+                          <span className="text-muted-foreground italic">No summary available</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {sourceName} · {change.jurisdiction ?? 'FL'}
+                      </p>
+                    </div>
+                    {filter === 'all' && (
+                      <StatusBadge status={change.review_status} />
+                    )}
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {timeAgo(change.detected_at)}
+                    </span>
+                    <i className="ri-arrow-right-s-line text-muted-foreground/50" />
+                  </Link>
+                )
+              })}
+            </div>
           </CardContent>
         </Card>
       )}

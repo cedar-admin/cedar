@@ -1,10 +1,11 @@
-// POST /api/changes/:id/acknowledge
+// GET /api/changes/:id/acknowledge?token=<signed>
 // Called when a practice clicks "Mark as Reviewed" in a delivery email.
-// Records the acknowledgment and redirects to the change detail page.
+// Token is HMAC-signed (practiceId:signature). Verifies before recording.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '../../../../../lib/db/client'
 import { getEnv } from '../../../../../lib/env'
+import { verifyAcknowledgeToken } from '../../../../../lib/delivery/email'
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +17,6 @@ export async function GET(
   const env = getEnv()
   const appUrl = env.NEXT_PUBLIC_APP_URL ?? 'https://cedar-beta.vercel.app'
 
-  // Resolve the practice from the token query param (optional — MVP uses single practice)
   const token = request.nextUrl.searchParams.get('token')
 
   try {
@@ -31,24 +31,14 @@ export async function GET(
       return NextResponse.redirect(`${appUrl}/changes?error=change_not_found`, { status: 302 })
     }
 
-    // Resolve practice — use token if provided, otherwise use the first active practice (MVP)
-    let practiceId: string | null = null
-
-    if (token) {
-      // Future: decode signed JWT token to get practice_id
-      // For MVP, token is the raw practice_id
-      practiceId = token
-    } else {
-      const { data: practice } = await supabase
-        .from('practices')
-        .select('id')
-        .limit(1)
-        .single()
-      practiceId = practice?.id ?? null
+    // Verify signed token
+    if (!token) {
+      return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=missing_token`, { status: 302 })
     }
 
+    const practiceId = verifyAcknowledgeToken(token, changeId, env.ADMIN_SECRET)
     if (!practiceId) {
-      return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=no_practice`, { status: 302 })
+      return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=invalid_token`, { status: 302 })
     }
 
     // Upsert acknowledgment — idempotent (re-clicking the link is safe)

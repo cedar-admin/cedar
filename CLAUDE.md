@@ -81,14 +81,16 @@ git add -A
 git commit -m "feat: ..."
 
 # 2. Push using PAT (HTTPS auth is not cached — must embed PAT in URL)
-PAT="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"
+# PAT is stored locally — never commit it. Source from env or credential store.
+PAT="$GITHUB_PAT"   # set GITHUB_PAT in your shell profile or .env.local
 git remote set-url origin "https://${PAT}@github.com/cedar-admin/cedar.git"
 git push origin main
 git remote set-url origin "https://github.com/cedar-admin/cedar.git"   # reset — never leave PAT in remote URL
 
 # 3. Verify Vercel picked it up (wait ~10s then poll)
+# VERCEL_TOKEN is stored locally — never commit it.
 sleep 10s && curl -s "https://api.vercel.com/v6/deployments?projectId=prj_YykyqY89BoocNV2xV3MUWcDjpdxv&limit=1" \
-  -H "Authorization: Bearer vcp_3ZBv8xhuHEFpY9VOOQmG0WpRMZkvH7J9iUkd4c6XpxKHM9XhgX1KYbv9" \
+  -H "Authorization: Bearer $VERCEL_TOKEN" \
   | jq '.deployments[0] | {id: .uid, state, url}'
 
 # 4. If state is BUILDING, poll again after 30s until READY or ERROR
@@ -249,13 +251,15 @@ This unsets the shell variable so `.env.local` takes precedence. Without this, C
 
 ## Access Tokens and API Keys
 
-Supabase Access Token (CLAUDE) = sbp_2451d7e72db7e49fab1b6591dd7bbceb821ed564
-Vercel Access Token (cedar-deploy) = vcp_3ZBv8xhuHEFpY9VOOQmG0WpRMZkvH7J9iUkd4c6XpxKHM9XhgX1KYbv9
-Anthropic API Key (CEDAR-MVP) = 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
-Browserbase Project ID = f3895e24-ee71-4558-9e37-d94d72234b11
-Browserbase API Key = bb_live_WE66ONapM9mUipx6IdgI5Sv1WWQ
-Resend API Key = re_NdX9vJ3S_718fyKUvaXWzvu3pbD2ERTtX
-GitHub PAT (cedar-deploy) = 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
+All secrets are stored in `.env.local` (local dev) and Vercel environment variables (production). Never commit secrets to this file or any version-controlled file.
+
+- **Supabase Access Token** — set in Supabase dashboard, used by CLI
+- **Vercel Access Token (cedar-deploy)** — set in Vercel dashboard
+- **ANTHROPIC_API_KEY** — set in .env.local and Vercel env vars
+- **BROWSERBASE_PROJECT_ID** — set in .env.local and Vercel env vars
+- **BROWSERBASE_API_KEY** — set in .env.local and Vercel env vars
+- **RESEND_API_KEY** — set in .env.local and Vercel env vars
+- **GitHub PAT (cedar-deploy)** — stored locally, used for git push auth
 
 ## Design System
 
@@ -287,6 +291,38 @@ Cedar uses shadcn/ui with a custom preset. All UI must conform to these rules:
 ### Theming
 - All visual tokens live in `globals.css` — that is the single source of truth
 - Do not modify `globals.css` CSS variables without explicit instruction
+
+## UI Standards
+
+### Shared Components
+- **SeverityBadge** (`components/SeverityBadge.tsx`) — use for all severity indicators; never define local severity colors
+- **StatusBadge** (`components/StatusBadge.tsx`) — use for all review status badges
+- **EmptyState** (`components/EmptyState.tsx`) — use for all "no data" states inside cards
+- **DataList** (`components/DataList.tsx`) — use for any clickable list of items with severity + timestamp
+
+### Shared Utilities
+- **`lib/ui-constants.ts`** — single source of truth for `SEVERITY_CLASS`, `SEVERITY_DOT`, `SEVERITY_ICON`, `SEVERITIES`, `STATUS_CLASS`, `STATUS_LABEL`
+- **`lib/format.ts`** — shared `timeAgo()`, `formatDate()`, `capitalize()` — never define these locally in pages
+
+### Page Layout Patterns
+- Outer wrapper: `<div className="space-y-6">`
+- Page title: `<h1 className="text-2xl font-semibold text-foreground">`
+- Page subtitle: `<p className="text-sm text-muted-foreground mt-1">`
+- Card section headers: `<CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">`
+- Empty states: `py-12`, icon `text-3xl`, icon margin `mb-2`
+- Back links: `inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors`
+
+### Role vs Tier
+- **Role** (admin, intelligence, monitor) — determines permissions and nav visibility
+- **Tier** (monitor, intelligence) — determines subscription features and billing
+- Never conflate these. Admin accounts have no subscription tier.
+- Settings page for admin shows "Role: Admin" with no plan, no Stripe info, no upgrade button
+- Sidebar shows: tier name for practice_owners, "Admin" for admins
+
+### Interactive Elements
+- All toggles must use `<Switch>` from `@/components/ui/switch` — never fake div-based toggles
+- All selects must use shadcn `<Select>` — never native `<select>`
+- All buttons must use `<Button>` from `@/components/ui/button`
 
 ## Generating Updated Types
 

@@ -2,27 +2,13 @@ import { createServerClient } from '../../../lib/db/client'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { SeverityBadge } from '@/components/SeverityBadge'
+import { SEVERITY_CLASS } from '@/lib/ui-constants'
+import { timeAgo } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
-
-const SEVERITY_CLASS: Record<string, string> = {
-  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
-  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
-  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
-}
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
 
 export default async function HomePage() {
   const { user } = await withAuth({ ensureSignedIn: true })
@@ -35,7 +21,7 @@ export default async function HomePage() {
     .eq('owner_email', user.email)
     .maybeSingle()
 
-  const practiceName = (practice as any)?.name ?? 'Your Practice'
+  const practiceName = practice?.name ?? 'Your Practice'
 
   // Stats
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 3_600_000).toISOString()
@@ -80,7 +66,7 @@ export default async function HomePage() {
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
@@ -113,7 +99,7 @@ export default async function HomePage() {
         <Card className="md:col-span-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 Critical &amp; High Alerts
               </CardTitle>
               <Button variant="ghost" size="sm" asChild>
@@ -133,12 +119,9 @@ export default async function HomePage() {
               <div className="divide-y divide-border">
                 {criticalAlerts.map((c) => {
                   const src = c.sources as { name: string } | null
-                  const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
                   return (
                     <Link key={c.id} href={`/changes/${c.id}`} className="flex items-start gap-3 px-1 py-3 hover:bg-muted/40 transition-colors">
-                      <Badge variant="outline" className={`text-xs shrink-0 w-[5.5rem] justify-center ${cls}`}>
-                        {c.severity}
-                      </Badge>
+                      <SeverityBadge severity={c.severity} />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-muted-foreground">{src?.name ?? '—'}</p>
                         <p className="text-sm text-foreground line-clamp-1 mt-0.5">
@@ -157,7 +140,7 @@ export default async function HomePage() {
         {/* Compliance health */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Compliance Health
             </CardTitle>
           </CardHeader>
@@ -199,7 +182,7 @@ export default async function HomePage() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Recent Activity — Last 7 Days
             </CardTitle>
             <Button variant="ghost" size="sm" asChild>
@@ -221,12 +204,9 @@ export default async function HomePage() {
             <div className="divide-y divide-border">
               {recentChanges.map((c) => {
                 const src = c.sources as { name: string } | null
-                const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
                 return (
                   <Link key={c.id} href={`/changes/${c.id}`} className="flex items-center gap-3 py-3 hover:bg-muted/30 transition-colors px-1">
-                    <Badge variant="outline" className={`text-xs shrink-0 w-[5.5rem] justify-center ${cls}`}>
-                      {c.severity ?? '—'}
-                    </Badge>
+                    <SeverityBadge severity={c.severity} />
                     <span className="text-sm text-foreground flex-1 truncate">
                       {src?.name ?? '—'}
                     </span>

@@ -30,9 +30,31 @@ interface SidebarProps {
   role: UserRole
 }
 
-function tierBadgeLabel(role: UserRole, tier: string): string {
-  if (role === 'admin') return 'Admin'
-  return tier.charAt(0).toUpperCase() + tier.slice(1)
+function RoleBadge({ role, tier }: { role: UserRole; tier: string | null }) {
+  if (role === 'admin') {
+    return (
+      <Badge
+        variant="outline"
+        className="mt-1 text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
+      >
+        Admin
+      </Badge>
+    )
+  }
+  const label = tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : 'Monitor'
+  const isIntelligence = tier?.toLowerCase() === 'intelligence'
+  return (
+    <Badge
+      variant="outline"
+      className={`mt-1 text-xs border-sidebar-border text-sidebar-foreground/70 ${
+        isIntelligence
+          ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800'
+          : ''
+      }`}
+    >
+      {label}
+    </Badge>
+  )
 }
 
 // CSS-based dark/light switch — avoids useTheme() hydration flash
@@ -111,20 +133,15 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
 
       {/* Bottom section */}
       <div className="shrink-0 border-t border-sidebar-border">
-        {/* Practice info */}
-        {practice && (
-          <div className="px-4 py-3 border-b border-sidebar-border">
+        {/* Practice / role info */}
+        <div className="px-4 py-3 border-b border-sidebar-border">
+          {practice && (
             <p className="text-xs font-medium text-sidebar-foreground truncate">
               {practice.name}
             </p>
-            <Badge
-              variant="outline"
-              className="mt-1 text-xs border-sidebar-border text-sidebar-foreground/70"
-            >
-              {tierBadgeLabel(role, practice.tier)}
-            </Badge>
-          </div>
-        )}
+          )}
+          <RoleBadge role={role} tier={practice?.tier ?? null} />
+        </div>
 
         {/* User row */}
         <div className="px-4 py-2.5 border-b border-sidebar-border">

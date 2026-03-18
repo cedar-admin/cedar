@@ -2,12 +2,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createServerClient } from '../../../../lib/db/client'
 import type { DiffBlock } from '../../../../lib/changes/diff'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { LegalDisclaimer } from '@/components/LegalDisclaimer'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { timeAgo } from '@/lib/format'
+import ReviewActions from '../ReviewActions'
 
 // ── Diff Viewer ───────────────────────────────────────────────────────────────
 
@@ -52,7 +51,7 @@ interface Props {
   params: Promise<{ id: string }>
 }
 
-export default async function ChangeDetailPage({ params }: Props) {
+export default async function ReviewDetailPage({ params }: Props) {
   const { id } = await params
   const supabase = createServerClient()
 
@@ -79,17 +78,24 @@ export default async function ChangeDetailPage({ params }: Props) {
     sources: { name: string; url: string } | null
   }
 
+  // HITL columns from migration 016 — not yet in generated types
+  const raw = change as Record<string, unknown>
+  const reviewedBy = raw.reviewed_by as string | null ?? null
+  const reviewedAt = raw.reviewed_at as string | null ?? null
+  const reviewNotes = raw.review_notes as string | null ?? null
+
   const blocks = Array.isArray(c.normalized_diff) ? c.normalized_diff as DiffBlock[] : null
+  const isPending = c.review_status === 'pending'
 
   return (
     <div className="max-w-4xl">
       {/* Back */}
       <Link
-        href="/changes"
+        href="/reviews"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
         <i className="ri-arrow-left-line" />
-        All changes
+        Review Queue
       </Link>
 
       {/* Header */}
@@ -97,6 +103,7 @@ export default async function ChangeDetailPage({ params }: Props) {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <SeverityBadge severity={c.severity} />
+            <StatusBadge status={c.review_status} />
             <span className="text-sm text-muted-foreground">{timeAgo(c.detected_at)}</span>
           </div>
           <h1 className="text-xl font-semibold text-foreground">
@@ -152,7 +159,19 @@ export default async function ChangeDetailPage({ params }: Props) {
             </CardContent>
           </Card>
 
-          <LegalDisclaimer />
+          {/* Review Actions — only show for pending changes */}
+          {isPending && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Review Decision
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ReviewActions changeId={c.id} sourceName={c.sources?.name ?? 'Unknown Source'} />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Metadata sidebar */}
@@ -177,6 +196,29 @@ export default async function ChangeDetailPage({ params }: Props) {
                     <StatusBadge status={c.review_status} />
                   </dd>
                 </div>
+                {reviewedBy && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Reviewed By</dt>
+                    <dd className="text-sm text-foreground mt-0.5">{reviewedBy}</dd>
+                  </div>
+                )}
+                {reviewedAt && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Reviewed At</dt>
+                    <dd className="text-sm text-foreground mt-0.5">
+                      {new Date(reviewedAt).toLocaleString('en-US', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                      })}
+                    </dd>
+                  </div>
+                )}
+                {reviewNotes && (
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Review Notes</dt>
+                    <dd className="text-sm text-foreground mt-0.5">{reviewNotes}</dd>
+                  </div>
+                )}
                 {c.chain_sequence !== null && (
                   <div>
                     <dt className="text-xs text-muted-foreground">Chain Sequence</dt>

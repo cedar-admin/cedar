@@ -10,6 +10,7 @@
 //   - Plain-text fallback with summary + truncated diff
 //   - Mandatory AI disclaimer footer on every email
 
+import { createHmac } from 'crypto'
 import { Resend } from 'resend'
 import { getEnv } from '../env'
 import type { DiffBlock } from '../changes/diff'
@@ -19,6 +20,7 @@ import type { DiffBlock } from '../changes/diff'
 export interface SendChangeAlertParams {
   to: string
   practiceName: string
+  practiceId: string
   changeSummary: string
   severity: string
   sourceName: string
@@ -28,6 +30,37 @@ export interface SendChangeAlertParams {
   normalizedDiff?: DiffBlock[] | null
   /** Effective date of the change if known (YYYY-MM-DD) */
   effectiveDate?: string | null
+}
+
+// ── Token signing ─────────────────────────────────────────────────────────────
+
+/**
+ * Generate an HMAC-SHA256 signed acknowledge token.
+ * Format: practiceId:signature (signature = HMAC of practiceId:changeId)
+ */
+export function signAcknowledgeToken(practiceId: string, changeId: string, secret: string): string {
+  const sig = createHmac('sha256', secret).update(`${practiceId}:${changeId}`).digest('hex')
+  return `${practiceId}:${sig}`
+}
+
+/**
+ * Verify an HMAC-SHA256 signed acknowledge token.
+ * Returns the practiceId if valid, null if tampered.
+ */
+export function verifyAcknowledgeToken(token: string, changeId: string, secret: string): string | null {
+  const sepIdx = token.indexOf(':')
+  if (sepIdx === -1) return null
+  const practiceId = token.slice(0, sepIdx)
+  const sig = token.slice(sepIdx + 1)
+  const expected = createHmac('sha256', secret).update(`${practiceId}:${changeId}`).digest('hex')
+  if (sig.length !== expected.length) return null
+  // Constant-time comparison
+  const a = Buffer.from(sig, 'hex')
+  const b = Buffer.from(expected, 'hex')
+  if (a.length !== b.length) return null
+  let diff = 0
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i]
+  return diff === 0 ? practiceId : null
 }
 
 export interface SendChangeAlertResult {
@@ -73,11 +106,12 @@ export async function sendChangeAlert(
 
   const resend = new Resend(env.RESEND_API_KEY)
   const appUrl = env.NEXT_PUBLIC_APP_URL ?? 'https://cedar-beta.vercel.app'
-  const { to, practiceName, changeSummary, severity, sourceName, sourceUrl, changeId, normalizedDiff, effectiveDate } = params
+  const { to, practiceName, practiceId, changeSummary, severity, sourceName, sourceUrl, changeId, normalizedDiff, effectiveDate } = params
   const sev = SEVERITY_CONFIG[severity.toLowerCase()] ?? DEFAULT_SEVERITY
 
   const detailsUrl     = `${appUrl}/changes/${changeId}`
-  const acknowledgeUrl = `${appUrl}/api/changes/${changeId}/acknowledge`
+  const token = signAcknowledgeToken(practiceId, changeId, env.ADMIN_SECRET)
+  const acknowledgeUrl = `${appUrl}/api/changes/${changeId}/acknowledge?token=${encodeURIComponent(token)}`
 
   const html = buildHtml({ practiceName, changeSummary, sev, sourceName, sourceUrl, normalizedDiff, effectiveDate, detailsUrl, acknowledgeUrl })
   const text = buildText({ practiceName, changeSummary, sev, sourceName, sourceUrl, normalizedDiff, effectiveDate, detailsUrl })

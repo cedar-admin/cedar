@@ -12,6 +12,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
+import { SEVERITY_CLASS } from '@/lib/ui-constants'
+import { timeAgo } from '@/lib/format'
 
 // ── Env var check ────────────────────────────────────────────────────────────
 
@@ -50,25 +52,6 @@ function EnvRow({ keyName, label, required }: { keyName: string; label: string; 
       )}
     </div>
   )
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function timeAgo(iso: string | null): string {
-  if (!iso) return 'Never'
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
-
-const SEVERITY_CLASS: Record<string, string> = {
-  critical:      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
-  high:          'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  medium:        'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800',
-  low:           'bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-  informational: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -115,7 +98,7 @@ export default async function SystemPage() {
   const missingRequired = ENV_VARS.filter(v => v.required && !process.env[v.key])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -140,7 +123,7 @@ export default async function SystemPage() {
       {/* Environment Variables */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Environment Variables
           </CardTitle>
         </CardHeader>
@@ -156,7 +139,7 @@ export default async function SystemPage() {
       {/* Sources */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Sources ({sources?.length ?? 0})
           </CardTitle>
         </CardHeader>
@@ -219,7 +202,7 @@ export default async function SystemPage() {
       {/* Recent Changes */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Recent Changes
           </CardTitle>
         </CardHeader>

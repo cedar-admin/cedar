@@ -1,13 +1,15 @@
-import { withAuth } from '@workos-inc/authkit-nextjs'
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
 import { createBillingPortalSession } from '../../actions/billing'
+import { getLayoutData } from '@/lib/layout-data'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { capitalize } from '@/lib/format'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -29,7 +32,7 @@ function TierBadge({ tier }: { tier: string }) {
           : ''
       }
     >
-      {tier.charAt(0).toUpperCase() + tier.slice(1)}
+      {capitalize(tier)}
     </Badge>
   )
 }
@@ -63,7 +66,7 @@ function SubscriptionStatus({ status }: { status: string | null }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
       <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-      {s === 'inactive' ? 'No subscription' : s.charAt(0).toUpperCase() + s.slice(1)}
+      {s === 'inactive' ? 'No subscription' : capitalize(s)}
     </span>
   )
 }
@@ -84,9 +87,10 @@ function formatRenewal(iso: string | null): string {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function SettingsPage() {
-  const { user } = await withAuth({ ensureSignedIn: true })
-  const supabase = createServerClient()
+  const { user, role } = await getLayoutData()
+  const isAdmin = role === 'admin'
 
+  const supabase = createServerClient()
   const { data: practice } = await supabase
     .from('practices')
     .select('id, name, owner_email, tier, stripe_customer_id, stripe_subscription_id, subscription_status, current_period_end, created_at')
@@ -101,7 +105,34 @@ export default async function SettingsPage() {
         <p className="text-muted-foreground text-sm mt-1">Account, notifications, and billing</p>
       </div>
 
-      {!practice && (
+      {/* Admin role card — no practice/billing info */}
+      {isAdmin && (
+        <div className="grid grid-cols-1 gap-5 max-w-2xl">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Account
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Email</span>
+                <span className="text-sm font-medium text-foreground">{user.email}</span>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Role</span>
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
+                  Admin
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Practice owner view */}
+      {!isAdmin && !practice && (
         <Alert className="max-w-lg">
           <i className="ri-hospital-line text-base" />
           <AlertDescription>
@@ -114,7 +145,7 @@ export default async function SettingsPage() {
         </Alert>
       )}
 
-      {practice && (
+      {!isAdmin && practice && (
         <div className="grid grid-cols-1 gap-5 max-w-2xl">
           {/* Practice Info */}
           <Card>
@@ -126,23 +157,23 @@ export default async function SettingsPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Name</span>
-                <span className="text-sm font-medium text-foreground">{(practice as any).name}</span>
+                <span className="text-sm font-medium text-foreground">{practice.name}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Owner Email</span>
-                <span className="text-sm font-medium text-foreground">{(practice as any).owner_email}</span>
+                <span className="text-sm font-medium text-foreground">{practice.owner_email}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Plan</span>
-                <TierBadge tier={(practice as any).tier ?? 'monitor'} />
+                <TierBadge tier={practice.tier ?? 'monitor'} />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Member Since</span>
                 <span className="text-sm text-foreground">
-                  {new Date((practice as any).created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                  {new Date(practice.created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
                 </span>
               </div>
             </CardContent>
@@ -158,27 +189,27 @@ export default async function SettingsPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Status</span>
-                <SubscriptionStatus status={(practice as any).subscription_status} />
+                <SubscriptionStatus status={practice.subscription_status} />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Renewal</span>
-                <span className="text-sm text-foreground">{formatRenewal((practice as any).current_period_end)}</span>
+                <span className="text-sm text-foreground">{formatRenewal(practice.current_period_end)}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Stripe Customer</span>
-                <span className="text-sm font-mono text-muted-foreground">{mask((practice as any).stripe_customer_id)}</span>
+                <span className="text-sm font-mono text-muted-foreground">{mask(practice.stripe_customer_id)}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Stripe Subscription</span>
-                <span className="text-sm font-mono text-muted-foreground">{mask((practice as any).stripe_subscription_id)}</span>
+                <span className="text-sm font-mono text-muted-foreground">{mask(practice.stripe_subscription_id)}</span>
               </div>
 
               {/* Billing actions */}
               <div className="pt-2">
-                {(practice as any).stripe_customer_id ? (
+                {practice.stripe_customer_id ? (
                   <form action={createBillingPortalSession}>
                     <Button type="submit" variant="outline" size="sm">
                       <i className="ri-bank-card-line" />
@@ -208,17 +239,14 @@ export default async function SettingsPage() {
               {/* Email alerts row */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Email alerts</p>
+                  <Label htmlFor="email-alerts" className="text-sm font-medium text-foreground">
+                    Email alerts
+                  </Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Receive email for Critical &amp; High severity changes
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-5 bg-primary relative cursor-pointer" title="Enabled">
-                    <span className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary-foreground block" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">On</span>
-                </div>
+                <Switch id="email-alerts" defaultChecked />
               </div>
               <Separator />
               {/* Severity threshold row */}
@@ -245,17 +273,14 @@ export default async function SettingsPage() {
               {/* Weekly digest row */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Weekly digest</p>
+                  <Label htmlFor="weekly-digest" className="text-sm font-medium text-foreground">
+                    Weekly digest
+                  </Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Summary email every Monday morning
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-5 bg-muted border border-border relative cursor-pointer" title="Disabled">
-                    <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-muted-foreground/50 block" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">Off</span>
-                </div>
+                <Switch id="weekly-digest" />
               </div>
               <div className="pt-1">
                 <p className="text-xs text-muted-foreground">
@@ -312,7 +337,7 @@ export default async function SettingsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">
-                        {(practice as any).owner_email}
+                        {practice.owner_email}
                       </p>
                       <p className="text-xs text-muted-foreground">Owner</p>
                     </div>

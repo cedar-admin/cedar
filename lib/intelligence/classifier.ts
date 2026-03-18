@@ -58,19 +58,34 @@ export async function runClassifier(
     context,
   })
 
-  const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  const jsonMatch = text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) {
-    throw new Error(`Classifier returned unparseable response: ${text}`)
+  if (!response.content?.[0]) {
+    throw new Error('Classifier returned empty content array')
   }
+  const text = response.content[0].type === 'text' ? response.content[0].text : ''
 
-  const parsed = JSON.parse(jsonMatch[0]) as {
+  // Parse JSON from response — try direct parse first, fall back to regex extraction
+  let parsed: {
     severity: Severity
     summary: string
     affected_practice_types: string[]
     regulatory_domains: string[]
     effective_date: string | null
     action_items: string[]
+  }
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error(`Classifier returned unparseable response: ${text.slice(0, 500)}`)
+    }
+    try {
+      parsed = JSON.parse(jsonMatch[0])
+    } catch (parseErr) {
+      throw new Error(
+        `Classifier JSON parse failed: ${parseErr instanceof Error ? parseErr.message : 'unknown'}. Raw: ${text.slice(0, 500)}`
+      )
+    }
   }
 
   return {
