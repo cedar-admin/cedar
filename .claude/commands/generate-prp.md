@@ -1,3 +1,7 @@
+---
+description: Generate a comprehensive PRP (Product Requirements Prompt) from a feature description file. Use when planning a new feature implementation.
+---
+
 # Generate PRP for Cedar
 
 ## Feature file: $ARGUMENTS

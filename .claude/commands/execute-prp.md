@@ -1,3 +1,7 @@
+---
+description: Execute an active PRP from PRPs/active/ to implement a feature. Use when ready to build a planned feature.
+---
+
 # Execute Cedar PRP
 
 ## PRP File: $ARGUMENTS
