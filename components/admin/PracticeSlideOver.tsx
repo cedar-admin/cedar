@@ -81,25 +81,27 @@ export function PracticeSlideOver({
     <>
       {/* Scrim */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 dark:bg-black/70"
+        className="fixed inset-0 z-40 bg-scrim animate-scrim-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col">
+      <div className="fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col animate-panel-in-right">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <h2 className="text-base font-semibold text-foreground truncate pr-4">
             {practice.name}
           </h2>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="text-muted-foreground hover:text-foreground shrink-0 h-8 w-8"
             aria-label="Close panel"
           >
             <i className="ri-close-line text-xl" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 px-6 py-6 space-y-6">

@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import type { UserRole } from '@/lib/layout-data'
+import { Button } from '@/components/ui/button'
 
 const MAIN_NAV = [
   { href: '/home',     label: 'Home',               icon: 'ri-home-4-line' },
@@ -79,21 +80,24 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
   return (
     <>
       {/* Expand trigger — visible only when collapsed, hugs left edge */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => setCollapsed(false)}
         aria-label="Expand sidebar"
-        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground transition-opacity duration-200 ${
+        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 rounded-none bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar transition-interactive ${
           collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
         <i className="ri-arrow-right-s-line text-sm" />
-      </button>
+      </Button>
 
       {/* Sidebar — always rendered, width animated */}
       <aside
-        className={`flex flex-col shrink-0 h-screen border-r border-sidebar-border bg-sidebar transition-all duration-200 ease-in-out ${
+        className={`flex flex-col shrink-0 h-screen border-r border-sidebar-border bg-sidebar ${
           collapsed ? 'w-0 overflow-hidden border-r-0' : 'w-60 overflow-y-auto'
         }`}
+        style={{ transition: 'all var(--duration-base) var(--ease-standard)' }}
       >
 
       {/* Logo + collapse button */}
@@ -101,13 +105,15 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
         <Link href="/home" className="flex items-center">
           <CedarLogo />
         </Link>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setCollapsed(true)}
           aria-label="Collapse sidebar"
-          className="flex items-center justify-center w-6 h-6 text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
+          className="w-6 h-6 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
         >
           <i className="ri-arrow-left-s-line text-base" />
-        </button>
+        </Button>
       </div>
 
       {/* Main nav */}

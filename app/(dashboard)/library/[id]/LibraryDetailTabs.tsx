@@ -86,18 +86,19 @@ export function LibraryDetailTabs({ reg, role }: Props) {
             live: 'Live Source',
           }
           return (
-            <button
+            <Button
               key={t}
               type="button"
+              variant="ghost"
               onClick={() => setTab(t)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              className={`px-4 py-2 h-auto rounded-none text-sm font-medium border-b-2 transition-interactive -mb-px ${
                 tab === t
-                  ? 'border-primary text-foreground'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-primary text-foreground hover:bg-transparent'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'
               }`}
             >
               {labels[t]}
-            </button>
+            </Button>
           )
         })}
       </div>

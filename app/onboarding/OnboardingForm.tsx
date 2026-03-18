@@ -175,12 +175,13 @@ export function OnboardingForm({ email }: Props) {
         {/* Plan cards */}
         <div className="grid grid-cols-2 gap-3">
           {/* Monitor */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setTier('monitor')}
-            className={`text-left p-4 border transition-colors ${
+            className={`h-auto text-left p-4 border rounded-none w-full justify-start transition-interactive ${
               tier === 'monitor'
-                ? 'border-primary bg-primary/5'
+                ? 'border-primary bg-primary/5 hover:bg-primary/5'
                 : 'border-border bg-card hover:bg-muted/40'
             }`}
           >
@@ -200,15 +201,16 @@ export function OnboardingForm({ email }: Props) {
                 </li>
               ))}
             </ul>
-          </button>
+          </Button>
 
           {/* Intelligence */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setTier('intelligence')}
-            className={`text-left p-4 border transition-colors ${
+            className={`h-auto text-left p-4 border rounded-none w-full justify-start transition-interactive ${
               tier === 'intelligence'
-                ? 'border-primary bg-primary/5'
+                ? 'border-primary bg-primary/5 hover:bg-primary/5'
                 : 'border-border bg-card hover:bg-muted/40'
             }`}
           >
@@ -228,7 +230,7 @@ export function OnboardingForm({ email }: Props) {
                 </li>
               ))}
             </ul>
-          </button>
+          </Button>
         </div>
 
         <Separator />
