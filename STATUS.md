@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 5
+Last updated: March 18, 2026 by Sonnet Session 6
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,11 +16,11 @@ Last updated: March 18, 2026 by Sonnet Session 5
 | 9. Dashboard | ⚙️ Partial | 13 pages rendering with real data. Settings notification toggles now persist. Sidebar role/tier badges updated. |
 
 ## Codebase Stats
-- **12,831 lines** TypeScript/TSX across 119 files
+- **12,990 lines** TypeScript/TSX across 120 files
 - **17** Supabase migrations (001-017)
-- **13** dashboard routes, **6** API routes
+- **14** dashboard routes, **6** API routes
 - **29** shadcn/ui components, **4** custom shared components
-- **28** git commits on main
+- **30** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
