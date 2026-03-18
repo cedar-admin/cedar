@@ -31,7 +31,11 @@ export type Database = {
           prev_chain_hash: string | null
           raw_classification: Json | null
           relevance_score: number | null
+          review_action: string | null
+          review_notes: string | null
           review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           severity: string | null
           source_id: string
           source_url_id: string | null
@@ -54,7 +58,11 @@ export type Database = {
           prev_chain_hash?: string | null
           raw_classification?: Json | null
           relevance_score?: number | null
+          review_action?: string | null
+          review_notes?: string | null
           review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           severity?: string | null
           source_id: string
           source_url_id?: string | null
@@ -77,7 +85,11 @@ export type Database = {
           prev_chain_hash?: string | null
           raw_classification?: Json | null
           relevance_score?: number | null
+          review_action?: string | null
+          review_notes?: string | null
           review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           severity?: string | null
           source_id?: string
           source_url_id?: string | null
