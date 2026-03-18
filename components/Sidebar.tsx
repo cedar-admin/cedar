@@ -97,7 +97,7 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
         className={`fixed inset-y-0 left-0 z-[40] flex flex-col w-60 h-screen overflow-y-auto border-r border-sidebar-border bg-sidebar ${
           collapsed ? '-translate-x-full' : 'translate-x-0'
         }`}
-        style={{ transition: 'transform var(--duration-base) var(--ease-standard)' }}
+        style={{ transition: 'translate var(--duration-base) var(--ease-standard)' }}
       >
 
       {/* Logo + collapse button */}
