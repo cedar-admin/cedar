@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 8
+Last updated: March 18, 2026 by Sonnet Session 9
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,24 +16,23 @@ Last updated: March 18, 2026 by Sonnet Session 8
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Admin practices page fully interactive. |
 
 ## Codebase Stats
-- **~13,600 lines** TypeScript/TSX across ~125 files
+- **~14,600 lines** TypeScript/TSX across ~125 files
 - **18** Supabase migrations (001-018)
 - **15** dashboard routes, **8** API routes
 - **29** shadcn/ui components, **4** custom shared components
-- **34** git commits on main
+- **36** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 8 (Sonnet) executed the design-system-refactor PRP — pure token/class migration, no logic or layout changes:
-- **`components/admin/SlideOverPanel.tsx`** (RENAMED from `PracticeSlideOver.tsx`): Component and props interface renamed to `SlideOverPanel` / `SlideOverPanelProps`. Import updated in `PracticesTable.tsx`.
-- **`components/admin/SlideOverPanel.tsx`**: Scrim `bg-black/50 dark:bg-black/70` → `bg-scrim animate-scrim-in !m-0`. Panel: `+animate-panel-in-right !m-0`. Close `<button>` → `<Button variant="ghost" size="icon">`. `!m-0` added to both fixed-position elements to override parent `space-y-6` margin inheritance.
-- **`components/Sidebar.tsx`**: Added `Button` import. Expand/collapse `<button>` → `<Button variant="ghost" size="icon" rounded-none>`. `<aside>` hardcoded `transition-all duration-200 ease-in-out` → inline `style={{ transition: 'all var(--duration-base) var(--ease-standard)' }}`.
-- **`app/onboarding/OnboardingForm.tsx`**: Both plan-selector `<button>` → `<Button variant="ghost" h-auto rounded-none w-full justify-start transition-interactive>`.
-- **`app/(dashboard)/library/[id]/LibraryDetailTabs.tsx`**: Tab `<button>` → `<Button variant="ghost" h-auto rounded-none hover:bg-transparent transition-interactive>`.
+Session 9 (Sonnet) executed the sidebar-transform-collapse PRP — replaced width-based collapse animation with GPU-composited `translate` transform:
+- **`components/Sidebar.tsx`**: `aside` changed from in-flow `shrink-0` with conditional `w-0`/`w-60` to `position: fixed` with constant `w-60`. Collapsed state uses `-translate-x-full`, expanded uses `translate-x-0`. Transition scoped to `translate` only (not `all`). A follow-up fix corrected the transition property from `transform` to `translate` — Tailwind v4 sets the CSS `translate` shorthand, not `transform`, so `transition: transform` had no effect and the panel snapped.
+- **`app/(dashboard)/layout.tsx`**: `main` given permanent `ml-60` (sidebar is now out of document flow).
+- **`app/(admin)/layout.tsx`**: Same permanent `ml-60` change.
 - Token audit: ✅ 0 errors. Build: ✅ Clean.
 
 ## Next Session Priority
 1. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
+2. **Settings toggles** — notification preferences don't persist to the database
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
