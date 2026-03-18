@@ -1,6 +1,6 @@
 # Cedar
 
-Regulatory intelligence platform for Florida medical practices. Monitors 71 regulatory sources, detects changes, classifies them through an AI pipeline, and delivers plain-language alerts with a tamper-evident audit trail. Information-only platform — Cedar provides regulatory monitoring, summaries, and FAQs. Cedar does not provide legal advice.
+Regulatory intelligence platform for Florida medical practices. Monitors 71 regulatory sources, detects changes, classifies them through an AI pipeline, and delivers plain-language alerts with a tamper-evident audit trail.
 
 ## Stack
 
@@ -15,45 +15,32 @@ Regulatory intelligence platform for Florida medical practices. Monitors 71 regu
 - **AI:** Anthropic Claude API (`claude-sonnet-4-5-20250929`)
 - **Push:** OneSignal (1.0 Full, Intelligence tier only)
 
-## Session Startup — Read in This Order
-
-1. Read this file (automatic)
-2. Read `STATUS.md` for current build state, last session summary, and next priority
-3. If a PRP exists in `PRPs/active/`, read it — that is your task for this session
-4. Read relevant source files before modifying them — always verify against the actual codebase
-
 ## Module Build Order
 
 1. Data Layer (Supabase schema, RLS, WorkOS, Stripe) ✅ DONE
 2. Orchestration (Inngest scheduler + monitorSource + delivery) ✅ DONE
-3. Source Fetching (auto-escalating dispatcher) ✅ DONE
-4. Document Processing (Docling + Whisper) — 🔲 Blocked on Railway deploy
-5. Change Detection (hash + diff + chain) ✅ DONE
-6. Intelligence Pipeline (3 agents, sequential) — Agents 1+2 DONE, Agent 3 deferred to 1.0 Full
-6B. HITL Review Layer — ⚙️ Partial (routes work, rule-matching incomplete)
-7. Audit Trail + Knowledge Graph — ⚙️ Partial (chain validator works, KG writes inline, snapshot.ts stub)
-8. Delivery (Resend + OneSignal) — ✅ Email DONE, OneSignal deferred to 1.0 Full
-9. Dashboard (Next.js) — ⚙️ Partial (13 pages, settings toggles don't persist)
+3. Source Fetching (auto-escalating dispatcher) — gov_api fetcher DONE, oxylabs/browserbase TODO
+4. Document Processing (Docling + Whisper) — stub in `/lib/processing/`
+5. Change Detection (hash + diff + chain) — DONE
+6. Intelligence Pipeline (3 agents, sequential) — Agents 1+2 DONE, Agent 3 deferred (see below)
+6B. HITL Review Layer — stub in `(admin)/reviews/`
+7. Audit Trail + Knowledge Graph — record.ts DONE, rest TODO
+8. Delivery (Resend + OneSignal) — email.ts DONE, OneSignal TODO
+9. Dashboard (Next.js — built progressively) — shell DONE
 
-**Important:** This list reflects last known state. `STATUS.md` has the current ground truth. Always verify against actual files and migrations.
+## How to Determine What to Build Next
 
-## Session Discipline
+At the start of every session, read this file and the actual codebase to determine current state. Do not rely on what CLAUDE.md says is done — verify against the actual files and migrations. The module list above reflects last known state but the codebase is the source of truth.
 
-### PRP Workflow (Preferred)
-When a PRP exists in `PRPs/active/`:
-- The PRP defines the scope for this session. Follow it precisely.
-- Do not add scope beyond the PRP. Note future work in `STATUS.md`.
-- Run all validation gates in the PRP before marking complete.
-- When done: update `STATUS.md`, move PRP to `PRPs/completed/`.
+To determine the next task:
+1. Find the first module in the list above that is not fully complete
+2. Within that module, identify the first incomplete component based on what exists in the codebase
+3. Build that component
+4. Repeat until the module is complete, then move to the next
 
-### When No PRP Exists
-Fall back to module-order progression:
-1. Check `STATUS.md` for the next priority
-2. Find the first incomplete module in the build order
-3. Within that module, identify the first incomplete component from the codebase
-4. Build it, then continue to the next piece within the same module
+Never stop at the end of a subtask and wait silently. Always continue to the next logical piece of work within the current module unless you hit a blocker.
 
-### Session Behavior
+## Session Behavior
 
 **When you complete a subtask within a module:**
 - State what you just built in 2-3 sentences
@@ -72,10 +59,6 @@ Fall back to module-order progression:
 - Describe the blocker clearly
 - State what you need to resolve it (a decision, a credential, a clarification)
 - Do not proceed past the blocker — ask for what you need
-
-**Before ending any session:**
-- Update `STATUS.md` with: what was built, what's next, any issues discovered
-- Stage, commit, and push all changes (see Git Push procedure below)
 
 **After completing any module or subtask that modifies files:**
 - Stage all changed files with `git add -A`
@@ -172,22 +155,24 @@ A module is not complete until its test criteria pass.
 
 **Module 7 — Audit Trail & Knowledge Graph**
 - Attempt to UPDATE a `changes` row via SQL — confirm trigger throws
-- `chain-validator.ts` detects a tampered hash and writes to `validation_log`
-- KG entity is written when a change is recorded
+- Attempt to DELETE a `changes` row — confirm trigger throws
+- KG entity is written correctly for a classified change
+- Weekly `audit.validate-chain` cron completes and writes to `validation_log`
 
 **Module 8 — Delivery**
-- An approved change triggers an email via Resend
-- Email contains: severity badge, AI summary, source link, disclaimer, acknowledge link
-- A `pending_review` change is NOT delivered
+- Alert email arrives in inbox with summary, severity badge, source link, and disclaimer
+- Delivery is logged to `cost_events`
+- `practice_acknowledgments` row is written when "Mark as Reviewed" is clicked
 
 **Module 9 — Dashboard**
-- All pages render without errors
-- Change detail page shows AI summary, structured diff, metadata, source link
-- Audit trail page shows validation runs and supports PDF export
-- Settings page persists notification preferences to database
-- Admin pages are not accessible to practice_owner role
+- Practice owner sees only their own changes (RLS enforced)
+- Admin sees all changes
+- Change detail page renders diff, AI summary, disclaimer, and source link
+- Audit trail export generates a valid PDF
 
-## Non-Negotiable Conventions
+## Key Conventions
+
+**Secrets:** All server-side secrets from `lib/env.ts` only. Never import from `process.env` directly. Never prefix server secrets with `NEXT_PUBLIC_`.
 
 **Feature gates:** All tier-based feature checks use `isFeatureEnabled(flagName, practiceTier)` from `lib/features.ts`. Never hardcode tier strings in components.
 
@@ -200,9 +185,6 @@ A module is not complete until its test criteria pass.
 **RLS:** Anon key subject to RLS. Service role key bypasses RLS. Use anon in client components, service role in Inngest functions and API routes only.
 
 **Jurisdiction:** Every source, change, KG entity has `jurisdiction` column defaulting to `'FL'`. Always set explicitly when querying — never assume Florida-only.
-
-**Disclaimer:** Every AI summary must carry:
-> "This summary was generated by AI and has not been reviewed by a licensed attorney. This is not legal advice. For decisions specific to your practice, consult your legal counsel."
 
 ## Where Things Live
 
@@ -219,12 +201,6 @@ A module is not complete until its test criteria pass.
 | Supabase types | `lib/db/types.ts` (regenerate after schema changes) |
 | Dashboard routes | `app/(dashboard)/` |
 | Admin routes | `app/(admin)/` |
-| Build status | `STATUS.md` |
-| Active PRP | `PRPs/active/` |
-| Completed PRPs | `PRPs/completed/` |
-| PRP template | `PRPs/templates/prp_base.md` |
-| Code pattern examples | `examples/patterns/` |
-| Architecture reference | `docs/architecture.md` |
 
 ## Configuration Tables (read from DB, not code)
 
@@ -249,6 +225,9 @@ Module 4 (Document Processing) requires a live Railway deployment of the Docling
 ## Product Rules
 
 **Information-only platform.** Cedar summarizes what changed. It does NOT provide legal advice or practice-specific directives.
+
+Every AI summary must carry this disclaimer:
+> "This summary was generated by AI and has not been reviewed by a licensed attorney. This is not legal advice. For decisions specific to your practice, consult your legal counsel."
 
 **Two tiers:**
 - Monitor ($99/mo): change feed, email alerts, audit trail

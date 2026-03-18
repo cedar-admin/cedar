@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(npm run lint)",
+      "Bash(npx supabase *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(tree *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(curl *)",
+      "Bash(mkdir *)",
+      "Bash(mv PRPs/active/* PRPs/completed/)",
+      "Read(*)",
+      "Write(CLAUDE.md)",
+      "Write(STATUS.md)",
+      "Write(PRPs/*)",
+      "Write(app/*)",
+      "Write(lib/*)",
+      "Write(inngest/*)",
+      "Write(components/*)",
+      "Write(supabase/*)",
+      "Write(examples/*)",
+      "Write(docs/*)",
+      "Write(*.ts)",
+      "Write(*.tsx)",
+      "Write(*.md)",
+      "Write(*.sql)",
+      "Write(*.json)",
+      "Write(*.css)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Bash(rm -rf *)",
+      "Bash(DROP *)",
+      "Bash(DELETE FROM *)"
+    ]
+  }
+}
