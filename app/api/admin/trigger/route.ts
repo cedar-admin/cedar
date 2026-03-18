@@ -13,6 +13,9 @@ import { getEnv } from '../../../../lib/env'
 export async function POST(req: NextRequest) {
   // ── Auth guard ────────────────────────────────────────────────────────────
   const secret = getEnv().ADMIN_SECRET
+  if (!secret) {
+    return NextResponse.json({ error: 'ADMIN_SECRET not configured' }, { status: 500 })
+  }
   if (req.headers.get('x-admin-secret') !== secret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

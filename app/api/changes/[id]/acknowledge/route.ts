@@ -36,6 +36,9 @@ export async function GET(
       return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=missing_token`, { status: 302 })
     }
 
+    if (!env.ADMIN_SECRET) {
+      return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=server_misconfigured`, { status: 302 })
+    }
     const practiceId = verifyAcknowledgeToken(token, changeId, env.ADMIN_SECRET)
     if (!practiceId) {
       return NextResponse.redirect(`${appUrl}/changes/${changeId}?error=invalid_token`, { status: 302 })

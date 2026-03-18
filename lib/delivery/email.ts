@@ -110,7 +110,9 @@ export async function sendChangeAlert(
   const sev = SEVERITY_CONFIG[severity.toLowerCase()] ?? DEFAULT_SEVERITY
 
   const detailsUrl     = `${appUrl}/changes/${changeId}`
-  const token = signAcknowledgeToken(practiceId, changeId, env.ADMIN_SECRET)
+  const token = env.ADMIN_SECRET
+    ? signAcknowledgeToken(practiceId, changeId, env.ADMIN_SECRET)
+    : practiceId  // fallback: unsigned token if ADMIN_SECRET not configured
   const acknowledgeUrl = `${appUrl}/api/changes/${changeId}/acknowledge?token=${encodeURIComponent(token)}`
 
   const html = buildHtml({ practiceName, changeSummary, sev, sourceName, sourceUrl, normalizedDiff, effectiveDate, detailsUrl, acknowledgeUrl })

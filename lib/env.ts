@@ -27,7 +27,7 @@ const serverEnvSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
   STRIPE_MONITOR_PRICE_ID: z.string().min(1),
   STRIPE_INTELLIGENCE_PRICE_ID: z.string().min(1),
-  ADMIN_SECRET: z.string().min(1),
+  ADMIN_SECRET: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().optional(),
   OXYLABS_USERNAME: z.string().optional(),
   OXYLABS_PASSWORD: z.string().optional(),
