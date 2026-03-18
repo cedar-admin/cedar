@@ -5,40 +5,106 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+/* =============================================================================
+   CEDAR DESIGN SYSTEM — globals.css
+   =============================================================================
+   This file is the single source of truth for all design tokens.
+   
+   TOKEN ARCHITECTURE (three tiers):
+   ┌─────────────────────────────────────────────────────────────┐
+   │  @theme { }        → Primitives (generates utility classes) │
+   │  :root / .dark { } → Semantics (theme-switchable)           │
+   │  @theme inline { } → Bridge (maps CSS vars → utilities)     │
+   └─────────────────────────────────────────────────────────────┘
+   
+   RULES:
+   - Components reference ONLY semantic tokens (--foreground, --primary, etc.)
+   - Semantic tokens reference primitives or raw oklch values
+   - New tokens: derive from existing scale. Document in specs/tokens/token-reference.md
+   - Never use raw hex, rgb, hsl, or pixel values in components
+   ============================================================================= */
+
+/* =============================================================================
+   PRIMITIVE TOKENS — @theme generates Tailwind utility classes
+   ============================================================================= */
+
+@theme {
+  /* ── Typography: Fluid type scale using clamp() ──
+     Formula: clamp(min, preferred, max)
+     preferred = intercept + slope × vw
+     Viewport range: 375px → 1440px
+     Always uses rem+vw mix for WCAG 1.4.4 browser zoom compliance */
+
+  --font-size-2xs: clamp(0.625rem, 0.6rem + 0.1vw, 0.6875rem);     /* 10→11px */
+  --font-size-xs:  clamp(0.75rem, 0.72rem + 0.12vw, 0.8125rem);     /* 12→13px */
+  --font-size-sm:  clamp(0.8125rem, 0.78rem + 0.14vw, 0.875rem);    /* 13→14px */
+  --font-size-base: clamp(0.875rem, 0.84rem + 0.16vw, 0.9375rem);   /* 14→15px */
+  --font-size-lg:  clamp(1rem, 0.95rem + 0.22vw, 1.125rem);         /* 16→18px */
+  --font-size-xl:  clamp(1.125rem, 1.05rem + 0.32vw, 1.3125rem);    /* 18→21px */
+  --font-size-2xl: clamp(1.375rem, 1.25rem + 0.52vw, 1.6875rem);    /* 22→27px */
+  --font-size-3xl: clamp(1.75rem, 1.56rem + 0.8vw, 2.25rem);        /* 28→36px */
+
+  /* ── Line heights: snap to 4px grid ── */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* ── Tracking ── */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ── Spacing: 4px base grid ──
+     Most spacing uses 8px multiples; 4px steps for fine-tuning.
+     These extend Tailwind's default scale. */
+
+  --spacing-0: 0px;
+  --spacing-px: 1px;
+  --spacing-0_5: 0.125rem;  /* 2px */
+  --spacing-1: 0.25rem;     /* 4px */
+  --spacing-1_5: 0.375rem;  /* 6px */
+  --spacing-2: 0.5rem;      /* 8px */
+  --spacing-2_5: 0.625rem;  /* 10px */
+  --spacing-3: 0.75rem;     /* 12px */
+  --spacing-3_5: 0.875rem;  /* 14px */
+  --spacing-4: 1rem;        /* 16px */
+  --spacing-5: 1.25rem;     /* 20px */
+  --spacing-6: 1.5rem;      /* 24px */
+  --spacing-7: 1.75rem;     /* 28px */
+  --spacing-8: 2rem;        /* 32px */
+  --spacing-9: 2.25rem;     /* 36px */
+  --spacing-10: 2.5rem;     /* 40px */
+  --spacing-12: 3rem;       /* 48px */
+  --spacing-14: 3.5rem;     /* 56px */
+  --spacing-16: 4rem;       /* 64px */
+  --spacing-20: 5rem;       /* 80px */
+  --spacing-24: 6rem;       /* 96px */
+
+  /* ── Z-index scale ── */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-scrim: 40;
+  --z-panel: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+  --z-max: 9999;
+
+  /* ── Shadows ── */
+  --shadow-xs:  0 1px 2px 0 oklch(0 0 0 / 0.03);
+  --shadow-sm:  0 1px 3px 0 oklch(0 0 0 / 0.06), 0 1px 2px -1px oklch(0 0 0 / 0.06);
+  --shadow-md:  0 4px 6px -1px oklch(0 0 0 / 0.07), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+  --shadow-lg:  0 10px 15px -3px oklch(0 0 0 / 0.07), 0 4px 6px -4px oklch(0 0 0 / 0.05);
+  --shadow-xl:  0 20px 25px -5px oklch(0 0 0 / 0.08), 0 8px 10px -6px oklch(0 0 0 / 0.04);
+
+  /* ── Radius: derived from --radius base value ──
+     All radii are multiples of the base --radius (set in :root).
+     Buttons/pills use independent tokens; nested elements use calc(). */
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -46,35 +112,84 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-full: 9999px;
+
+  /* ── Motion: duration scale ──
+     Desktop UI should skew toward faster end.
+     All component transitions reference these tokens. */
+
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-moderate: 300ms;
+  --duration-slow: 400ms;
+  --duration-slower: 500ms;
+
+  /* ── Motion: easing curves ── */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.2);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Motion: stagger delays for list animations ── */
+  --stagger-fast: 30ms;
+  --stagger-base: 50ms;
+  --stagger-slow: 80ms;
+
+  /* ── Layout: common widths ── */
+  --width-sidebar: 15rem;          /* 240px — matches current w-60 */
+  --width-panel: 30rem;            /* 480px — slide-over panels */
+  --width-content-max: 72rem;      /* 1152px — max content width */
 }
 
+
+/* =============================================================================
+   SEMANTIC TOKENS — :root for light, .dark for dark
+   ============================================================================= */
+
 :root {
+  /* ── Base ── */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* ── Surfaces ── */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Leaf green — hsl(129.63 64.8% 75.49%) → darker variant for light bg */
+
+  /* ── Brand: Cedar leaf green ── */
   --primary: oklch(0.56 0.17 145);
   --primary-foreground: oklch(0.98 0.02 145);
+
+  /* ── Secondary / Muted / Accent ── */
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
+
+  /* ── Feedback ── */
   --destructive: oklch(0.577 0.245 27.325);
+
+  /* ── Borders & focus ── */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.72 0.15 145);
-  /* Leaf green chart scale */
+
+  /* ── Chart scale (leaf green ramp) ── */
   --chart-1: oklch(0.90 0.09 145);
   --chart-2: oklch(0.82 0.15 145);
   --chart-3: oklch(0.72 0.17 145);
   --chart-4: oklch(0.62 0.17 145);
   --chart-5: oklch(0.52 0.15 145);
+
+  /* ── Base radius (all radii derive from this via @theme multipliers) ── */
   --radius: 0.45rem;
+
+  /* ── Sidebar ── */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.62 0.17 145);
@@ -83,6 +198,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.72 0.15 145);
+
+  /* ── Scrim (overlay behind modals/panels) ── */
+  --scrim: oklch(0 0 0 / 50%);
 }
 
 .dark {
@@ -92,7 +210,6 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  /* Leaf green — full brightness on dark bg */
   --primary: oklch(0.82 0.15 145);
   --primary-foreground: oklch(0.18 0.05 145);
   --secondary: oklch(0.274 0.006 286.033);
@@ -118,7 +235,230 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.56 0 0);
+  --scrim: oklch(0 0 0 / 70%);
 }
+
+
+/* =============================================================================
+   BRIDGE — maps CSS variables → Tailwind utility classes
+   ============================================================================= */
+
+@theme inline {
+  /* ── Colors ── */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-scrim: var(--scrim);
+
+  /* ── Sidebar colors ── */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ── Fonts ── */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+
+/* =============================================================================
+   SHARED ANIMATION KEYFRAMES
+   =============================================================================
+   These provide consistent motion across the entire app.
+   Components use Tailwind classes that reference these.
+   
+   Naming: [action]-[direction]
+   All keyframes use token-based durations via animation shorthand in components.
+   ============================================================================= */
+
+@keyframes slide-in-from-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-out-to-right {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+
+@keyframes slide-in-from-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-out-to-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scale-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.95); }
+}
+
+/* ── Composed panel animations ──
+   Used by Sidebar, PracticeSlideOver, and any future slide-over panels.
+   Combines slide + fade for polished entrances/exits. */
+
+@keyframes panel-in-right {
+  from { transform: translateX(100%); opacity: 0.8; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes panel-out-right {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(100%); opacity: 0.8; }
+}
+
+@keyframes panel-in-left {
+  from { transform: translateX(-100%); opacity: 0.8; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes panel-out-left {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-100%); opacity: 0.8; }
+}
+
+@keyframes scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scrim-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+
+/* =============================================================================
+   UTILITY CLASSES — shared motion patterns
+   =============================================================================
+   These classes compose keyframes with duration/easing tokens.
+   Use these on components for consistent animation behavior. */
+
+/* ── Panel slide animations ── */
+.animate-panel-in-right {
+  animation: panel-in-right var(--duration-moderate) var(--ease-out) both;
+}
+.animate-panel-out-right {
+  animation: panel-out-right var(--duration-base) var(--ease-in) both;
+}
+.animate-panel-in-left {
+  animation: panel-in-left var(--duration-moderate) var(--ease-out) both;
+}
+.animate-panel-out-left {
+  animation: panel-out-left var(--duration-base) var(--ease-in) both;
+}
+
+/* ── Scrim (overlay) animations ── */
+.animate-scrim-in {
+  animation: scrim-in var(--duration-base) var(--ease-out) both;
+}
+.animate-scrim-out {
+  animation: scrim-out var(--duration-fast) var(--ease-in) both;
+}
+
+/* ── Generic fade/scale for dialogs, tooltips, popovers ── */
+.animate-fade-in {
+  animation: fade-in var(--duration-fast) var(--ease-out) both;
+}
+.animate-fade-out {
+  animation: fade-out var(--duration-fast) var(--ease-in) both;
+}
+.animate-scale-in {
+  animation: scale-in var(--duration-base) var(--ease-out) both;
+}
+.animate-scale-out {
+  animation: scale-out var(--duration-fast) var(--ease-in) both;
+}
+
+/* ── Shared transition presets ──
+   Apply to interactive elements for consistent hover/focus transitions.
+   Keeps all transitions on GPU-composited properties only. */
+
+.transition-interactive {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+.transition-transform {
+  transition-property: transform, opacity;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* ── Nested border radius helper ──
+   Apply to child elements inside rounded containers.
+   Set --parent-radius and --parent-padding on the parent,
+   then children auto-calculate concentric radii.
+   
+   Usage:
+     Parent: style={{ '--parent-radius': 'var(--radius-xl)', '--parent-padding': '1rem' }}
+     Child:  className="radius-nested"
+*/
+.radius-nested {
+  border-radius: max(0px, calc(var(--parent-radius) - var(--parent-padding)));
+}
+
+
+/* =============================================================================
+   REDUCED MOTION — safety net
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =============================================================================
+   BASE LAYER
+   ============================================================================= */
 
 @layer base {
   * {

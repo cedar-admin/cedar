@@ -60,7 +60,7 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
 
   if (showRejectDialog) {
     return (
-      <div className="flex flex-col gap-2 min-w-[220px]">
+      <div className="flex flex-col gap-2 min-w-56">
         <Textarea
           placeholder="Reason for rejection (optional)"
           rows={2}

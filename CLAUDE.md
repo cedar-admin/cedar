@@ -284,34 +284,57 @@ All secrets are stored in `.env.local` (local dev) and Vercel environment variab
 
 ## Design System
 
-Cedar uses shadcn/ui with a custom preset. All UI must conform to these rules:
+Cedar uses a token-based design system enforced through four layers: this file (advisory), on-demand specs (reference), ESLint + token audit (deterministic), and a closed token architecture (structural).
+
+### Before writing or modifying ANY UI code:
+1. Read `docs/design-system/design-standards.md` for patterns and principles
+2. Check `specs/tokens/token-reference.md` for available tokens
+3. Check `src/components/ui/` for existing components
+4. If the component has a spec in `specs/components/`, follow it
+5. Run `node scripts/token-audit.js` before finishing — zero errors required
+
+### Core rules
+- **Colors:** CSS variables only via Tailwind classes (`bg-primary`, `text-muted-foreground`, `border-border`). No hardcoded hex, rgb, hsl, or oklch in components.
+- **Spacing:** Tailwind scale only (`p-4`, `gap-2`, `space-y-6`). No arbitrary pixel values (`p-[13px]`).
+- **Typography:** Tailwind text classes (`text-sm`, `text-base`, `text-2xl`). All sizes are fluid via clamp().
+- **Radius:** Derived scale (`rounded-md`, `rounded-lg`, `rounded-xl`). All derive from base `--radius`. For nested elements: `rounded-[max(0px,calc(var(--radius-xl)-1rem))]`.
+- **Shadows:** Token scale (`shadow-sm` through `shadow-xl`).
+- **Z-index:** Token scale only (`z-[0]`, `z-[10]`, `z-[40]`, `z-[50]`). See `token-reference.md`.
+- **Motion:** Use shared animation classes (`.animate-panel-in-right`, `.animate-scrim-in`, `.transition-interactive`, etc.) from globals.css. Duration tokens: `--duration-fast` through `--duration-slower`. Easing: `--ease-standard`, `--ease-out`, `--ease-in`.
+- **No inline styles** except for dynamic values (stagger delays, computed positions).
+- **No arbitrary Tailwind values** — ESLint `tailwindcss/no-arbitrary-value` catches these.
 
 ### Components
 - Use shadcn/ui components from `components/ui/` exclusively
 - No raw HTML buttons, inputs, selects, textareas, or form elements
-- If a needed component is missing, add it: `pnpm dlx shadcn@latest add [name]`
-
-### Styling
-- Colors via CSS variables only — no hardcoded hex, rgb, or hsl values
-- No inline styles
-- No arbitrary Tailwind values (e.g. no `w-[347px]`, `text-[13px]`)
-- Spacing and sizing via Tailwind scale only
+- If a needed component is missing: `pnpm dlx shadcn@latest add [name]`
+- New reusable components: write spec in `specs/components/` first, use CVA + cn()
+- Rule of three: abstract into a shared component when a pattern appears 3+ times
 
 ### Icons
-- Remix Icon only (`<i className="ri-[name]"></i>`)
+- Remix Icon only (`<i className="ri-[name]-line" />`)
 - No other icon libraries (no lucide-react, no heroicons)
 
-### Typography
-- Font: Geist (already configured via preset)
-- Sizes via Tailwind scale only (`text-sm`, `text-base`, `text-lg`, etc.)
+### Dark mode
+- Semantic tokens handle light/dark automatically (`bg-background`, `text-foreground`)
+- Use `dark:` prefix only for non-semantic colors (status badges with raw Tailwind colors)
+- Test both modes for every new UI element
 
-### Dark Mode
-- Always implement both light and dark variants for any new UI
-- Use `dark:` Tailwind prefix — never hardcode for one theme only
+### Animation patterns
+- Slide-over panels: `.animate-panel-in-right` / `.animate-panel-out-right` on panel, `.animate-scrim-in` on overlay
+- Sidebar expand/collapse: `.animate-panel-in-left` / `.animate-panel-out-left`
+- Dialogs: `.animate-scale-in` / `.animate-scale-out`
+- Hover/focus: `.transition-interactive` or `transition-colors`
+- Entering = `--ease-out`, exiting = `--ease-in`
+- Only animate `transform` and `opacity` (GPU-composited, 60fps)
 
-### Theming
-- All visual tokens live in `globals.css` — that is the single source of truth
-- Do not modify `globals.css` CSS variables without explicit instruction
+### Adding new tokens
+1. Check if an existing token works (within ±2px or ±1 shade)
+2. If genuinely new and used 3+ places: add to `globals.css`, document in `specs/tokens/token-reference.md`
+3. Primitives → `@theme { }`, semantics → `:root` / `.dark`, bridge → `@theme inline { }`
+
+### Token source of truth
+All visual tokens live in `src/styles/globals.css`. Reference docs live in `specs/tokens/token-reference.md`. Design principles live in `docs/design-system/design-standards.md`.
 
 ## UI Standards
 

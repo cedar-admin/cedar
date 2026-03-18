@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint . --quiet"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -42,6 +43,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^10.0.3",
+    "eslint-plugin-tailwindcss": "^3.18.2",
     "supabase": "^2.78.1",
     "tailwindcss": "^4",
     "typescript": "^5"
