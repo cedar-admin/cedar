@@ -8,7 +8,7 @@ import type { Database } from '@/lib/db/types'
 
 type PracticeRow = Database['public']['Tables']['practices']['Row']
 
-interface PracticeSlideOverProps {
+interface SlideOverPanelProps {
   practice: PracticeRow
   acknowledgedCount: number
   onClose: () => void
@@ -19,13 +19,13 @@ interface PracticeSlideOverProps {
 // Internal confirmation step state type
 type ConfirmStep = 'tier' | 'delete' | null
 
-export function PracticeSlideOver({
+export function SlideOverPanel({
   practice,
   acknowledgedCount,
   onClose,
   onTierChanged,
   onDeleted,
-}: PracticeSlideOverProps) {
+}: SlideOverPanelProps) {
   const [confirmStep, setConfirmStep] = useState<ConfirmStep>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

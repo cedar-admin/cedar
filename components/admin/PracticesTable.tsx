@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { formatDate } from '@/lib/format'
-import { PracticeSlideOver } from '@/components/admin/PracticeSlideOver'
+import { SlideOverPanel } from '@/components/admin/SlideOverPanel'
 import type { Database } from '@/lib/db/types'
 
 type PracticeRow = Database['public']['Tables']['practices']['Row']
@@ -219,7 +219,7 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
 
       {/* Slide-over — rendered outside table div so it's not clipped */}
       {selectedPractice && (
-        <PracticeSlideOver
+        <SlideOverPanel
           practice={selectedPractice}
           acknowledgedCount={ackCounts[selectedPractice.id] ?? 0}
           onClose={() => setSelectedPractice(null)}
