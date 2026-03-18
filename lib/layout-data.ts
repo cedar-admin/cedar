@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation'
 
 export type UserRole = 'admin' | 'intelligence' | 'monitor'
 
-const ADMIN_EMAILS = ['cedaradmin@gmail.com']
+export const ADMIN_EMAILS = ['cedaradmin@gmail.com']
 
 export function resolveRole(email: string, tier: string | null): UserRole {
   if (ADMIN_EMAILS.includes(email.toLowerCase())) return 'admin'
@@ -22,6 +22,23 @@ export interface LayoutData {
   user: { email: string; firstName: string | null; lastName: string | null }
   practice: { name: string; tier: string; subscription_status: string | null } | null
   role: UserRole
+}
+
+/**
+ * Use in API routes to verify the caller is an admin.
+ * Returns the WorkOS user object if admin, or null if not authenticated/not admin.
+ * API routes should return 401 when this returns null.
+ */
+export async function requireAdmin(): Promise<{ id: string; email: string } | null> {
+  try {
+    const { user } = await withAuth({ ensureSignedIn: true })
+    if (!user) return null
+    const role = resolveRole(user.email, null)
+    if (role !== 'admin') return null
+    return { id: user.id, email: user.email }
+  } catch {
+    return null
+  }
 }
 
 export async function getLayoutData(): Promise<LayoutData> {

@@ -8,6 +8,17 @@ description: Generate a comprehensive PRP (Product Requirements Prompt) from a f
 
 Generate a complete PRP for the feature described in the specified file. The executing agent only gets the context in the PRP plus the codebase. Research thoroughly before writing.
 
+## Guard: Check for Existing Active PRP (do this first)
+
+List the contents of `PRPs/active/`. If any `.md` file exists there, STOP immediately and tell the user:
+
+> ⚠️ There is already an active PRP: `PRPs/active/<filename>`. You must resolve it before generating a new one. Options:
+> - Run `/execute-prp` to implement it
+> - Move it to `PRPs/completed/` if already done
+> - Delete it if it's no longer needed
+
+Do not proceed with PRP generation until `PRPs/active/` is empty.
+
 ## Research Process
 
 1. **Read STATUS.md** for current build state and known issues

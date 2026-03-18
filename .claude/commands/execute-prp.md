@@ -28,6 +28,18 @@ Implement a feature using the specified PRP file. Follow every instruction preci
    - After each file change, run: `npm run build`
    - Fix any build errors before proceeding to the next task
    - Do not skip ahead — complete each task fully before starting the next
+   - After the task passes build validation, commit and push to main using the git push procedure from CLAUDE.md:
+     ```bash
+     git add -A
+     git reset HEAD .env.local
+     git commit -m "feat: <task description>"
+     PAT=$(grep GITHUB_PAT .env.local | cut -d= -f2-)
+     [ -z "$PAT" ] && PAT="$GITHUB_PAT"
+     git remote set-url origin "https://${PAT}@github.com/cedar-admin/cedar.git"
+     git push origin main
+     git remote set-url origin "https://github.com/cedar-admin/cedar.git"
+     ```
+   - Verify Vercel picked up the deploy before continuing to the next task
 
 4. **Validate**
    - Run every validation command listed in the PRP

@@ -1263,6 +1263,7 @@ export type Database = {
         Row: {
           created_at: string
           current_period_end: string | null
+          deleted_at: string | null
           id: string
           name: string
           notification_preferences: Json
@@ -1278,6 +1279,7 @@ export type Database = {
         Insert: {
           created_at?: string
           current_period_end?: string | null
+          deleted_at?: string | null
           id?: string
           name: string
           notification_preferences?: Json
@@ -1293,6 +1295,7 @@ export type Database = {
         Update: {
           created_at?: string
           current_period_end?: string | null
+          deleted_at?: string | null
           id?: string
           name?: string
           notification_preferences?: Json

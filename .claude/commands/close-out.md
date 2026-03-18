@@ -8,6 +8,17 @@ End the current session cleanly: summarize what was built, update STATUS.md, arc
 
 ## Process
 
+### 0. Staleness Check (do this first, before any edits)
+
+Read `STATUS.md` and find the "Last updated" line at the top. It follows the format:
+`Last updated: <date> by Sonnet Session <N>`
+
+Extract the session number N. Compare it to the session number for *this* conversation. If the STATUS.md session number is **higher** than this session's number, STOP immediately and warn the user:
+
+> ⚠️ STATUS.md was last updated by Session N, which is newer than this session. Proceeding would overwrite more recent information. Please confirm you want to continue, or run /close-out from the correct session.
+
+Do not update STATUS.md, commit, or push until the user explicitly confirms.
+
 ### 1. Read Context
 
 - Read `STATUS.md` (current state before your changes)
@@ -40,12 +51,12 @@ If no PRP was active, skip this step.
 
 ### 4. Commit
 
-Stage only relevant files. Do not stage `.env.local` or any file containing secrets.
+Stage only the close-out files (STATUS.md and the moved PRP). Feature code was already committed and pushed during execution — do not re-stage it.
 
 ```bash
-git add -A
-git reset HEAD .env.local   # never commit secrets
-git status                  # confirm staged files look right
+git add STATUS.md
+git add PRPs/completed/<name>.md   # if a PRP was active
+git status                         # confirm only close-out files are staged
 git commit -m "chore: close out session — <one-line summary>"
 ```
 
