@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 4
+Last updated: March 18, 2026 by Sonnet Session 5
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,15 +16,15 @@ Last updated: March 18, 2026 by Sonnet Session 4
 | 9. Dashboard | ⚙️ Partial | 13 pages rendering with real data. Settings notification toggles now persist. Sidebar role/tier badges updated. |
 
 ## Codebase Stats
-- **12,717 lines** TypeScript across 119 files
-- **16** Supabase migrations (001-016)
+- **12,831 lines** TypeScript/TSX across 119 files
+- **17** Supabase migrations (001-017)
 - **13** dashboard routes, **6** API routes
 - **29** shadcn/ui components, **4** custom shared components
-- **20** git commits on main
+- **28** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 4 (Sonnet) implemented settings notification persistence (PRP: settings-fix). Created migration 017 adding `notification_preferences JSONB` to the `practices` table, a `saveNotificationPreferences` server action, and a `NotificationsForm` client component with auto-save on change (useTransition). Settings page now loads saved state from DB and persists every toggle/select change immediately. Build: clean.
+Session 5 (Sonnet) was a credentials and tooling session. Added GITHUB_PAT, SUPABASE_ACCESS_TOKEN, and VERCEL_TOKEN to the local credential store. Confirmed and applied migration 017 (notification_preferences) to production Supabase. Created the `/close-out` slash command at `.claude/commands/close-out.md` to standardize session wrap-up. Updated STATUS.md credential status. No PRP was active. No module-level code was changed.
 
 ## Next Session Priority
 1. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
@@ -44,4 +44,4 @@ Session 4 (Sonnet) implemented settings notification persistence (PRP: settings-
 - Vercel: cedar-beta.vercel.app (auto-deploy from main)
 - Credentials configured: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, ADMIN_SECRET ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅
 - Credentials pending verification: Stripe env vars, Inngest keys in Vercel
-- Supabase migrations: 17 applied to production (016 + 017 applied this session)
+- Supabase migrations: 17 applied to production ✅
