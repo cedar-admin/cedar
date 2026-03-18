@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 7
+Last updated: March 18, 2026 by Sonnet Session 8
 
 ## Module Status
 | Module | Status | Notes |
@@ -20,22 +20,20 @@ Last updated: March 18, 2026 by Sonnet Session 7
 - **18** Supabase migrations (001-018)
 - **15** dashboard routes, **8** API routes
 - **29** shadcn/ui components, **4** custom shared components
-- **31** git commits on main
+- **34** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 7 (Sonnet) implemented the practices admin PRP. Upgraded `app/(admin)/practices/page.tsx` from a read-only server component into a full admin user management interface:
-- **Migration 018**: Added `deleted_at TIMESTAMPTZ NULL` to `practices` table (soft delete support). Applied to production Supabase.
-- **`lib/layout-data.ts`**: Exported `ADMIN_EMAILS`, added `requireAdmin()` helper used by API routes.
-- **`app/api/admin/practices/[id]/tier/route.ts`** (NEW): PATCH endpoint — updates `practices.tier`. Admin-only, validates tier value, returns 401/422/500 on errors. TODO comment for Stripe sync.
-- **`app/api/admin/practices/[id]/route.ts`** (NEW): DELETE endpoint — soft-deletes practice (sets `deleted_at`), then deletes WorkOS user by email lookup. Graceful: logs warning if WorkOS user not found, does not fail.
-- **`components/admin/PracticeSlideOver.tsx`** (NEW): Fixed overlay slide-over panel with scrim, profile section, account stats (ack count + age in days), tier toggle (confirmation step), soft delete (confirmation step).
-- **`components/admin/PracticesTable.tsx`** (NEW): Client component with Tier/Status/Practice Type filter selects, count label, empty state, clickable table rows, optimistic updates on tier change/deletion.
-- **`app/(admin)/practices/page.tsx`** (REPLACED): Server component fetches non-deleted practices + ack counts, passes to PracticesTable. Build: ✅ Clean.
+Session 8 (Sonnet) executed the design-system-refactor PRP — pure token/class migration, no logic or layout changes:
+- **`components/admin/SlideOverPanel.tsx`** (RENAMED from `PracticeSlideOver.tsx`): Component and props interface renamed to `SlideOverPanel` / `SlideOverPanelProps`. Import updated in `PracticesTable.tsx`.
+- **`components/admin/SlideOverPanel.tsx`**: Scrim `bg-black/50 dark:bg-black/70` → `bg-scrim animate-scrim-in !m-0`. Panel: `+animate-panel-in-right !m-0`. Close `<button>` → `<Button variant="ghost" size="icon">`. `!m-0` added to both fixed-position elements to override parent `space-y-6` margin inheritance.
+- **`components/Sidebar.tsx`**: Added `Button` import. Expand/collapse `<button>` → `<Button variant="ghost" size="icon" rounded-none>`. `<aside>` hardcoded `transition-all duration-200 ease-in-out` → inline `style={{ transition: 'all var(--duration-base) var(--ease-standard)' }}`.
+- **`app/onboarding/OnboardingForm.tsx`**: Both plan-selector `<button>` → `<Button variant="ghost" h-auto rounded-none w-full justify-start transition-interactive>`.
+- **`app/(dashboard)/library/[id]/LibraryDetailTabs.tsx`**: Tab `<button>` → `<Button variant="ghost" h-auto rounded-none hover:bg-transparent transition-interactive>`.
+- Token audit: ✅ 0 errors. Build: ✅ Clean.
 
 ## Next Session Priority
 1. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
-2. **Visual consistency pass** — interrupted during Session 3
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
