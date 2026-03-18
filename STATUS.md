@@ -26,15 +26,11 @@ Last updated: March 18, 2026 by Sonnet Session 4
 ## Last Session Summary
 Session 4 (Sonnet) implemented settings notification persistence (PRP: settings-fix). Created migration 017 adding `notification_preferences JSONB` to the `practices` table, a `saveNotificationPreferences` server action, and a `NotificationsForm` client component with auto-save on change (useTransition). Settings page now loads saved state from DB and persists every toggle/select change immediately. Build: clean.
 
-**Migration 017 status:** File created at `supabase/migrations/017_notification_prefs.sql`. Types manually updated in `lib/db/types.ts`. **Needs to be applied to production Supabase** — no management API access token available locally. Apply via Supabase dashboard SQL editor or after setting `SUPABASE_ACCESS_TOKEN` and running `npx supabase db push`.
-
 ## Next Session Priority
-1. **Apply migration 017 to production** — run `npx supabase db push` after getting Supabase access token, then `npx supabase gen types typescript --project-id serumeiwrvtwisibuawe > lib/db/types.ts`
-2. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
-3. **Visual consistency pass** — interrupted during Session 3
+1. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline
+2. **Visual consistency pass** — interrupted during Session 3
 
 ## Known Issues
-- Migration 017 not yet applied to production Supabase (see Next Session Priority)
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
 - Library page has 6 hardcoded regulations (intentional — gated to Intelligence tier)
 - Zero test files in the project (notable gap for a compliance platform)
@@ -46,6 +42,6 @@ Session 4 (Sonnet) implemented settings notification persistence (PRP: settings-
 
 ## Environment
 - Vercel: cedar-beta.vercel.app (auto-deploy from main)
-- Credentials configured: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, ADMIN_SECRET ✅
+- Credentials configured: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, ADMIN_SECRET ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅
 - Credentials pending verification: Stripe env vars, Inngest keys in Vercel
-- Supabase migrations: 16 in repo (verify all applied to production)
+- Supabase migrations: 17 applied to production (016 + 017 applied this session)
