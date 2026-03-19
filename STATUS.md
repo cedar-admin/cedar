@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Sonnet Session 13 (final)
+Last updated: March 19, 2026 by Sonnet Session 14
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,21 +16,23 @@ Last updated: March 19, 2026 by Sonnet Session 13 (final)
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Library page now queries real kg_entities. Settings toggles persist. |
 
 ## Codebase Stats
-- **~14,524 lines** TypeScript/TSX across ~131 files
-- **21** Supabase migrations (001-021)
+- **~15,282 lines** TypeScript/TSX across ~132 files
+- **24** Supabase migrations (001-024)
 - **15** dashboard routes, **9** API routes
 - **29** shadcn/ui components, **5** custom shared components
-- **60** git commits on main
+- **67** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 13 debugged the corpus seed pipeline (6 root-cause bugs across 3 sources), applied Migration 021 to fix a PostgREST upsert constraint issue, and seeded 98,777 kg_entities into production. Then wired the Regulation Library dashboard page to query that real data with server-side pagination and filtering.
+Session 14 implemented Phase 1 of the taxonomy architecture: schema extensions, full-text search indexes, domain taxonomy seed data, and the rule-based classification Inngest function. Three migrations (022–024) were applied to production Supabase cleanly. Migration 021 had been applied manually in the prior session but not tracked by the CLI — repaired with `supabase migration repair` before pushing 022–024.
 
-**Corpus seed bugs fixed:** Federal Register was blocked by an anti-bot redirect (`api.federalregister.gov` → `unblock.federalregister.gov`) — fixed by switching to `www.federalregister.gov/api/v1/documents`. eCFR used today's date but the API lags 1-3 days — fixed with a `getECFRLatestDate()` helper. eCFR `extractParts` matched `=== 'Part'` but actual `label_level` values are `"Part 1"`, `"Part 2"` — fixed with `startsWith`. openFDA used non-existent `report_number`/`res_event_number` — the real field is `recall_number`. Migration 020's partial unique index is not recognized by PostgREST `ON CONFLICT` — Migration 021 replaced it with a named unique constraint.
+**Schema additions (022):** Extended `kg_domains` (depth, domain_code, taxonomy_source), `kg_entity_domains` (relevance_score, classified_by, classified_at, is_primary), `classification_rules` (stage, confidence_threshold); added `authority_level_enum` + `issuing_agency` on `kg_entities`; created 9 new tables: `kg_practice_types`, `kg_entity_practice_relevance`, `kg_classification_log`, `kg_service_lines`, `kg_service_line_regulations`, `practice_profiles`, `practice_service_lines`, `practice_staff`, `practice_equipment`.
 
-**Corpus seed results:** eCFR 264 parts · FR 54,993 documents (rules + notices) · openFDA 43,520 enforcement actions → **98,777 total**.
+**Search indexes (023):** `pg_trgm` extension, `search_vector` tsvector column populated for all 98,777 entities with auto-update trigger, GIN search index, trigram GIN on name, JSONB expression indexes, `mv_corpus_facets` materialized view with `refresh_corpus_facets()` RPC.
 
-**Library page:** Removed all hardcoded `MOCK_REGULATIONS`. `library/page.tsx` now queries `kg_entities` server-side with `searchParams`-driven filters (type, jurisdiction, text search) and 50-per-page pagination. `LibraryBrowser` rewritten with URL-param filtering via `useRouter`. Detail page (`library/[id]`) queries by UUID and renders real metadata. `LibraryDetailTabs` simplified to Summary + Live Source using real entity fields.
+**Taxonomy seed (024):** 10 L1 root domains, 55 L2 topic domains, 50 L3 specific requirement areas; 14 practice types (10 Cedar targets, NUCC-coded); 10 service lines (8 Cedar targets) with regulation_domain arrays.
+
+**Classification function:** `inngest/corpus-classify.ts` — event `cedar/corpus.classify`, 22 rules (CFR title/part ranges, agency matching, keyword matching), batches of 500 entities, writes to `kg_entity_domains` (UPSERT) + `kg_classification_log` (INSERT), refreshes `mv_corpus_facets` on completion. Registered in Inngest serve() route. Types regenerated.
 
 ## Pipeline Test Instructions (Next Step)
 
@@ -64,9 +66,11 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 | FDA Compounding Guidance | `08770aca-1aad-4f2e-abe8-3ed90ab9f630` | `227eebd4-aae3-4bde-a0a8-1a38b883a59c` |
 
 ## Next Session Priority
-1. **Pipeline test execution** — corpus is seeded and library is live. Trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Start with one gov API source. Source IDs are in the table below.
-2. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated fully in the pipeline (only severity-based lookup, no complex rule matching logic).
-3. **audit/snapshot.ts** — currently a stub; complete the snapshot export for the audit trail page PDF export.
+1. **Run corpus-classify** — trigger `cedar/corpus.classify` from Inngest dev dashboard, watch all batches complete, verify `kg_entity_domains` and `kg_classification_log` have rows. Check classification distribution by domain. This validates Phase 1 end-to-end.
+2. **Phase 2: Library UI** — add domain facets sidebar to the library page (query `mv_corpus_facets`), wire full-text search to `search_vector` (`@@` operator), add domain breadcrumb navigation. Phase 2 PRP should be generated from the data-architecture-research.md Phase 2 section.
+3. **Pipeline test execution** — trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues.
+4. **HITL rule-matching logic** — `review_rules` table exists but rule-matching is incomplete in the pipeline.
+5. **audit/snapshot.ts** — currently a stub; complete the snapshot export for the audit trail page PDF export.
 
 ### Corpus Seed Verification SQL
 ```sql
@@ -90,7 +94,8 @@ GROUP BY identifier, source_id HAVING COUNT(*) > 1;
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
 - FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies — only Rules and Notices were ingested
-- Library text search uses `ilike` (no full-text index) — adequate for now, may need `tsvector` index if search becomes slow at scale
+- Library text search still uses `ilike` (the new `search_vector` column exists but the library page query hasn't been updated to use it yet — Phase 2 work)
+- `corpus-classify` not yet triggered — classification data not yet in `kg_entity_domains`; `mv_corpus_facets` will have limited rows until it runs
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
