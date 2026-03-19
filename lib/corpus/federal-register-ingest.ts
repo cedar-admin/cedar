@@ -52,16 +52,24 @@ const START_YEAR = 2021
 
 // ── Type mapping ──────────────────────────────────────────────────────────
 
+// FR /documents endpoint returns title-case type values in responses
 const TYPE_TO_ENTITY_TYPE: Record<string, string> = {
-  RULE:          'regulation',
-  PROPOSED_RULE: 'proposed_rule',
-  NOTICE:        'notice',
+  'Rule':          'regulation',
+  'Proposed Rule': 'proposed_rule',
+  'Notice':        'notice',
+  // Legacy uppercase fallbacks (articles.json format)
+  'RULE':          'regulation',
+  'PROPOSED_RULE': 'proposed_rule',
+  'NOTICE':        'notice',
 }
 
 const TYPE_TO_STATUS: Record<string, string> = {
-  RULE:          'active',
-  PROPOSED_RULE: 'proposed',
-  NOTICE:        'active',
+  'Rule':          'active',
+  'Proposed Rule': 'proposed',
+  'Notice':        'active',
+  'RULE':          'active',
+  'PROPOSED_RULE': 'proposed',
+  'NOTICE':        'active',
 }
 
 // ── FR API response types ─────────────────────────────────────────────────

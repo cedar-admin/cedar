@@ -23,7 +23,7 @@ export interface FederalRegisterParams {
  * Docs: https://www.federalregister.gov/developers/api/v1
  */
 export async function fetchFederalRegister(params: FederalRegisterParams = {}): Promise<string> {
-  const url = new URL('https://api.federalregister.gov/v1/articles.json')
+  const url = new URL('https://www.federalregister.gov/api/v1/documents')
 
   if (params.agencies?.length) {
     params.agencies.forEach(a => url.searchParams.append('agencies[]', a))
@@ -123,13 +123,34 @@ export async function fetchOpenFDA(params: OpenFDAParams): Promise<string> {
 // ── Corpus bulk fetch functions ───────────────────────────────────────────
 
 /**
+ * Fetch the latest available date for a CFR title from the eCFR titles endpoint.
+ * The eCFR versioner lags 1-3 days behind the current date — using today fails.
+ */
+async function getECFRLatestDate(titleNumber: number): Promise<string> {
+  const res = await fetchWithTimeout('https://www.ecfr.gov/api/versioner/v1/titles.json')
+  if (!res.ok) {
+    // Fall back to 3 days ago if the titles endpoint fails
+    const d = new Date()
+    d.setDate(d.getDate() - 3)
+    return d.toISOString().split('T')[0]
+  }
+  const data = await res.json() as { titles: Array<{ number: number; up_to_date_as_of: string }> }
+  const title = data.titles?.find(t => t.number === titleNumber)
+  if (title?.up_to_date_as_of) return title.up_to_date_as_of
+  // Fall back to 3 days ago
+  const d = new Date()
+  d.setDate(d.getDate() - 3)
+  return d.toISOString().split('T')[0]
+}
+
+/**
  * Fetch the full structural hierarchy of a CFR title from the eCFR versioner API.
  * Returns raw JSON — the hierarchy of chapters, parts, subparts, and sections
  * WITHOUT full text (wide-and-shallow pass for corpus seeding).
  */
 export async function fetchECFRStructure(titleNumber: number): Promise<string> {
-  const today = new Date().toISOString().split('T')[0]
-  const url = `https://www.ecfr.gov/api/versioner/v1/structure/${today}/title-${titleNumber}.json`
+  const date = await getECFRLatestDate(titleNumber)
+  const url = `https://www.ecfr.gov/api/versioner/v1/structure/${date}/title-${titleNumber}.json`
   const res = await fetchWithTimeout(url)
   if (!res.ok) {
     throw new Error(`eCFR structure error: ${res.status} ${res.statusText}`)
@@ -152,7 +173,7 @@ export interface FederalRegisterSearchParams {
  * Supports full date-range filtering and field selection.
  */
 export async function searchFederalRegister(params: FederalRegisterSearchParams): Promise<string> {
-  const url = new URL('https://api.federalregister.gov/v1/articles.json')
+  const url = new URL('https://www.federalregister.gov/api/v1/documents')
 
   params.agencies.forEach(a => url.searchParams.append('agencies[]', a))
   url.searchParams.set('per_page', String(params.perPage ?? 1000))

@@ -29,7 +29,8 @@ interface ECFRNode {
 
 function extractParts(node: ECFRNode): ECFRNode[] {
   const parts: ECFRNode[] = []
-  if (node.label_level === 'Part' && !node.reserved) {
+  // label_level is e.g. "Part 1", "Part 2" — match prefix rather than exact string
+  if (node.label_level?.startsWith('Part ') && !node.reserved) {
     parts.push(node)
   }
   for (const child of node.children ?? []) {

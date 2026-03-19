@@ -28,7 +28,7 @@ interface OpenFDAMeta {
 }
 
 interface DrugEnforcementRecord {
-  report_number:        string
+  recall_number:        string
   product_description?: string
   reason_for_recall?:   string
   status?:              string
@@ -41,11 +41,11 @@ interface DrugEnforcementRecord {
 }
 
 interface DeviceEnforcementRecord {
-  res_event_number?:    string
+  recall_number?:       string
   product_description?: string
   reason_for_recall?:   string
   status?:              string
-  event_date_initiated?: string
+  recall_initiation_date?: string
   distribution_pattern?: string
   classification?:      string
   recalling_firm?:      string
@@ -103,20 +103,21 @@ async function paginateEndpoint(
     for (const record of results) {
       if (endpoint.startsWith('drug/')) {
         const r = record as DrugEnforcementRecord
-        if (!r.report_number) continue
+        if (!r.recall_number) continue
 
         const isFL = r.distribution_pattern?.toLowerCase().includes('florida') ?? false
+        const rawDate = r.report_date
 
         entities.push({
-          name:            (r.product_description ?? r.report_number).slice(0, 200),
+          name:            (r.product_description ?? r.recall_number).slice(0, 200),
           description:     r.reason_for_recall ?? undefined,
           entity_type:     'enforcement_action',
           jurisdiction:    isFL ? 'FL' : 'US',
           status:          r.status?.toLowerCase() ?? 'unknown',
-          identifier:      r.report_number,
+          identifier:      r.recall_number,
           source_id:       sourceId,
-          publication_date: r.report_date
-            ? `${r.report_date.slice(0, 4)}-${r.report_date.slice(4, 6)}-${r.report_date.slice(6, 8)}`
+          publication_date: rawDate
+            ? `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`
             : undefined,
           document_type:   documentType,
           external_url:    undefined,
@@ -125,19 +126,18 @@ async function paginateEndpoint(
       } else {
         // device/enforcement
         const r = record as DeviceEnforcementRecord
-        const id = r.res_event_number ?? (record.id as string | undefined)
-        if (!id) continue
+        if (!r.recall_number) continue
 
         const isFL = r.distribution_pattern?.toLowerCase().includes('florida') ?? false
-        const rawDate = r.event_date_initiated as string | undefined
+        const rawDate = r.recall_initiation_date
 
         entities.push({
-          name:            (r.product_description ?? id).slice(0, 200),
+          name:            (r.product_description ?? r.recall_number).slice(0, 200),
           description:     r.reason_for_recall ?? undefined,
           entity_type:     'enforcement_action',
           jurisdiction:    isFL ? 'FL' : 'US',
           status:          r.status?.toLowerCase() ?? 'unknown',
-          identifier:      `device-${id}`,
+          identifier:      `device-${r.recall_number}`,
           source_id:       sourceId,
           publication_date: rawDate
             ? `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`
