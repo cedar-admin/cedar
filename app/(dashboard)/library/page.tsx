@@ -1,97 +1,93 @@
+import { createServerClient } from '@/lib/db/client'
 import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
-import { LibraryBrowser, type Regulation } from '@/components/LibraryBrowser'
+import { LibraryBrowser, type LibraryEntity, type LibraryFilters } from '@/components/LibraryBrowser'
 
 export const dynamic = 'force-dynamic'
 
-const MOCK_REGULATIONS: Regulation[] = [
-  {
-    id: 'reg-001',
-    title: 'FDA 503B Outsourcing Facility Requirements',
-    agency: 'FDA',
-    topic: 'Compounding',
-    subtopic: 'Outsourcing Facilities',
-    status: 'Active',
-    jurisdiction: 'Federal',
-    lastUpdated: '2026-03-10',
-    summary: 'Regulations governing 503B outsourcing facilities including GMP compliance, registration, and product reporting requirements.',
-  },
-  {
-    id: 'reg-002',
-    title: 'DEA Schedule II–V Controlled Substance Prescribing',
-    agency: 'DEA',
-    topic: 'Prescribing',
-    subtopic: 'Controlled Substances',
-    status: 'Active',
-    jurisdiction: 'Federal',
-    lastUpdated: '2026-02-15',
-    summary: 'Federal requirements for prescribing, dispensing, and recordkeeping of Schedule II through V controlled substances.',
-  },
-  {
-    id: 'reg-003',
-    title: 'Florida Board of Medicine: Telehealth Standards of Practice',
-    agency: 'FL Board of Medicine',
-    topic: 'Telehealth',
-    subtopic: 'Standards of Care',
-    status: 'Active',
-    jurisdiction: 'Florida',
-    lastUpdated: '2026-01-20',
-    summary: 'Standards governing telehealth practice in Florida including patient consent, prescribing limitations, and documentation requirements.',
-  },
-  {
-    id: 'reg-004',
-    title: 'eCFR Title 21 Part 211 — Current Good Manufacturing Practice',
-    agency: 'FDA',
-    topic: 'Manufacturing',
-    subtopic: 'CGMP',
-    status: 'Active',
-    jurisdiction: 'Federal',
-    lastUpdated: '2025-12-01',
-    summary: 'Current Good Manufacturing Practice regulations for finished pharmaceuticals, including facilities, controls, and production standards.',
-  },
-  {
-    id: 'reg-005',
-    title: 'Florida Administrative Code 64B8 — Medical Practice Act',
-    agency: 'FL DOH',
-    topic: 'Medical Practice',
-    subtopic: 'Licensing & Standards',
-    status: 'Active',
-    jurisdiction: 'Florida',
-    lastUpdated: '2025-11-15',
-    summary: 'Florida Medical Practice Act provisions covering physician licensing, discipline, and scope of practice requirements.',
-  },
-  {
-    id: 'reg-006',
-    title: 'Florida Board of Pharmacy: Compounding Standards',
-    agency: 'FL Board of Pharmacy',
-    topic: 'Compounding',
-    subtopic: 'Pharmacy Standards',
-    status: 'Active',
-    jurisdiction: 'Florida',
-    lastUpdated: '2025-10-30',
-    summary: 'Florida-specific compounding regulations including beyond-use dating, labeling, and recordkeeping for compounded preparations.',
-  },
-]
+const PAGE_SIZE = 50
+const VALID_TYPES = ['regulation', 'proposed_rule', 'notice', 'enforcement_action']
+const VALID_JURISDICTIONS = ['US', 'FL']
 
-export default async function LibraryPage() {
+interface Props {
+  searchParams: Promise<{ page?: string; type?: string; jurisdiction?: string; q?: string }>
+}
+
+export default async function LibraryPage({ searchParams }: Props) {
   const { role } = await getLayoutData()
   const isGated = role === 'monitor'
 
+  const { page: pageParam, type: typeParam, jurisdiction: jurParam, q: qParam } = await searchParams
+
+  const page    = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
+  const type    = VALID_TYPES.includes(typeParam ?? '') ? typeParam! : ''
+  const jurisdiction = VALID_JURISDICTIONS.includes(jurParam ?? '') ? jurParam! : ''
+  const q       = (qParam ?? '').trim().slice(0, 100)
+
+  const filters: LibraryFilters = { type, jurisdiction, q }
+
+  let entities: LibraryEntity[] = []
+  let total = 0
+  let totalPages = 1
+  let safePage = 1
+
+  if (!isGated) {
+    const supabase = createServerClient()
+
+    // Count with filters
+    let countQ = supabase
+      .from('kg_entities')
+      .select('id', { count: 'exact', head: true })
+    if (type)         countQ = countQ.eq('entity_type', type)
+    if (jurisdiction) countQ = countQ.eq('jurisdiction', jurisdiction)
+    if (q)            countQ = countQ.ilike('name', `%${q}%`)
+
+    const { count } = await countQ
+    total      = count ?? 0
+    totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+    safePage   = Math.min(page, totalPages)
+
+    const from = (safePage - 1) * PAGE_SIZE
+    const to   = from + PAGE_SIZE - 1
+
+    // Fetch page
+    let dataQ = supabase
+      .from('kg_entities')
+      .select('id, name, description, entity_type, document_type, jurisdiction, status, citation, publication_date, external_url')
+      .order('publication_date', { ascending: false, nullsFirst: false })
+      .range(from, to)
+    if (type)         dataQ = dataQ.eq('entity_type', type)
+    if (jurisdiction) dataQ = dataQ.eq('jurisdiction', jurisdiction)
+    if (q)            dataQ = dataQ.ilike('name', `%${q}%`)
+
+    const { data } = await dataQ
+    entities = (data ?? []) as LibraryEntity[]
+  }
+
+  const from = (safePage - 1) * PAGE_SIZE
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Regulation Library</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          AI-curated summaries of Florida and federal healthcare regulations
+          {!isGated && total > 0
+            ? `${total.toLocaleString()} regulations, rules, and enforcement records`
+            : 'Federal and Florida healthcare regulations'}
         </p>
       </div>
 
-      {/* Upgrade banner for monitor users */}
       {isGated && <UpgradeBanner feature="Regulation Library" />}
 
-      {/* Browser (client component — handles filters + search shell) */}
-      <LibraryBrowser regulations={isGated ? [] : MOCK_REGULATIONS} isGated={isGated} />
+      <LibraryBrowser
+        entities={entities}
+        total={total}
+        page={safePage}
+        totalPages={totalPages}
+        from={from}
+        filters={filters}
+        isGated={isGated}
+      />
     </div>
   )
 }
