@@ -1,6 +1,14 @@
 # Cedar
 
-Regulatory intelligence platform for Florida medical practices. Monitors 71 regulatory sources, detects changes, classifies them through an AI pipeline, and delivers plain-language alerts with a tamper-evident audit trail. Information-only platform — Cedar provides regulatory monitoring, summaries, and FAQs. Cedar does not provide legal advice.
+Regulatory monitoring platform for independent medical practices — starting in Florida, expanding state by state. Cedar monitors federal and state regulatory sources (agencies, boards, legislative activity, enforcement databases, court filings), detects meaningful changes within hours of publication, classifies them through an AI intelligence pipeline, and delivers plain-language alerts with a tamper-evident audit trail.
+
+Cedar shrinks the delay between a regulation being updated and a practice owner knowing about it — from days or weeks down to hours. Every AI summary links back to the original source material and carries a disclaimer. Cedar provides regulatory monitoring, summaries, and FAQs. Cedar does not provide legal advice.
+
+**Target market (current):** Independent functional medicine clinics, hormone optimization practices, med spas, and compounding-adjacent operations in Florida — small practices (1-5 providers) operating in a heavily regulated gray zone without in-house compliance staff.
+
+**Expansion path:** Florida first → California, Texas, New York → all 50 states. The source count grows with each state and as new regulatory sources emerge.
+
+**Long-term vision:** The most reliable third-party legal aggregation and summary service in the medical industry — making law and regulations accessible and understandable in real-time. The go-to platform for regulation compliance, and eventually for all operational guidance for small to mid-size medical practices.
 
 ## Stack
 
@@ -248,17 +256,25 @@ Module 4 (Document Processing) requires a live Railway deployment of the Docling
 
 ## Product Rules
 
-**Information-only platform.** Cedar summarizes what changed. It does NOT provide legal advice or practice-specific directives.
+**Information-only platform.** Cedar summarizes what changed and why it matters. Cedar does NOT provide legal advice or practice-specific directives. Every AI-generated summary and analysis carries a disclaimer.
 
-**Two tiers:**
-- Monitor ($99/mo): change feed, email alerts, audit trail
+**Core value proposition:** Practice owners currently find out about regulatory changes reactively — through attorney calls, newsletters, social media, or word of mouth. Cedar makes that awareness continuous, automated, and documented. When something changes, the practice knows within the hour, with a plain-language summary, potential impact analysis, a readable view of the source material, and a direct link to the original .gov or board site.
+
+**Tiers (current):**
+- Monitor ($99/mo): change feed, email alerts, audit trail, regulation library, source access
 - Intelligence ($199/mo): all Monitor + Q&A, knowledge graph, attorney-reviewed content, weekly digest, push notifications
+
+Additional tiers and pricing will evolve. Build the system so tiers are configuration, not code.
+
+**Attorney-reviewed content:** Weekly or biweekly attorney reviews, articles, and FAQ updates addressing the most significant regulatory changes. This is a future component of the Intelligence tier — the review infrastructure (HITL layer, review_rules, reviewer role) exists to support it.
 
 ## MVP Scope
 
-10 Critical-tier sources. Single Claude agent (relevance filter + classifier combined). Supabase append-only store. Resend email alert. Minimal dashboard. WorkOS auth.
+10 initial Florida sources (3 gov API, 7 web scrape). Two-agent Claude intelligence pipeline (relevance filter + classifier). Supabase append-only store. Resend email alerts. Dashboard with change feed, source library, regulation library, audit trail. WorkOS auth.
 
-Success criteria: 3+ sources detect real regulatory changes within 24 hours, AI summary accuracy verified, audit trail correct, alert email arrives.
+**Current phase:** Initial corpus build — populating the regulation library with the current state of all relevant laws, regulations, and rules from each source, then enabling ongoing change detection against that baseline.
+
+Success criteria: All sources producing real regulatory data, AI summaries accurate and linked to original sources, audit trail correct, alerts delivered within 1 hour of detection.
 
 ## Dev Server Startup (Important)
 
