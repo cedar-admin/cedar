@@ -29,6 +29,13 @@ export function SlideOverPanel({
   const [confirmStep, setConfirmStep] = useState<ConfirmStep>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isClosing, setIsClosing] = useState(false)
+
+  // Run exit animation (200ms = --duration-base), then call the parent callback
+  function startClose(cb: () => void) {
+    setIsClosing(true)
+    setTimeout(cb, 200)
+  }
 
   // Calculate account age in days
   const accountAgeDays = Math.floor(
@@ -70,7 +77,7 @@ export function SlideOverPanel({
         const data = await res.json().catch(() => ({})) as { error?: string }
         throw new Error(data.error ?? 'Delete failed')
       }
-      onDeleted(practice.id)
+      startClose(() => onDeleted(practice.id))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
       setIsLoading(false)
@@ -81,13 +88,13 @@ export function SlideOverPanel({
     <>
       {/* Scrim */}
       <div
-        className="fixed inset-0 z-40 bg-scrim animate-scrim-in !m-0"
-        onClick={onClose}
+        className={`fixed inset-0 z-40 bg-scrim !m-0 ${isClosing ? 'animate-scrim-out' : 'animate-scrim-in'}`}
+        onClick={() => startClose(onClose)}
         aria-hidden="true"
       />
 
       {/* Panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col animate-panel-in-right !m-0">
+      <div className={`fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col !m-0 ${isClosing ? 'animate-panel-out-right' : 'animate-panel-in-right'}`}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <h2 className="text-base font-semibold text-foreground truncate pr-4">
@@ -96,7 +103,7 @@ export function SlideOverPanel({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
+            onClick={() => startClose(onClose)}
             className="text-muted-foreground hover:text-foreground shrink-0 h-8 w-8"
             aria-label="Close panel"
           >
