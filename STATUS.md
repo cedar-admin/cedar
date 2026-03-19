@@ -1,10 +1,10 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Sonnet Session 13
+Last updated: March 19, 2026 by Sonnet Session 13 (final)
 
 ## Module Status
 | Module | Status | Notes |
 |--------|--------|-------|
-| 1. Data Layer | ✅ Complete | 20 migrations, RLS, config tables, 10 seed sources |
+| 1. Data Layer | ✅ Complete | 21 migrations, RLS, config tables, 10 seed sources |
 | 2. Orchestration | ✅ Complete | 8 Inngest functions registered (corpus-seed added) |
 | 3. Source Fetching | ✅ Complete | Gov APIs + Oxylabs + BrowserBase + auto-escalating dispatcher |
 | 4. Doc Processing | 🔲 Blocked | Railway/Docling deploy needed for PDF extraction |
@@ -13,41 +13,24 @@ Last updated: March 19, 2026 by Sonnet Session 13
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities in production. audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Settings notification toggles now persist. |
+| 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Library page now queries real kg_entities. Settings toggles persist. |
 
 ## Codebase Stats
-- **~14,573 lines** TypeScript/TSX across ~131 files
-- **20** Supabase migrations (001-020)
+- **~14,524 lines** TypeScript/TSX across ~131 files
+- **21** Supabase migrations (001-021)
 - **15** dashboard routes, **9** API routes
 - **29** shadcn/ui components, **5** custom shared components
-- **54** git commits on main
+- **60** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 13 (Sonnet) debugged and fixed 5 bugs in the corpus seed pipeline, applied a database migration, and successfully populated 98,777 kg_entities in production.
+Session 13 debugged the corpus seed pipeline (6 root-cause bugs across 3 sources), applied Migration 021 to fix a PostgREST upsert constraint issue, and seeded 98,777 kg_entities into production. Then wired the Regulation Library dashboard page to query that real data with server-side pagination and filtering.
 
-**Root causes found and fixed:**
-1. **Federal Register blocked by anti-bot redirect** — `api.federalregister.gov` redirects cloud IPs to `unblock.federalregister.gov`, returning HTML. Fixed: changed to `www.federalregister.gov/api/v1/documents` which works from Vercel. Both `fetchFederalRegister` and `searchFederalRegister` in `lib/fetchers/gov-apis.ts` updated.
-2. **eCFR date error** — `fetchECFRStructure` used today's date but eCFR lags 1-3 days. Fixed: added `getECFRLatestDate()` helper that queries `/api/versioner/v1/titles.json` for `up_to_date_as_of` before fetching structure.
-3. **eCFR Part detection** — `extractParts` checked `label_level === 'Part'` but actual values are `"Part 1"`, `"Part 2"` etc. Fixed: use `startsWith('Part ')`.
-4. **openFDA wrong identifier fields** — code used `report_number` / `res_event_number` which don't exist; actual field is `recall_number` for both drug and device enforcement.
-5. **Upsert constraint unrecognizable** — Migration 020 partial index (`WHERE identifier IS NOT NULL`) is not recognized by PostgREST's `ON CONFLICT` clause. Fixed: Migration 021 drops the partial index and adds a named unique constraint `kg_entities_identifier_source_key` on `(identifier, source_id)`. Applied to production.
+**Corpus seed bugs fixed:** Federal Register was blocked by an anti-bot redirect (`api.federalregister.gov` → `unblock.federalregister.gov`) — fixed by switching to `www.federalregister.gov/api/v1/documents`. eCFR used today's date but the API lags 1-3 days — fixed with a `getECFRLatestDate()` helper. eCFR `extractParts` matched `=== 'Part'` but actual `label_level` values are `"Part 1"`, `"Part 2"` — fixed with `startsWith`. openFDA used non-existent `report_number`/`res_event_number` — the real field is `recall_number`. Migration 020's partial unique index is not recognized by PostgREST `ON CONFLICT` — Migration 021 replaced it with a named unique constraint.
 
-**Corpus seed results (production):**
-| Source | Entities |
-|--------|----------|
-| eCFR Title 21 | 264 CFR parts |
-| Federal Register (FDA/DEA/FTC/HHS/CMS, 2021–2026) | 6,437 rules + 48,556 notices |
-| openFDA drug enforcement | 17,520 actions |
-| openFDA device enforcement | 26,000 actions (25k skip cap) |
-| **TOTAL** | **98,777** |
+**Corpus seed results:** eCFR 264 parts · FR 54,993 documents (rules + notices) · openFDA 43,520 enforcement actions → **98,777 total**.
 
-**Files changed (committed + deployed):**
-- `lib/fetchers/gov-apis.ts` — FR URL fix + eCFR date helper
-- `lib/corpus/ecfr-ingest.ts` — Part detection fix
-- `lib/corpus/federal-register-ingest.ts` — type mapping for title-case response values
-- `lib/corpus/openfda-ingest.ts` — recall_number field fix for both endpoints
-- `supabase/migrations/021_kg_entity_upsert_constraint.sql` — named unique constraint
+**Library page:** Removed all hardcoded `MOCK_REGULATIONS`. `library/page.tsx` now queries `kg_entities` server-side with `searchParams`-driven filters (type, jurisdiction, text search) and 50-per-page pagination. `LibraryBrowser` rewritten with URL-param filtering via `useRouter`. Detail page (`library/[id]`) queries by UUID and renders real metadata. `LibraryDetailTabs` simplified to Summary + Live Source using real entity fields.
 
 ## Pipeline Test Instructions (Next Step)
 
@@ -81,9 +64,9 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 | FDA Compounding Guidance | `08770aca-1aad-4f2e-abe8-3ed90ab9f630` | `227eebd4-aae3-4bde-a0a8-1a38b883a59c` |
 
 ## Next Session Priority
-1. **Pipeline test execution** — corpus is seeded. Trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Start with one gov API source. Source IDs are in the table below.
-2. **Regulation library page** — wire the Library page to show real kg_entities from Supabase (currently shows 6 hardcoded items).
-3. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated fully in the pipeline (only severity-based lookup, no complex rule matching logic).
+1. **Pipeline test execution** — corpus is seeded and library is live. Trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Start with one gov API source. Source IDs are in the table below.
+2. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated fully in the pipeline (only severity-based lookup, no complex rule matching logic).
+3. **audit/snapshot.ts** — currently a stub; complete the snapshot export for the audit trail page PDF export.
 
 ### Corpus Seed Verification SQL
 ```sql
@@ -104,10 +87,10 @@ GROUP BY identifier, source_id HAVING COUNT(*) > 1;
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
-- Library page now queries real kg_entities with server-side pagination and filtering ✅
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
-- FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies (confirmed via API test) — only Rules and Notices ingested
+- FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies — only Rules and Notices were ingested
+- Library text search uses `ilike` (no full-text index) — adequate for now, may need `tsvector` index if search becomes slow at scale
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
@@ -115,7 +98,7 @@ GROUP BY identifier, source_id HAVING COUNT(*) > 1;
 
 ## Environment
 - Vercel: cedar-beta.vercel.app (auto-deploy from main)
-- Credentials configured in Vercel: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, Inngest ✅, Stripe ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅
-- ADMIN_SECRET: in .env.local but not confirmed in Vercel (add if admin API routes fail in production)
-- Supabase migrations: 20 applied to production ✅
+- Credentials configured in Vercel: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, Inngest ✅, Stripe ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅, ADMIN_SECRET ✅
+- Supabase migrations: 21 applied to production ✅
 - Practices in production: 2 (delivery recipients configured)
+- kg_entities in production: 98,777 (seeded March 19, 2026)
