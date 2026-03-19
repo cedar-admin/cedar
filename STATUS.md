@@ -1,45 +1,43 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 11
+Last updated: March 19, 2026 by Sonnet Session 12
 
 ## Module Status
 | Module | Status | Notes |
 |--------|--------|-------|
-| 1. Data Layer | ✅ Complete | 19 migrations, RLS, config tables, 10 seed sources |
-| 2. Orchestration | ✅ Complete | 7 Inngest functions registered (3 real, 3 stubs, 1 deferred) |
+| 1. Data Layer | ✅ Complete | 20 migrations, RLS, config tables, 10 seed sources |
+| 2. Orchestration | ✅ Complete | 8 Inngest functions registered (corpus-seed added) |
 | 3. Source Fetching | ✅ Complete | Gov APIs + Oxylabs + BrowserBase + auto-escalating dispatcher |
 | 4. Doc Processing | 🔲 Blocked | Railway/Docling deploy needed for PDF extraction |
 | 5. Change Detection | ✅ Complete | SHA-256, chain hash, structured diff (DiffBlock[] JSONB) |
 | 6. Intelligence | ⚙️ MVP Complete | 2-agent pipeline (relevance filter + classifier). Agent 3 (Ontology) deferred to 1.0 Full |
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
-| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. audit/snapshot.ts is a stub |
+| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed pipeline built (not yet fired). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Settings notification toggles now persist. |
 
 ## Codebase Stats
-- **~14,700 lines** TypeScript/TSX across ~126 files
-- **19** Supabase migrations (001-019)
-- **15** dashboard routes, **8** API routes
+- **~14,573 lines** TypeScript/TSX across ~131 files
+- **20** Supabase migrations (001-020)
+- **15** dashboard routes, **9** API routes
 - **29** shadcn/ui components, **5** custom shared components
-- **48** git commits on main
+- **54** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 11 (Sonnet) executed the pipeline-proof-of-life PRP — code and infrastructure prep for the first end-to-end pipeline test:
+Session 12 (Sonnet) built the gov API corpus seed pipeline — the bulk ingestion system that populates the regulation library with real regulatory data as the baseline for change detection.
 
 **Code changes (committed + deployed):**
-- **`lib/env.ts`**: Made `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_MONITOR_PRICE_ID`, `STRIPE_INTELLIGENCE_PRICE_ID` optional in Zod schema. These were blocking `getEnv()` on any server path (including Inngest functions) when Stripe isn't configured.
-- **`lib/stripe.ts`**: Added explicit guard in `getStripe()` — throws clear error if key is missing instead of silently passing `undefined` to Stripe constructor.
-- **`app/api/webhooks/stripe/route.ts`**: Guard `STRIPE_WEBHOOK_SECRET` before constructEvent — returns 503 if not configured.
-- **`app/pricing/page.tsx`**: Use `?? ''` fallback for price IDs passed to `bind()` to satisfy TypeScript.
-- **Settings persistence** (previously completed, verified): Migration 017, `app/actions/settings.ts`, `components/NotificationsForm.tsx`, `app/(dashboard)/settings/page.tsx` all in place and wired.
+- **Migration 020** (`020_kg_entity_upsert_index.sql`): Unique partial index on `kg_entities(identifier, source_id)` for upsert dedup. Applied to production Supabase.
+- **`lib/fetchers/gov-apis.ts`**: Added 3 bulk fetch functions: `fetchECFRStructure` (eCFR structure hierarchy), `searchFederalRegister` (full date-range + field-select), `fetchOpenFDAPaginated` (skip-based pagination, accepts any endpoint string).
+- **`lib/corpus/shared.ts`**: `KGEntityInsert` interface + `upsertEntities()` — batches 100 rows at a time, `ON CONFLICT (identifier, source_id)` dedup.
+- **`lib/corpus/ecfr-ingest.ts`**: Fetches eCFR Title 21 structure, extracts all Parts, upserts as `regulation` entities with citation and external_url.
+- **`lib/corpus/federal-register-ingest.ts`**: Paginates FDA/DEA/FTC/HHS/CMS documents 2021–present, year-partitioned to stay under 2000-result limit. Full API response stored in metadata JSONB.
+- **`lib/corpus/openfda-ingest.ts`**: Skip-paginates `drug/enforcement` and `device/enforcement` up to 25k skip limit. Florida-specific jurisdiction detection from distribution_pattern.
+- **`inngest/corpus-seed.ts`**: Inngest function (`cedar/corpus.seed`), 5 steps, concurrency limit 1, retries 1.
+- **`app/api/admin/corpus-seed/route.ts`**: Admin-gated endpoint to fire the seed event.
+- **`app/(admin)/system/SeedCorpusButton.tsx`** + **`page.tsx`**: "Seed Corpus" button added to System Health page header.
 
-**Infrastructure verified:**
-- All critical env vars confirmed in Vercel: Oxylabs ✅, BrowserBase ✅, Anthropic ✅, Resend ✅, Inngest ✅, Stripe ✅
-- Migration `notification_prefs` (017) confirmed applied to production Supabase
-- 2 practices configured in production (delivery recipients ready): `amrilling721@gmail.com` (monitor), `cedaradmin@gmail.com` (intelligence)
-- `ADMIN_SECRET` missing from Vercel env vars (add if admin API routes need it)
-
-**Pipeline NOT yet tested** — requires manual Inngest triggers (see pipeline test instructions below).
+**Corpus seed NOT yet fired** — pipeline is code-complete and deployed. Trigger from System Health page or Inngest Cloud dashboard.
 
 ## Pipeline Test Instructions (Next Step)
 
@@ -108,22 +106,42 @@ FROM kg_entities ORDER BY created_at DESC LIMIT 10;
 ```
 
 ## Next Session Priority
-1. **Pipeline test execution** — trigger all 10 sources via Inngest, document results, fix any broken selectors or content issues
-2. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated in the pipeline (rule query fires but only checks by severity, no complex rule matching)
+1. **Fire corpus seed** — go to System Health → "Seed Corpus" button (or Inngest Cloud dashboard: send `cedar/corpus.seed` event). Monitor 5-step execution. Verify entity counts in Supabase with the verification SQL below. Check that the regulation library page shows real data.
+2. **Pipeline test execution** — trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Source IDs are in the table below.
+3. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated fully in the pipeline (only severity-based lookup, no complex rule matching logic).
+
+### Corpus Seed Verification SQL
+```sql
+-- Entity counts by source
+SELECT s.name, COUNT(e.id) as entities
+FROM kg_entities e JOIN sources s ON s.id = e.source_id
+GROUP BY s.name ORDER BY entities DESC;
+
+-- Entity counts by type
+SELECT entity_type, document_type, COUNT(*) as count
+FROM kg_entities GROUP BY entity_type, document_type ORDER BY count DESC;
+
+-- Verify no duplicates
+SELECT identifier, source_id, COUNT(*) as dupes
+FROM kg_entities WHERE identifier IS NOT NULL
+GROUP BY identifier, source_id HAVING COUNT(*) > 1;
+```
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
-- Library page has 6 hardcoded regulations (intentional — gated to Intelligence tier)
+- Library page has 6 hardcoded regulations (intentional — will be replaced by real kg_entities after corpus seed fires)
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
+- openFDA upsert relies on partial unique index for conflict detection — if Supabase's `.upsert()` doesn't match the partial index, device enforcement records with `device-` prefix identifier may still create duplicates on re-run; watch Inngest logs on first execution
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
+- Corpus seed not yet fired — regulation library is still empty until triggered
 - Pipeline not yet tested against real data — must run manually via Inngest
 
 ## Environment
 - Vercel: cedar-beta.vercel.app (auto-deploy from main)
 - Credentials configured in Vercel: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, Inngest ✅, Stripe ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅
 - ADMIN_SECRET: in .env.local but not confirmed in Vercel (add if admin API routes fail in production)
-- Supabase migrations: 19 applied to production ✅
+- Supabase migrations: 20 applied to production ✅
 - Practices in production: 2 (delivery recipients configured)
