@@ -1,5 +1,6 @@
 import { createServerClient } from '../../../lib/db/client'
 import TriggerButton from './TriggerButton'
+import SeedCorpusButton from './SeedCorpusButton'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -107,7 +108,10 @@ export default async function SystemPage() {
             Environment status, source monitoring, and manual trigger controls
           </p>
         </div>
-        <TriggerButton label="Run All Sources" />
+        <div className="flex items-center gap-2">
+          <SeedCorpusButton />
+          <TriggerButton label="Run All Sources" />
+        </div>
       </div>
 
       {missingRequired.length > 0 && (

@@ -120,6 +120,84 @@ export async function fetchOpenFDA(params: OpenFDAParams): Promise<string> {
   return res.text()
 }
 
+// ── Corpus bulk fetch functions ───────────────────────────────────────────
+
+/**
+ * Fetch the full structural hierarchy of a CFR title from the eCFR versioner API.
+ * Returns raw JSON — the hierarchy of chapters, parts, subparts, and sections
+ * WITHOUT full text (wide-and-shallow pass for corpus seeding).
+ */
+export async function fetchECFRStructure(titleNumber: number): Promise<string> {
+  const today = new Date().toISOString().split('T')[0]
+  const url = `https://www.ecfr.gov/api/versioner/v1/structure/${today}/title-${titleNumber}.json`
+  const res = await fetchWithTimeout(url)
+  if (!res.ok) {
+    throw new Error(`eCFR structure error: ${res.status} ${res.statusText}`)
+  }
+  return res.text()
+}
+
+export interface FederalRegisterSearchParams {
+  agencies: string[]
+  types: string[]       // ['RULE', 'PROPOSED_RULE', 'NOTICE']
+  dateGte: string       // YYYY-MM-DD
+  dateLte: string       // YYYY-MM-DD
+  perPage?: number      // max 1000
+  page?: number
+  fields: string[]
+}
+
+/**
+ * Paginated Federal Register search for bulk corpus ingestion.
+ * Supports full date-range filtering and field selection.
+ */
+export async function searchFederalRegister(params: FederalRegisterSearchParams): Promise<string> {
+  const url = new URL('https://api.federalregister.gov/v1/articles.json')
+
+  params.agencies.forEach(a => url.searchParams.append('agencies[]', a))
+  url.searchParams.set('per_page', String(params.perPage ?? 1000))
+  url.searchParams.set('order', 'oldest')
+  if (params.page && params.page > 1) url.searchParams.set('page', String(params.page))
+  params.types.forEach(t => url.searchParams.append('conditions[type][]', t))
+  url.searchParams.set('conditions[publication_date][gte]', params.dateGte)
+  url.searchParams.set('conditions[publication_date][lte]', params.dateLte)
+  params.fields.forEach(f => url.searchParams.append('fields[]', f))
+
+  const res = await fetchWithTimeout(url.toString())
+  if (!res.ok) {
+    throw new Error(`Federal Register search error: ${res.status} ${res.statusText}`)
+  }
+  return res.text()
+}
+
+export interface OpenFDAPaginatedParams {
+  endpoint: string    // 'drug/enforcement', 'device/enforcement', etc.
+  search?: string
+  limit?: number      // max 1000
+  skip?: number
+}
+
+/**
+ * Single-page openFDA fetch with skip-based pagination support.
+ * Use in a loop (skip += limit) to paginate through large datasets.
+ * Returns empty results on 404 (no results found).
+ */
+export async function fetchOpenFDAPaginated(params: OpenFDAPaginatedParams): Promise<string> {
+  const url = new URL(`https://api.fda.gov/${params.endpoint}.json`)
+  if (params.search) url.searchParams.set('search', params.search)
+  if (params.limit)  url.searchParams.set('limit', String(params.limit))
+  if (params.skip)   url.searchParams.set('skip', String(params.skip))
+
+  const res = await fetchWithTimeout(url.toString())
+  if (res.status === 404) {
+    return JSON.stringify({ results: [], meta: { results: { total: 0 } } })
+  }
+  if (!res.ok) {
+    throw new Error(`openFDA error: ${res.status} ${res.statusText}`)
+  }
+  return res.text()
+}
+
 // ── Shared helpers ────────────────────────────────────────────────────────
 
 async function fetchWithTimeout(url: string): Promise<Response> {

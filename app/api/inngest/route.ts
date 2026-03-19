@@ -6,6 +6,7 @@ import { runIntelligencePipeline } from '../../../inngest/intelligence'
 import { deliverChangeAlert } from '../../../inngest/delivery'
 import { recoverFailedFetch } from '../../../inngest/recovery'
 import { weeklyAuditValidation } from '../../../inngest/audit-validation'
+import { corpusSeed } from '../../../inngest/corpus-seed'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -17,6 +18,7 @@ export const { GET, POST, PUT } = serve({
     deliverChangeAlert,
     recoverFailedFetch,
     weeklyAuditValidation,
+    corpusSeed,
   ],
   signingKey: process.env.INNGEST_SIGNING_KEY,
 })
