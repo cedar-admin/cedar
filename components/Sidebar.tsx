@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { SidebarLink } from './SidebarLink'
 import { SignOutButton } from './SignOutButton'
@@ -30,6 +29,9 @@ interface SidebarProps {
   user: { email: string; firstName: string | null; lastName: string | null }
   practice: { name: string; tier: string } | null
   role: UserRole
+  collapsed: boolean
+  onCollapse: () => void
+  onExpand: () => void
 }
 
 function RoleBadge({ role, tier }: { role: UserRole; tier: string | null }) {
@@ -69,9 +71,7 @@ function CedarLogo() {
   )
 }
 
-export function Sidebar({ user, practice, role }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false)
-
+export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand }: SidebarProps) {
   const displayName =
     user.firstName && user.lastName
       ? `${user.firstName} ${user.lastName}`
@@ -83,7 +83,7 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setCollapsed(false)}
+        onClick={onExpand}
         aria-label="Expand sidebar"
         className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 rounded-none bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar transition-interactive ${
           collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -108,7 +108,7 @@ export function Sidebar({ user, practice, role }: SidebarProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setCollapsed(true)}
+          onClick={onCollapse}
           aria-label="Collapse sidebar"
           className="w-6 h-6 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
         >
