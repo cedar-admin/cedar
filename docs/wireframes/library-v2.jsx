@@ -5,7 +5,9 @@
  *
  * PURPOSE: Visual reference for the regulatory library browse experience.
  * This is a WIREFRAME, not production code. All data is hardcoded to
- * demonstrate layout, navigation, and information density decisions.
+ * demonstrate layout, navigation, and information density decisions. 
+ * Do not use any design decisions included in this file, follow Cedar's
+ * own design system referenced in Claude.md
  *
  * ─── ARCHITECTURE CONTEXT ──────────────────────────────────────────
  *
