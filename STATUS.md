@@ -104,7 +104,7 @@ GROUP BY identifier, source_id HAVING COUNT(*) > 1;
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
-- Library page has 6 hardcoded regulations — **now has real data in kg_entities, needs to be wired up**
+- Library page now queries real kg_entities with server-side pagination and filtering ✅
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
 - FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies (confirmed via API test) — only Rules and Notices ingested
