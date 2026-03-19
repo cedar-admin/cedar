@@ -1,6 +1,6 @@
 # Cedar
 
-Regulatory monitoring platform for independent medical practices — starting in Florida, expanding state by state. Cedar monitors federal and state regulatory sources (agencies, boards, legislative activity, enforcement databases, court filings), detects meaningful changes within hours of publication, classifies them through an AI intelligence pipeline, and delivers plain-language alerts with a tamper-evident audit trail.
+Cedar is a regulatory intelligence platform for independent medical practices — starting in Florida, expanding state by state. Cedar monitors federal and state regulatory sources (agencies, boards, legislative activity, enforcement databases, court filings), detects meaningful changes within hours of publication, classifies them through an AI intelligence pipeline, and delivers plain-language alerts with a tamper-evident audit trail.
 
 Cedar shrinks the delay between a regulation being updated and a practice owner knowing about it — from days or weeks down to hours. Every AI summary links back to the original source material and carries a disclaimer. Cedar provides regulatory monitoring, summaries, and FAQs. Cedar does not provide legal advice.
 
