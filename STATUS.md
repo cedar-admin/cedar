@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 18, 2026 by Sonnet Session 9
+Last updated: March 18, 2026 by Sonnet Session 10
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,18 +16,20 @@ Last updated: March 18, 2026 by Sonnet Session 9
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Admin practices page fully interactive. |
 
 ## Codebase Stats
-- **~14,600 lines** TypeScript/TSX across ~125 files
+- **~14,700 lines** TypeScript/TSX across ~126 files
 - **18** Supabase migrations (001-018)
 - **15** dashboard routes, **8** API routes
-- **29** shadcn/ui components, **4** custom shared components
-- **36** git commits on main
+- **29** shadcn/ui components, **5** custom shared components
+- **39** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 9 (Sonnet) executed the sidebar-transform-collapse PRP — replaced width-based collapse animation with GPU-composited `translate` transform:
-- **`components/Sidebar.tsx`**: `aside` changed from in-flow `shrink-0` with conditional `w-0`/`w-60` to `position: fixed` with constant `w-60`. Collapsed state uses `-translate-x-full`, expanded uses `translate-x-0`. Transition scoped to `translate` only (not `all`). A follow-up fix corrected the transition property from `transform` to `translate` — Tailwind v4 sets the CSS `translate` shorthand, not `transform`, so `transition: transform` had no effect and the panel snapped.
-- **`app/(dashboard)/layout.tsx`**: `main` given permanent `ml-60` (sidebar is now out of document flow).
-- **`app/(admin)/layout.tsx`**: Same permanent `ml-60` change.
+Session 10 (Sonnet) executed the sidebar-responsive-layout PRP — responsive layout shell with desktop push and tablet overlay scrim:
+- **`components/Sidebar.tsx`**: Lifted internal `collapsed` state out — now fully controlled via `collapsed`, `onCollapse`, `onExpand` props.
+- **`components/SidebarShell.tsx`** (new): Client wrapper that owns `collapsed` state. Renders sidebar, tablet scrim (`z-[30] lg:hidden animate-scrim-in`), and main content with `lg:ml-60` that transitions via `margin-left var(--duration-base) var(--ease-standard)`. Clicking scrim closes sidebar.
+- **`app/(dashboard)/layout.tsx`**: Replaced direct `Sidebar` + `BreadcrumbNav` render with `SidebarShell`.
+- **`app/(admin)/layout.tsx`**: Same.
+- Also fixed `SlideOverPanel` exit animation (panel + scrim animate out before unmount).
 - Token audit: ✅ 0 errors. Build: ✅ Clean.
 
 ## Next Session Priority
