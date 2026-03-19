@@ -1187,26 +1187,41 @@ export type Database = {
       kg_entity_versions: {
         Row: {
           change_id: string | null
+          change_summary: string | null
+          content_hash: string | null
+          content_snapshot: string | null
           created_at: string
           entity_id: string
+          fr_document_number: string | null
           id: string
           snapshot: Json
+          version_date: string | null
           version_number: number
         }
         Insert: {
           change_id?: string | null
+          change_summary?: string | null
+          content_hash?: string | null
+          content_snapshot?: string | null
           created_at?: string
           entity_id: string
+          fr_document_number?: string | null
           id?: string
           snapshot: Json
+          version_date?: string | null
           version_number: number
         }
         Update: {
           change_id?: string | null
+          change_summary?: string | null
+          content_hash?: string | null
+          content_snapshot?: string | null
           created_at?: string
           entity_id?: string
+          fr_document_number?: string | null
           id?: string
           snapshot?: Json
+          version_date?: string | null
           version_number?: number
         }
         Relationships: [
@@ -1374,8 +1389,13 @@ export type Database = {
         Row: {
           confidence: number | null
           created_at: string
+          effective_date: string | null
+          end_date: string | null
+          fr_citation: string | null
           id: string
           notes: string | null
+          provenance: string | null
+          rel_type: Database["public"]["Enums"]["relationship_type_enum"] | null
           relationship_type: string
           relationship_type_id: string | null
           source_change_id: string | null
@@ -1385,8 +1405,15 @@ export type Database = {
         Insert: {
           confidence?: number | null
           created_at?: string
+          effective_date?: string | null
+          end_date?: string | null
+          fr_citation?: string | null
           id?: string
           notes?: string | null
+          provenance?: string | null
+          rel_type?:
+            | Database["public"]["Enums"]["relationship_type_enum"]
+            | null
           relationship_type: string
           relationship_type_id?: string | null
           source_change_id?: string | null
@@ -1396,8 +1423,15 @@ export type Database = {
         Update: {
           confidence?: number | null
           created_at?: string
+          effective_date?: string | null
+          end_date?: string | null
+          fr_citation?: string | null
           id?: string
           notes?: string | null
+          provenance?: string | null
+          rel_type?:
+            | Database["public"]["Enums"]["relationship_type_enum"]
+            | null
           relationship_type?: string
           relationship_type_id?: string | null
           source_change_id?: string | null
@@ -2259,6 +2293,23 @@ export type Database = {
         | "state_statute"
         | "state_board_rule"
         | "professional_standard"
+      relationship_type_enum:
+        | "amends"
+        | "amended_by"
+        | "supersedes"
+        | "superseded_by"
+        | "implements"
+        | "interprets"
+        | "cites"
+        | "cited_by"
+        | "corrects"
+        | "part_of"
+        | "has_legal_basis"
+        | "conflicts_with"
+        | "related_to"
+        | "delegates_to"
+        | "enables"
+        | "restricts"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2395,6 +2446,24 @@ export const Constants = {
         "state_statute",
         "state_board_rule",
         "professional_standard",
+      ],
+      relationship_type_enum: [
+        "amends",
+        "amended_by",
+        "supersedes",
+        "superseded_by",
+        "implements",
+        "interprets",
+        "cites",
+        "cited_by",
+        "corrects",
+        "part_of",
+        "has_legal_basis",
+        "conflicts_with",
+        "related_to",
+        "delegates_to",
+        "enables",
+        "restricts",
       ],
     },
   },

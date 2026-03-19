@@ -158,11 +158,31 @@ export async function fetchECFRStructure(titleNumber: number): Promise<string> {
   return res.text()
 }
 
+export interface ECFRTitleInfo {
+  number:            number
+  name:              string
+  latest_amended_on: string   // YYYY-MM-DD — last actual text amendment
+  up_to_date_as_of:  string   // YYYY-MM-DD — safe date for content fetch
+}
+
+/**
+ * Fetch all eCFR titles metadata including latest_amended_on.
+ * Used by ecfr-daily-check to determine which titles changed since last poll.
+ * Endpoint: https://www.ecfr.gov/api/versioner/v1/titles.json
+ */
+export async function fetchECFRTitles(): Promise<ECFRTitleInfo[]> {
+  const res = await fetchWithTimeout('https://www.ecfr.gov/api/versioner/v1/titles.json')
+  if (!res.ok) throw new Error(`eCFR titles error: ${res.status} ${res.statusText}`)
+  const data = await res.json() as { titles: ECFRTitleInfo[] }
+  return data.titles ?? []
+}
+
 export interface FederalRegisterSearchParams {
   agencies: string[]
   types: string[]       // ['RULE', 'PROPOSED_RULE', 'NOTICE']
   dateGte: string       // YYYY-MM-DD
   dateLte: string       // YYYY-MM-DD
+  cfrTitles?: number[]  // e.g. [21, 29, 42, 45] — filters by CFR title
   perPage?: number      // max 1000
   page?: number
   fields: string[]
@@ -182,6 +202,11 @@ export async function searchFederalRegister(params: FederalRegisterSearchParams)
   params.types.forEach(t => url.searchParams.append('conditions[type][]', t))
   url.searchParams.set('conditions[publication_date][gte]', params.dateGte)
   url.searchParams.set('conditions[publication_date][lte]', params.dateLte)
+  if (params.cfrTitles?.length) {
+    params.cfrTitles.forEach(t =>
+      url.searchParams.append('conditions[cfr][title][]', String(t))
+    )
+  }
   params.fields.forEach(f => url.searchParams.append('fields[]', f))
 
   const res = await fetchWithTimeout(url.toString())
