@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Sonnet Session 12
+Last updated: March 19, 2026 by Sonnet Session 13
 
 ## Module Status
 | Module | Status | Notes |
@@ -11,7 +11,7 @@ Last updated: March 19, 2026 by Sonnet Session 12
 | 5. Change Detection | ✅ Complete | SHA-256, chain hash, structured diff (DiffBlock[] JSONB) |
 | 6. Intelligence | ⚙️ MVP Complete | 2-agent pipeline (relevance filter + classifier). Agent 3 (Ontology) deferred to 1.0 Full |
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
-| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed pipeline built (not yet fired). audit/snapshot.ts is a stub |
+| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities in production. audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Settings notification toggles now persist. |
 
@@ -24,24 +24,32 @@ Last updated: March 19, 2026 by Sonnet Session 12
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 12 (Sonnet) built the gov API corpus seed pipeline — the bulk ingestion system that populates the regulation library with real regulatory data as the baseline for change detection.
+Session 13 (Sonnet) debugged and fixed 5 bugs in the corpus seed pipeline, applied a database migration, and successfully populated 98,777 kg_entities in production.
 
-**Code changes (committed + deployed):**
-- **Migration 020** (`020_kg_entity_upsert_index.sql`): Unique partial index on `kg_entities(identifier, source_id)` for upsert dedup. Applied to production Supabase.
-- **`lib/fetchers/gov-apis.ts`**: Added 3 bulk fetch functions: `fetchECFRStructure` (eCFR structure hierarchy), `searchFederalRegister` (full date-range + field-select), `fetchOpenFDAPaginated` (skip-based pagination, accepts any endpoint string).
-- **`lib/corpus/shared.ts`**: `KGEntityInsert` interface + `upsertEntities()` — batches 100 rows at a time, `ON CONFLICT (identifier, source_id)` dedup.
-- **`lib/corpus/ecfr-ingest.ts`**: Fetches eCFR Title 21 structure, extracts all Parts, upserts as `regulation` entities with citation and external_url.
-- **`lib/corpus/federal-register-ingest.ts`**: Paginates FDA/DEA/FTC/HHS/CMS documents 2021–present, year-partitioned to stay under 2000-result limit. Full API response stored in metadata JSONB.
-- **`lib/corpus/openfda-ingest.ts`**: Skip-paginates `drug/enforcement` and `device/enforcement` up to 25k skip limit. Florida-specific jurisdiction detection from distribution_pattern.
-- **`inngest/corpus-seed.ts`**: Inngest function (`cedar/corpus.seed`), 5 steps, concurrency limit 1, retries 1.
-- **`app/api/admin/corpus-seed/route.ts`**: Admin-gated endpoint to fire the seed event.
-- **`app/(admin)/system/SeedCorpusButton.tsx`** + **`page.tsx`**: "Seed Corpus" button added to System Health page header.
+**Root causes found and fixed:**
+1. **Federal Register blocked by anti-bot redirect** — `api.federalregister.gov` redirects cloud IPs to `unblock.federalregister.gov`, returning HTML. Fixed: changed to `www.federalregister.gov/api/v1/documents` which works from Vercel. Both `fetchFederalRegister` and `searchFederalRegister` in `lib/fetchers/gov-apis.ts` updated.
+2. **eCFR date error** — `fetchECFRStructure` used today's date but eCFR lags 1-3 days. Fixed: added `getECFRLatestDate()` helper that queries `/api/versioner/v1/titles.json` for `up_to_date_as_of` before fetching structure.
+3. **eCFR Part detection** — `extractParts` checked `label_level === 'Part'` but actual values are `"Part 1"`, `"Part 2"` etc. Fixed: use `startsWith('Part ')`.
+4. **openFDA wrong identifier fields** — code used `report_number` / `res_event_number` which don't exist; actual field is `recall_number` for both drug and device enforcement.
+5. **Upsert constraint unrecognizable** — Migration 020 partial index (`WHERE identifier IS NOT NULL`) is not recognized by PostgREST's `ON CONFLICT` clause. Fixed: Migration 021 drops the partial index and adds a named unique constraint `kg_entities_identifier_source_key` on `(identifier, source_id)`. Applied to production.
 
-**Corpus seed NOT yet fired** — pipeline is code-complete and deployed. Trigger from System Health page or Inngest Cloud dashboard.
+**Corpus seed results (production):**
+| Source | Entities |
+|--------|----------|
+| eCFR Title 21 | 264 CFR parts |
+| Federal Register (FDA/DEA/FTC/HHS/CMS, 2021–2026) | 6,437 rules + 48,556 notices |
+| openFDA drug enforcement | 17,520 actions |
+| openFDA device enforcement | 26,000 actions (25k skip cap) |
+| **TOTAL** | **98,777** |
+
+**Files changed (committed + deployed):**
+- `lib/fetchers/gov-apis.ts` — FR URL fix + eCFR date helper
+- `lib/corpus/ecfr-ingest.ts` — Part detection fix
+- `lib/corpus/federal-register-ingest.ts` — type mapping for title-case response values
+- `lib/corpus/openfda-ingest.ts` — recall_number field fix for both endpoints
+- `supabase/migrations/021_kg_entity_upsert_constraint.sql` — named unique constraint
 
 ## Pipeline Test Instructions (Next Step)
-
-The pipeline is code-complete and infrastructure-ready. The next step is to trigger it manually via the Inngest dashboard and observe results.
 
 ### Setup
 ```bash
@@ -54,7 +62,7 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 
 ### Source IDs (production Supabase)
 
-**Gov API sources — test these first:**
+**Gov API sources:**
 | Source | source_id | source_url_id |
 |--------|-----------|---------------|
 | FDA Federal Register | `60e1eabf-7118-493d-b104-c058ba432332` | `4fef5fa7-9e35-4d08-8c59-fdc9b8a2b3d8` |
@@ -72,42 +80,9 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 | DEA Diversion Control | `0d7bbcaa-9da2-435b-85c0-e49fdffd489d` | `6832b2f9-5807-4c07-b9ad-7430217c8764` |
 | FDA Compounding Guidance | `08770aca-1aad-4f2e-abe8-3ed90ab9f630` | `227eebd4-aae3-4bde-a0a8-1a38b883a59c` |
 
-### Event payload (send in Inngest dashboard at localhost:8288)
-```json
-{
-  "name": "cedar/source.monitor",
-  "data": {
-    "sourceId": "<source_id>",
-    "sourceUrlId": "<source_url_id>"
-  }
-}
-```
-
-### Start with one gov API source, verify before expanding:
-1. Send event for FDA Federal Register
-2. Watch monitor-source execute all 11 steps in Inngest dashboard
-3. Verify in Supabase: changes table has a record, cost_events has entries
-4. Check kg_entities for a linked entity
-5. Check that deliver-change-alert fired and Resend logged a send
-
-### Verification SQL (run in Supabase SQL editor)
-```sql
--- Change records
-SELECT id, source_id, severity, summary, chain_sequence, agent_version, review_status, created_at
-FROM changes ORDER BY created_at DESC LIMIT 10;
-
--- Cost events
-SELECT service, operation, cost_usd, created_at
-FROM cost_events ORDER BY created_at DESC LIMIT 20;
-
--- KG entities
-SELECT id, name, entity_type, change_id, created_at
-FROM kg_entities ORDER BY created_at DESC LIMIT 10;
-```
-
 ## Next Session Priority
-1. **Fire corpus seed** — go to System Health → "Seed Corpus" button (or Inngest Cloud dashboard: send `cedar/corpus.seed` event). Monitor 5-step execution. Verify entity counts in Supabase with the verification SQL below. Check that the regulation library page shows real data.
-2. **Pipeline test execution** — trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Source IDs are in the table below.
+1. **Pipeline test execution** — corpus is seeded. Trigger all 10 sources via Inngest (`cedar/source.monitor` events), document results, fix any broken selectors or content issues. Start with one gov API source. Source IDs are in the table below.
+2. **Regulation library page** — wire the Library page to show real kg_entities from Supabase (currently shows 6 hardcoded items).
 3. **HITL rule-matching logic** — `review_rules` table exists but rules aren't evaluated fully in the pipeline (only severity-based lookup, no complex rule matching logic).
 
 ### Corpus Seed Verification SQL
@@ -129,14 +104,13 @@ GROUP BY identifier, source_id HAVING COUNT(*) > 1;
 
 ## Known Issues
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
-- Library page has 6 hardcoded regulations (intentional — will be replaced by real kg_entities after corpus seed fires)
+- Library page has 6 hardcoded regulations — **now has real data in kg_entities, needs to be wired up**
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
-- openFDA upsert relies on partial unique index for conflict detection — if Supabase's `.upsert()` doesn't match the partial index, device enforcement records with `device-` prefix identifier may still create duplicates on re-run; watch Inngest logs on first execution
+- FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies (confirmed via API test) — only Rules and Notices ingested
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
-- Corpus seed not yet fired — regulation library is still empty until triggered
 - Pipeline not yet tested against real data — must run manually via Inngest
 
 ## Environment
