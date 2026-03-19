@@ -673,11 +673,16 @@ export type Database = {
       }
       kg_entities: {
         Row: {
+          agencies: Json | null
+          cfr_references: Json | null
           change_id: string | null
+          citation: string | null
           classification_confidence: number | null
+          comment_close_date: string | null
           created_at: string
           current_classification_id: string | null
           description: string | null
+          document_type: string | null
           effective_date: string | null
           entity_type: string
           entity_type_id: string | null
@@ -688,16 +693,23 @@ export type Database = {
           last_classified_at: string | null
           metadata: Json | null
           name: string
+          pdf_url: string | null
+          publication_date: string | null
           source_id: string | null
           status: string | null
           updated_at: string
         }
         Insert: {
+          agencies?: Json | null
+          cfr_references?: Json | null
           change_id?: string | null
+          citation?: string | null
           classification_confidence?: number | null
+          comment_close_date?: string | null
           created_at?: string
           current_classification_id?: string | null
           description?: string | null
+          document_type?: string | null
           effective_date?: string | null
           entity_type: string
           entity_type_id?: string | null
@@ -708,16 +720,23 @@ export type Database = {
           last_classified_at?: string | null
           metadata?: Json | null
           name: string
+          pdf_url?: string | null
+          publication_date?: string | null
           source_id?: string | null
           status?: string | null
           updated_at?: string
         }
         Update: {
+          agencies?: Json | null
+          cfr_references?: Json | null
           change_id?: string | null
+          citation?: string | null
           classification_confidence?: number | null
+          comment_close_date?: string | null
           created_at?: string
           current_classification_id?: string | null
           description?: string | null
+          document_type?: string | null
           effective_date?: string | null
           entity_type?: string
           entity_type_id?: string | null
@@ -728,6 +747,8 @@ export type Database = {
           last_classified_at?: string | null
           metadata?: Json | null
           name?: string
+          pdf_url?: string | null
+          publication_date?: string | null
           source_id?: string | null
           status?: string | null
           updated_at?: string
@@ -1862,3 +1883,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
