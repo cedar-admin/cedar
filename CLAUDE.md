@@ -384,6 +384,10 @@ All visual tokens live in `src/styles/globals.css`. Reference docs live in `spec
 - All selects must use shadcn `<Select>` — never native `<select>`
 - All buttons must use `<Button>` from `@/components/ui/button`
 
+## Reference Documents
+- `docs/architecture/data-architecture-research.md` — taxonomy, classification, relationship model, schema additions
+- `docs/wireframes/library-v2.jsx` — regulatory library wireframe with architectural context in header comments
+
 ## Generating Updated Types
 
 After pushing migrations to Supabase:
