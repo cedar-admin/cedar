@@ -18,4 +18,5 @@ export const { GET, POST, PUT } = serve({
     recoverFailedFetch,
     weeklyAuditValidation,
   ],
+  signingKey: process.env.INNGEST_SIGNING_KEY,
 })
