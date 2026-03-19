@@ -387,6 +387,7 @@ export type Database = {
         Row: {
           action: Json
           conditions: Json
+          confidence_threshold: number
           created_at: string
           created_by: string
           description: string | null
@@ -397,6 +398,7 @@ export type Database = {
           priority: number
           rule_set_id: string | null
           rule_type: string
+          stage: number
           stop_on_match: boolean
           times_matched: number
           updated_at: string
@@ -405,6 +407,7 @@ export type Database = {
         Insert: {
           action?: Json
           conditions?: Json
+          confidence_threshold?: number
           created_at?: string
           created_by?: string
           description?: string | null
@@ -415,6 +418,7 @@ export type Database = {
           priority?: number
           rule_set_id?: string | null
           rule_type?: string
+          stage?: number
           stop_on_match?: boolean
           times_matched?: number
           updated_at?: string
@@ -423,6 +427,7 @@ export type Database = {
         Update: {
           action?: Json
           conditions?: Json
+          confidence_threshold?: number
           created_at?: string
           created_by?: string
           description?: string | null
@@ -433,6 +438,7 @@ export type Database = {
           priority?: number
           rule_set_id?: string | null
           rule_type?: string
+          stage?: number
           stop_on_match?: boolean
           times_matched?: number
           updated_at?: string
@@ -624,41 +630,128 @@ export type Database = {
         }
         Relationships: []
       }
+      kg_classification_log: {
+        Row: {
+          classified_at: string
+          classified_by: string | null
+          confidence: number | null
+          domain_id: string | null
+          entity_id: string
+          id: string
+          needs_review: boolean
+          review_reason: string | null
+          rule_id: string | null
+          run_id: string | null
+          stage: string
+        }
+        Insert: {
+          classified_at?: string
+          classified_by?: string | null
+          confidence?: number | null
+          domain_id?: string | null
+          entity_id: string
+          id?: string
+          needs_review?: boolean
+          review_reason?: string | null
+          rule_id?: string | null
+          run_id?: string | null
+          stage: string
+        }
+        Update: {
+          classified_at?: string
+          classified_by?: string | null
+          confidence?: number | null
+          domain_id?: string | null
+          entity_id?: string
+          id?: string
+          needs_review?: boolean
+          review_reason?: string | null
+          rule_id?: string | null
+          run_id?: string | null
+          stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_classification_log_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "kg_domains"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_classification_log_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_classification_log_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_classification_log_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "classification_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_classification_log_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "v_active_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kg_domains: {
         Row: {
           color: string | null
           created_at: string
+          depth: number
           description: string | null
+          domain_code: string | null
           id: string
           is_active: boolean
           name: string
           parent_id: string | null
           slug: string
           sort_order: number
+          taxonomy_source: string | null
           updated_at: string
         }
         Insert: {
           color?: string | null
           created_at?: string
+          depth?: number
           description?: string | null
+          domain_code?: string | null
           id?: string
           is_active?: boolean
           name: string
           parent_id?: string | null
           slug: string
           sort_order?: number
+          taxonomy_source?: string | null
           updated_at?: string
         }
         Update: {
           color?: string | null
           created_at?: string
+          depth?: number
           description?: string | null
+          domain_code?: string | null
           id?: string
           is_active?: boolean
           name?: string
           parent_id?: string | null
           slug?: string
           sort_order?: number
+          taxonomy_source?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -674,6 +767,9 @@ export type Database = {
       kg_entities: {
         Row: {
           agencies: Json | null
+          authority_level:
+            | Database["public"]["Enums"]["authority_level_enum"]
+            | null
           cfr_references: Json | null
           change_id: string | null
           citation: string | null
@@ -689,18 +785,23 @@ export type Database = {
           external_url: string | null
           id: string
           identifier: string | null
+          issuing_agency: string | null
           jurisdiction: string
           last_classified_at: string | null
           metadata: Json | null
           name: string
           pdf_url: string | null
           publication_date: string | null
+          search_vector: unknown
           source_id: string | null
           status: string | null
           updated_at: string
         }
         Insert: {
           agencies?: Json | null
+          authority_level?:
+            | Database["public"]["Enums"]["authority_level_enum"]
+            | null
           cfr_references?: Json | null
           change_id?: string | null
           citation?: string | null
@@ -716,18 +817,23 @@ export type Database = {
           external_url?: string | null
           id?: string
           identifier?: string | null
+          issuing_agency?: string | null
           jurisdiction?: string
           last_classified_at?: string | null
           metadata?: Json | null
           name: string
           pdf_url?: string | null
           publication_date?: string | null
+          search_vector?: unknown
           source_id?: string | null
           status?: string | null
           updated_at?: string
         }
         Update: {
           agencies?: Json | null
+          authority_level?:
+            | Database["public"]["Enums"]["authority_level_enum"]
+            | null
           cfr_references?: Json | null
           change_id?: string | null
           citation?: string | null
@@ -743,12 +849,14 @@ export type Database = {
           external_url?: string | null
           id?: string
           identifier?: string | null
+          issuing_agency?: string | null
           jurisdiction?: string
           last_classified_at?: string | null
           metadata?: Json | null
           name?: string
           pdf_url?: string | null
           publication_date?: string | null
+          search_vector?: unknown
           source_id?: string | null
           status?: string | null
           updated_at?: string
@@ -801,24 +909,36 @@ export type Database = {
       kg_entity_domains: {
         Row: {
           assigned_by: string
+          classified_at: string | null
+          classified_by: string | null
           confidence: number | null
           created_at: string
           domain_id: string
           entity_id: string
+          is_primary: boolean
+          relevance_score: number | null
         }
         Insert: {
           assigned_by?: string
+          classified_at?: string | null
+          classified_by?: string | null
           confidence?: number | null
           created_at?: string
           domain_id: string
           entity_id: string
+          is_primary?: boolean
+          relevance_score?: number | null
         }
         Update: {
           assigned_by?: string
+          classified_at?: string | null
+          classified_by?: string | null
           confidence?: number | null
           created_at?: string
           domain_id?: string
           entity_id?: string
+          is_primary?: boolean
+          relevance_score?: number | null
         }
         Relationships: [
           {
@@ -945,6 +1065,52 @@ export type Database = {
             columns: ["surviving_entity_id"]
             isOneToOne: false
             referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_entity_practice_relevance: {
+        Row: {
+          classified_at: string
+          classified_by: string
+          entity_id: string
+          practice_type_id: string
+          relevance_score: number | null
+        }
+        Insert: {
+          classified_at?: string
+          classified_by?: string
+          entity_id: string
+          practice_type_id: string
+          relevance_score?: number | null
+        }
+        Update: {
+          classified_at?: string
+          classified_by?: string
+          entity_id?: string
+          practice_type_id?: string
+          relevance_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_entity_practice_relevance_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_practice_relevance_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_practice_relevance_practice_type_id_fkey"
+            columns: ["practice_type_id"]
+            isOneToOne: false
+            referencedRelation: "kg_practice_types"
             referencedColumns: ["id"]
           },
         ]
@@ -1105,6 +1271,48 @@ export type Database = {
           },
         ]
       }
+      kg_practice_types: {
+        Row: {
+          classification: string
+          created_at: string
+          display_name: string
+          grouping: string
+          id: string
+          is_active: boolean
+          is_cedar_target: boolean
+          nucc_code: string | null
+          slug: string
+          sort_order: number
+          specialization: string | null
+        }
+        Insert: {
+          classification: string
+          created_at?: string
+          display_name: string
+          grouping: string
+          id?: string
+          is_active?: boolean
+          is_cedar_target?: boolean
+          nucc_code?: string | null
+          slug: string
+          sort_order?: number
+          specialization?: string | null
+        }
+        Update: {
+          classification?: string
+          created_at?: string
+          display_name?: string
+          grouping?: string
+          id?: string
+          is_active?: boolean
+          is_cedar_target?: boolean
+          nucc_code?: string | null
+          slug?: string
+          sort_order?: number
+          specialization?: string | null
+        }
+        Relationships: []
+      }
       kg_relationship_types: {
         Row: {
           created_at: string
@@ -1241,6 +1449,108 @@ export type Database = {
           },
         ]
       }
+      kg_service_line_regulations: {
+        Row: {
+          classified_at: string
+          classified_by: string
+          entity_id: string
+          regulation_role: string
+          relevance_score: number
+          service_line_id: string
+        }
+        Insert: {
+          classified_at?: string
+          classified_by?: string
+          entity_id: string
+          regulation_role?: string
+          relevance_score?: number
+          service_line_id: string
+        }
+        Update: {
+          classified_at?: string
+          classified_by?: string
+          entity_id?: string
+          regulation_role?: string
+          relevance_score?: number
+          service_line_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_service_line_regulations_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "kg_entities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_service_line_regulations_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "v_entity_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_service_line_regulations_service_line_id_fkey"
+            columns: ["service_line_id"]
+            isOneToOne: false
+            referencedRelation: "kg_service_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kg_service_lines: {
+        Row: {
+          cpt_codes: string[] | null
+          created_at: string
+          description: string | null
+          icd10_codes: string[] | null
+          id: string
+          is_active: boolean
+          is_cedar_target: boolean
+          name: string
+          practice_type_id: string | null
+          regulation_domains: string[] | null
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          cpt_codes?: string[] | null
+          created_at?: string
+          description?: string | null
+          icd10_codes?: string[] | null
+          id?: string
+          is_active?: boolean
+          is_cedar_target?: boolean
+          name: string
+          practice_type_id?: string | null
+          regulation_domains?: string[] | null
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          cpt_codes?: string[] | null
+          created_at?: string
+          description?: string | null
+          icd10_codes?: string[] | null
+          id?: string
+          is_active?: boolean
+          is_cedar_target?: boolean
+          name?: string
+          practice_type_id?: string | null
+          regulation_domains?: string[] | null
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kg_service_lines_practice_type_id_fkey"
+            columns: ["practice_type_id"]
+            isOneToOne: false
+            referencedRelation: "kg_practice_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       practice_acknowledgments: {
         Row: {
           acknowledged_at: string
@@ -1273,6 +1583,180 @@ export type Database = {
           },
           {
             foreignKeyName: "practice_acknowledgments_practice_id_fkey"
+            columns: ["practice_id"]
+            isOneToOne: false
+            referencedRelation: "practices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_equipment: {
+        Row: {
+          created_at: string
+          equipment_type: string
+          id: string
+          practice_id: string
+          vendor: string | null
+        }
+        Insert: {
+          created_at?: string
+          equipment_type: string
+          id?: string
+          practice_id: string
+          vendor?: string | null
+        }
+        Update: {
+          created_at?: string
+          equipment_type?: string
+          id?: string
+          practice_id?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_equipment_practice_id_fkey"
+            columns: ["practice_id"]
+            isOneToOne: false
+            referencedRelation: "practices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_profiles: {
+        Row: {
+          accepts_medicaid: boolean
+          accepts_medicare: boolean
+          annual_revenue_band: string | null
+          city: string | null
+          compounding_pharmacy: boolean
+          created_at: string
+          dea_registered: boolean
+          id: string
+          npi: string | null
+          onboarding_complete: boolean
+          practice_id: string
+          provider_count: number | null
+          state: string
+          updated_at: string
+          uses_telehealth: boolean
+          website: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          accepts_medicaid?: boolean
+          accepts_medicare?: boolean
+          annual_revenue_band?: string | null
+          city?: string | null
+          compounding_pharmacy?: boolean
+          created_at?: string
+          dea_registered?: boolean
+          id?: string
+          npi?: string | null
+          onboarding_complete?: boolean
+          practice_id: string
+          provider_count?: number | null
+          state?: string
+          updated_at?: string
+          uses_telehealth?: boolean
+          website?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          accepts_medicaid?: boolean
+          accepts_medicare?: boolean
+          annual_revenue_band?: string | null
+          city?: string | null
+          compounding_pharmacy?: boolean
+          created_at?: string
+          dea_registered?: boolean
+          id?: string
+          npi?: string | null
+          onboarding_complete?: boolean
+          practice_id?: string
+          provider_count?: number | null
+          state?: string
+          updated_at?: string
+          uses_telehealth?: boolean
+          website?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_profiles_practice_id_fkey"
+            columns: ["practice_id"]
+            isOneToOne: true
+            referencedRelation: "practices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_service_lines: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          practice_id: string
+          service_line_id: string
+          volume_band: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          practice_id: string
+          service_line_id: string
+          volume_band?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          practice_id?: string
+          service_line_id?: string
+          volume_band?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_service_lines_practice_id_fkey"
+            columns: ["practice_id"]
+            isOneToOne: false
+            referencedRelation: "practices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "practice_service_lines_service_line_id_fkey"
+            columns: ["service_line_id"]
+            isOneToOne: false
+            referencedRelation: "kg_service_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_staff: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          practice_id: string
+          role: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          practice_id: string
+          role: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          practice_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_staff_practice_id_fkey"
             columns: ["practice_id"]
             isOneToOne: false
             referencedRelation: "practices"
@@ -1595,6 +2079,16 @@ export type Database = {
       }
     }
     Views: {
+      mv_corpus_facets: {
+        Row: {
+          agency: string | null
+          doc_count: number | null
+          domain: string | null
+          entity_type: string | null
+          jurisdiction: string | null
+        }
+        Relationships: []
+      }
       v_active_rules: {
         Row: {
           action: Json | null
@@ -1751,9 +2245,20 @@ export type Database = {
     }
     Functions: {
       each: { Args: { hs: unknown }; Returns: Record<string, unknown>[] }
+      refresh_corpus_facets: { Args: never; Returns: undefined }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
-      [_ in never]: never
+      authority_level_enum:
+        | "federal_statute"
+        | "federal_regulation"
+        | "sub_regulatory_guidance"
+        | "national_coverage_determination"
+        | "local_coverage_determination"
+        | "state_statute"
+        | "state_board_rule"
+        | "professional_standard"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1880,6 +2385,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      authority_level_enum: [
+        "federal_statute",
+        "federal_regulation",
+        "sub_regulatory_guidance",
+        "national_coverage_determination",
+        "local_coverage_determination",
+        "state_statute",
+        "state_board_rule",
+        "professional_standard",
+      ],
+    },
   },
 } as const
