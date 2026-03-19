@@ -22,11 +22,11 @@ const serverEnvSchema = z.object({
   // App URL — used in email links. Falls back to cedar-beta.vercel.app if not set.
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
 
-  // Stripe — required for billing
-  STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1),
-  STRIPE_MONITOR_PRICE_ID: z.string().min(1),
-  STRIPE_INTELLIGENCE_PRICE_ID: z.string().min(1),
+  // Stripe — optional (only required for billing routes; pipeline runs without them)
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_MONITOR_PRICE_ID: z.string().optional(),
+  STRIPE_INTELLIGENCE_PRICE_ID: z.string().optional(),
   ADMIN_SECRET: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().optional(),
   OXYLABS_USERNAME: z.string().optional(),

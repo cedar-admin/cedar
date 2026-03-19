@@ -94,7 +94,7 @@ export default async function PricingPage() {
                 ))}
               </ul>
               <Separator />
-              <form action={createCheckoutSession.bind(null, env.STRIPE_MONITOR_PRICE_ID)}>
+              <form action={createCheckoutSession.bind(null, env.STRIPE_MONITOR_PRICE_ID ?? '')}>
                 <Button
                   type="submit"
                   className="w-full"
@@ -139,7 +139,7 @@ export default async function PricingPage() {
                 ))}
               </ul>
               <Separator />
-              <form action={createCheckoutSession.bind(null, env.STRIPE_INTELLIGENCE_PRICE_ID)}>
+              <form action={createCheckoutSession.bind(null, env.STRIPE_INTELLIGENCE_PRICE_ID ?? '')}>
                 <Button
                   type="submit"
                   className="w-full"
