@@ -52,6 +52,9 @@ export function BreadcrumbNav() {
   // Single-segment paths (e.g. /home) — no breadcrumb needed
   if (crumbs.length <= 1) return null
 
+  // Library sub-pages render their own breadcrumbs with domain names from DB
+  if (pathname.startsWith('/library/')) return null
+
   return (
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6">
       {crumbs.map((crumb, i) => (
