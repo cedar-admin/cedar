@@ -307,89 +307,78 @@ All secrets are stored in `.env.local` (local dev) and Vercel environment variab
 
 ## Design System
 
-Cedar uses a token-based design system enforced through four layers: this file (advisory), on-demand specs (reference), ESLint + token audit (deterministic), and a closed token architecture (structural).
+Cedar uses **Radix Themes** for standard UI components and **Radix Primitives + Tailwind** for custom creative components. The color system is Radix Colors with a custom green accent, defined in `globals.css`.
 
 ### Before writing or modifying ANY UI code:
 1. Read `docs/design-system/design-standards.md` for patterns and principles
-2. Check `specs/tokens/token-reference.md` for available tokens
-3. Check `src/components/ui/` for existing components
-4. If the component has a spec in `specs/components/`, follow it
-5. Run `node scripts/token-audit.js` before finishing — zero errors required
+2. Determine: does a Radix Themes component cover this? If yes, use it. If no, build with Primitives + Tailwind + Radix CSS variables.
+
+### Component decision framework
+- **Radix Themes component exists** → import from `@radix-ui/themes`, style via props (`variant`, `size`, `color`, `highContrast`). Use layout primitives (`Flex`, `Box`, `Grid`) and typography components (`Heading`, `Text`) for structure.
+- **Radix Themes component does NOT exist** (Accordion, Sheet/SlideOver, Sidebar, Breadcrumb, Pagination, Command, Toast) → build with Radix Primitives + Tailwind, using Radix CSS variables for colors: `bg-[var(--accent-9)]`, `border-[var(--gray-6)]`, `text-[var(--gray-12)]`.
+- **Portalled custom components** → wrap portal content with `<Theme>` from `@radix-ui/themes`.
 
 ### Core rules
-- **Colors:** CSS variables only via Tailwind classes (`bg-primary`, `text-muted-foreground`, `border-border`). No hardcoded hex, rgb, hsl, or oklch in components.
-- **Spacing:** Tailwind scale only (`p-4`, `gap-2`, `space-y-6`). No arbitrary pixel values (`p-[13px]`).
-- **Typography:** Tailwind text classes (`text-sm`, `text-base`, `text-2xl`). All sizes are fluid via clamp().
-- **Radius:** Derived scale (`rounded-md`, `rounded-lg`, `rounded-xl`). All derive from base `--radius`. For nested elements: `rounded-[max(0px,calc(var(--radius-xl)-1rem))]`.
-- **Shadows:** Token scale (`shadow-sm` through `shadow-xl`).
-- **Z-index:** Token scale only (`z-[0]`, `z-[10]`, `z-[40]`, `z-[50]`). See `token-reference.md`.
-- **Motion:** Use shared animation classes (`.animate-panel-in-right`, `.animate-scrim-in`, `.transition-interactive`, etc.) from globals.css. Duration tokens: `--duration-fast` through `--duration-slower`. Easing: `--ease-standard`, `--ease-out`, `--ease-in`.
+- **Colors:** Radix Themes props (`color="green"`) for Themes components. Radix CSS variables (`var(--accent-9)`, `var(--gray-12)`) for custom components. No hardcoded hex, rgb, hsl, or oklch in components.
+- **Spacing:** Radix layout props (`<Flex gap="4" p="5">`) for Themes components. Tailwind scale (`p-4`, `gap-6`) for custom components. No arbitrary pixel values.
+- **Typography:** Radix `<Heading>` and `<Text>` with `size` props (1–9). For custom components, Tailwind text classes are acceptable.
+- **Radius:** Controlled globally by `<Theme radius="large">`. Individual overrides via `radius` prop. Custom components: `var(--radius-3)` etc.
+- **Shadows:** Radix `--shadow-1` through `--shadow-6`. Auto-adapt in dark mode.
+- **Motion:** Cedar's custom animation classes from globals.css (`.animate-panel-in-right`, `.animate-scrim-in`, `.transition-interactive`). Duration tokens: `--duration-fast` through `--duration-slower`. Easing: `--ease-standard`, `--ease-out`, `--ease-in`.
 - **No inline styles** except for dynamic values (stagger delays, computed positions).
-- **No arbitrary Tailwind values** — ESLint `tailwindcss/no-arbitrary-value` catches these.
-
-### Components
-- Use shadcn/ui components from `components/ui/` exclusively
-- No raw HTML buttons, inputs, selects, textareas, or form elements
-- If a needed component is missing: `pnpm dlx shadcn@latest add [name]`
-- New reusable components: write spec in `specs/components/` first, use CVA + cn()
-- Rule of three: abstract into a shared component when a pattern appears 3+ times
 
 ### Icons
 - Remix Icon only (`<i className="ri-[name]-line" />`)
-- No other icon libraries (no lucide-react, no heroicons)
+- Wrap icon-only buttons with Radix `<IconButton>`
+- No Phosphor icons, no Lucide, no Heroicons
 
 ### Dark mode
-- Semantic tokens handle light/dark automatically (`bg-background`, `text-foreground`)
-- Use `dark:` prefix only for non-semantic colors (status badges with raw Tailwind colors)
+- Radix Themes handles it automatically — Radix Colors swap when `.dark` is applied to `<html>`
+- Custom Primitive-based components: use `var(--accent-*)` and `var(--gray-*)` — they swap automatically
+- Avoid raw Tailwind colors (`bg-green-500`) — use `bg-[var(--accent-9)]` so dark mode works
 - Test both modes for every new UI element
 
 ### Animation patterns
 - Slide-over panels: `.animate-panel-in-right` / `.animate-panel-out-right` on panel, `.animate-scrim-in` on overlay
-- Sidebar expand/collapse: `.animate-panel-in-left` / `.animate-panel-out-left`
+- Sidebar: CSS transition on width with `--duration-base` and `--ease-standard`
 - Dialogs: `.animate-scale-in` / `.animate-scale-out`
 - Hover/focus: `.transition-interactive` or `transition-colors`
-- Entering = `--ease-out`, exiting = `--ease-in`
-- Only animate `transform` and `opacity` (GPU-composited, 60fps)
-
-### Adding new tokens
-1. Check if an existing token works (within ±2px or ±1 shade)
-2. If genuinely new and used 3+ places: add to `globals.css`, document in `specs/tokens/token-reference.md`
-3. Primitives → `@theme { }`, semantics → `:root` / `.dark`, bridge → `@theme inline { }`
-
-### Token source of truth
-All visual tokens live in `src/styles/globals.css`. Reference docs live in `specs/tokens/token-reference.md`. Design principles live in `docs/design-system/design-standards.md`.
+- Every animated entrance MUST have a corresponding animated exit
 
 ## UI Standards
 
 ### Shared Components
-- **SeverityBadge** (`components/SeverityBadge.tsx`) — use for all severity indicators; never define local severity colors
+- **SeverityBadge** (`components/SeverityBadge.tsx`) — use for all severity indicators
 - **StatusBadge** (`components/StatusBadge.tsx`) — use for all review status badges
-- **EmptyState** (`components/EmptyState.tsx`) — use for all "no data" states inside cards
+- **EmptyState** (`components/EmptyState.tsx`) — use for all "no data" states
 - **DataList** (`components/DataList.tsx`) — use for any clickable list of items with severity + timestamp
 
 ### Shared Utilities
-- **`lib/ui-constants.ts`** — single source of truth for `SEVERITY_CLASS`, `SEVERITY_DOT`, `SEVERITY_ICON`, `SEVERITIES`, `STATUS_CLASS`, `STATUS_LABEL`
-- **`lib/format.ts`** — shared `timeAgo()`, `formatDate()`, `capitalize()` — never define these locally in pages
+- **`lib/ui-constants.ts`** — single source of truth for severity/status mappings
+- **`lib/format.ts`** — shared `timeAgo()`, `formatDate()`, `capitalize()` — never define these locally
 
 ### Page Layout Patterns
-- Outer wrapper: `<div className="space-y-6">`
-- Page title: `<h1 className="text-2xl font-semibold text-foreground">`
-- Page subtitle: `<p className="text-sm text-muted-foreground mt-1">`
-- Card section headers: `<CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">`
-- Empty states: `py-12`, icon `text-3xl`, icon margin `mb-2`
-- Back links: `inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors`
+- Outer wrapper: `<Flex direction="column" gap="6">`
+- Page title: `<Heading size="6" weight="bold">`
+- Page subtitle: `<Text size="2" color="gray">`
+- Section header: `<Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">`
+- Empty states: centered Flex with icon + Text
+- Back links: `<Link size="2" color="gray">` with arrow icon
 
 ### Role vs Tier
 - **Role** (admin, intelligence, monitor) — determines permissions and nav visibility
 - **Tier** (monitor, intelligence) — determines subscription features and billing
 - Never conflate these. Admin accounts have no subscription tier.
-- Settings page for admin shows "Role: Admin" with no plan, no Stripe info, no upgrade button
-- Sidebar shows: tier name for practice_owners, "Admin" for admins
 
 ### Interactive Elements
-- All toggles must use `<Switch>` from `@/components/ui/switch` — never fake div-based toggles
-- All selects must use shadcn `<Select>` — never native `<select>`
-- All buttons must use `<Button>` from `@/components/ui/button`
+- All buttons: Radix `<Button>` or `<IconButton>`
+- All toggles: Radix `<Switch>`
+- All selects: Radix `<Select.Root>`
+- All inputs: Radix `<TextField.Root>` or `<TextArea>`
+- No raw HTML form elements
+
+### Token source of truth
+All visual tokens live in `app/globals.css`. Design principles live in `docs/design-system/design-standards.md`.
 
 ## Reference Documents
 - `docs/architecture/data-architecture-research.md` — taxonomy, classification, relationship model, schema additions
