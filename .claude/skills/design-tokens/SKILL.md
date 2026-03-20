@@ -1,42 +1,55 @@
-# Skill: Design Token Usage
+# Skill: Design Tokens (Radix Themes)
 
 ## Token decision tree
 
 When you need a visual value:
 
-1. **Color?** → Check semantic tokens in `specs/tokens/token-reference.md`. Use Tailwind class (`bg-primary`, `text-muted-foreground`). For opacity: `bg-primary/10`.
+1. **Color on a Radix Themes component?** → Use the `color` prop: `<Button color="green">`, `<Badge color="red">`. For the accent color, omit the prop (it defaults to the theme accent).
 
-2. **Spacing?** → Use Tailwind scale (`p-4`, `gap-2`, `space-y-6`). If it doesn't feel right, move ±1 step. Never invent arbitrary values.
+2. **Color on a custom component?** → Use Radix CSS variables: `bg-[var(--accent-9)]`, `text-[var(--gray-12)]`, `border-[var(--gray-6)]`. These swap automatically in dark mode.
 
-3. **Font size?** → Use `text-xs` through `text-3xl`. All are fluid (clamp-based).
+3. **Spacing on a Radix Themes component?** → Use layout props: `<Flex gap="4" p="5">`, `<Box m="3">`. Scale is 1–9.
 
-4. **Border radius?** → Use `rounded-sm` through `rounded-4xl` or `rounded-full`. For nested elements, calculate: `max(0px, outer_radius - padding)`.
+4. **Spacing on a custom component?** → Use Tailwind scale: `p-4`, `gap-6`, `space-y-4`. Or reference Radix tokens: `var(--space-4)`.
 
-5. **Shadow?** → Use `shadow-xs` through `shadow-xl`.
+5. **Typography?** → Use `<Heading size="6">` and `<Text size="2">`. Scale is 1–9.
 
-6. **Z-index?** → Use the scale: `z-[0]` base, `z-[10]` dropdown, `z-[40]` scrim, `z-[50]` panel. Reference `token-reference.md` for full list.
+6. **Border radius?** → Controlled globally by `<Theme radius="large">`. Override per-component with `radius` prop. Custom components: `var(--radius-3)`.
 
-7. **Animation?** → Use utility classes from globals.css (`.animate-panel-in-right`, `.transition-interactive`, etc.). For durations: reference `--duration-fast` through `--duration-slower`.
+7. **Shadow?** → Radix provides `--shadow-1` through `--shadow-6`. Use in Tailwind: `shadow-[var(--shadow-3)]`.
 
-## When to create a new token
+8. **Animation?** → Use Cedar's custom classes from globals.css: `.animate-panel-in-right`, `.transition-interactive`. Duration tokens: `--duration-fast` through `--duration-slower`.
 
-Create a new token ONLY when:
-- The value will be used in **3+ places**
-- No existing token is within ±2px or ±1 shade
-- It represents a genuinely new semantic concept
+## Color scale reference (12 steps)
 
-Process:
-1. Add the primitive value to `@theme { }` in `globals.css`
-2. If theme-switchable, add semantic aliases in `:root` and `.dark`
-3. If it needs a Tailwind utility, bridge it in `@theme inline { }`
-4. Document it in `specs/tokens/token-reference.md`
+| Steps | Purpose | Example usage |
+|-------|---------|--------------|
+| 1–2 | Backgrounds | `var(--accent-1)`, `var(--gray-2)` |
+| 3–5 | Interactive backgrounds | `var(--accent-3)` for hover, `var(--accent-5)` for active |
+| 6–8 | Borders | `var(--gray-6)` for subtle, `var(--accent-8)` for strong |
+| 9 | Solid backgrounds | `var(--accent-9)` for primary buttons |
+| 10 | Hovered solid | `var(--accent-10)` |
+| 11–12 | Text | `var(--gray-11)` muted, `var(--gray-12)` high-contrast |
+
+## Semantic color shortcuts
+
+- `var(--color-background)` — page background
+- `var(--color-surface)` — surface overlay
+- `var(--color-panel-solid)` — solid panel background
+- `var(--color-panel-translucent)` — frosted panel background
+- `var(--color-overlay)` — scrim/overlay behind modals
+
+## Status colors (always available regardless of accent)
+
+- Success: `color="green"` or `var(--green-9)`
+- Warning: `color="amber"` or `var(--amber-9)`
+- Error: `color="red"` or `var(--red-9)`
+- Info: `color="blue"` or `var(--blue-9)`
 
 ## Forbidden patterns
 
-- `text-[#ff0000]` — arbitrary color values
+- `bg-green-500` — raw Tailwind color (won't adapt to dark mode). Use `bg-[var(--accent-9)]`
+- `text-[#ff0000]` — hardcoded hex
 - `p-[13px]` — arbitrary spacing
-- `w-[347px]` — arbitrary widths (use max-w scale or layout tokens)
-- `z-[999]` — arbitrary z-index (use the scale)
-- `duration-[250ms]` — arbitrary durations (use token: `--duration-base`)
-- `rounded-[7px]` — arbitrary radius (use the derived scale)
-- Inline `style={{ }}` for colors, spacing, or layout (use for dynamic values only, like stagger delays)
+- Inline `style={{ color: 'red' }}` — use Radix `color="red"` prop or `var(--red-9)`
+- Overriding Radix Themes component backgrounds/borders with Tailwind classes — use props instead
