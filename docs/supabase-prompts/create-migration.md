@@ -26,6 +26,8 @@ For example:
 20240906123045_create_profiles.sql
 ```
 
+> **Cedar note:** Migrations 001–027 use a legacy `NNN_description.sql` naming scheme and are exempt from this convention. All migrations created after 027 must use the `YYYYMMDDHHmmss_description.sql` format.
+
 ## SQL Guidelines
 
 Write Postgres-compatible SQL code for Supabase migration files that:

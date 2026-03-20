@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 20, 2026 by Session 19
+Last updated: March 20, 2026 by Session 20
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,25 +24,12 @@ Last updated: March 20, 2026 by Session 19
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 19 completed the full shadcn/ui → Radix Themes design system migration (PRP: design-system-migration-radix-themes.md).
+Session 20 was a documentation and repo hygiene pass. No feature code was written.
 
-**What was built:**
-- Installed `@radix-ui/themes 3.3.0`; removed `shadcn`, `class-variance-authority`, `@phosphor-icons/react`, `lucide-react`, `radix-ui`, `@radix-ui/react-dropdown-menu`
-- Rewrote `app/globals.css`: Radix Colors palette with Cedar leaf green accent, Cedar motion/layout tokens, all animation keyframes preserved
-- Updated `app/providers.tsx`: added `<Theme accentColor="green" grayColor="gray" radius="large">` wrapper
-- Updated `lib/ui-constants.ts`: Radix CSS variables replace dark:-prefixed Tailwind color classes
-- Created `components/ThemeToggle.tsx` (moved from components/ui/theme-toggle.tsx)
-- Rewrote all 21 composite components in `components/`
-- Rewrote all 26 pages/components in `app/` (dashboard + admin)
-- Stubbed out `components/ui/*.tsx` (no longer needed — can be deleted)
-- Deleted stale files: `specs/tokens/token-reference.md`, `specs/components/slide-over-panel.md`, `scripts/token-audit.js`, `docs/design-system/current-state-audit-20260320.md`
-- Build: 0 errors, 0 warnings — all 31 routes compile clean
-- Deployed to cedar-beta.vercel.app (state: READY)
-
-**Decisions made:**
-- `components/ui/` directory and `components.json` could not be deleted via `rm -rf` (hook blocked). Files were stubbed instead. Can be cleaned up manually or via a tool with explicit permission.
-- `components/LibraryBrowser.tsx` stubbed (orphaned, not imported anywhere)
-- CSS layer ordering approach simplified — `@layer theme, base, radix, components, utilities` with explicit import assignments conflicts with tw-animate-css `@utility` declarations in Tailwind v4; used standard `@import "tailwindcss"` instead
+**What was changed:**
+- `CLAUDE.md`: removed stale page count from Module 9 status line; updated Dashboard status to "settings persist, some pages incomplete"; corrected architecture reference path to `docs/architecture/architecture.md`
+- `docs/supabase-prompts/create-migration.md`: added a blockquote note documenting the naming exception for legacy migrations 001–027 — no code impact
+- All changes are non-functional; no migrations, no schema changes, no new routes
 
 ## Next Session Priority
 1. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode

@@ -41,7 +41,7 @@ Cedar shrinks the delay between a regulation being updated and a practice owner 
 6B. HITL Review Layer — ⚙️ Partial (routes work, rule-matching incomplete)
 7. Audit Trail + Knowledge Graph — ⚙️ Partial (chain validator works, KG writes inline, snapshot.ts stub)
 8. Delivery (Resend + OneSignal) — ✅ Email DONE, OneSignal deferred to 1.0 Full
-9. Dashboard (Next.js) — ⚙️ Partial (13 pages, settings toggles don't persist)
+9. Dashboard (Next.js) — ⚙️ Partial (settings persist, some pages incomplete)
 
 **Important:** This list reflects last known state. `STATUS.md` has the current ground truth. Always verify against actual files and migrations.
 
@@ -239,7 +239,7 @@ A module is not complete until its test criteria pass.
 | Completed PRPs | `PRPs/completed/` |
 | PRP template | `PRPs/templates/prp_base.md` |
 | Code pattern examples | `examples/patterns/` |
-| Architecture reference | `docs/architecture.md` |
+| Architecture reference | `docs/architecture/architecture.md` |
 
 ## Configuration Tables (read from DB, not code)
 
