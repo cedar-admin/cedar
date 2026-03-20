@@ -16,3 +16,11 @@ export function formatDate(iso: string): string {
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
+
+export function daysUntil(iso: string | null): number | null {
+  if (!iso) return null
+  const target = new Date(iso)
+  const now = new Date()
+  const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  return diff
+}
