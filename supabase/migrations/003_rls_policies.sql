@@ -1,113 +1,162 @@
--- Cedar MVP: Row Level Security + Append-Only Enforcement
-
--- ============================================================
--- Enable RLS on all sensitive tables
--- ============================================================
-ALTER TABLE changes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE practice_acknowledgments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE practices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cost_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sources ENABLE ROW LEVEL SECURITY;
-ALTER TABLE source_urls ENABLE ROW LEVEL SECURITY;
-ALTER TABLE review_actions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE feature_flags ENABLE ROW LEVEL SECURITY;
-ALTER TABLE review_rules ENABLE ROW LEVEL SECURITY;
-ALTER TABLE system_config ENABLE ROW LEVEL SECURITY;
-ALTER TABLE prompt_templates ENABLE ROW LEVEL SECURITY;
+-- Migration: 003_rls_policies.sql
+-- Purpose: RLS policies for core tables, append-only trigger on changes, auto-update timestamp on system_config
+-- Tables affected: sources, source_urls, feature_flags, review_rules, system_config, prompt_templates, practices, changes, practice_acknowledgments, review_actions, cost_events
+-- Special considerations: RLS enablement moved to 001/002; practices_own and acknowledgments_own split into per-operation policies
 
 -- ============================================================
 -- Sources: readable by all authenticated users, writable by service role only
 -- ============================================================
-CREATE POLICY "sources_read" ON sources
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "sources_select_authenticated" on public.sources
+  for select to authenticated
+  using (true);
 
-CREATE POLICY "source_urls_read" ON source_urls
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "source_urls_select_authenticated" on public.source_urls
+  for select to authenticated
+  using (true);
 
 -- ============================================================
 -- Config tables: readable by all authenticated users
 -- ============================================================
-CREATE POLICY "feature_flags_read" ON feature_flags
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "feature_flags_select_authenticated" on public.feature_flags
+  for select to authenticated
+  using (true);
 
-CREATE POLICY "review_rules_read" ON review_rules
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "review_rules_select_authenticated" on public.review_rules
+  for select to authenticated
+  using (true);
 
-CREATE POLICY "system_config_read" ON system_config
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "system_config_select_authenticated" on public.system_config
+  for select to authenticated
+  using (true);
 
-CREATE POLICY "prompt_templates_read" ON prompt_templates
-  FOR SELECT USING (auth.role() = 'authenticated' AND is_active = true);
+create policy "prompt_templates_select_authenticated" on public.prompt_templates
+  for select to authenticated
+  using (is_active = true);
 
 -- ============================================================
--- Practices: owners see only their own practice
+-- Practices: owners see only their own practice (split into per-operation policies)
 -- ============================================================
-CREATE POLICY "practices_own" ON practices
-  FOR ALL USING (owner_email = (auth.jwt() ->> 'email'));
+create policy "practices_select_owner" on public.practices
+  for select to authenticated
+  using (owner_email = ((select auth.jwt()) ->> 'email'));
+
+create policy "practices_insert_owner" on public.practices
+  for insert to authenticated
+  with check (owner_email = ((select auth.jwt()) ->> 'email'));
+
+create policy "practices_update_owner" on public.practices
+  for update to authenticated
+  using (owner_email = ((select auth.jwt()) ->> 'email'))
+  with check (owner_email = ((select auth.jwt()) ->> 'email'));
+
+create policy "practices_delete_owner" on public.practices
+  for delete to authenticated
+  using (owner_email = ((select auth.jwt()) ->> 'email'));
 
 -- ============================================================
 -- Changes: readable by all authenticated practices (shared resource)
 -- Writable only by service role (Inngest pipeline)
 -- ============================================================
-CREATE POLICY "changes_read" ON changes
-  FOR SELECT USING (auth.role() = 'authenticated');
+create policy "changes_select_authenticated" on public.changes
+  for select to authenticated
+  using (true);
 
 -- ============================================================
--- Practice acknowledgments: practice sees only their own acknowledgments
+-- Practice acknowledgments: practice sees only their own acknowledgments (split into per-operation policies)
 -- ============================================================
-CREATE POLICY "acknowledgments_own" ON practice_acknowledgments
-  FOR ALL USING (
+create policy "acknowledgments_select_owner" on public.practice_acknowledgments
+  for select to authenticated
+  using (
     practice_id = (
-      SELECT id FROM practices WHERE owner_email = (auth.jwt() ->> 'email')
+      select id from public.practices where owner_email = ((select auth.jwt()) ->> 'email')
+    )
+  );
+
+create policy "acknowledgments_insert_owner" on public.practice_acknowledgments
+  for insert to authenticated
+  with check (
+    practice_id = (
+      select id from public.practices where owner_email = ((select auth.jwt()) ->> 'email')
+    )
+  );
+
+create policy "acknowledgments_update_owner" on public.practice_acknowledgments
+  for update to authenticated
+  using (
+    practice_id = (
+      select id from public.practices where owner_email = ((select auth.jwt()) ->> 'email')
+    )
+  )
+  with check (
+    practice_id = (
+      select id from public.practices where owner_email = ((select auth.jwt()) ->> 'email')
+    )
+  );
+
+create policy "acknowledgments_delete_owner" on public.practice_acknowledgments
+  for delete to authenticated
+  using (
+    practice_id = (
+      select id from public.practices where owner_email = ((select auth.jwt()) ->> 'email')
     )
   );
 
 -- ============================================================
 -- Review actions: reviewers and admins only
 -- ============================================================
-CREATE POLICY "review_actions_reviewer" ON review_actions
-  FOR SELECT USING (
-    (auth.jwt() ->> 'role') IN ('reviewer', 'admin')
+create policy "review_actions_select_reviewer" on public.review_actions
+  for select to authenticated
+  using (
+    ((select auth.jwt()) ->> 'role') in ('reviewer', 'admin')
   );
 
 -- ============================================================
 -- Cost events: admin only
 -- ============================================================
-CREATE POLICY "cost_events_admin" ON cost_events
-  FOR SELECT USING ((auth.jwt() ->> 'role') = 'admin');
+create policy "cost_events_select_admin" on public.cost_events
+  for select to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
 
 -- ============================================================
 -- APPEND-ONLY enforcement on changes table
 -- Blocks UPDATE and DELETE at the database level — no exceptions
 -- ============================================================
-CREATE OR REPLACE FUNCTION enforce_changes_append_only()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF TG_OP = 'UPDATE' THEN
-    RAISE EXCEPTION 'changes table is append-only. Use superseded_by to correct a change record.';
-  END IF;
-  IF TG_OP = 'DELETE' THEN
-    RAISE EXCEPTION 'changes table is append-only. Records cannot be deleted.';
-  END IF;
-  RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.enforce_changes_append_only()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if tg_op = 'UPDATE' then
+    raise exception 'changes table is append-only. Use superseded_by to correct a change record.';
+  end if;
+  if tg_op = 'DELETE' then
+    raise exception 'changes table is append-only. Records cannot be deleted.';
+  end if;
+  return null;
+end;
+$$;
 
-CREATE TRIGGER changes_append_only
-  BEFORE UPDATE OR DELETE ON changes
-  FOR EACH ROW EXECUTE FUNCTION enforce_changes_append_only();
+create trigger changes_append_only
+  before update or delete on public.changes
+  for each row execute function public.enforce_changes_append_only();
 
 -- ============================================================
 -- Auto-update updated_at on system_config
 -- ============================================================
-CREATE OR REPLACE FUNCTION update_system_config_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = now();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.update_system_config_timestamp()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
 
-CREATE TRIGGER system_config_updated_at
-  BEFORE UPDATE ON system_config
-  FOR EACH ROW EXECUTE FUNCTION update_system_config_timestamp();
+create trigger system_config_updated_at
+  before update on public.system_config
+  for each row execute function public.update_system_config_timestamp();

@@ -1,3 +1,8 @@
+-- Migration: 019_kg_corpus_columns.sql
+-- Purpose: Add corpus ingestion columns to kg_entities (publication_date, document_type, pdf_url, etc.)
+-- Tables affected: kg_entities
+-- Special considerations: None
+
 -- ============================================================================
 -- Cedar Migration 019: KG Entity Columns for Corpus Ingestion
 -- ============================================================================
@@ -6,66 +11,66 @@
 -- Columns here are promoted because they're filterable, sortable, or joinable.
 -- ============================================================================
 
--- Publication date: when the document was published/posted (distinct from 
+-- Publication date: when the document was published/posted (distinct from
 -- effective_date, which is when it takes legal effect). Nearly every source
 -- has this concept — FR publish date, board posting date, enforcement report date.
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  publication_date DATE;
+alter table public.kg_entities add column if not exists
+  publication_date date;
 
--- Document type: more granular than entity_type. entity_type is the broad 
--- category (regulation, enforcement_action). document_type is the specific 
+-- Document type: more granular than entity_type. entity_type is the broad
+-- category (regulation, enforcement_action). document_type is the specific
 -- format from the source (RULE, PROPOSED_RULE, NOTICE, GUIDANCE, FINAL_ORDER,
 -- BOARD_MINUTES, WARNING_LETTER, RECALL, etc.). Every source has this.
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  document_type TEXT;
+alter table public.kg_entities add column if not exists
+  document_type text;
 
 -- PDF URL: many sources provide both an HTML view and a PDF. external_url
 -- captures the primary link (usually HTML). This captures the PDF when available.
 -- Needed for eventual Docling extraction.
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  pdf_url TEXT;
+alter table public.kg_entities add column if not exists
+  pdf_url text;
 
 -- Comment close date: deadline for public comment on proposed rules.
--- Time-sensitive — proposed rules with upcoming deadlines are high-priority 
--- alerts. Applies to Federal Register, FL Administrative Register, and 
+-- Time-sensitive — proposed rules with upcoming deadlines are high-priority
+-- alerts. Applies to Federal Register, FL Administrative Register, and
 -- any source that publishes proposed rules.
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  comment_close_date DATE;
+alter table public.kg_entities add column if not exists
+  comment_close_date date;
 
 -- Agencies: JSONB array of agencies associated with this entity.
 -- Some documents span multiple agencies (e.g., joint FDA/DEA rules).
--- source_id captures the Cedar source; this captures the actual government 
+-- source_id captures the Cedar source; this captures the actual government
 -- agencies named on the document. Format: [{"name": "...", "slug": "...", "url": "..."}]
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  agencies JSONB;
+alter table public.kg_entities add column if not exists
+  agencies jsonb;
 
 -- CFR references: which Code of Federal Regulations parts this entity affects.
 -- Critical for connecting Federal Register rulemaking to the actual CFR sections
 -- they create/modify. Also useful for FL Administrative Code references.
 -- Format: [{"title": 21, "part": 216, "section": null}]
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  cfr_references JSONB;
+alter table public.kg_entities add column if not exists
+  cfr_references jsonb;
 
 -- Citation: the official legal citation (e.g., "89 FR 12345", "64B8-9.003 F.A.C.",
--- "Section 503A of the FD&C Act"). Distinct from identifier (which is a dedup key 
--- like document_number or report_number). Citation is the string a lawyer would use 
+-- "Section 503A of the FD&C Act"). Distinct from identifier (which is a dedup key
+-- like document_number or report_number). Citation is the string a lawyer would use
 -- to reference this document.
-ALTER TABLE kg_entities ADD COLUMN IF NOT EXISTS
-  citation TEXT;
+alter table public.kg_entities add column if not exists
+  citation text;
 
 -- Indexes for the new columns that will be filtered/sorted on
-CREATE INDEX IF NOT EXISTS idx_kg_entities_publication_date 
-  ON kg_entities(publication_date DESC) WHERE publication_date IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_kg_entities_document_type 
-  ON kg_entities(document_type) WHERE document_type IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_kg_entities_comment_close_date 
-  ON kg_entities(comment_close_date) WHERE comment_close_date IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_kg_entities_citation 
-  ON kg_entities(citation) WHERE citation IS NOT NULL;
+create index if not exists idx_kg_entities_publication_date
+  on public.kg_entities(publication_date desc) where publication_date is not null;
+create index if not exists idx_kg_entities_document_type
+  on public.kg_entities(document_type) where document_type is not null;
+create index if not exists idx_kg_entities_comment_close_date
+  on public.kg_entities(comment_close_date) where comment_close_date is not null;
+create index if not exists idx_kg_entities_citation
+  on public.kg_entities(citation) where citation is not null;
 
 -- ============================================================================
 -- NOTES:
--- 
+--
 -- Fields that remain in metadata JSONB (query via metadata->>'' or metadata->>''):
 --   Federal Register: docket_ids, regulation_id_numbers (RIN), significant (bool),
 --     full_text_xml_url, raw_text_url, page_length, start_page, end_page, volume,

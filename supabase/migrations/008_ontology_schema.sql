@@ -1,14 +1,15 @@
--- ============================================================================
--- Cedar Ontology Schema — Migration 001
--- Foundation for regulatory content classification and knowledge organization
--- ============================================================================
--- 
+-- Migration: 008_ontology_schema.sql
+-- Purpose: Ontology infrastructure — entity types, relationship types, domains, jurisdictions, classification rules/results/overrides, merge tracking, taxonomy changelog
+-- Tables affected: kg_entity_types, kg_relationship_types, kg_domains, kg_entity_domains, kg_jurisdictions, kg_entity_jurisdictions, classification_rules, classification_rule_sets, classification_results, classification_overrides, kg_entity_merges, taxonomy_changelog (creates); kg_entities, kg_relationships (alters)
+-- Special considerations: Hierarchical taxonomy with depth limit; 4 append-only trigger functions; seed data for entity types, relationship types, domains, jurisdictions, and classification rules
+
+--
 -- This migration creates the taxonomy, classification, and reclassification
 -- infrastructure that sits on top of the existing kg_entities, kg_relationships,
 -- and kg_entity_versions tables defined in the build guide.
 --
 -- Design principles:
---   1. Taxonomy is data, not code. Entity types, relationship types, and 
+--   1. Taxonomy is data, not code. Entity types, relationship types, and
 --      classification rules are all database rows, editable without deploys.
 --   2. Hierarchical with controlled depth. Entity types support parent/child
 --      nesting, but depth is soft-capped at 3 levels to prevent over-specification.
@@ -25,66 +26,72 @@
 -- ============================================================================
 
 -- The master registry of entity types. Every kg_entity record references one
--- of these types. Types are hierarchical: a "Final Rule" is a child of 
+-- of these types. Types are hierarchical: a "Final Rule" is a child of
 -- "Regulation," which lets you query at whatever granularity you need.
 
-CREATE TABLE kg_entity_types (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.kg_entity_types (
+    id              uuid primary key default gen_random_uuid(),
+
     -- Identity
-    slug            TEXT NOT NULL UNIQUE,          -- machine key: 'regulation', 'enforcement_action'
-    name            TEXT NOT NULL,                 -- display: 'Regulation', 'Enforcement Action'
-    description     TEXT,                          -- one-sentence definition
-    
+    slug            text not null unique,          -- machine key: 'regulation', 'enforcement_action'
+    name            text not null,                 -- display: 'Regulation', 'Enforcement Action'
+    description     text,                          -- one-sentence definition
+
     -- Hierarchy
-    parent_id       UUID REFERENCES kg_entity_types(id),
-    depth           INT NOT NULL DEFAULT 0,        -- 0 = root, 1 = child, 2 = grandchild
-    path            TEXT NOT NULL DEFAULT '',       -- materialized path: 'regulation/final_rule'
-    sort_order      INT NOT NULL DEFAULT 0,        -- display ordering within siblings
-    
+    parent_id       uuid references public.kg_entity_types(id),
+    depth           int not null default 0,        -- 0 = root, 1 = child, 2 = grandchild
+    path            text not null default '',       -- materialized path: 'regulation/final_rule'
+    sort_order      int not null default 0,        -- display ordering within siblings
+
     -- Classification guidance
-    distinguishing_criteria TEXT,                  -- what separates this type from similar types
-    example_documents       TEXT[],               -- real-world examples for classifier training
-    
+    distinguishing_criteria text,                  -- what separates this type from similar types
+    example_documents       text[],               -- real-world examples for classifier training
+
     -- Lifecycle
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    is_system       BOOLEAN NOT NULL DEFAULT false, -- system types can't be deleted, only deactivated
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT,                          -- admin user id or 'system'
-    
+    is_active       boolean not null default true,
+    is_system       boolean not null default false, -- system types can't be deleted, only deactivated
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    created_by      text,                          -- admin user id or 'system'
+
     -- Constraints
-    CONSTRAINT depth_limit CHECK (depth <= 3),
-    CONSTRAINT slug_format CHECK (slug ~ '^[a-z][a-z0-9_]*$')
+    constraint depth_limit check (depth <= 3),
+    constraint slug_format check (slug ~ '^[a-z][a-z0-9_]*$')
 );
 
-CREATE INDEX idx_kg_entity_types_parent ON kg_entity_types(parent_id);
-CREATE INDEX idx_kg_entity_types_path ON kg_entity_types(path);
-CREATE INDEX idx_kg_entity_types_active ON kg_entity_types(is_active) WHERE is_active = true;
+comment on table public.kg_entity_types is 'Hierarchical registry of entity types — every kg_entity references one type.';
+
+create index idx_kg_entity_types_parent on public.kg_entity_types(parent_id);
+create index idx_kg_entity_types_path on public.kg_entity_types(path);
+create index idx_kg_entity_types_active on public.kg_entity_types(is_active) where is_active = true;
 
 -- Trigger to auto-compute path and depth from parent
-CREATE OR REPLACE FUNCTION compute_entity_type_path()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.parent_id IS NULL THEN
-        NEW.depth := 0;
-        NEW.path := NEW.slug;
-    ELSE
-        SELECT depth + 1, path || '/' || NEW.slug
-        INTO NEW.depth, NEW.path
-        FROM kg_entity_types WHERE id = NEW.parent_id;
-        
-        IF NEW.depth > 3 THEN
-            RAISE EXCEPTION 'Entity type hierarchy cannot exceed 3 levels deep';
-        END IF;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.compute_entity_type_path()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+    if new.parent_id is null then
+        new.depth := 0;
+        new.path := new.slug;
+    else
+        select depth + 1, path || '/' || new.slug
+        into new.depth, new.path
+        from public.kg_entity_types where id = new.parent_id;
 
-CREATE TRIGGER trg_entity_type_path
-    BEFORE INSERT OR UPDATE OF parent_id, slug ON kg_entity_types
-    FOR EACH ROW EXECUTE FUNCTION compute_entity_type_path();
+        if new.depth > 3 then
+            raise exception 'Entity type hierarchy cannot exceed 3 levels deep';
+        end if;
+    end if;
+    return new;
+end;
+$$;
+
+create trigger trg_entity_type_path
+    before insert or update of parent_id, slug on public.kg_entity_types
+    for each row execute function public.compute_entity_type_path();
 
 
 -- ============================================================================
@@ -94,36 +101,38 @@ CREATE TRIGGER trg_entity_type_path
 -- Every kg_relationship record references one of these types.
 -- Directional: from_entity → to_entity means something specific.
 
-CREATE TABLE kg_relationship_types (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.kg_relationship_types (
+    id              uuid primary key default gen_random_uuid(),
+
     -- Identity
-    slug            TEXT NOT NULL UNIQUE,
-    name            TEXT NOT NULL,                 -- 'Supersedes', 'Amends'
-    description     TEXT,                          -- what this relationship means
-    
+    slug            text not null unique,
+    name            text not null,                 -- 'Supersedes', 'Amends'
+    description     text,                          -- what this relationship means
+
     -- Directionality
-    forward_label   TEXT NOT NULL,                 -- A → B: "supersedes"
-    inverse_label   TEXT NOT NULL,                 -- B → A: "superseded by"
-    
+    forward_label   text not null,                 -- A → B: "supersedes"
+    inverse_label   text not null,                 -- B → A: "superseded by"
+
     -- Constraints on usage
-    valid_from_types TEXT[],                       -- entity type slugs allowed as source (null = any)
-    valid_to_types   TEXT[],                       -- entity type slugs allowed as target (null = any)
-    is_temporal      BOOLEAN NOT NULL DEFAULT false, -- does this relationship have effective dates?
-    is_exclusive     BOOLEAN NOT NULL DEFAULT false, -- can an entity have only one of these?
-    
+    valid_from_types text[],                       -- entity type slugs allowed as source (null = any)
+    valid_to_types   text[],                       -- entity type slugs allowed as target (null = any)
+    is_temporal      boolean not null default false, -- does this relationship have effective dates?
+    is_exclusive     boolean not null default false, -- can an entity have only one of these?
+
     -- Lifecycle
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    is_system       BOOLEAN NOT NULL DEFAULT false,
-    sort_order      INT NOT NULL DEFAULT 0,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT,
-    
-    CONSTRAINT slug_format CHECK (slug ~ '^[a-z][a-z0-9_]*$')
+    is_active       boolean not null default true,
+    is_system       boolean not null default false,
+    sort_order      int not null default 0,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    created_by      text,
+
+    constraint slug_format check (slug ~ '^[a-z][a-z0-9_]*$')
 );
 
-CREATE INDEX idx_kg_relationship_types_active ON kg_relationship_types(is_active) WHERE is_active = true;
+comment on table public.kg_relationship_types is 'Typed directed relationships between entities with directionality labels.';
+
+create index idx_kg_relationship_types_active on public.kg_relationship_types(is_active) where is_active = true;
 
 
 -- ============================================================================
@@ -134,32 +143,36 @@ CREATE INDEX idx_kg_relationship_types_active ON kg_relationship_types(is_active
 -- An entity can belong to multiple domains (e.g., a compounding rule touches
 -- both "controlled_substances" and "pharmacy_regulation").
 
-CREATE TABLE kg_domains (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug            TEXT NOT NULL UNIQUE,
-    name            TEXT NOT NULL,
-    description     TEXT,
-    parent_id       UUID REFERENCES kg_domains(id),
-    color           TEXT,                          -- hex color for UI display
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    sort_order      INT NOT NULL DEFAULT 0,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    
-    CONSTRAINT slug_format CHECK (slug ~ '^[a-z][a-z0-9_]*$')
+create table public.kg_domains (
+    id              uuid primary key default gen_random_uuid(),
+    slug            text not null unique,
+    name            text not null,
+    description     text,
+    parent_id       uuid references public.kg_domains(id),
+    color           text,                          -- hex color for UI display
+    is_active       boolean not null default true,
+    sort_order      int not null default 0,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+
+    constraint slug_format check (slug ~ '^[a-z][a-z0-9_]*$')
 );
+
+comment on table public.kg_domains is 'Cross-cutting domain labels applied to entities (many-to-many via kg_entity_domains).';
 
 -- Junction table: entities ↔ domains (many-to-many)
-CREATE TABLE kg_entity_domains (
-    entity_id       UUID NOT NULL REFERENCES kg_entities(id) ON DELETE CASCADE,
-    domain_id       UUID NOT NULL REFERENCES kg_domains(id) ON DELETE CASCADE,
-    confidence      DECIMAL(3,2),                  -- 0.00-1.00, null if manually assigned
-    assigned_by     TEXT NOT NULL DEFAULT 'system', -- 'system', 'agent', or admin user id
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (entity_id, domain_id)
+create table public.kg_entity_domains (
+    entity_id       uuid not null references public.kg_entities(id) on delete cascade,
+    domain_id       uuid not null references public.kg_domains(id) on delete cascade,
+    confidence      decimal(3,2),                  -- 0.00-1.00, null if manually assigned
+    assigned_by     text not null default 'system', -- 'system', 'agent', or admin user id
+    created_at      timestamptz not null default now(),
+    primary key (entity_id, domain_id)
 );
 
-CREATE INDEX idx_entity_domains_domain ON kg_entity_domains(domain_id);
+comment on table public.kg_entity_domains is 'Junction table mapping entities to domains with confidence scores.';
+
+create index idx_entity_domains_domain on public.kg_entity_domains(domain_id);
 
 
 -- ============================================================================
@@ -169,25 +182,29 @@ CREATE INDEX idx_entity_domains_domain ON kg_entity_domains(domain_id);
 -- Separate from the jurisdiction column on kg_entities (which is a default).
 -- Some entities span multiple jurisdictions. This table handles that.
 
-CREATE TABLE kg_jurisdictions (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    code            TEXT NOT NULL UNIQUE,           -- 'US', 'FL', 'FL-BOM', 'FL-BOP'
-    name            TEXT NOT NULL,
-    jurisdiction_type TEXT NOT NULL,                -- 'federal', 'state', 'board', 'local'
-    parent_code     TEXT REFERENCES kg_jurisdictions(code),
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+create table public.kg_jurisdictions (
+    id              uuid primary key default gen_random_uuid(),
+    code            text not null unique,           -- 'US', 'FL', 'FL-BOM', 'FL-BOP'
+    name            text not null,
+    jurisdiction_type text not null,                -- 'federal', 'state', 'board', 'local'
+    parent_code     text references public.kg_jurisdictions(code),
+    is_active       boolean not null default true,
+    created_at      timestamptz not null default now()
 );
 
-CREATE TABLE kg_entity_jurisdictions (
-    entity_id       UUID NOT NULL REFERENCES kg_entities(id) ON DELETE CASCADE,
-    jurisdiction_id UUID NOT NULL REFERENCES kg_jurisdictions(id) ON DELETE CASCADE,
-    is_primary      BOOLEAN NOT NULL DEFAULT false,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (entity_id, jurisdiction_id)
+comment on table public.kg_jurisdictions is 'Hierarchical jurisdiction registry — federal, state, board, local.';
+
+create table public.kg_entity_jurisdictions (
+    entity_id       uuid not null references public.kg_entities(id) on delete cascade,
+    jurisdiction_id uuid not null references public.kg_jurisdictions(id) on delete cascade,
+    is_primary      boolean not null default false,
+    created_at      timestamptz not null default now(),
+    primary key (entity_id, jurisdiction_id)
 );
 
-CREATE INDEX idx_entity_jurisdictions_jur ON kg_entity_jurisdictions(jurisdiction_id);
+comment on table public.kg_entity_jurisdictions is 'Junction table mapping entities to multiple jurisdictions.';
+
+create index idx_entity_jurisdictions_jur on public.kg_entity_jurisdictions(jurisdiction_id);
 
 
 -- ============================================================================
@@ -197,73 +214,77 @@ CREATE INDEX idx_entity_jurisdictions_jur ON kg_entity_jurisdictions(jurisdictio
 -- Programmatic rules evaluated at ingest time. Rules are stored as database
 -- rows and applied in priority order. Editable via admin UI or prompt.
 
-CREATE TABLE classification_rules (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.classification_rules (
+    id              uuid primary key default gen_random_uuid(),
+
     -- Identity
-    name            TEXT NOT NULL,
-    description     TEXT,
-    
+    name            text not null,
+    description     text,
+
     -- Rule definition
-    rule_type       TEXT NOT NULL DEFAULT 'assign_entity_type',
+    rule_type       text not null default 'assign_entity_type',
     -- 'assign_entity_type' — sets entity_type on matching content
     -- 'assign_domain'      — tags matching content with a domain
     -- 'assign_severity'    — sets severity level
     -- 'flag_for_review'    — routes to HITL review
     -- 'exclude'            — marks content as non-regulatory noise
-    
+
     -- Conditions (evaluated as AND — all must match)
-    conditions      JSONB NOT NULL DEFAULT '[]',
+    conditions      jsonb not null default '[]',
     -- Each condition: { "field": "...", "operator": "...", "value": "..." }
     -- Fields: source_id, source_name, source_agency, jurisdiction,
     --         content_keywords, document_structure, url_pattern,
     --         content_length, detected_severity, agent_confidence
-    -- Operators: eq, neq, contains, not_contains, gt, lt, gte, lte, 
+    -- Operators: eq, neq, contains, not_contains, gt, lt, gte, lte,
     --            matches (regex), in, not_in, exists, not_exists
-    
+
     -- Action (what to do when conditions match)
-    action          JSONB NOT NULL DEFAULT '{}',
+    action          jsonb not null default '{}',
     -- Examples:
     --   { "entity_type_slug": "enforcement_action" }
     --   { "domain_slugs": ["compounding", "controlled_substances"] }
     --   { "severity": "critical", "requires_review": true }
     --   { "exclude": true, "reason": "navigation content" }
-    
+
     -- Execution
-    priority        INT NOT NULL DEFAULT 100,       -- lower = evaluated first
-    stop_on_match   BOOLEAN NOT NULL DEFAULT false,  -- if true, skip remaining rules
-    rule_set_id     UUID,                           -- optional grouping (FK added below)
-    
+    priority        int not null default 100,       -- lower = evaluated first
+    stop_on_match   boolean not null default false,  -- if true, skip remaining rules
+    rule_set_id     uuid,                           -- optional grouping (FK added below)
+
     -- Lifecycle
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    version         INT NOT NULL DEFAULT 1,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT NOT NULL DEFAULT 'system',
-    
+    is_active       boolean not null default true,
+    version         int not null default 1,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    created_by      text not null default 'system',
+
     -- Stats
-    times_matched   BIGINT NOT NULL DEFAULT 0,
-    last_matched_at TIMESTAMPTZ
+    times_matched   bigint not null default 0,
+    last_matched_at timestamptz
 );
 
-CREATE INDEX idx_classification_rules_active ON classification_rules(is_active, priority) 
-    WHERE is_active = true;
-CREATE INDEX idx_classification_rules_type ON classification_rules(rule_type);
+comment on table public.classification_rules is 'Programmatic rules evaluated at ingest time for entity classification.';
+
+create index idx_classification_rules_active on public.classification_rules(is_active, priority)
+    where is_active = true;
+create index idx_classification_rules_type on public.classification_rules(rule_type);
 
 -- Rule sets: named groups of rules that can be enabled/disabled together
-CREATE TABLE classification_rule_sets (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name            TEXT NOT NULL,
-    description     TEXT,
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT NOT NULL DEFAULT 'system'
+create table public.classification_rule_sets (
+    id              uuid primary key default gen_random_uuid(),
+    name            text not null,
+    description     text,
+    is_active       boolean not null default true,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    created_by      text not null default 'system'
 );
 
-ALTER TABLE classification_rules 
-    ADD CONSTRAINT fk_rule_set 
-    FOREIGN KEY (rule_set_id) REFERENCES classification_rule_sets(id);
+comment on table public.classification_rule_sets is 'Named groups of classification rules that can be toggled together.';
+
+alter table public.classification_rules
+    add constraint fk_rule_set
+    foreign key (rule_set_id) references public.classification_rule_sets(id);
 
 
 -- ============================================================================
@@ -271,52 +292,54 @@ ALTER TABLE classification_rules
 -- ============================================================================
 
 -- Every classification attempt (programmatic or agent) produces a result record.
--- This is the provenance layer — you can always trace why something was 
+-- This is the provenance layer — you can always trace why something was
 -- classified the way it was.
 
-CREATE TABLE classification_results (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.classification_results (
+    id              uuid primary key default gen_random_uuid(),
+
     -- What was classified
-    change_id       UUID REFERENCES changes(id),           -- if classifying a change
-    entity_id       UUID REFERENCES kg_entities(id),       -- if classifying an entity
-    
+    change_id       uuid references public.changes(id),           -- if classifying a change
+    entity_id       uuid references public.kg_entities(id),       -- if classifying an entity
+
     -- Classification output
-    entity_type_slug    TEXT REFERENCES kg_entity_types(slug),
-    domain_slugs        TEXT[],
-    severity            TEXT,
-    confidence          DECIMAL(3,2),                       -- 0.00-1.00
-    
+    entity_type_slug    text references public.kg_entity_types(slug),
+    domain_slugs        text[],
+    severity            text,
+    confidence          decimal(3,2),                       -- 0.00-1.00
+
     -- How it was classified
-    classification_method TEXT NOT NULL,
+    classification_method text not null,
     -- 'programmatic' — matched a classification_rule
     -- 'agent'        — classified by intelligence pipeline
     -- 'manual'       — admin override
-    
+
     -- Provenance
-    rule_id         UUID REFERENCES classification_rules(id),  -- which rule matched (programmatic)
-    agent_name      TEXT,                                       -- which agent (agent)
-    agent_version   TEXT,                                       -- agent@version
-    model           TEXT,                                       -- claude model used
-    reasoning       TEXT,                                       -- agent's reasoning or admin's notes
-    raw_output      JSONB,                                      -- full agent response
-    
+    rule_id         uuid references public.classification_rules(id),  -- which rule matched (programmatic)
+    agent_name      text,                                       -- which agent (agent)
+    agent_version   text,                                       -- agent@version
+    model           text,                                       -- claude model used
+    reasoning       text,                                       -- agent's reasoning or admin's notes
+    raw_output      jsonb,                                      -- full agent response
+
     -- Lifecycle
-    is_current      BOOLEAN NOT NULL DEFAULT true,              -- latest classification for this entity
-    superseded_by   UUID REFERENCES classification_results(id),
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT NOT NULL DEFAULT 'system',
-    
+    is_current      boolean not null default true,              -- latest classification for this entity
+    superseded_by   uuid references public.classification_results(id),
+    created_at      timestamptz not null default now(),
+    created_by      text not null default 'system',
+
     -- At least one target must be set
-    CONSTRAINT has_target CHECK (change_id IS NOT NULL OR entity_id IS NOT NULL)
+    constraint has_target check (change_id is not null or entity_id is not null)
 );
 
-CREATE INDEX idx_classification_results_entity ON classification_results(entity_id) 
-    WHERE is_current = true;
-CREATE INDEX idx_classification_results_change ON classification_results(change_id);
-CREATE INDEX idx_classification_results_method ON classification_results(classification_method);
-CREATE INDEX idx_classification_results_confidence ON classification_results(confidence) 
-    WHERE confidence < 0.7;
+comment on table public.classification_results is 'Provenance records for every classification attempt — programmatic, agent, or manual.';
+
+create index idx_classification_results_entity on public.classification_results(entity_id)
+    where is_current = true;
+create index idx_classification_results_change on public.classification_results(change_id);
+create index idx_classification_results_method on public.classification_results(classification_method);
+create index idx_classification_results_confidence on public.classification_results(confidence)
+    where confidence < 0.7;
 
 
 -- ============================================================================
@@ -325,46 +348,52 @@ CREATE INDEX idx_classification_results_confidence ON classification_results(con
 
 -- Every manual change to a classification. Immutable audit trail.
 
-CREATE TABLE classification_overrides (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.classification_overrides (
+    id              uuid primary key default gen_random_uuid(),
+
     -- What was reclassified
-    entity_id       UUID REFERENCES kg_entities(id),
-    change_id       UUID REFERENCES changes(id),
-    
+    entity_id       uuid references public.kg_entities(id),
+    change_id       uuid references public.changes(id),
+
     -- What changed
-    field_changed   TEXT NOT NULL,                  -- 'entity_type', 'domains', 'severity', 'metadata'
-    old_value       JSONB NOT NULL,
-    new_value       JSONB NOT NULL,
-    
+    field_changed   text not null,                  -- 'entity_type', 'domains', 'severity', 'metadata'
+    old_value       jsonb not null,
+    new_value       jsonb not null,
+
     -- Who and why
-    overridden_by   TEXT NOT NULL,                  -- admin user id
-    reason          TEXT NOT NULL,                  -- required: explain every override
-    
+    overridden_by   text not null,                  -- admin user id
+    reason          text not null,                  -- required: explain every override
+
     -- Context
-    previous_result_id UUID REFERENCES classification_results(id),
-    new_result_id      UUID REFERENCES classification_results(id),
-    
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    
-    CONSTRAINT has_target CHECK (entity_id IS NOT NULL OR change_id IS NOT NULL)
+    previous_result_id uuid references public.classification_results(id),
+    new_result_id      uuid references public.classification_results(id),
+
+    created_at      timestamptz not null default now(),
+
+    constraint has_target check (entity_id is not null or change_id is not null)
 );
 
+comment on table public.classification_overrides is 'Append-only audit trail of manual reclassification decisions.';
+
 -- Override records are append-only
-CREATE OR REPLACE FUNCTION prevent_override_mutation()
-RETURNS TRIGGER AS $$
-BEGIN
-    RAISE EXCEPTION 'classification_overrides table is append-only.';
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.prevent_override_mutation()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+    raise exception 'classification_overrides table is append-only.';
+end;
+$$;
 
-CREATE TRIGGER enforce_override_append_only
-    BEFORE UPDATE OR DELETE ON classification_overrides
-    FOR EACH ROW EXECUTE FUNCTION prevent_override_mutation();
+create trigger enforce_override_append_only
+    before update or delete on public.classification_overrides
+    for each row execute function public.prevent_override_mutation();
 
-CREATE INDEX idx_overrides_entity ON classification_overrides(entity_id);
-CREATE INDEX idx_overrides_change ON classification_overrides(change_id);
-CREATE INDEX idx_overrides_by ON classification_overrides(overridden_by);
+create index idx_overrides_entity on public.classification_overrides(entity_id);
+create index idx_overrides_change on public.classification_overrides(change_id);
+create index idx_overrides_by on public.classification_overrides(overridden_by);
 
 
 -- ============================================================================
@@ -374,44 +403,50 @@ CREATE INDEX idx_overrides_by ON classification_overrides(overridden_by);
 -- When two ingested documents turn out to be the same regulation,
 -- they get merged. This table tracks every merge with full provenance.
 
-CREATE TABLE kg_entity_merges (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
+create table public.kg_entity_merges (
+    id              uuid primary key default gen_random_uuid(),
+
     -- The merge
-    surviving_entity_id UUID NOT NULL REFERENCES kg_entities(id),
-    merged_entity_id    UUID NOT NULL REFERENCES kg_entities(id),
-    
+    surviving_entity_id uuid not null references public.kg_entities(id),
+    merged_entity_id    uuid not null references public.kg_entities(id),
+
     -- Context
-    merge_reason    TEXT NOT NULL,
-    merge_strategy  TEXT NOT NULL DEFAULT 'keep_surviving',
+    merge_reason    text not null,
+    merge_strategy  text not null default 'keep_surviving',
     -- 'keep_surviving'   — surviving entity's data wins
-    -- 'keep_merged'      — merged entity's data wins  
+    -- 'keep_merged'      — merged entity's data wins
     -- 'combine'          — merge metadata from both
-    
+
     -- Snapshot of merged entity at time of merge (for undo)
-    merged_entity_snapshot JSONB NOT NULL,
-    
+    merged_entity_snapshot jsonb not null,
+
     -- Who
-    merged_by       TEXT NOT NULL,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    
-    CONSTRAINT different_entities CHECK (surviving_entity_id != merged_entity_id)
+    merged_by       text not null,
+    created_at      timestamptz not null default now(),
+
+    constraint different_entities check (surviving_entity_id != merged_entity_id)
 );
 
+comment on table public.kg_entity_merges is 'Append-only records of entity merge operations with full snapshots for undo.';
+
 -- Merge records are append-only
-CREATE OR REPLACE FUNCTION prevent_merge_mutation()
-RETURNS TRIGGER AS $$
-BEGIN
-    RAISE EXCEPTION 'kg_entity_merges table is append-only.';
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.prevent_merge_mutation()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+    raise exception 'kg_entity_merges table is append-only.';
+end;
+$$;
 
-CREATE TRIGGER enforce_merge_append_only
-    BEFORE UPDATE OR DELETE ON kg_entity_merges
-    FOR EACH ROW EXECUTE FUNCTION prevent_merge_mutation();
+create trigger enforce_merge_append_only
+    before update or delete on public.kg_entity_merges
+    for each row execute function public.prevent_merge_mutation();
 
-CREATE INDEX idx_merges_surviving ON kg_entity_merges(surviving_entity_id);
-CREATE INDEX idx_merges_merged ON kg_entity_merges(merged_entity_id);
+create index idx_merges_surviving on public.kg_entity_merges(surviving_entity_id);
+create index idx_merges_merged on public.kg_entity_merges(merged_entity_id);
 
 
 -- ============================================================================
@@ -422,35 +457,41 @@ CREATE INDEX idx_merges_merged ON kg_entity_merges(merged_entity_id);
 -- modifying rules) is logged here. This is distinct from entity classification
 -- changes — this tracks changes to the classification system itself.
 
-CREATE TABLE taxonomy_changelog (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
-    table_name      TEXT NOT NULL,                  -- which taxonomy table changed
-    record_id       UUID NOT NULL,                  -- which record changed
-    action          TEXT NOT NULL,                  -- 'insert', 'update', 'delete', 'deactivate'
-    
-    old_values      JSONB,                          -- before (null for inserts)
-    new_values      JSONB,                          -- after (null for deletes)
-    
-    changed_by      TEXT NOT NULL,                  -- admin user id or 'system'
-    reason          TEXT,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+create table public.taxonomy_changelog (
+    id              uuid primary key default gen_random_uuid(),
+
+    table_name      text not null,                  -- which taxonomy table changed
+    record_id       uuid not null,                  -- which record changed
+    action          text not null,                  -- 'insert', 'update', 'delete', 'deactivate'
+
+    old_values      jsonb,                          -- before (null for inserts)
+    new_values      jsonb,                          -- after (null for deletes)
+
+    changed_by      text not null,                  -- admin user id or 'system'
+    reason          text,
+    created_at      timestamptz not null default now()
 );
 
+comment on table public.taxonomy_changelog is 'Append-only audit log of changes to the taxonomy system itself.';
+
 -- Append-only
-CREATE OR REPLACE FUNCTION prevent_changelog_mutation()
-RETURNS TRIGGER AS $$
-BEGIN
-    RAISE EXCEPTION 'taxonomy_changelog table is append-only.';
-END;
-$$ LANGUAGE plpgsql;
+create or replace function public.prevent_changelog_mutation()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+    raise exception 'taxonomy_changelog table is append-only.';
+end;
+$$;
 
-CREATE TRIGGER enforce_changelog_append_only
-    BEFORE UPDATE OR DELETE ON taxonomy_changelog
-    FOR EACH ROW EXECUTE FUNCTION prevent_changelog_mutation();
+create trigger enforce_changelog_append_only
+    before update or delete on public.taxonomy_changelog
+    for each row execute function public.prevent_changelog_mutation();
 
-CREATE INDEX idx_taxonomy_changelog_table ON taxonomy_changelog(table_name, record_id);
-CREATE INDEX idx_taxonomy_changelog_time ON taxonomy_changelog(created_at DESC);
+create index idx_taxonomy_changelog_table on public.taxonomy_changelog(table_name, record_id);
+create index idx_taxonomy_changelog_time on public.taxonomy_changelog(created_at desc);
 
 
 -- ============================================================================
@@ -458,24 +499,24 @@ CREATE INDEX idx_taxonomy_changelog_time ON taxonomy_changelog(created_at DESC);
 -- ============================================================================
 
 -- Add entity_type_id FK to kg_entities (linking to the new taxonomy)
-ALTER TABLE kg_entities 
-    ADD COLUMN entity_type_id UUID REFERENCES kg_entity_types(id);
+alter table public.kg_entities
+    add column entity_type_id uuid references public.kg_entity_types(id);
 
 -- Add relationship_type_id FK to kg_relationships
-ALTER TABLE kg_relationships
-    ADD COLUMN relationship_type_id UUID REFERENCES kg_relationship_types(id);
+alter table public.kg_relationships
+    add column relationship_type_id uuid references public.kg_relationship_types(id);
 
 -- Add classification linkage to kg_entities
-ALTER TABLE kg_entities
-    ADD COLUMN current_classification_id UUID REFERENCES classification_results(id),
-    ADD COLUMN classification_confidence DECIMAL(3,2),
-    ADD COLUMN last_classified_at TIMESTAMPTZ;
+alter table public.kg_entities
+    add column current_classification_id uuid references public.classification_results(id),
+    add column classification_confidence decimal(3,2),
+    add column last_classified_at timestamptz;
 
 -- Index the new columns
-CREATE INDEX idx_kg_entities_type_id ON kg_entities(entity_type_id);
-CREATE INDEX idx_kg_relationships_type_id ON kg_relationships(relationship_type_id);
-CREATE INDEX idx_kg_entities_confidence ON kg_entities(classification_confidence) 
-    WHERE classification_confidence < 0.7;
+create index idx_kg_entities_type_id on public.kg_entities(entity_type_id);
+create index idx_kg_relationships_type_id on public.kg_relationships(relationship_type_id);
+create index idx_kg_entities_confidence on public.kg_entities(classification_confidence)
+    where classification_confidence < 0.7;
 
 
 -- ============================================================================
@@ -483,159 +524,159 @@ CREATE INDEX idx_kg_entities_confidence ON kg_entities(classification_confidence
 -- ============================================================================
 
 -- Root-level entity types (the "buckets")
-INSERT INTO kg_entity_types (slug, name, description, is_system, distinguishing_criteria, example_documents, sort_order) VALUES
+insert into public.kg_entity_types (slug, name, description, is_system, distinguishing_criteria, example_documents, sort_order) values
 
 -- Primary Regulatory Content
-('statute', 'Statute', 
+('statute', 'Statute',
  'Legislation enacted by a legislative body (Congress, state legislature) that creates, modifies, or repeals law.',
  true,
  'Originates from a legislature. Has a public law number or statute citation. Requires legislative vote to change.',
- ARRAY['21 USC §353a (FDCA compounding provisions)', 'FL Stat §458 (Medical Practice Act)', 'FL Stat §465 (Pharmacy Act)'],
+ array['21 USC §353a (FDCA compounding provisions)', 'FL Stat §458 (Medical Practice Act)', 'FL Stat §465 (Pharmacy Act)'],
  10),
 
 ('regulation', 'Regulation',
  'Binding rule promulgated by an executive agency under statutory authority, published in a register and codified.',
  true,
  'Issued by an agency under delegated authority. Published in Federal Register or FL Administrative Register. Codified in CFR or FAC.',
- ARRAY['21 CFR Part 216 (compounding)', '64B8 FAC (FL Board of Medicine rules)', 'DEA scheduling rules'],
+ array['21 CFR Part 216 (compounding)', '64B8 FAC (FL Board of Medicine rules)', 'DEA scheduling rules'],
  20),
 
 ('guidance', 'Guidance',
  'Non-binding document issued by an agency explaining its interpretation of law, recommended practices, or compliance expectations.',
  true,
  'Explicitly labeled as guidance, advisory, or non-binding. Reflects agency interpretation. Cannot create new legal obligations.',
- ARRAY['FDA Compounding Guidance Documents', 'CMS MLN Matters articles', 'DEA Practitioner Manual'],
+ array['FDA Compounding Guidance Documents', 'CMS MLN Matters articles', 'DEA Practitioner Manual'],
  30),
 
 ('enforcement_action', 'Enforcement Action',
  'Formal agency action against a person or entity for alleged violations, including warnings, fines, consent decrees, and license actions.',
  true,
  'Directed at a specific person/entity. Alleges a violation. Imposes or threatens a consequence.',
- ARRAY['FDA Warning Letters', 'FL BOM disciplinary orders', 'DEA registration revocations', 'FTC consent decrees'],
+ array['FDA Warning Letters', 'FL BOM disciplinary orders', 'DEA registration revocations', 'FTC consent decrees'],
  40),
 
 ('court_decision', 'Court Decision',
  'Judicial ruling from any court level that interprets, applies, or invalidates regulatory or statutory provisions.',
  true,
  'Issued by a court (not an agency). Interprets law. May set precedent. Includes orders, opinions, and injunctions.',
- ARRAY['Franck''s Lab v. FDA', 'Loper Bright v. Raimondo (Chevron overrule)', 'FL circuit court injunctions'],
+ array['Franck''s Lab v. FDA', 'Loper Bright v. Raimondo (Chevron overrule)', 'FL circuit court injunctions'],
  50),
 
 ('notice', 'Notice',
  'Official communication from an agency announcing an action, event, deadline, or information without creating new binding requirements.',
  true,
  'Informational or procedural. Announces meetings, deadlines, availability of documents, or fee changes. Does not itself create binding rules.',
- ARRAY['Federal Register notices of proposed rulemaking', 'FL BOM meeting notices', 'FDA safety communications'],
+ array['Federal Register notices of proposed rulemaking', 'FL BOM meeting notices', 'FDA safety communications'],
  60),
 
 ('proposed_rule', 'Proposed Rule',
  'Draft regulation published for public comment before potential adoption as a final rule.',
  true,
  'Published for comment. Has a comment period deadline. May or may not become final. Represents agency intent.',
- ARRAY['NPRM in Federal Register', 'FL proposed rule notices in FAR', 'DEA proposed scheduling actions'],
+ array['NPRM in Federal Register', 'FL proposed rule notices in FAR', 'DEA proposed scheduling actions'],
  70),
 
 ('license_requirement', 'License Requirement',
  'Specification of credentials, permits, registrations, or authorizations required to perform regulated activities.',
  true,
  'Defines who can do what under which conditions. Specifies education, examination, or application requirements.',
- ARRAY['FL medical license requirements', 'DEA registration for prescribing', 'CLIA lab certification requirements'],
+ array['FL medical license requirements', 'DEA registration for prescribing', 'CLIA lab certification requirements'],
  80),
 
 ('penalty_schedule', 'Penalty Schedule',
  'Published schedule of fines, sanctions, or consequences for specific violations.',
  true,
  'Lists specific violations paired with specific consequences. May include ranges, aggravating/mitigating factors.',
- ARRAY['FL BOM fine schedule', 'OSHA penalty tables', 'CMS civil monetary penalty amounts'],
+ array['FL BOM fine schedule', 'OSHA penalty tables', 'CMS civil monetary penalty amounts'],
  90),
 
 ('standard', 'Standard',
  'Technical or professional standard issued by a standards body or professional association that may be incorporated by reference into regulation.',
  true,
  'Issued by a standards organization or professional body. May be voluntary or incorporated by reference into binding law.',
- ARRAY['USP compounding standards (795, 797, 800)', 'ASTM standards', 'Joint Commission standards'],
+ array['USP compounding standards (795, 797, 800)', 'ASTM standards', 'Joint Commission standards'],
  100),
 
 ('advisory_opinion', 'Advisory Opinion',
  'Formal opinion issued by an agency or board in response to a specific question about how law applies to a particular situation.',
  true,
  'Responds to a specific factual scenario. Binds only the requester (if at all). Signals agency interpretation.',
- ARRAY['FL BOM declaratory statements', 'FDA advisory opinions', 'OIG advisory opinions'],
+ array['FL BOM declaratory statements', 'FDA advisory opinions', 'OIG advisory opinions'],
  110),
 
 ('exemption', 'Exemption',
  'Formal grant of relief from a regulatory requirement, either categorical or case-specific.',
  true,
  'Removes or reduces a regulatory obligation. May be conditional, time-limited, or permanent.',
- ARRAY['503B outsourcing facility exemptions', 'FDA enforcement discretion letters', 'HIPAA exemptions'],
+ array['503B outsourcing facility exemptions', 'FDA enforcement discretion letters', 'HIPAA exemptions'],
  120);
 
 -- Child entity types (second level — adds granularity where needed)
-INSERT INTO kg_entity_types (slug, name, description, parent_id, is_system, distinguishing_criteria, sort_order) VALUES
+insert into public.kg_entity_types (slug, name, description, parent_id, is_system, distinguishing_criteria, sort_order) values
 
-('final_rule', 'Final Rule', 
+('final_rule', 'Final Rule',
  'Regulation that has completed the rulemaking process and is effective or scheduled to become effective.',
- (SELECT id FROM kg_entity_types WHERE slug = 'regulation'), true,
+ (select id from public.kg_entity_types where slug = 'regulation'), true,
  'Has an effective date. Published as a final rule in the register. No longer open for comment.',
  10),
 
 ('interim_final_rule', 'Interim Final Rule',
  'Rule effective immediately upon publication, with post-effective comment period.',
- (SELECT id FROM kg_entity_types WHERE slug = 'regulation'), true,
+ (select id from public.kg_entity_types where slug = 'regulation'), true,
  'Effective on publication but with a concurrent comment period. Often used for urgent matters.',
  20),
 
 ('emergency_rule', 'Emergency Rule',
  'Rule adopted without standard notice-and-comment procedures due to urgent circumstances.',
- (SELECT id FROM kg_entity_types WHERE slug = 'regulation'), true,
+ (select id from public.kg_entity_types where slug = 'regulation'), true,
  'Bypasses normal rulemaking. Limited duration. Requires finding of imminent danger or emergency.',
  30),
 
 ('warning_letter', 'Warning Letter',
  'Formal notice from an agency that a person or entity is in violation, with demand for corrective action.',
- (SELECT id FROM kg_entity_types WHERE slug = 'enforcement_action'), true,
+ (select id from public.kg_entity_types where slug = 'enforcement_action'), true,
  'Warns of violation. Demands corrective action within a deadline. Public record.',
  10),
 
 ('consent_decree', 'Consent Decree',
  'Court-approved agreement between an agency and a regulated entity resolving enforcement action.',
- (SELECT id FROM kg_entity_types WHERE slug = 'enforcement_action'), true,
+ (select id from public.kg_entity_types where slug = 'enforcement_action'), true,
  'Negotiated settlement. Court-approved. Binding on parties. Often includes ongoing compliance requirements.',
  20),
 
 ('license_action', 'License Action',
  'Board action to suspend, revoke, restrict, or place conditions on a professional license.',
- (SELECT id FROM kg_entity_types WHERE slug = 'enforcement_action'), true,
+ (select id from public.kg_entity_types where slug = 'enforcement_action'), true,
  'Directly affects a practitioner''s ability to practice. Issued by a licensing board.',
  30),
 
 ('civil_penalty', 'Civil Penalty',
  'Monetary fine imposed by an agency for regulatory violations.',
- (SELECT id FROM kg_entity_types WHERE slug = 'enforcement_action'), true,
+ (select id from public.kg_entity_types where slug = 'enforcement_action'), true,
  'Financial penalty. Assessed by agency (not court). May be appealable.',
  40),
 
 ('draft_guidance', 'Draft Guidance',
  'Guidance document published for comment before finalization.',
- (SELECT id FROM kg_entity_types WHERE slug = 'guidance'), true,
+ (select id from public.kg_entity_types where slug = 'guidance'), true,
  'Labeled as draft. Open for comment. Represents current agency thinking but not final position.',
  10),
 
 ('compliance_guide', 'Compliance Guide',
  'Guidance document specifically focused on how to comply with a regulation or set of requirements.',
- (SELECT id FROM kg_entity_types WHERE slug = 'guidance'), true,
+ (select id from public.kg_entity_types where slug = 'guidance'), true,
  'Focused on compliance steps. Often structured as Q&A or checklist. Directed at regulated entities.',
  20),
 
 ('injunction', 'Injunction',
  'Court order requiring a party to do or refrain from doing a specific act.',
- (SELECT id FROM kg_entity_types WHERE slug = 'court_decision'), true,
+ (select id from public.kg_entity_types where slug = 'court_decision'), true,
  'Directly commands action or inaction. Can be temporary (TRO/preliminary) or permanent.',
  10),
 
 ('stay_order', 'Stay Order',
  'Court or agency order temporarily halting the enforcement or effectiveness of a rule or decision.',
- (SELECT id FROM kg_entity_types WHERE slug = 'court_decision'), true,
+ (select id from public.kg_entity_types where slug = 'court_decision'), true,
  'Pauses enforcement pending further proceedings. Time-limited or until further order.',
  20);
 
@@ -644,7 +685,7 @@ INSERT INTO kg_entity_types (slug, name, description, parent_id, is_system, dist
 -- PART 12: SEED DATA — BASE RELATIONSHIP TYPES
 -- ============================================================================
 
-INSERT INTO kg_relationship_types (slug, name, description, forward_label, inverse_label, is_temporal, is_exclusive, is_system, sort_order) VALUES
+insert into public.kg_relationship_types (slug, name, description, forward_label, inverse_label, is_temporal, is_exclusive, is_system, sort_order) values
 
 ('supersedes', 'Supersedes',
  'The source entity replaces the target entity as the current authority.',
@@ -726,7 +767,7 @@ INSERT INTO kg_relationship_types (slug, name, description, forward_label, inver
 -- PART 13: SEED DATA — BASE DOMAINS (Healthcare / Medical Practice)
 -- ============================================================================
 
-INSERT INTO kg_domains (slug, name, description, sort_order) VALUES
+insert into public.kg_domains (slug, name, description, sort_order) values
 ('compounding', 'Compounding', 'Drug compounding regulations including 503A/503B, USP standards, and state pharmacy board rules.', 10),
 ('controlled_substances', 'Controlled Substances', 'DEA scheduling, prescribing requirements, PDMP rules, and state-level controlled substance regulations.', 20),
 ('telehealth', 'Telehealth', 'Telehealth prescribing, interstate licensure, platform requirements, and remote patient monitoring rules.', 30),
@@ -750,10 +791,10 @@ INSERT INTO kg_domains (slug, name, description, sort_order) VALUES
 -- PART 14: SEED DATA — BASE JURISDICTIONS
 -- ============================================================================
 
-INSERT INTO kg_jurisdictions (code, name, jurisdiction_type) VALUES
+insert into public.kg_jurisdictions (code, name, jurisdiction_type) values
 ('US', 'United States (Federal)', 'federal');
 
-INSERT INTO kg_jurisdictions (code, name, jurisdiction_type, parent_code) VALUES
+insert into public.kg_jurisdictions (code, name, jurisdiction_type, parent_code) values
 ('FL', 'Florida', 'state', 'US'),
 ('FL-BOM', 'Florida Board of Medicine', 'board', 'FL'),
 ('FL-BOP', 'Florida Board of Pharmacy', 'board', 'FL'),
@@ -766,7 +807,7 @@ INSERT INTO kg_jurisdictions (code, name, jurisdiction_type, parent_code) VALUES
 -- PART 15: SEED DATA — STARTER CLASSIFICATION RULES
 -- ============================================================================
 
-INSERT INTO classification_rules (name, description, rule_type, conditions, action, priority, is_active, created_by) VALUES
+insert into public.classification_rules (name, description, rule_type, conditions, action, priority, is_active, created_by) values
 
 ('FDA Warning Letters → Enforcement Action',
  'All content from FDA warning letter pages classified as enforcement actions.',
@@ -837,53 +878,251 @@ INSERT INTO classification_rules (name, description, rule_type, conditions, acti
 -- ============================================================================
 
 -- Taxonomy tables: readable by all authenticated users, writable by admin only
-ALTER TABLE kg_entity_types ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "entity_types_read" ON kg_entity_types FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "entity_types_admin" ON kg_entity_types FOR ALL USING (auth.jwt()->>'role' = 'admin');
 
-ALTER TABLE kg_relationship_types ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "rel_types_read" ON kg_relationship_types FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "rel_types_admin" ON kg_relationship_types FOR ALL USING (auth.jwt()->>'role' = 'admin');
+alter table public.kg_entity_types enable row level security;
 
-ALTER TABLE kg_domains ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "domains_read" ON kg_domains FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "domains_admin" ON kg_domains FOR ALL USING (auth.jwt()->>'role' = 'admin');
+create policy "entity_types_select_authenticated" on public.kg_entity_types
+  for select to authenticated
+  using (true);
 
-ALTER TABLE kg_jurisdictions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "jurisdictions_read" ON kg_jurisdictions FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "jurisdictions_admin" ON kg_jurisdictions FOR ALL USING (auth.jwt()->>'role' = 'admin');
+create policy "entity_types_insert_admin" on public.kg_entity_types
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_types_update_admin" on public.kg_entity_types
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_types_delete_admin" on public.kg_entity_types
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.kg_relationship_types enable row level security;
+
+create policy "rel_types_select_authenticated" on public.kg_relationship_types
+  for select to authenticated
+  using (true);
+
+create policy "rel_types_insert_admin" on public.kg_relationship_types
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rel_types_update_admin" on public.kg_relationship_types
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rel_types_delete_admin" on public.kg_relationship_types
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.kg_domains enable row level security;
+
+create policy "domains_select_authenticated" on public.kg_domains
+  for select to authenticated
+  using (true);
+
+create policy "domains_insert_admin" on public.kg_domains
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "domains_update_admin" on public.kg_domains
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "domains_delete_admin" on public.kg_domains
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.kg_jurisdictions enable row level security;
+
+create policy "jurisdictions_select_authenticated" on public.kg_jurisdictions
+  for select to authenticated
+  using (true);
+
+create policy "jurisdictions_insert_admin" on public.kg_jurisdictions
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "jurisdictions_update_admin" on public.kg_jurisdictions
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "jurisdictions_delete_admin" on public.kg_jurisdictions
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
 
 -- Classification tables: admin-only
-ALTER TABLE classification_rules ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "rules_admin" ON classification_rules FOR ALL USING (auth.jwt()->>'role' = 'admin');
 
-ALTER TABLE classification_results ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "results_read" ON classification_results FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "results_admin" ON classification_results FOR ALL USING (auth.jwt()->>'role' = 'admin');
+alter table public.classification_rules enable row level security;
 
-ALTER TABLE classification_overrides ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "overrides_admin" ON classification_overrides FOR ALL USING (auth.jwt()->>'role' = 'admin');
+create policy "rules_select_admin" on public.classification_rules
+  for select to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rules_insert_admin" on public.classification_rules
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rules_update_admin" on public.classification_rules
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rules_delete_admin" on public.classification_rules
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.classification_results enable row level security;
+
+create policy "results_select_authenticated" on public.classification_results
+  for select to authenticated
+  using (true);
+
+create policy "results_insert_admin" on public.classification_results
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "results_update_admin" on public.classification_results
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "results_delete_admin" on public.classification_results
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.classification_overrides enable row level security;
+
+create policy "overrides_select_admin" on public.classification_overrides
+  for select to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "overrides_insert_admin" on public.classification_overrides
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "overrides_update_admin" on public.classification_overrides
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "overrides_delete_admin" on public.classification_overrides
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
 
 -- Audit tables: read by authenticated, write by admin/system
-ALTER TABLE taxonomy_changelog ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "changelog_read" ON taxonomy_changelog FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "changelog_admin" ON taxonomy_changelog FOR ALL USING (auth.jwt()->>'role' = 'admin');
 
-ALTER TABLE kg_entity_merges ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "merges_read" ON kg_entity_merges FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "merges_admin" ON kg_entity_merges FOR ALL USING (auth.jwt()->>'role' = 'admin');
+alter table public.taxonomy_changelog enable row level security;
+
+create policy "changelog_select_authenticated" on public.taxonomy_changelog
+  for select to authenticated
+  using (true);
+
+create policy "changelog_insert_admin" on public.taxonomy_changelog
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "changelog_update_admin" on public.taxonomy_changelog
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "changelog_delete_admin" on public.taxonomy_changelog
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.kg_entity_merges enable row level security;
+
+create policy "merges_select_authenticated" on public.kg_entity_merges
+  for select to authenticated
+  using (true);
+
+create policy "merges_insert_admin" on public.kg_entity_merges
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "merges_update_admin" on public.kg_entity_merges
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "merges_delete_admin" on public.kg_entity_merges
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
 
 -- Junction tables: readable by all authenticated, writable by admin/service role
-ALTER TABLE kg_entity_domains ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "entity_domains_read" ON kg_entity_domains FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "entity_domains_admin" ON kg_entity_domains FOR ALL USING (auth.jwt()->>'role' = 'admin');
 
-ALTER TABLE kg_entity_jurisdictions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "entity_jurisdictions_read" ON kg_entity_jurisdictions FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "entity_jurisdictions_admin" ON kg_entity_jurisdictions FOR ALL USING (auth.jwt()->>'role' = 'admin');
+alter table public.kg_entity_domains enable row level security;
 
-ALTER TABLE classification_rule_sets ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "rule_sets_admin" ON classification_rule_sets FOR ALL USING (auth.jwt()->>'role' = 'admin');
+create policy "entity_domains_select_authenticated" on public.kg_entity_domains
+  for select to authenticated
+  using (true);
+
+create policy "entity_domains_insert_admin" on public.kg_entity_domains
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_domains_update_admin" on public.kg_entity_domains
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_domains_delete_admin" on public.kg_entity_domains
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.kg_entity_jurisdictions enable row level security;
+
+create policy "entity_jurisdictions_select_authenticated" on public.kg_entity_jurisdictions
+  for select to authenticated
+  using (true);
+
+create policy "entity_jurisdictions_insert_admin" on public.kg_entity_jurisdictions
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_jurisdictions_update_admin" on public.kg_entity_jurisdictions
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "entity_jurisdictions_delete_admin" on public.kg_entity_jurisdictions
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+
+alter table public.classification_rule_sets enable row level security;
+
+create policy "rule_sets_select_admin" on public.classification_rule_sets
+  for select to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rule_sets_insert_admin" on public.classification_rule_sets
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rule_sets_update_admin" on public.classification_rule_sets
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+
+create policy "rule_sets_delete_admin" on public.classification_rule_sets
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
 
 
 -- ============================================================================
@@ -891,53 +1130,53 @@ CREATE POLICY "rule_sets_admin" ON classification_rule_sets FOR ALL USING (auth.
 -- ============================================================================
 
 -- Flat view of entity types with full path for easy querying
-CREATE VIEW v_entity_types_flat AS
-SELECT 
+create view public.v_entity_types_flat as
+select
     t.id,
     t.slug,
     t.name,
     t.description,
     t.path,
     t.depth,
-    p.slug AS parent_slug,
-    p.name AS parent_name,
+    p.slug as parent_slug,
+    p.name as parent_name,
     t.is_active,
     t.sort_order,
-    (SELECT count(*) FROM kg_entities e WHERE e.entity_type_id = t.id) AS entity_count
-FROM kg_entity_types t
-LEFT JOIN kg_entity_types p ON t.parent_id = p.id
-WHERE t.is_active = true
-ORDER BY t.path, t.sort_order;
+    (select count(*) from public.kg_entities e where e.entity_type_id = t.id) as entity_count
+from public.kg_entity_types t
+left join public.kg_entity_types p on t.parent_id = p.id
+where t.is_active = true
+order by t.path, t.sort_order;
 
 -- Entity detail view with type, domains, and jurisdiction
-CREATE VIEW v_entity_details AS
-SELECT
+create view public.v_entity_details as
+select
     e.id,
     e.name,
     e.description,
     e.status,
     e.effective_date,
     e.jurisdiction,
-    et.slug AS entity_type_slug,
-    et.name AS entity_type_name,
-    et.path AS entity_type_path,
+    et.slug as entity_type_slug,
+    et.name as entity_type_name,
+    et.path as entity_type_path,
     e.classification_confidence,
-    array_agg(DISTINCT d.slug) FILTER (WHERE d.slug IS NOT NULL) AS domain_slugs,
-    array_agg(DISTINCT d.name) FILTER (WHERE d.name IS NOT NULL) AS domain_names,
-    array_agg(DISTINCT j.code) FILTER (WHERE j.code IS NOT NULL) AS jurisdiction_codes,
+    array_agg(distinct d.slug) filter (where d.slug is not null) as domain_slugs,
+    array_agg(distinct d.name) filter (where d.name is not null) as domain_names,
+    array_agg(distinct j.code) filter (where j.code is not null) as jurisdiction_codes,
     e.created_at,
     e.updated_at
-FROM kg_entities e
-LEFT JOIN kg_entity_types et ON e.entity_type_id = et.id
-LEFT JOIN kg_entity_domains ed ON e.id = ed.entity_id
-LEFT JOIN kg_domains d ON ed.domain_id = d.id
-LEFT JOIN kg_entity_jurisdictions ej ON e.id = ej.entity_id
-LEFT JOIN kg_jurisdictions j ON ej.jurisdiction_id = j.id
-GROUP BY e.id, et.slug, et.name, et.path;
+from public.kg_entities e
+left join public.kg_entity_types et on e.entity_type_id = et.id
+left join public.kg_entity_domains ed on e.id = ed.entity_id
+left join public.kg_domains d on ed.domain_id = d.id
+left join public.kg_entity_jurisdictions ej on e.id = ej.entity_id
+left join public.kg_jurisdictions j on ej.jurisdiction_id = j.id
+group by e.id, et.slug, et.name, et.path;
 
 -- Classification audit trail for a given entity
-CREATE VIEW v_classification_history AS
-SELECT
+create view public.v_classification_history as
+select
     cr.id,
     cr.entity_id,
     cr.change_id,
@@ -952,12 +1191,12 @@ SELECT
     cr.is_current,
     cr.created_at,
     cr.created_by
-FROM classification_results cr
-ORDER BY cr.created_at DESC;
+from public.classification_results cr
+order by cr.created_at desc;
 
 -- Active classification rules with match stats
-CREATE VIEW v_active_rules AS
-SELECT
+create view public.v_active_rules as
+select
     r.id,
     r.name,
     r.description,
@@ -967,9 +1206,9 @@ SELECT
     r.priority,
     r.times_matched,
     r.last_matched_at,
-    rs.name AS rule_set_name,
+    rs.name as rule_set_name,
     r.updated_at
-FROM classification_rules r
-LEFT JOIN classification_rule_sets rs ON r.rule_set_id = rs.id
-WHERE r.is_active = true
-ORDER BY r.priority;
+from public.classification_rules r
+left join public.classification_rule_sets rs on r.rule_set_id = rs.id
+where r.is_active = true
+order by r.priority;

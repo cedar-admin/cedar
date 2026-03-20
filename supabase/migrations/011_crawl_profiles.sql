@@ -1,50 +1,59 @@
--- ============================================================================
--- Cedar Crawl Profile System — Migration 011
--- Template table, discovery agent state, and seed data for 10 sources
--- ============================================================================
---
--- Depends on: source_urls table (Module 1), kg_entity_types (Migration 001)
--- Creates: crawl_templates table, discovery_runs log, seed templates
--- ============================================================================
+-- Migration: 011_crawl_profiles.sql
+-- Purpose: Create crawl template and discovery run tables with seed templates for 10 sources
+-- Tables affected: crawl_templates, discovery_runs, source_urls (alter)
+-- Special considerations: Large seed data for crawl templates; source_urls gets template_id FK
 
 
 -- ============================================================================
 -- PART 1: CRAWL TEMPLATES TABLE
 -- ============================================================================
 
-CREATE TABLE crawl_templates (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug            TEXT NOT NULL UNIQUE,
-    name            TEXT NOT NULL,
-    description     TEXT,
-    
+create table public.crawl_templates (
+    id              uuid primary key default gen_random_uuid(),
+    slug            text not null unique,
+    name            text not null,
+    description     text,
+
     -- The template scrape_config — sources inherit from this
     -- Source-level scrape_config fields override template fields (shallow merge per top-level key)
-    default_config  JSONB NOT NULL DEFAULT '{}',
-    
+    default_config  jsonb not null default '{}',
+
     -- Which sources use this template
     -- (denormalized count for admin UI — computed, not authoritative)
-    source_count    INT NOT NULL DEFAULT 0,
-    
+    source_count    int not null default 0,
+
     -- Template versioning
-    version         INT NOT NULL DEFAULT 1,
-    changelog       JSONB DEFAULT '[]',
-    
+    version         int not null default 1,
+    changelog       jsonb default '[]',
+
     -- Lifecycle
-    is_active       BOOLEAN NOT NULL DEFAULT true,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    created_by      TEXT NOT NULL DEFAULT 'system',
-    
-    CONSTRAINT slug_format CHECK (slug ~ '^[a-z][a-z0-9_]*$')
+    is_active       boolean not null default true,
+    created_at      timestamptz not null default now(),
+    updated_at      timestamptz not null default now(),
+    created_by      text not null default 'system',
+
+    constraint slug_format check (slug ~ '^[a-z][a-z0-9_]*$')
 );
 
-CREATE INDEX idx_crawl_templates_active ON crawl_templates(is_active) WHERE is_active = true;
+comment on table public.crawl_templates is 'Template-driven scrape configurations that sources inherit from.';
+
+create index idx_crawl_templates_active on public.crawl_templates(is_active) where is_active = true;
 
 -- RLS
-ALTER TABLE crawl_templates ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "templates_read" ON crawl_templates FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "templates_admin" ON crawl_templates FOR ALL USING (auth.jwt()->>'role' = 'admin');
+alter table public.crawl_templates enable row level security;
+
+create policy "templates_select_authenticated" on public.crawl_templates
+  for select to authenticated using (true);
+create policy "templates_insert_admin" on public.crawl_templates
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+create policy "templates_update_admin" on public.crawl_templates
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+create policy "templates_delete_admin" on public.crawl_templates
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
 
 
 -- ============================================================================
@@ -52,57 +61,70 @@ CREATE POLICY "templates_admin" ON crawl_templates FOR ALL USING (auth.jwt()->>'
 -- ============================================================================
 -- Every monitoring pass (Job 2) logs its results here for observability
 
-CREATE TABLE discovery_runs (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_url_id   UUID NOT NULL REFERENCES source_urls(id),
-    
+create table public.discovery_runs (
+    id              uuid primary key default gen_random_uuid(),
+    source_url_id   uuid not null references public.source_urls(id),
+
     -- Run details
-    run_type        TEXT NOT NULL,  -- 'pass_1_skim', 'pass_2_extract', 'initial_crawl', 'workflow'
-    started_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    completed_at    TIMESTAMPTZ,
-    status          TEXT NOT NULL DEFAULT 'running',  -- running, completed, failed, partial
-    
+    run_type        text not null,  -- 'pass_1_skim', 'pass_2_extract', 'initial_crawl', 'workflow'
+    started_at      timestamptz not null default now(),
+    completed_at    timestamptz,
+    status          text not null default 'running',  -- running, completed, failed, partial
+
     -- Pass 1 results
-    items_scanned   INT DEFAULT 0,
-    items_changed   INT DEFAULT 0,
-    items_new       INT DEFAULT 0,
-    items_queued    INT DEFAULT 0,         -- queued for pass 2
-    nav_changed     BOOLEAN DEFAULT false,  -- structural navigation change detected
-    
+    items_scanned   int default 0,
+    items_changed   int default 0,
+    items_new       int default 0,
+    items_queued    int default 0,         -- queued for pass 2
+    nav_changed     boolean default false,  -- structural navigation change detected
+
     -- Pass 2 results
-    items_extracted INT DEFAULT 0,
-    items_classified INT DEFAULT 0,
-    entities_created INT DEFAULT 0,
-    
+    items_extracted int default 0,
+    items_classified int default 0,
+    entities_created int default 0,
+
     -- Cost
-    fetch_cost_usd  DECIMAL(10,6) DEFAULT 0,
-    agent_cost_usd  DECIMAL(10,6) DEFAULT 0,
-    
+    fetch_cost_usd  decimal(10,6) default 0,
+    agent_cost_usd  decimal(10,6) default 0,
+
     -- Learned patterns this run
-    patterns_discovered JSONB DEFAULT '[]',
-    
+    patterns_discovered jsonb default '[]',
+
     -- Errors
-    errors          JSONB DEFAULT '[]',
-    
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    errors          jsonb default '[]',
+
+    created_at      timestamptz not null default now()
 );
 
-CREATE INDEX idx_discovery_runs_source ON discovery_runs(source_url_id, created_at DESC);
-CREATE INDEX idx_discovery_runs_status ON discovery_runs(status) WHERE status != 'completed';
+comment on table public.discovery_runs is 'Per-source monitoring pass log with scan, extraction, and cost metrics.';
 
-ALTER TABLE discovery_runs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "runs_read" ON discovery_runs FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "runs_admin" ON discovery_runs FOR ALL USING (auth.jwt()->>'role' = 'admin');
+create index idx_discovery_runs_source on public.discovery_runs(source_url_id, created_at desc);
+create index idx_discovery_runs_status on public.discovery_runs(status) where status != 'completed';
+
+alter table public.discovery_runs enable row level security;
+
+create policy "runs_select_authenticated" on public.discovery_runs
+  for select to authenticated using (true);
+create policy "runs_insert_admin" on public.discovery_runs
+  for insert to authenticated
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+create policy "runs_update_admin" on public.discovery_runs
+  for update to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin')
+  with check (((select auth.jwt()) ->> 'role') = 'admin');
+create policy "runs_delete_admin" on public.discovery_runs
+  for delete to authenticated
+  using (((select auth.jwt()) ->> 'role') = 'admin');
 
 
 -- ============================================================================
 -- PART 3: SEED TEMPLATES
 -- ============================================================================
 
-INSERT INTO crawl_templates (slug, name, description, default_config, created_by) VALUES
+insert into public.crawl_templates (slug, name, description, default_config, created_by) values
 
 -- Template: FL Board Site
-('fl_board_site', 'Florida Board Site', 
+('fl_board_site', 'Florida Board Site',
  'Template for FL professional licensing board websites (Board of Medicine, Pharmacy, Nursing, Osteopathic Medicine). Handles laws/rules pages, meeting agendas, audio recordings, and disciplinary actions.',
  '{
    "schema_version": "1.0",
@@ -407,14 +429,14 @@ INSERT INTO crawl_templates (slug, name, description, default_config, created_by
 -- If inserting fresh rows, adapt to INSERT.
 
 -- Add scrape_config column to source_urls (per-URL config, overrides sources.scrape_config)
-ALTER TABLE source_urls ADD COLUMN IF NOT EXISTS scrape_config JSONB;
-CREATE INDEX IF NOT EXISTS idx_source_urls_scrape_config ON source_urls USING GIN (scrape_config);
+alter table public.source_urls add column if not exists scrape_config jsonb;
+create index if not exists idx_source_urls_scrape_config on public.source_urls using gin (scrape_config);
 
-COMMENT ON COLUMN source_urls.scrape_config IS
+comment on column public.source_urls.scrape_config is
   'Per-URL crawl configuration. Shallow-merged with crawl_templates.default_config at runtime. Top-level keys override template.';
 
 -- 1. FDA Federal Register (Gov API)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "federal_register_api",
   "source_meta": {
@@ -472,11 +494,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "gov_api" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%FDA Federal Register%';
+from public.sources s where su.source_id = s.id and s.name ilike '%FDA Federal Register%';
 
 
 -- 2. FDA Compounding Guidance (Oxylabs)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "federal_agency_guidance",
   "source_meta": {
@@ -533,11 +555,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "oxylabs" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%FDA Compounding%';
+from public.sources s where su.source_id = s.id and s.name ilike '%FDA Compounding%';
 
 
 -- 3. DEA Diversion Control (Oxylabs)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "federal_agency_guidance",
   "source_meta": {
@@ -595,11 +617,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "oxylabs" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%DEA Diversion%';
+from public.sources s where su.source_id = s.id and s.name ilike '%DEA Diversion%';
 
 
 -- 4. eCFR Title 21 (Gov API)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "gov_api_structured",
   "source_meta": {
@@ -649,11 +671,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "gov_api" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%eCFR%';
+from public.sources s where su.source_id = s.id and s.name ilike '%eCFR%';
 
 
 -- 5. openFDA Drug Enforcement (Gov API)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "gov_api_structured",
   "source_meta": {
@@ -703,11 +725,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "gov_api" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%openFDA%';
+from public.sources s where su.source_id = s.id and s.name ilike '%openFDA%';
 
 
 -- 6. FL Dept of Health — MQA (Oxylabs)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "fl_doh_hub",
   "source_meta": {
@@ -757,11 +779,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "oxylabs" },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%Dept of Health%MQA%';
+from public.sources s where su.source_id = s.id and s.name ilike '%Dept of Health%MQA%';
 
 
 -- 7. FL Board of Medicine (Oxylabs/BrowserBase)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "fl_board_site",
   "source_meta": {
@@ -853,11 +875,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "browserbase", "requires_javascript": true, "requires_interaction": true },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%Board of Medicine%' AND s.name NOT ILIKE '%Osteopathic%';
+from public.sources s where su.source_id = s.id and s.name ilike '%Board of Medicine%' and s.name not ilike '%Osteopathic%';
 
 
 -- 8. FL Board of Pharmacy (Oxylabs/BrowserBase)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "fl_board_site",
   "source_meta": {
@@ -934,11 +956,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "browserbase", "requires_javascript": true, "requires_interaction": true },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%Board of Pharmacy%';
+from public.sources s where su.source_id = s.id and s.name ilike '%Board of Pharmacy%';
 
 
 -- 9. FL Administrative Register (Oxylabs/BrowserBase)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "state_administrative_register",
   "source_meta": {
@@ -998,11 +1020,11 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "browserbase", "requires_javascript": true, "requires_interaction": true },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%Administrative Register%';
+from public.sources s where su.source_id = s.id and s.name ilike '%Administrative Register%';
 
 
 -- 10. FL Board of Osteopathic Medicine (Oxylabs/BrowserBase)
-UPDATE source_urls su SET scrape_config = '{
+update public.source_urls su set scrape_config = '{
   "schema_version": "1.0",
   "template_ref": "fl_board_site",
   "source_meta": {
@@ -1078,4 +1100,4 @@ UPDATE source_urls su SET scrape_config = '{
   "fetcher": { "preferred_method": "browserbase", "requires_javascript": true, "requires_interaction": true },
   "learned_patterns": { "url_patterns": [], "content_patterns": [], "link_patterns": [], "last_learning_run": null, "pattern_version": 0 }
 }'::jsonb
-FROM sources s WHERE su.source_id = s.id AND s.name ILIKE '%Osteopathic%';
+from public.sources s where su.source_id = s.id and s.name ilike '%Osteopathic%';

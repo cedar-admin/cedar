@@ -1,8 +1,13 @@
+-- Migration: 004_seed_sources.sql
+-- Purpose: Seed 10 critical-tier Florida regulatory sources and their primary URLs
+-- Tables affected: sources, source_urls
+-- Special considerations: DML only — inserts initial monitoring sources for MVP
+
 -- Cedar MVP: Seed 10 Critical-Tier Florida Regulatory Sources
 -- These are the initial sources for the MVP pipeline proof-of-life
 -- All sources are Florida medical practice relevant (compounding, prescribing, licensing)
 
-INSERT INTO sources (name, jurisdiction, url, fetch_method, tier, is_active, scrape_config) VALUES
+insert into public.sources (name, jurisdiction, url, fetch_method, tier, is_active, scrape_config) values
 
 -- 1. FDA Federal Register — federal rulemaking for drugs, compounding, DEA scheduling
 (
@@ -157,5 +162,5 @@ INSERT INTO sources (name, jurisdiction, url, fetch_method, tier, is_active, scr
 );
 
 -- Create source_url entries for each source (primary URL to monitor)
-INSERT INTO source_urls (source_id, url)
-SELECT id, url FROM sources WHERE jurisdiction = 'FL' AND tier = 'critical';
+insert into public.source_urls (source_id, url)
+select id, url from public.sources where jurisdiction = 'FL' and tier = 'critical';

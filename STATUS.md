@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Opus Session 17
+Last updated: March 20, 2026 by Opus Session 18
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,10 +24,11 @@ Last updated: March 19, 2026 by Opus Session 17
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 17 implemented the Phase 4 Regulatory Library Dashboard (PRP: `phase-4-regulatory-library-dashboard.md`). Replaced the flat-list library page with a hierarchical, category-driven experience: category grid landing → regulation list → 4-tab detail view (Overview, Reader, Timeline, Related). Created 8 new shared components (ConfidenceBadge, AuthorityBadge, ServiceLineTag, DeadlineChip, DomainCard, RegulationRow, ContentReader, RelationshipCard). Added practice-type filter pills to the landing page using `kg_domain_practice_type_map`. Category detail page uses full-text search via `search_vector` (@@) replacing old `ilike` pattern, with sub-domain navigation badges and pagination. Regulation detail page fetches all tab data in parallel (classification log, versions, relationships, service lines, domains, practice relevance). Sidebar updated with "Ask Cedar" (disabled, SOON badge) and "My Practice". BreadcrumbNav suppressed on library sub-pages (custom DB-powered breadcrumbs instead). Token audit and build both pass clean. **Note: Phase 3 scoring pipelines have NOT been triggered yet — `kg_entity_domains`, `kg_entity_practice_relevance`, `kg_service_line_regulations`, and `authority_level` are all empty. The library UI handles this gracefully with empty states but will not show categorized data until the pipelines run.**
+Session 18 applied the Supabase best practices audit (docs/audits/supabase-audit.md) across all 27 migrations. All 148 audit findings addressed: lowercased all SQL keywords, schema-qualified all table references with `public.`, added structured header comments to every file, added `comment on table` for all tables, enabled RLS in the same migration as CREATE TABLE (moved from 003 to 001/002), split all 19+ `FOR ALL` RLS policies into granular per-operation policies (SELECT/INSERT/UPDATE/DELETE), added `TO authenticated` clause to every policy, wrapped all `auth.jwt()` calls in `(select auth.jwt())` for per-statement caching, added explicit `security invoker` and `set search_path = ''` to all functions, added justification comments to the 2 `security definer` functions, consolidated duplicate policies from 009 into 008, added missing indexes for RLS-referenced columns. Created `supabase/schemas/` declarative schema directory with 4 files representing the desired final state. Updated CLAUDE.md with UUID PK convention, migration naming, and declarative schema workflow.
 
 ## Next Session Priority
-1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard) — this is the critical prerequisite for the library to show real categorized data:
+1. **Reset and re-apply migrations to production Supabase** — all 27 migrations were rewritten in place; the production instance needs `supabase db reset` and migrations re-applied to pick up the changes (lowercase SQL, granular RLS policies, function security fixes). Coordinate with a maintenance window.
+2. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard) — this is the critical prerequisite for the library to show real categorized data:
    - `cedar/corpus.classify` — populates `kg_entity_domains` (assigns ~99K entities to taxonomy domains)
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes both views
@@ -92,6 +93,7 @@ SELECT COUNT(*) FROM kg_classification_log;
 - `components/LibraryBrowser.tsx` is now orphaned — no longer imported after library page rewrite; can be removed
 - Phase 3 scoring functions not yet triggered — `kg_entity_practice_relevance`, `kg_service_line_regulations`, `authority_level` are all empty until the pipeline runs; `mv_practice_relevance_summary` will show 0 `total_regulations` for all rows
 - Supabase CLI binary not installed via npm (broken symlink in node_modules/.bin); use cached npx path: `/Users/anthonyrilling/.npm/_npx/b96a6bd565c470ce/node_modules/supabase/bin/supabase` with `SUPABASE_ACCESS_TOKEN` env var set
+- Production Supabase instance needs migration reset — all 27 migrations rewritten for best practices audit (lowercase SQL, granular RLS, function security). Must re-apply from scratch.
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)

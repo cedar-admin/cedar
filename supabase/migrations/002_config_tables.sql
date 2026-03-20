@@ -1,47 +1,75 @@
--- Cedar MVP: Configuration Tables
--- All feature behavior is driven by DB config — no code changes needed to adjust behavior
+-- Migration: 002_config_tables.sql
+-- Purpose: Create configuration tables for feature flags, prompt templates, system config, and review rules; seed initial config data
+-- Tables affected: feature_flags, prompt_templates, system_config, review_rules
+-- Special considerations: RLS enabled on all tables; seed data included
 
+-- ============================================================
 -- Feature flags: what features are enabled per subscription tier
-CREATE TABLE feature_flags (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  flag_name  TEXT NOT NULL,
-  tier       TEXT NOT NULL CHECK (tier IN ('monitor', 'intelligence')),
-  enabled    BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(flag_name, tier)
+-- ============================================================
+create table public.feature_flags (
+  id         uuid primary key default gen_random_uuid(),
+  flag_name  text not null,
+  tier       text not null check (tier in ('monitor', 'intelligence')),
+  enabled    boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique(flag_name, tier)
 );
 
+alter table public.feature_flags enable row level security;
+
+comment on table public.feature_flags is 'Tier-based feature gates — controls which features are available per subscription tier.';
+
+-- ============================================================
 -- Prompt templates: active agent prompts (MVP prompts live in code, migrate here after stability)
-CREATE TABLE prompt_templates (
-  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  agent_name TEXT NOT NULL, -- 'relevance_filter', 'classifier', 'ontology_mapper'
-  version    TEXT NOT NULL,
-  prompt     TEXT NOT NULL,
-  is_active  BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(agent_name, version)
+-- ============================================================
+create table public.prompt_templates (
+  id         uuid primary key default gen_random_uuid(),
+  agent_name text not null, -- 'relevance_filter', 'classifier', 'ontology_mapper'
+  version    text not null,
+  prompt     text not null,
+  is_active  boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique(agent_name, version)
 );
 
+alter table public.prompt_templates enable row level security;
+
+comment on table public.prompt_templates is 'Agent prompt storage for post-MVP migration from code-based prompts.';
+
+-- ============================================================
 -- System config: operational thresholds — never hardcode these in application code
-CREATE TABLE system_config (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key         TEXT NOT NULL UNIQUE,
-  value       TEXT NOT NULL,
-  description TEXT,
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+-- ============================================================
+create table public.system_config (
+  id          uuid primary key default gen_random_uuid(),
+  key         text not null unique,
+  value       text not null,
+  description text,
+  updated_at  timestamptz not null default now()
 );
 
+alter table public.system_config enable row level security;
+
+comment on table public.system_config is 'Operational thresholds and configuration — cost limits, schedules, confidence thresholds.';
+
+-- ============================================================
 -- Review rules: HITL routing — determines which severity levels go to attorney review
-CREATE TABLE review_rules (
-  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  severity        TEXT NOT NULL UNIQUE CHECK (severity IN ('critical', 'high', 'medium', 'low', 'informational')),
-  auto_approve    BOOLEAN NOT NULL DEFAULT false,
-  route_to_hitl   BOOLEAN NOT NULL DEFAULT false,
-  notes           TEXT
+-- ============================================================
+create table public.review_rules (
+  id              uuid primary key default gen_random_uuid(),
+  severity        text not null unique check (severity in ('critical', 'high', 'medium', 'low', 'informational')),
+  auto_approve    boolean not null default false,
+  route_to_hitl   boolean not null default false,
+  notes           text
 );
 
+alter table public.review_rules enable row level security;
+
+comment on table public.review_rules is 'HITL routing rules — determines which severity levels require attorney review.';
+
+-- ============================================================
 -- Seed: Feature flags
-INSERT INTO feature_flags (flag_name, tier, enabled) VALUES
+-- ============================================================
+insert into public.feature_flags (flag_name, tier, enabled) values
   -- Monitor tier features
   ('change_feed',           'monitor',      true),
   ('email_alerts',          'monitor',      true),
@@ -64,8 +92,10 @@ INSERT INTO feature_flags (flag_name, tier, enabled) VALUES
   ('regulation_browser',    'intelligence', true),
   ('digest_archive',        'intelligence', true);
 
+-- ============================================================
 -- Seed: System config defaults
-INSERT INTO system_config (key, value, description) VALUES
+-- ============================================================
+insert into public.system_config (key, value, description) values
   ('confidence_threshold',      '0.7',   'Minimum relevance score for a change to be processed'),
   ('max_retry_attempts',        '3',     'Max Inngest retry attempts per job'),
   ('cost_limit_per_run_usd',    '0.50',  'Max spend per monitoring run before alerting'),
@@ -75,10 +105,12 @@ INSERT INTO system_config (key, value, description) VALUES
   ('weekly_discovery_day',      'sunday','Day of week for weekly re-crawl of all sources'),
   ('digest_delivery_day',       'friday','Day of week for weekly digest delivery');
 
+-- ============================================================
 -- Seed: Review rules
 -- Critical + High → HITL (attorney must review before publishing to Intelligence tier)
 -- Medium/Low/Informational → auto-approve
-INSERT INTO review_rules (severity, auto_approve, route_to_hitl, notes) VALUES
+-- ============================================================
+insert into public.review_rules (severity, auto_approve, route_to_hitl, notes) values
   ('critical',      false, true,  'Attorney review required within 4 hours. Push notification triggered immediately on detection.'),
   ('high',          false, true,  'Attorney review required within 24 hours.'),
   ('medium',        true,  false, 'Auto-approved. Included in weekly digest for attorney batch review.'),

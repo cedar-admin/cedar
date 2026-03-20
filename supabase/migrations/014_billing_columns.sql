@@ -1,15 +1,19 @@
--- Cedar Module 10: Add billing status columns to practices
+-- Migration: 014_billing_columns.sql
+-- Purpose: Add subscription billing status columns to practices for Stripe integration
+-- Tables affected: practices
+-- Special considerations: None
+
 -- subscription_status mirrors Stripe's subscription.status field
 -- 'inactive' is the Cedar-specific default meaning "never subscribed"
 -- current_period_end stores the next renewal/expiry timestamp
 
-ALTER TABLE practices
-  ADD COLUMN subscription_status TEXT DEFAULT 'inactive'
-    CHECK (subscription_status IN (
+alter table public.practices
+  add column subscription_status text default 'inactive'
+    check (subscription_status in (
       'active', 'trialing', 'past_due', 'canceled', 'unpaid', 'incomplete', 'inactive'
     )),
-  ADD COLUMN current_period_end TIMESTAMPTZ;
+  add column current_period_end timestamptz;
 
 -- Index for webhook handler lookups by stripe_customer_id
-CREATE INDEX idx_practices_stripe_customer_id ON practices(stripe_customer_id)
-  WHERE stripe_customer_id IS NOT NULL;
+create index idx_practices_stripe_customer_id on public.practices(stripe_customer_id)
+  where stripe_customer_id is not null;

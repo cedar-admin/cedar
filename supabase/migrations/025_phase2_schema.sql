@@ -1,15 +1,15 @@
--- ============================================================================
--- Cedar Migration 025: Phase 2 Schema — Relationship Enrichment + Versioning
--- Based on: docs/architecture/data-architecture-research.md (Phase 2)
--- ============================================================================
+-- Migration: 025_phase2_schema.sql
+-- Purpose: Phase 2 schema extensions — relationship enrichment, entity version content-hash tracking
+-- Tables affected: kg_relationships, kg_entity_versions
+-- Special considerations: Adds relationship_type_enum; extends existing columns without breaking Phase 1 data
 
 -- ── 1. Relationship type enum ──────────────────────────────────────────────
 -- NOTE: kg_relationships already has relationship_type TEXT column (migration 007).
 -- This enum is a NEW column alongside it — old TEXT column stays for backwards compat.
 -- When new rows are inserted, set BOTH columns in sync.
 
-DO $$ BEGIN
-  CREATE TYPE relationship_type_enum AS ENUM (
+do $$ begin
+  create type relationship_type_enum as enum (
     'amends',           -- FR document modifies CFR section
     'amended_by',       -- inverse
     'supersedes',       -- new regulation replaces old
@@ -27,47 +27,47 @@ DO $$ BEGIN
     'enables',          -- permits an activity
     'restricts'         -- constrains an activity
   );
-EXCEPTION WHEN duplicate_object THEN NULL;
-END $$;
+exception when duplicate_object then null;
+end $$;
 
 -- ── 2. Extend kg_relationships ─────────────────────────────────────────────
 -- Existing columns: relationship_type TEXT, confidence DECIMAL(3,2), notes TEXT, source_change_id
 
-ALTER TABLE kg_relationships
-  ADD COLUMN IF NOT EXISTS rel_type         relationship_type_enum,
-  ADD COLUMN IF NOT EXISTS effective_date   DATE,
-  ADD COLUMN IF NOT EXISTS end_date         DATE,
-  ADD COLUMN IF NOT EXISTS provenance       TEXT,
+alter table public.kg_relationships
+  add column if not exists rel_type         relationship_type_enum,
+  add column if not exists effective_date   date,
+  add column if not exists end_date         date,
+  add column if not exists provenance       text,
     -- 'api_cfr_references' | 'api_correction_of' | 'nlp_extracted' | 'manual'
-  ADD COLUMN IF NOT EXISTS fr_citation      TEXT;
+  add column if not exists fr_citation      text;
     -- e.g. '89 FR 1433'
 
 -- Composite indexes for efficient relationship traversal by type
-CREATE INDEX IF NOT EXISTS idx_relationships_source_type
-  ON kg_relationships(source_entity_id, relationship_type);
+create index if not exists idx_relationships_source_type
+  on public.kg_relationships(source_entity_id, relationship_type);
 
-CREATE INDEX IF NOT EXISTS idx_relationships_target_type
-  ON kg_relationships(target_entity_id, relationship_type);
+create index if not exists idx_relationships_target_type
+  on public.kg_relationships(target_entity_id, relationship_type);
 
 -- ── 3. Extend kg_entity_versions with content-hash versioning ─────────────
 -- Existing columns: version_number INTEGER, snapshot JSONB, change_id
 -- Phase 2 adds content-hash based versioning (FRBR Expression model).
 -- version_date can be NULL on pre-Phase-2 rows (version_number scheme).
 
-ALTER TABLE kg_entity_versions
-  ADD COLUMN IF NOT EXISTS version_date         DATE,
-  ADD COLUMN IF NOT EXISTS content_hash         TEXT,    -- SHA-256 of content_snapshot
-  ADD COLUMN IF NOT EXISTS content_snapshot     TEXT,    -- full regulation text at this point
-  ADD COLUMN IF NOT EXISTS fr_document_number   TEXT,    -- FR doc that triggered this version
-  ADD COLUMN IF NOT EXISTS change_summary       TEXT;    -- AI-generated summary of what changed
+alter table public.kg_entity_versions
+  add column if not exists version_date         date,
+  add column if not exists content_hash         text,    -- SHA-256 of content_snapshot
+  add column if not exists content_snapshot     text,    -- full regulation text at this point
+  add column if not exists fr_document_number   text,    -- FR doc that triggered this version
+  add column if not exists change_summary       text;    -- AI-generated summary of what changed
 
 -- Unique constraint on (entity_id, version_date) for content-hash versioning.
 -- WHERE version_date IS NOT NULL avoids conflict with legacy rows (version_number scheme).
-CREATE UNIQUE INDEX IF NOT EXISTS idx_kg_entity_versions_date_unique
-  ON kg_entity_versions(entity_id, version_date)
-  WHERE version_date IS NOT NULL;
+create unique index if not exists idx_kg_entity_versions_date_unique
+  on public.kg_entity_versions(entity_id, version_date)
+  where version_date is not null;
 
 -- Fast lookup for "most recent version of entity"
-CREATE INDEX IF NOT EXISTS idx_kg_entity_versions_date_desc
-  ON kg_entity_versions(entity_id, version_date DESC)
-  WHERE version_date IS NOT NULL;
+create index if not exists idx_kg_entity_versions_date_desc
+  on public.kg_entity_versions(entity_id, version_date desc)
+  where version_date is not null;
