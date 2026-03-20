@@ -396,3 +396,20 @@ After pushing migrations to Supabase:
 ```bash
 npx supabase gen types typescript --project-id serumeiwrvtwisibuawe > lib/db/types.ts
 ```
+
+## Supabase Prompt References
+
+Before writing any Supabase-related code — migrations, RLS policies, database functions, Edge Functions, Realtime subscriptions, auth client setup, or raw SQL — read the relevant prompt file(s) in `docs/supabase-prompts/` and follow their conventions:
+
+| When you're writing...                     | Read this file first                          |
+| ------------------------------------------ | --------------------------------------------- |
+| Any SQL (queries, migrations, schema)      | `docs/supabase-prompts/sql-style-guide.md`    |
+| A new migration file                       | `docs/supabase-prompts/create-migration.md`   |
+| RLS policies                               | `docs/supabase-prompts/create-rls-policies.md`|
+| Database functions or triggers             | `docs/supabase-prompts/create-functions.md`   |
+| Declarative schema changes                 | `docs/supabase-prompts/declarative-schema.md` |
+| Edge Functions                             | `docs/supabase-prompts/edge-functions.md`     |
+| Supabase Auth (client, server, proxy)      | `docs/supabase-prompts/nextjs-auth.md`        |
+| Realtime (broadcast, presence, triggers)   | `docs/supabase-prompts/realtime.md`           |
+
+Multiple files may apply to a single task. For example, writing a migration that adds a table with RLS policies requires reading `sql-style-guide.md`, `create-migration.md`, and `create-rls-policies.md`.
