@@ -38,7 +38,7 @@ Supabase maps every request to one of the roles:
 - `anon`: an unauthenticated request (the user is not logged in)
 - `authenticated`: an authenticated request (the user is logged in)
 
-These are actually [Postgres Roles](/docs/guides/database/postgres/roles). You can use these roles within your Policies using the `TO` clause:
+These are actually Postgres Roles. You can use these roles within your Policies using the `TO` clause:
 
 ```sql
 create policy "Profiles are viewable by everyone"
@@ -56,62 +56,11 @@ to authenticated
 using ( true );
 ```
 
-Note that `for ...` must be added after the table but before the roles. `to ...` must be added after `for ...`:
-
-### Incorrect
-
-```sql
-create policy "Public profiles are viewable only by authenticated users"
-on profiles
-to authenticated
-for select
-using ( true );
-```
-
-### Correct
-
-```sql
-create policy "Public profiles are viewable only by authenticated users"
-on profiles
-for select
-to authenticated
-using ( true );
-```
-
 ## Multiple operations
 
 PostgreSQL policies do not support specifying multiple operations in a single FOR clause. You need to create separate policies for each operation.
 
-### Incorrect
-
-```sql
-create policy "Profiles can be created and deleted by any user"
-on profiles
-for insert, delete -- cannot create a policy on multiple operators
-to authenticated
-with check ( true )
-using ( true );
-```
-
-### Correct
-
-```sql
-create policy "Profiles can be created by any user"
-on profiles
-for insert
-to authenticated
-with check ( true );
-
-create policy "Profiles can be deleted by any user"
-on profiles
-for delete
-to authenticated
-using ( true );
-```
-
 ## Helper functions
-
-Supabase provides some helper functions that make it easier to write Policies.
 
 ### `auth.uid()`
 
@@ -119,57 +68,13 @@ Returns the ID of the user making the request.
 
 ### `auth.jwt()`
 
-Returns the JWT of the user making the request. Anything that you store in the user's `raw_app_meta_data` column or the `raw_user_meta_data` column will be accessible using this function. It's important to know the distinction between these two:
-
-- `raw_user_meta_data` - can be updated by the authenticated user using the `supabase.auth.update()` function. It is not a good place to store authorization data.
-- `raw_app_meta_data` - cannot be updated by the user, so it's a good place to store authorization data.
-
-The `auth.jwt()` function is extremely versatile. For example, if you store some team data inside `app_metadata`, you can use it to determine whether a particular user belongs to a team. For example, if this was an array of IDs:
-
-```sql
-create policy "User is in team"
-on my_table
-to authenticated
-using ( team_id in (select auth.jwt() -> 'app_metadata' -> 'teams'));
-```
-
-### MFA
-
-The `auth.jwt()` function can be used to check for [Multi-Factor Authentication](/docs/guides/auth/auth-mfa#enforce-rules-for-mfa-logins). For example, you could restrict a user from updating their profile unless they have at least 2 levels of authentication (Assurance Level 2):
-
-```sql
-create policy "Restrict updates."
-on profiles
-as restrictive
-for update
-to authenticated using (
-  (select auth.jwt()->>'aal') = 'aal2'
-);
-```
+Returns the JWT of the user making the request.
 
 ## RLS performance recommendations
 
-Every authorization system has an impact on performance. While row level security is powerful, the performance impact is important to keep in mind. This is especially true for queries that scan every row in a table - like many `select` operations, including those using limit, offset, and ordering.
-
-Based on a series of [tests](https://github.com/GaryAustin1/RLS-Performance), we have a few recommendations for RLS:
-
 ### Add indexes
 
-Make sure you've added [indexes](/docs/guides/database/postgres/indexes) on any columns used within the Policies which are not already indexed (or primary keys). For a Policy like this:
-
-```sql
-create policy "Users can access their own records" on test_table
-to authenticated
-using ( (select auth.uid()) = user_id );
-```
-
-You can add an index like:
-
-```sql
-create index userid
-on test_table
-using btree (user_id);
-```
+Make sure you've added indexes on any columns used within the Policies which are not already indexed (or primary keys).
 
 ### Call functions with `select`
 
@@ -189,57 +94,6 @@ to authenticated
 using ( (select auth.uid()) = user_id );
 ```
 
-This method works well for JWT functions like `auth.uid()` and `auth.jwt()` as well as `security definer` Functions. Wrapping the function causes an `initPlan` to be run by the Postgres optimizer, which allows it to "cache" the results per-statement, rather than calling the function on each row.
-
-Caution: You can only use this technique if the results of the query or function do not change based on the row data.
-
-### Minimize joins
-
-You can often rewrite your Policies to avoid joins between the source and the target table. Instead, try to organize your policy to fetch all the relevant data from the target table into an array or set, then you can use an `IN` or `ANY` operation in your filter.
-
-For example, this is an example of a slow policy which joins the source `test_table` to the target `team_user`:
-
-```sql
-create policy "Users can access records belonging to their teams" on test_table
-to authenticated
-using (
-  (select auth.uid()) in (
-    select user_id
-    from team_user
-    where team_user.team_id = team_id -- joins to the source "test_table.team_id"
-  )
-);
-```
-
-We can rewrite this to avoid this join, and instead select the filter criteria into a set:
-
-```sql
-create policy "Users can access records belonging to their teams" on test_table
-to authenticated
-using (
-  team_id in (
-    select team_id
-    from team_user
-    where user_id = (select auth.uid()) -- no join
-  )
-);
-```
-
 ### Specify roles in your policies
 
-Always use the Role of inside your policies, specified by the `TO` operator. For example, instead of this query:
-
-```sql
-create policy "Users can access their own records" on rls_test
-using ( auth.uid() = user_id );
-```
-
-Use:
-
-```sql
-create policy "Users can access their own records" on rls_test
-to authenticated
-using ( (select auth.uid()) = user_id );
-```
-
-This prevents the policy `( (select auth.uid()) = user_id )` from running for any `anon` users, since the execution stops at the `to authenticated` step.
+Always use the Role inside your policies, specified by the `TO` operator.

@@ -6,7 +6,7 @@
 - Employ consistent, descriptive identifiers for tables, columns, and other database objects.
 - Use white space and indentation to enhance the readability of your code.
 - Store dates in ISO 8601 format (`yyyy-mm-ddThh:mm:ss.sssss`).
-- Include comments for complex logic, using '/_ ... _/' for block comments and '--' for line comments.
+- Include comments for complex logic, using '/* ... */' for block comments and '--' for line comments.
 
 ## Naming Conventions
 
