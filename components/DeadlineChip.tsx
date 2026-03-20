@@ -1,5 +1,6 @@
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@radix-ui/themes'
 import { daysUntil } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 interface DeadlineChipProps {
   date: string | null
@@ -16,24 +17,24 @@ export function DeadlineChip({ date, label = 'Deadline', className }: DeadlineCh
 
   if (days < 0) {
     text = 'Passed'
-    cls = 'text-muted-foreground border-border'
+    cls = 'text-[var(--gray-11)] border-[var(--gray-6)]'
   } else if (days === 0) {
     text = 'Today'
-    cls = 'text-red-700 border-red-200 dark:text-red-400 dark:border-red-800'
+    cls = 'text-[var(--red-11)] border-[var(--red-6)]'
   } else if (days <= 7) {
     text = `${days}d left`
-    cls = 'text-red-700 border-red-200 dark:text-red-400 dark:border-red-800'
+    cls = 'text-[var(--red-11)] border-[var(--red-6)]'
   } else if (days <= 30) {
     text = `${days}d left`
-    cls = 'text-yellow-700 border-yellow-200 dark:text-yellow-400 dark:border-yellow-800'
+    cls = 'text-[var(--amber-11)] border-[var(--amber-6)]'
   } else {
     const d = new Date(date!)
     text = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    cls = 'text-muted-foreground border-border'
+    cls = 'text-[var(--gray-11)] border-[var(--gray-6)]'
   }
 
   return (
-    <Badge variant="outline" className={`text-xs gap-1 ${cls} ${className ?? ''}`}>
+    <Badge variant="outline" className={cn('text-xs gap-1', cls, className)}>
       <i className="ri-time-line" />
       {label}: {text}
     </Badge>

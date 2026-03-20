@@ -1,16 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Switch, Separator, Select, Text, Flex, Box } from '@radix-ui/themes'
 import { saveNotificationPreferences } from '@/app/actions/settings'
 import type { NotificationPreferences } from '@/app/actions/settings'
 
@@ -31,80 +22,78 @@ export function NotificationsForm({ initial }: NotificationsFormProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <Flex direction="column" gap="4">
       {/* Email alerts row */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Label htmlFor="email-alerts" className="text-sm font-medium text-foreground">
+      <Flex align="center" justify="between">
+        <Box>
+          <Text as="label" size="2" weight="medium" htmlFor="email-alerts">
             Email alerts
-          </Label>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          </Text>
+          <Text size="1" color="gray" as="p" mt="1">
             Receive email for Critical &amp; High severity changes
-          </p>
-        </div>
+          </Text>
+        </Box>
         <Switch
           id="email-alerts"
           checked={prefs.email_alerts}
           onCheckedChange={(checked) => update({ email_alerts: checked })}
           disabled={isPending}
         />
-      </div>
-      <Separator />
+      </Flex>
+      <Separator size="4" />
 
       {/* Severity threshold row */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-foreground">Email threshold</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
+      <Flex align="center" justify="between" gap="4">
+        <Box>
+          <Text size="2" weight="medium">Email threshold</Text>
+          <Text size="1" color="gray" as="p" mt="1">
             Only send alerts at or above this severity
-          </p>
-        </div>
-        <Select
+          </Text>
+        </Box>
+        <Select.Root
           value={prefs.email_threshold}
           onValueChange={(value) =>
             update({ email_threshold: value as NotificationPreferences['email_threshold'] })
           }
           disabled={isPending}
         >
-          <SelectTrigger className="w-36">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="critical">Critical only</SelectItem>
-            <SelectItem value="high">High &amp; above</SelectItem>
-            <SelectItem value="medium">Medium &amp; above</SelectItem>
-            <SelectItem value="all">All changes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <Separator />
+          <Select.Trigger style={{ width: '9rem' }} />
+          <Select.Content>
+            <Select.Item value="critical">Critical only</Select.Item>
+            <Select.Item value="high">High &amp; above</Select.Item>
+            <Select.Item value="medium">Medium &amp; above</Select.Item>
+            <Select.Item value="all">All changes</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </Flex>
+      <Separator size="4" />
 
       {/* Weekly digest row */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Label htmlFor="weekly-digest" className="text-sm font-medium text-foreground">
+      <Flex align="center" justify="between">
+        <Box>
+          <Text as="label" size="2" weight="medium" htmlFor="weekly-digest">
             Weekly digest
-          </Label>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          </Text>
+          <Text size="1" color="gray" as="p" mt="1">
             Summary email every Monday morning
-          </p>
-        </div>
+          </Text>
+        </Box>
         <Switch
           id="weekly-digest"
           checked={prefs.weekly_digest}
           onCheckedChange={(checked) => update({ weekly_digest: checked })}
           disabled={isPending}
         />
-      </div>
+      </Flex>
 
-      <div className="pt-1">
-        <p className="text-xs text-muted-foreground">
+      <Box pt="1">
+        <Text size="1" color="gray">
           <i className="ri-information-line mr-1" />
           {isPending
             ? 'Saving…'
             : 'Notification preferences are applied account-wide. Per-user settings coming soon.'}
-        </p>
-      </div>
-    </div>
+        </Text>
+      </Box>
+    </Flex>
   )
 }

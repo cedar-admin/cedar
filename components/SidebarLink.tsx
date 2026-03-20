@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@radix-ui/themes'
 
 interface SidebarLinkProps {
   href: string
@@ -19,13 +19,13 @@ export function SidebarLink({ href, label, icon, disabled, badge }: SidebarLinkP
   if (disabled) {
     return (
       <span
-        className="flex items-center gap-3 px-3 py-2 text-sm text-sidebar-foreground/40 cursor-not-allowed"
+        className="flex items-center gap-3 px-3 py-2 text-sm text-[var(--gray-9)] cursor-not-allowed"
         aria-disabled="true"
       >
         <i className={`${icon} text-base shrink-0`} />
         <span className="flex-1">{label}</span>
         {badge && (
-          <Badge variant="outline" className="text-xs px-1.5 py-0 border-sidebar-border text-sidebar-foreground/40">
+          <Badge variant="outline" size="1" className="text-[var(--gray-9)] border-[var(--gray-6)]">
             {badge}
           </Badge>
         )}
@@ -36,10 +36,10 @@ export function SidebarLink({ href, label, icon, disabled, badge }: SidebarLinkP
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+      className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-[var(--radius-2)] ${
         isActive
-          ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
+          ? 'bg-[var(--accent-a3)] text-[var(--accent-11)] font-medium'
+          : 'text-[var(--gray-11)] hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)]'
       }`}
     >
       <i className={`${icon} text-base shrink-0`} />

@@ -4,6 +4,7 @@ import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { DomainCard } from '@/components/DomainCard'
 import { EmptyState } from '@/components/EmptyState'
 import Link from 'next/link'
+import { Flex, Heading, Text, Box } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,15 +20,15 @@ export default async function LibraryPage({ searchParams }: Props) {
 
   if (isGated) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Regulation Library</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+      <Flex direction="column" gap="6">
+        <Box>
+          <Heading size="6" weight="bold">Regulation Library</Heading>
+          <Text size="2" color="gray" as="p" mt="1">
             Federal and Florida healthcare regulations
-          </p>
-        </div>
+          </Text>
+        </Box>
         <UpgradeBanner feature="Regulation Library" />
-      </div>
+      </Flex>
     )
   }
 
@@ -92,15 +93,15 @@ export default async function LibraryPage({ searchParams }: Props) {
     .select('id', { count: 'exact', head: true })
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Regulation Library</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+    <Flex direction="column" gap="6">
+      <Box>
+        <Heading size="6" weight="bold">Regulation Library</Heading>
+        <Text size="2" color="gray" as="p" mt="1">
           {totalEntities
             ? `${totalEntities.toLocaleString()} regulations, rules, and enforcement records`
             : 'Federal and Florida healthcare regulations'}
-        </p>
-      </div>
+        </Text>
+      </Box>
 
       {/* Practice type filter pills */}
       {(practiceTypes ?? []).length > 0 && (
@@ -109,8 +110,8 @@ export default async function LibraryPage({ searchParams }: Props) {
             href="/library"
             className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
               !practiceTypeSlug
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
+                ? 'bg-[var(--accent-9)] text-white border-[var(--accent-9)]'
+                : 'bg-[var(--color-panel)] text-[var(--gray-11)] border-[var(--gray-6)] hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)]'
             }`}
           >
             All
@@ -121,8 +122,8 @@ export default async function LibraryPage({ searchParams }: Props) {
               href={`/library?practice_type=${pt.slug}`}
               className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
                 practiceTypeSlug === pt.slug
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
+                  ? 'bg-[var(--accent-9)] text-white border-[var(--accent-9)]'
+                  : 'bg-[var(--color-panel)] text-[var(--gray-11)] border-[var(--gray-6)] hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)]'
               }`}
             >
               {pt.display_name}
@@ -157,6 +158,6 @@ export default async function LibraryPage({ searchParams }: Props) {
           description="The regulation taxonomy has not been configured yet."
         />
       )}
-    </div>
+    </Flex>
   )
 }

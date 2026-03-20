@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge, Button, Flex, Text, Theme } from '@radix-ui/themes'
 import { formatDate } from '@/lib/format'
 import type { Database } from '@/lib/db/types'
 
@@ -85,178 +84,180 @@ export function SlideOverPanel({
   }
 
   return (
-    <>
-      {/* Scrim */}
-      <div
-        className={`fixed inset-0 z-40 bg-scrim !m-0 ${isClosing ? 'animate-scrim-out' : 'animate-scrim-in'}`}
-        onClick={() => startClose(onClose)}
-        aria-hidden="true"
-      />
+    <Theme>
+      <>
+        {/* Scrim */}
+        <div
+          className={`fixed inset-0 z-40 bg-scrim !m-0 ${isClosing ? 'animate-scrim-out' : 'animate-scrim-in'}`}
+          onClick={() => startClose(onClose)}
+          aria-hidden="true"
+        />
 
-      {/* Panel */}
-      <div className={`fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-background border-l border-border shadow-xl overflow-y-auto flex flex-col !m-0 ${isClosing ? 'animate-panel-out-right' : 'animate-panel-in-right'}`}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-          <h2 className="text-base font-semibold text-foreground truncate pr-4">
-            {practice.name}
-          </h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => startClose(onClose)}
-            className="text-muted-foreground hover:text-foreground shrink-0 h-8 w-8"
-            aria-label="Close panel"
-          >
-            <i className="ri-close-line text-xl" />
-          </Button>
-        </div>
+        {/* Panel */}
+        <div className={`fixed inset-y-0 right-0 z-50 w-[480px] max-w-full bg-[var(--color-background)] border-l border-[var(--gray-6)] shadow-xl overflow-y-auto flex flex-col !m-0 ${isClosing ? 'animate-panel-out-right' : 'animate-panel-in-right'}`}>
+          {/* Header */}
+          <Flex align="center" justify="between" px="6" py="4" className="border-b border-[var(--gray-6)] shrink-0">
+            <Text size="3" weight="bold" className="truncate pr-4">
+              {practice.name}
+            </Text>
+            <Button
+              variant="ghost"
+              size="1"
+              onClick={() => startClose(onClose)}
+              className="text-[var(--gray-11)] hover:text-[var(--gray-12)] shrink-0 h-8 w-8"
+              aria-label="Close panel"
+            >
+              <i className="ri-close-line text-xl" />
+            </Button>
+          </Flex>
 
-        <div className="flex-1 px-6 py-6 space-y-6">
-          {/* Profile section */}
-          <section>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Practice Profile
-            </h3>
-            <dl className="space-y-2">
-              {[
-                { label: 'Practice Name', value: practice.name },
-                { label: 'Owner Name', value: practice.owner_name ?? '—' },
-                { label: 'Owner Email', value: practice.owner_email },
-                { label: 'Practice Type', value: practice.practice_type ?? '—' },
-                { label: 'Phone', value: practice.phone ?? '—' },
-                { label: 'State', value: 'FL' },
-                { label: 'Stripe Customer ID', value: practice.stripe_customer_id ?? '—' },
-                { label: 'Stripe Subscription ID', value: practice.stripe_subscription_id ?? '—' },
-                { label: 'Current Period End', value: practice.current_period_end ? formatDate(practice.current_period_end) : '—' },
-                { label: 'Created', value: formatDate(practice.created_at) },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex items-start gap-2">
-                  <dt className="text-xs text-muted-foreground w-40 shrink-0 pt-px">{label}</dt>
-                  <dd className="text-sm text-foreground">{value}</dd>
-                </div>
-              ))}
-              {/* Tier — as badge */}
-              <div className="flex items-center gap-2">
-                <dt className="text-xs text-muted-foreground w-40 shrink-0">Tier</dt>
-                <dd><TierBadge tier={practice.tier} /></dd>
-              </div>
-              {/* Subscription status — as badge */}
-              <div className="flex items-center gap-2">
-                <dt className="text-xs text-muted-foreground w-40 shrink-0">Subscription Status</dt>
-                <dd><SubscriptionBadge status={practice.subscription_status} /></dd>
-              </div>
-            </dl>
-          </section>
-
-          {/* Stats section */}
-          <section>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Account Stats
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs text-muted-foreground mb-1">Changes Acknowledged</p>
-                <p className="text-xl font-semibold text-foreground">{acknowledgedCount}</p>
-              </div>
-              <div className="rounded-lg border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs text-muted-foreground mb-1">Account Age</p>
-                <p className="text-xl font-semibold text-foreground">{accountAgeDays}d</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Admin actions section */}
-          <section>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Admin Actions
-            </h3>
-
-            {error && (
-              <p className="text-xs text-destructive mb-3">{error}</p>
-            )}
-
-            {/* Tier toggle */}
-            <div className="rounded-lg border border-border p-4 space-y-3 mb-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Tier</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Currently on <strong>{practice.tier}</strong> plan.
-                  Switch to <strong>{targetTier}</strong>?
-                </p>
-              </div>
-              {confirmStep === 'tier' ? (
+          <div className="flex-1 px-6 py-6 space-y-6">
+            {/* Profile section */}
+            <section>
+              <h3 className="text-xs font-semibold text-[var(--gray-11)] uppercase tracking-wide mb-3">
+                Practice Profile
+              </h3>
+              <dl className="space-y-2">
+                {[
+                  { label: 'Practice Name', value: practice.name },
+                  { label: 'Owner Name', value: practice.owner_name ?? '—' },
+                  { label: 'Owner Email', value: practice.owner_email },
+                  { label: 'Practice Type', value: practice.practice_type ?? '—' },
+                  { label: 'Phone', value: practice.phone ?? '—' },
+                  { label: 'State', value: 'FL' },
+                  { label: 'Stripe Customer ID', value: practice.stripe_customer_id ?? '—' },
+                  { label: 'Stripe Subscription ID', value: practice.stripe_subscription_id ?? '—' },
+                  { label: 'Current Period End', value: practice.current_period_end ? formatDate(practice.current_period_end) : '—' },
+                  { label: 'Created', value: formatDate(practice.created_at) },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-start gap-2">
+                    <dt className="text-xs text-[var(--gray-11)] w-40 shrink-0 pt-px">{label}</dt>
+                    <dd className="text-sm text-[var(--gray-12)]">{value}</dd>
+                  </div>
+                ))}
+                {/* Tier — as badge */}
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    onClick={handleTierChange}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Updating…' : `Confirm → ${targetTier}`}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setConfirmStep(null)}
-                    disabled={isLoading}
-                  >
-                    Cancel
-                  </Button>
+                  <dt className="text-xs text-[var(--gray-11)] w-40 shrink-0">Tier</dt>
+                  <dd><TierBadge tier={practice.tier} /></dd>
                 </div>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setConfirmStep('tier')}
-                >
-                  Switch to {targetTier}
-                </Button>
-              )}
-            </div>
-
-            {/* Soft delete */}
-            <div className="rounded-lg border border-destructive/30 p-4 space-y-3">
-              <div>
-                <p className="text-sm font-medium text-destructive">Delete Practice</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Soft-deletes this practice and removes the WorkOS user account.
-                  This cannot be undone from the UI.
-                </p>
-              </div>
-              {confirmStep === 'delete' ? (
+                {/* Subscription status — as badge */}
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleDelete}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Deleting…' : 'Confirm Delete'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setConfirmStep(null)}
-                    disabled={isLoading}
-                  >
-                    Cancel
-                  </Button>
+                  <dt className="text-xs text-[var(--gray-11)] w-40 shrink-0">Subscription Status</dt>
+                  <dd><SubscriptionBadge status={practice.subscription_status} /></dd>
                 </div>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-destructive border-destructive/30 hover:bg-destructive/10"
-                  onClick={() => setConfirmStep('delete')}
-                >
-                  <i className="ri-delete-bin-line mr-1.5" />
-                  Delete Practice
-                </Button>
+              </dl>
+            </section>
+
+            {/* Stats section */}
+            <section>
+              <h3 className="text-xs font-semibold text-[var(--gray-11)] uppercase tracking-wide mb-3">
+                Account Stats
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg border border-[var(--gray-6)] bg-[var(--gray-a3)] px-4 py-3">
+                  <p className="text-xs text-[var(--gray-11)] mb-1">Changes Acknowledged</p>
+                  <p className="text-xl font-semibold text-[var(--gray-12)]">{acknowledgedCount}</p>
+                </div>
+                <div className="rounded-lg border border-[var(--gray-6)] bg-[var(--gray-a3)] px-4 py-3">
+                  <p className="text-xs text-[var(--gray-11)] mb-1">Account Age</p>
+                  <p className="text-xl font-semibold text-[var(--gray-12)]">{accountAgeDays}d</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Admin actions section */}
+            <section>
+              <h3 className="text-xs font-semibold text-[var(--gray-11)] uppercase tracking-wide mb-3">
+                Admin Actions
+              </h3>
+
+              {error && (
+                <p className="text-xs text-[var(--red-9)] mb-3">{error}</p>
               )}
-            </div>
-          </section>
+
+              {/* Tier toggle */}
+              <div className="rounded-lg border border-[var(--gray-6)] p-4 space-y-3 mb-3">
+                <div>
+                  <p className="text-sm font-medium text-[var(--gray-12)]">Tier</p>
+                  <p className="text-xs text-[var(--gray-11)] mt-0.5">
+                    Currently on <strong>{practice.tier}</strong> plan.
+                    Switch to <strong>{targetTier}</strong>?
+                  </p>
+                </div>
+                {confirmStep === 'tier' ? (
+                  <Flex align="center" gap="2">
+                    <Button
+                      size="1"
+                      onClick={handleTierChange}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Updating…' : `Confirm → ${targetTier}`}
+                    </Button>
+                    <Button
+                      size="1"
+                      variant="ghost"
+                      onClick={() => setConfirmStep(null)}
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                ) : (
+                  <Button
+                    size="1"
+                    variant="outline"
+                    onClick={() => setConfirmStep('tier')}
+                  >
+                    Switch to {targetTier}
+                  </Button>
+                )}
+              </div>
+
+              {/* Soft delete */}
+              <div className="rounded-lg border border-[var(--red-6)] p-4 space-y-3">
+                <div>
+                  <p className="text-sm font-medium text-[var(--red-9)]">Delete Practice</p>
+                  <p className="text-xs text-[var(--gray-11)] mt-0.5">
+                    Soft-deletes this practice and removes the WorkOS user account.
+                    This cannot be undone from the UI.
+                  </p>
+                </div>
+                {confirmStep === 'delete' ? (
+                  <Flex align="center" gap="2">
+                    <Button
+                      size="1"
+                      color="red"
+                      onClick={handleDelete}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Deleting…' : 'Confirm Delete'}
+                    </Button>
+                    <Button
+                      size="1"
+                      variant="ghost"
+                      onClick={() => setConfirmStep(null)}
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                ) : (
+                  <Button
+                    size="1"
+                    variant="outline"
+                    className="text-[var(--red-9)] border-[var(--red-6)] hover:bg-[var(--red-a3)]"
+                    onClick={() => setConfirmStep('delete')}
+                  >
+                    <i className="ri-delete-bin-line mr-1.5" />
+                    Delete Practice
+                  </Button>
+                )}
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </Theme>
   )
 }
 
@@ -267,12 +268,9 @@ function TierBadge({ tier }: { tier: string }) {
   const label = tier.charAt(0).toUpperCase() + tier.slice(1)
   return (
     <Badge
-      variant="outline"
-      className={
-        isIntelligence
-          ? 'text-xs bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800'
-          : 'text-xs'
-      }
+      variant="soft"
+      color={isIntelligence ? 'purple' : 'gray'}
+      size="1"
     >
       {label}
     </Badge>
@@ -280,15 +278,15 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 function SubscriptionBadge({ status }: { status: string | null }) {
-  if (!status) return <span className="text-xs text-muted-foreground">—</span>
-  const styles: Record<string, string> = {
-    active:   'text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
-    trialing: 'text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800',
-    past_due: 'text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
-    unpaid:   'text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
-    canceled: 'text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  if (!status) return <span className="text-xs text-[var(--gray-11)]">—</span>
+  const colorMap: Record<string, 'green' | 'blue' | 'amber' | 'red' | 'gray'> = {
+    active:   'green',
+    trialing: 'blue',
+    past_due: 'amber',
+    unpaid:   'amber',
+    canceled: 'red',
   }
-  const cls = styles[status] ?? 'text-xs text-muted-foreground'
+  const color = colorMap[status] ?? 'gray'
   const label = status.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-  return <Badge variant="outline" className={cls}>{label}</Badge>
+  return <Badge variant="soft" color={color} size="1">{label}</Badge>
 }

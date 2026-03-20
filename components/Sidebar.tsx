@@ -3,11 +3,9 @@
 import Link from 'next/link'
 import { SidebarLink } from './SidebarLink'
 import { SignOutButton } from './SignOutButton'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { Badge, Separator, Button, IconButton } from '@radix-ui/themes'
 import type { UserRole } from '@/lib/layout-data'
-import { Button } from '@/components/ui/button'
 
 const MAIN_NAV = [
   { href: '/home',     label: 'Home',               icon: 'ri-home-4-line' },
@@ -40,7 +38,7 @@ function RoleBadge({ role, tier }: { role: UserRole; tier: string | null }) {
     return (
       <Badge
         variant="outline"
-        className="mt-1 text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
+        className="mt-1 text-xs bg-[var(--amber-a3)] text-[var(--amber-11)] border-[var(--amber-6)]"
       >
         Admin
       </Badge>
@@ -51,10 +49,10 @@ function RoleBadge({ role, tier }: { role: UserRole; tier: string | null }) {
   return (
     <Badge
       variant="outline"
-      className={`mt-1 text-xs border-sidebar-border text-sidebar-foreground/70 ${
+      className={`mt-1 text-xs ${
         isIntelligence
-          ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800'
-          : ''
+          ? 'bg-[var(--purple-a3)] text-[var(--purple-11)] border-[var(--purple-6)]'
+          : 'text-[var(--gray-11)] border-[var(--gray-6)]'
       }`}
     >
       {label}
@@ -81,40 +79,40 @@ export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand 
   return (
     <>
       {/* Expand trigger — visible only when collapsed, hugs left edge */}
-      <Button
+      <IconButton
         variant="ghost"
-        size="icon"
+        size="1"
         onClick={onExpand}
         aria-label="Expand sidebar"
-        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 rounded-none bg-sidebar border-r border-t border-b border-sidebar-border text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar transition-interactive ${
+        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 rounded-none bg-[var(--color-panel-translucent)] border-r border-t border-b border-[var(--gray-6)] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] transition-interactive ${
           collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
         <i className="ri-arrow-right-s-line text-sm" />
-      </Button>
+      </IconButton>
 
       {/* Sidebar — fixed position, slides off-screen with translateX */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[40] flex flex-col w-60 h-screen overflow-y-auto border-r border-sidebar-border bg-sidebar ${
+        className={`fixed inset-y-0 left-0 z-[40] flex flex-col w-60 h-screen overflow-y-auto border-r border-[var(--gray-6)] bg-[var(--color-panel-translucent)] ${
           collapsed ? '-translate-x-full' : 'translate-x-0'
         }`}
         style={{ transition: 'translate var(--duration-base) var(--ease-standard)' }}
       >
 
       {/* Logo + collapse button */}
-      <div className="flex items-center justify-between px-4 h-14 shrink-0 border-b border-sidebar-border">
+      <div className="flex items-center justify-between px-4 h-14 shrink-0 border-b border-[var(--gray-6)]">
         <Link href="/home" className="flex items-center">
           <CedarLogo />
         </Link>
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
+          size="1"
           onClick={onCollapse}
           aria-label="Collapse sidebar"
-          className="w-6 h-6 rounded-none text-sidebar-foreground/40 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+          className="text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)]"
         >
           <i className="ri-arrow-left-s-line text-base" />
-        </Button>
+        </IconButton>
       </div>
 
       {/* Main nav */}
@@ -134,11 +132,11 @@ export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand 
         {role === 'admin' && (
           <>
             <div className="pt-4 pb-1 px-3">
-              <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-[var(--gray-9)] uppercase tracking-wider">
                 Admin
               </p>
             </div>
-            <Separator className="bg-sidebar-border my-1" />
+            <Separator className="my-1" />
             {ADMIN_NAV.map((item) => (
               <SidebarLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
             ))}
@@ -147,11 +145,11 @@ export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand 
       </nav>
 
       {/* Bottom section */}
-      <div className="shrink-0 border-t border-sidebar-border">
+      <div className="shrink-0 border-t border-[var(--gray-6)]">
         {/* Practice / role info */}
-        <div className="px-4 py-3 border-b border-sidebar-border">
+        <div className="px-4 py-3 border-b border-[var(--gray-6)]">
           {practice && (
-            <p className="text-xs font-medium text-sidebar-foreground truncate">
+            <p className="text-xs font-medium text-[var(--gray-12)] truncate">
               {practice.name}
             </p>
           )}
@@ -159,14 +157,14 @@ export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand 
         </div>
 
         {/* User row */}
-        <div className="px-4 py-2.5 border-b border-sidebar-border">
+        <div className="px-4 py-2.5 border-b border-[var(--gray-6)]">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-primary/20 flex items-center justify-center shrink-0">
-              <i className="ri-user-line text-primary text-sm" />
+            <div className="w-7 h-7 bg-[var(--accent-a3)] flex items-center justify-center shrink-0">
+              <i className="ri-user-line text-[var(--accent-11)] text-sm" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-sidebar-foreground truncate">{displayName}</p>
-              <p className="text-xs text-sidebar-foreground/50 truncate">{user.email}</p>
+              <p className="text-xs font-medium text-[var(--gray-12)] truncate">{displayName}</p>
+              <p className="text-xs text-[var(--gray-9)] truncate">{user.email}</p>
             </div>
           </div>
         </div>

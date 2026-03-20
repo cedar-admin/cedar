@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { Button, Flex, Text } from '@radix-ui/themes'
 
 interface TriggerButtonProps {
   label: string
@@ -45,26 +45,26 @@ export default function TriggerButton({ label, sourceId }: TriggerButtonProps) {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <Flex align="center" gap="3">
       <Button
-        variant={state === 'done' ? 'outline' : 'default'}
-        size="sm"
+        variant={state === 'done' ? 'outline' : 'solid'}
+        size="1"
         onClick={handleTrigger}
         disabled={state === 'loading'}
       >
         {state === 'loading' ? (
           <><i className="ri-loader-4-line animate-spin" /> Running…</>
         ) : state === 'done' ? (
-          <><i className="ri-checkbox-circle-line text-green-500" /> Triggered</>
+          <><i className="ri-checkbox-circle-line text-[var(--green-9)]" /> Triggered</>
         ) : (
           <><i className="ri-play-circle-line" /> {label}</>
         )}
       </Button>
       {result && (
-        <span className={`text-xs ${state === 'error' ? 'text-destructive' : 'text-muted-foreground'}`}>
+        <Text size="1" color={state === 'error' ? 'red' : 'gray'}>
           {result}
-        </span>
+        </Text>
       )}
-    </div>
+    </Flex>
   )
 }

@@ -1,10 +1,11 @@
 import Link from 'next/link'
+import { Badge, Flex, Text } from '@radix-ui/themes'
 import { AuthorityBadge } from '@/components/AuthorityBadge'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
 import { DeadlineChip } from '@/components/DeadlineChip'
 import { ServiceLineTag } from '@/components/ServiceLineTag'
-import { Badge } from '@/components/ui/badge'
 import { capitalize } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 interface RegulationRowProps {
   entity: {
@@ -31,20 +32,20 @@ export function RegulationRow({ entity, domainSlug, serviceTags, className }: Re
   return (
     <Link
       href={`/library/${domainSlug}/${entity.id}`}
-      className={`block px-4 py-3 hover:bg-muted/30 transition-colors ${className ?? ''}`}
+      className={cn('block px-4 py-3 hover:bg-[var(--gray-a2)] transition-colors', className)}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1 space-y-1">
-          <h4 className="text-sm font-medium text-foreground line-clamp-2">{entity.name}</h4>
+      <Flex align="start" justify="between" gap="3">
+        <Flex direction="column" gap="1" className="min-w-0 flex-1">
+          <Text size="2" weight="medium" className="line-clamp-2 text-[var(--gray-12)]">{entity.name}</Text>
           {entity.citation && (
-            <p className="text-xs text-muted-foreground">{entity.citation}</p>
+            <Text size="1" color="gray">{entity.citation}</Text>
           )}
           {entity.description && (
-            <p className="text-xs text-muted-foreground line-clamp-2">{entity.description}</p>
+            <Text size="1" color="gray" className="line-clamp-2">{entity.description}</Text>
           )}
-          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <Flex wrap="wrap" align="center" gap="1" mt="1">
             {entity.entity_type && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="soft" size="1">
                 {capitalize(entity.entity_type.replace(/_/g, ' '))}
               </Badge>
             )}
@@ -54,14 +55,16 @@ export function RegulationRow({ entity, domainSlug, serviceTags, className }: Re
             {serviceTags?.map((tag) => (
               <ServiceLineTag key={tag} name={tag} />
             ))}
-          </div>
-        </div>
-        <div className="shrink-0 text-right text-xs text-muted-foreground">
+          </Flex>
+        </Flex>
+        <div className="shrink-0 text-right">
           {entity.publication_date && (
-            <time>{new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}</time>
+            <Text size="1" color="gray">
+              <time>{new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}</time>
+            </Text>
           )}
         </div>
-      </div>
+      </Flex>
     </Link>
   )
 }

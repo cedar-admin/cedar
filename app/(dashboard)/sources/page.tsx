@@ -1,15 +1,5 @@
 import { createServerClient } from '../../../lib/db/client'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Badge, Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -31,20 +21,20 @@ function MonitoringTierBadge({ tier }: { tier: string | null }) {
 function FreshnessIndicator({ lastFetchedAt }: { lastFetchedAt: string | null }) {
   if (!lastFetchedAt) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" />
+      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--gray-11)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--gray-11)] opacity-30" />
         Never checked
       </span>
     )
   }
   const ageH = (Date.now() - new Date(lastFetchedAt).getTime()) / 3_600_000
-  let dotColor = 'bg-muted-foreground/30'
+  let dotColor = 'bg-[var(--gray-11)] opacity-30'
   let label = 'Stale'
-  if (ageH < 25)       { dotColor = 'bg-green-500'; label = 'Fresh' }
+  if (ageH < 25)       { dotColor = 'bg-[var(--green-9)]'; label = 'Fresh' }
   else if (ageH < 168) { dotColor = 'bg-yellow-400'; label = 'Aging' }
 
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 text-xs text-[var(--gray-11)]">
       <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
       {label}
     </span>
@@ -99,76 +89,76 @@ export default async function SourcesPage() {
   })
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Source Library</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <Heading size="6" weight="bold">Source Library</Heading>
+        <Text size="2" color="gray" as="p" mt="1">
           {sources.length} active source{sources.length !== 1 ? 's' : ''} &mdash; Florida regulatory coverage
-        </p>
+        </Text>
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <i className="ri-error-warning-line text-base" />
-          <AlertDescription>
+        <Callout.Root color="red">
+          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Text>
             Failed to load sources: {error.message}
-          </AlertDescription>
-        </Alert>
+          </Callout.Text>
+        </Callout.Root>
       )}
 
       {sources.length === 0 && !error ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <i className="ri-database-2-line text-3xl text-muted-foreground/40 mb-2" />
-            <p className="text-sm text-muted-foreground">No active sources found.</p>
-          </CardContent>
+          <Box p="4">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <i className="ri-database-2-line text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
+              <p className="text-sm text-[var(--gray-11)]">No active sources found.</p>
+            </div>
+          </Box>
         </Card>
       ) : (
         <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead className="w-28">Tier</TableHead>
-                  <TableHead className="w-36">Fetch Method</TableHead>
-                  <TableHead className="w-16 text-center">URLs</TableHead>
-                  <TableHead className="w-28">Last Checked</TableHead>
-                  <TableHead className="w-28">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {withMeta.map((source) => (
-                  <TableRow key={source.id}>
-                    <TableCell>
-                      <div className="text-sm font-medium text-foreground">{source.name}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {source.jurisdiction ?? 'FL'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <MonitoringTierBadge tier={source.tier} />
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {source.fetchMethod}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground text-center">
-                      {source.urlCount}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {timeAgo(source.latestFetchedAt)}
-                    </TableCell>
-                    <TableCell>
-                      <FreshnessIndicator lastFetchedAt={source.latestFetchedAt} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="w-28">Tier</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="w-36">Fetch Method</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="w-16 text-center">URLs</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="w-28">Last Checked</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell className="w-28">Status</Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {withMeta.map((source) => (
+                <Table.Row key={source.id}>
+                  <Table.Cell>
+                    <div className="text-sm font-medium text-[var(--gray-12)]">{source.name}</div>
+                    <div className="text-xs text-[var(--gray-11)] mt-0.5">
+                      {source.jurisdiction ?? 'FL'}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <MonitoringTierBadge tier={source.tier} />
+                  </Table.Cell>
+                  <Table.Cell className="text-sm text-[var(--gray-11)]">
+                    {source.fetchMethod}
+                  </Table.Cell>
+                  <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
+                    {source.urlCount}
+                  </Table.Cell>
+                  <Table.Cell className="text-sm text-[var(--gray-11)] whitespace-nowrap">
+                    {timeAgo(source.latestFetchedAt)}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <FreshnessIndicator lastFetchedAt={source.latestFetchedAt} />
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
         </Card>
       )}
-    </div>
+    </Flex>
   )
 }

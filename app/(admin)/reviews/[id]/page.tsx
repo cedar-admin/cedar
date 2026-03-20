@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createServerClient } from '../../../../lib/db/client'
 import type { DiffBlock } from '../../../../lib/changes/diff'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { timeAgo } from '@/lib/format'
@@ -12,21 +12,21 @@ import ReviewActions from '../ReviewActions'
 
 function DiffViewer({ blocks }: { blocks: DiffBlock[] }) {
   return (
-    <div className="font-mono text-xs border border-border overflow-auto max-h-96 bg-card">
+    <div className="font-mono text-xs border border-[var(--gray-6)] overflow-auto max-h-96 bg-[var(--gray-a2)]">
       {blocks.map((block, i) => {
         const lines = block.content.split('\n')
         return lines.map((line, j) => {
-          let rowCls = 'bg-card text-muted-foreground'
-          let gutterCls = 'text-muted-foreground border-r border-border'
+          let rowCls = 'bg-transparent text-[var(--gray-11)]'
+          let gutterCls = 'text-[var(--gray-11)] border-r border-[var(--gray-6)]'
           let prefix = ' '
           if (block.type === 'added') {
-            rowCls = 'bg-green-50 dark:bg-green-950/40'
-            gutterCls = 'text-green-600 dark:text-green-400 border-r border-green-200 dark:border-green-800'
+            rowCls = 'bg-[var(--green-a3)]'
+            gutterCls = 'text-[var(--green-11)] border-r border-[var(--green-6)]'
             prefix = '+'
           }
           if (block.type === 'removed') {
-            rowCls = 'bg-red-50 dark:bg-red-950/40'
-            gutterCls = 'text-red-600 dark:text-red-400 border-r border-red-200 dark:border-red-800'
+            rowCls = 'bg-[var(--red-a3)]'
+            gutterCls = 'text-[var(--red-11)] border-r border-[var(--red-6)]'
             prefix = '-'
           }
           return (
@@ -92,7 +92,7 @@ export default async function ReviewDetailPage({ params }: Props) {
       {/* Back */}
       <Link
         href="/reviews"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--gray-11)] hover:text-[var(--gray-12)] mb-6 transition-colors"
       >
         <i className="ri-arrow-left-line" />
         Review Queue
@@ -101,111 +101,111 @@ export default async function ReviewDetailPage({ params }: Props) {
       {/* Header */}
       <div className="flex items-start gap-4 mb-6">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
+          <Flex align="center" gap="3" mb="2">
             <SeverityBadge severity={c.severity} />
             <StatusBadge status={c.review_status} />
-            <span className="text-sm text-muted-foreground">{timeAgo(c.detected_at)}</span>
-          </div>
-          <h1 className="text-xl font-semibold text-foreground">
+            <Text size="2" color="gray">{timeAgo(c.detected_at)}</Text>
+          </Flex>
+          <Heading size="5" weight="bold">
             {c.sources?.name ?? 'Unknown Source'}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          </Heading>
+          <Text size="2" color="gray" className="mt-0.5 block">
             Change detected {new Date(c.detected_at).toLocaleString('en-US', {
               dateStyle: 'long',
               timeStyle: 'short',
             })}
-          </p>
+          </Text>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         {/* Main content */}
-        <div className="col-span-2 space-y-6">
+        <div className="col-span-2 flex flex-col gap-6">
           {/* AI Summary */}
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 AI Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </Text>
+            </Box>
+            <Box px="4" pb="4">
               {c.summary ? (
-                <p className="text-sm text-foreground leading-relaxed">{c.summary}</p>
+                <Text size="2" className="leading-relaxed block">{c.summary}</Text>
               ) : (
-                <p className="text-sm text-muted-foreground italic">
+                <Text size="2" color="gray" className="italic">
                   No AI summary available for this change.
-                </p>
+                </Text>
               )}
-            </CardContent>
+            </Box>
           </Card>
 
           {/* Diff Viewer */}
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Detected Changes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </Text>
+            </Box>
+            <Box px="4" pb="4">
               {blocks && blocks.length > 0 ? (
                 <DiffViewer blocks={blocks} />
               ) : (
-                <div className="border border-dashed border-border p-8 text-center">
-                  <p className="text-sm text-muted-foreground">
+                <div className="border border-dashed border-[var(--gray-6)] p-8 text-center">
+                  <Text size="2" color="gray">
                     Full text change detected &mdash; no structured diff available.
-                  </p>
+                  </Text>
                 </div>
               )}
-            </CardContent>
+            </Box>
           </Card>
 
           {/* Review Actions — only show for pending changes */}
           {isPending && (
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <Box px="4" pt="4" pb="3">
+                <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                   Review Decision
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </Text>
+              </Box>
+              <Box px="4" pb="4">
                 <ReviewActions changeId={c.id} sourceName={c.sources?.name ?? 'Unknown Source'} />
-              </CardContent>
+              </Box>
             </Card>
           )}
         </div>
 
         {/* Metadata sidebar */}
-        <aside className="space-y-4">
+        <aside className="flex flex-col gap-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </Text>
+            </Box>
+            <Box px="4" pb="4">
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-xs text-muted-foreground">Jurisdiction</dt>
-                  <dd className="text-sm font-medium text-foreground mt-0.5">
+                  <dt className="text-xs text-[var(--gray-11)]">Jurisdiction</dt>
+                  <dd className="text-sm font-medium text-[var(--gray-12)] mt-0.5">
                     {c.jurisdiction ?? 'FL'}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Review Status</dt>
+                  <dt className="text-xs text-[var(--gray-11)]">Review Status</dt>
                   <dd className="mt-0.5">
                     <StatusBadge status={c.review_status} />
                   </dd>
                 </div>
                 {reviewedBy && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Reviewed By</dt>
-                    <dd className="text-sm text-foreground mt-0.5">{reviewedBy}</dd>
+                    <dt className="text-xs text-[var(--gray-11)]">Reviewed By</dt>
+                    <dd className="text-sm text-[var(--gray-12)] mt-0.5">{reviewedBy}</dd>
                   </div>
                 )}
                 {reviewedAt && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Reviewed At</dt>
-                    <dd className="text-sm text-foreground mt-0.5">
+                    <dt className="text-xs text-[var(--gray-11)]">Reviewed At</dt>
+                    <dd className="text-sm text-[var(--gray-12)] mt-0.5">
                       {new Date(reviewedAt).toLocaleString('en-US', {
                         dateStyle: 'medium',
                         timeStyle: 'short',
@@ -215,35 +215,35 @@ export default async function ReviewDetailPage({ params }: Props) {
                 )}
                 {reviewNotes && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Review Notes</dt>
-                    <dd className="text-sm text-foreground mt-0.5">{reviewNotes}</dd>
+                    <dt className="text-xs text-[var(--gray-11)]">Review Notes</dt>
+                    <dd className="text-sm text-[var(--gray-12)] mt-0.5">{reviewNotes}</dd>
                   </div>
                 )}
                 {c.chain_sequence !== null && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Chain Sequence</dt>
-                    <dd className="text-sm font-medium text-foreground mt-0.5">
+                    <dt className="text-xs text-[var(--gray-11)]">Chain Sequence</dt>
+                    <dd className="text-sm font-medium text-[var(--gray-12)] mt-0.5">
                       #{c.chain_sequence}
                     </dd>
                   </div>
                 )}
                 {c.hash && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Content Hash</dt>
-                    <dd className="text-xs font-mono text-muted-foreground mt-0.5 break-all">
+                    <dt className="text-xs text-[var(--gray-11)]">Content Hash</dt>
+                    <dd className="text-xs font-mono text-[var(--gray-11)] mt-0.5 break-all">
                       {c.hash.slice(0, 16)}&hellip;
                     </dd>
                   </div>
                 )}
                 {c.sources?.url && (
                   <div>
-                    <dt className="text-xs text-muted-foreground">Source URL</dt>
+                    <dt className="text-xs text-[var(--gray-11)]">Source URL</dt>
                     <dd className="mt-0.5">
                       <a
                         href={c.sources.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-primary hover:text-primary/80 underline break-all transition-colors"
+                        className="text-xs text-[var(--accent-9)] hover:text-[var(--accent-10)] underline break-all transition-colors"
                       >
                         {c.sources.url.length > 50
                           ? c.sources.url.slice(0, 50) + '…'
@@ -253,7 +253,7 @@ export default async function ReviewDetailPage({ params }: Props) {
                   </div>
                 )}
               </dl>
-            </CardContent>
+            </Box>
           </Card>
         </aside>
       </div>

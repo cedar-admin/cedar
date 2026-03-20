@@ -1,9 +1,8 @@
 import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import Link from 'next/link'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { Card, Box, Flex, Heading, Text, Badge } from '@radix-ui/themes'
+import { TextField } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
 
@@ -124,56 +123,56 @@ export default async function FaqPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Regulatory FAQ</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+      <Box>
+        <Heading size="6" weight="bold">Regulatory FAQ</Heading>
+        <Text size="2" color="gray" as="p" mt="1">
           Plain-language answers to common Florida &amp; federal healthcare regulatory questions
-        </p>
-      </div>
+        </Text>
+      </Box>
 
       {/* Search shell */}
-      <div className="flex gap-2">
-        <div className="flex-1 relative">
-          <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-base" />
-          <Input
+      <Flex gap="2">
+        <Box flexGrow="1" style={{ position: 'relative' }}>
+          <i className="ri-search-line" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-11)' }} />
+          <TextField.Root
             placeholder="Search questions… (Intelligence plan feature)"
-            className="pl-9"
             disabled={isGated}
+            style={{ paddingLeft: '2.25rem' }}
           />
-        </div>
-      </div>
+        </Box>
+      </Flex>
       {isGated && (
-        <p className="text-xs text-muted-foreground -mt-4">
+        <Text size="1" color="gray" mt="-3">
           <i className="ri-lock-2-line mr-1" />
           Full FAQ search is available on the Intelligence plan.
-        </p>
+        </Text>
       )}
 
       {/* Upgrade banner for monitor users */}
       {isGated && <UpgradeBanner feature="Regulatory FAQ" />}
 
       {!isGated && (
-        <div className="space-y-8">
+        <Flex direction="column" gap="8">
           {grouped.map(({ topic, items }) => (
-            <div key={topic}>
-              <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-foreground">{topic}</h2>
-                <span className="text-xs text-muted-foreground">
+            <Box key={topic}>
+              <Flex align="center" gap="2" mb="3">
+                <Text size="2" weight="bold" color="gray">{topic}</Text>
+                <Text size="1" color="gray">
                   {items.length} {items.length === 1 ? 'question' : 'questions'}
-                </span>
-              </div>
-              <div className="space-y-2">
+                </Text>
+              </Flex>
+              <Flex direction="column" gap="2">
                 {items.map((faq) => (
                   <Link key={faq.id} href={`/faq/${faq.id}`}>
-                    <Card className="hover:bg-muted/30 transition-colors cursor-pointer">
-                      <CardContent className="pt-4 pb-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                              <Badge variant="secondary" className="text-xs">{faq.subtopic}</Badge>
-                              <Badge variant="outline" className="text-xs text-muted-foreground">{faq.jurisdiction}</Badge>
+                    <Card className="hover:bg-[var(--gray-a2)] transition-colors cursor-pointer">
+                      <Box p="4">
+                        <Flex align="start" justify="between" gap="4">
+                          <Box flexGrow="1" style={{ minWidth: 0 }}>
+                            <Flex align="center" gap="2" mb="1" wrap="wrap">
+                              <Badge variant="soft" className="text-xs">{faq.subtopic}</Badge>
+                              <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.jurisdiction}</Badge>
                               <DifficultyBadge difficulty={faq.difficulty} />
                               {faq.attorneyReviewed && (
                                 <span className="inline-flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 font-medium">
@@ -181,23 +180,23 @@ export default async function FaqPage() {
                                   Attorney Reviewed
                                 </span>
                               )}
-                            </div>
-                            <h3 className="text-sm font-medium text-foreground">{faq.question}</h3>
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{faq.excerpt}</p>
-                          </div>
-                          <div className="shrink-0">
-                            <i className="ri-arrow-right-s-line text-muted-foreground text-lg" />
-                          </div>
-                        </div>
-                      </CardContent>
+                            </Flex>
+                            <Text size="2" weight="medium" as="p">{faq.question}</Text>
+                            <Text size="1" color="gray" as="p" mt="1" className="line-clamp-2">{faq.excerpt}</Text>
+                          </Box>
+                          <Box flexShrink="0">
+                            <i className="ri-arrow-right-s-line text-[var(--gray-11)] text-lg" />
+                          </Box>
+                        </Flex>
+                      </Box>
                     </Card>
                   </Link>
                 ))}
-              </div>
-            </div>
+              </Flex>
+            </Box>
           ))}
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   )
 }

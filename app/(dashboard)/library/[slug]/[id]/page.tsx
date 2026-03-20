@@ -5,7 +5,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { LegalDisclaimer } from '@/components/LegalDisclaimer'
 import { AuthorityBadge } from '@/components/AuthorityBadge'
-import { Badge } from '@/components/ui/badge'
+import { Badge, Flex, Box, Heading, Text } from '@radix-ui/themes'
 import { capitalize } from '@/lib/format'
 import { RegulationTabs } from './RegulationTabs'
 
@@ -21,9 +21,9 @@ export default async function RegulationDetailPage({ params }: Props) {
 
   if (isGated) {
     return (
-      <div className="space-y-6">
+      <Flex direction="column" gap="6">
         <UpgradeBanner feature="Regulation Library" />
-      </div>
+      </Flex>
     )
   }
 
@@ -145,34 +145,34 @@ export default async function RegulationDetailPage({ params }: Props) {
   }))
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+      <nav className="flex items-center gap-1.5 text-sm text-[var(--gray-11)]">
         {breadcrumbs.map((crumb, i) => (
           <span key={crumb.href} className="flex items-center gap-1.5">
             {i > 0 && <i className="ri-arrow-right-s-line text-xs" />}
-            <Link href={crumb.href} className="hover:text-foreground transition-colors">
+            <Link href={crumb.href} className="hover:text-[var(--gray-12)] transition-colors">
               {crumb.label}
             </Link>
           </span>
         ))}
         <i className="ri-arrow-right-s-line text-xs" />
-        <span className="text-foreground font-medium truncate max-w-xs">{entity.name}</span>
+        <span className="text-[var(--gray-12)] font-medium truncate max-w-xs">{entity.name}</span>
       </nav>
 
       {/* Back link */}
       <Link
         href={`/library/${slug}`}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--gray-11)] hover:text-[var(--gray-12)] transition-colors"
       >
         <i className="ri-arrow-left-line" />
         Back to {domain?.name ?? 'category'}
       </Link>
 
       {/* Badge row */}
-      <div className="flex flex-wrap items-center gap-2">
+      <Flex wrap="wrap" align="center" gap="2">
         {entity.entity_type && (
-          <Badge variant="secondary">{capitalize(entity.entity_type.replace(/_/g, ' '))}</Badge>
+          <Badge variant="soft">{capitalize(entity.entity_type.replace(/_/g, ' '))}</Badge>
         )}
         {entity.document_type && (
           <Badge variant="outline">{entity.document_type.replace(/_/g, ' ')}</Badge>
@@ -182,32 +182,32 @@ export default async function RegulationDetailPage({ params }: Props) {
         {entity.status && (
           <Badge variant="outline">{capitalize(entity.status)}</Badge>
         )}
-      </div>
+      </Flex>
 
       {/* Entity name */}
-      <h1 className="text-2xl font-semibold text-foreground">{entity.name}</h1>
+      <Heading size="6" weight="bold" as="h1">{entity.name}</Heading>
 
       {/* Metadata row */}
-      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <Flex wrap="wrap" align="center" gap="4">
         {entity.citation && (
-          <span className="flex items-center gap-1">
+          <Text size="2" color="gray" className="flex items-center gap-1">
             <i className="ri-file-text-line" />
             {entity.citation}
-          </span>
+          </Text>
         )}
         {entity.effective_date && (
-          <span className="flex items-center gap-1">
+          <Text size="2" color="gray" className="flex items-center gap-1">
             <i className="ri-calendar-check-line" />
             Effective: {new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-          </span>
+          </Text>
         )}
         {entity.publication_date && (
-          <span className="flex items-center gap-1">
+          <Text size="2" color="gray" className="flex items-center gap-1">
             <i className="ri-calendar-line" />
             Published: {new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-          </span>
+          </Text>
         )}
-      </div>
+      </Flex>
 
       {/* Tabs */}
       <RegulationTabs
@@ -223,6 +223,6 @@ export default async function RegulationDetailPage({ params }: Props) {
       />
 
       <LegalDisclaimer />
-    </div>
+    </Flex>
   )
 }

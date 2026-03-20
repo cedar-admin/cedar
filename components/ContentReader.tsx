@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Button, IconButton, Card, Box } from '@radix-ui/themes'
 
 interface ContentReaderProps {
   content: string | null
@@ -27,8 +26,8 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
   if (!content) {
     return (
       <div className={`flex flex-col items-center justify-center py-12 text-center ${className ?? ''}`}>
-        <i className="ri-file-unknow-line text-3xl text-muted-foreground/40 mb-2" />
-        <p className="text-sm text-muted-foreground">No content snapshot available</p>
+        <i className="ri-file-unknow-line text-3xl text-[var(--gray-9)] mb-2" />
+        <p className="text-sm text-[var(--gray-11)]">No content snapshot available</p>
       </div>
     )
   }
@@ -41,12 +40,12 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
 
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-50 bg-background animate-fade-in overflow-auto">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background px-6 py-3">
-          <h2 className="text-base font-semibold text-foreground truncate">{title ?? 'Document'}</h2>
-          <Button variant="ghost" size="sm" onClick={() => setFullscreen(false)}>
+      <div className="fixed inset-0 z-50 bg-[var(--color-background)] animate-fade-in overflow-auto">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--gray-6)] bg-[var(--color-background)] px-6 py-3">
+          <h2 className="text-base font-semibold text-[var(--gray-12)] truncate">{title ?? 'Document'}</h2>
+          <IconButton variant="ghost" size="1" onClick={() => setFullscreen(false)}>
             <i className="ri-close-line text-lg" />
-          </Button>
+          </IconButton>
         </div>
         <div className="mx-auto max-w-4xl px-6 py-6">{body}</div>
       </div>
@@ -55,17 +54,17 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
 
   return (
     <Card className={className}>
-      <CardContent className="relative">
+      <Box p="4" className="relative">
         <Button
           variant="ghost"
-          size="sm"
+          size="1"
           className="absolute top-2 right-2"
           onClick={() => setFullscreen(true)}
         >
           <i className="ri-fullscreen-line" />
         </Button>
         <div className="max-h-96 overflow-auto">{body}</div>
-      </CardContent>
+      </Box>
     </Card>
   )
 }

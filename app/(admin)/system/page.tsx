@@ -1,18 +1,7 @@
 import { createServerClient } from '../../../lib/db/client'
 import TriggerButton from './TriggerButton'
 import SeedCorpusButton from './SeedCorpusButton'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Separator } from '@/components/ui/separator'
+import { Badge, Callout, Card, Box, Flex, Heading, Text, Table, Separator } from '@radix-ui/themes'
 import { SEVERITY_CLASS } from '@/lib/ui-constants'
 import { timeAgo } from '@/lib/format'
 
@@ -32,26 +21,26 @@ const ENV_VARS = [
 function EnvRow({ keyName, label, required }: { keyName: string; label: string; required: boolean }) {
   const isSet = !!process.env[keyName]
   return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-mono text-foreground">{keyName}</span>
-        <span className="text-xs text-muted-foreground">{label}</span>
+    <Flex align="center" justify="between" py="2">
+      <Flex align="center" gap="2">
+        <span className="text-sm font-mono text-[var(--gray-12)]">{keyName}</span>
+        <Text size="1" color="gray">{label}</Text>
         {required && !isSet && (
-          <Badge variant="outline" className="text-xs text-destructive border-destructive/30 bg-destructive/5">
+          <Badge variant="outline" color="red" size="1">
             Required
           </Badge>
         )}
-      </div>
+      </Flex>
       {isSet ? (
-        <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-medium">
+        <span className="flex items-center gap-1 text-xs text-[var(--green-11)] font-medium">
           <i className="ri-checkbox-circle-fill" /> Set
         </span>
       ) : (
-        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1 text-xs text-[var(--gray-11)]">
           <i className="ri-close-circle-line" /> Not set
         </span>
       )}
-    </div>
+    </Flex>
   )
 }
 
@@ -99,66 +88,66 @@ export default async function SystemPage() {
   const missingRequired = ENV_VARS.filter(v => v.required && !process.env[v.key])
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex align="center" justify="between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">System Health</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <Heading size="6" weight="bold">System Health</Heading>
+          <Text size="2" color="gray" className="mt-1 block">
             Environment status, source monitoring, and manual trigger controls
-          </p>
+          </Text>
         </div>
-        <div className="flex items-center gap-2">
+        <Flex align="center" gap="2">
           <SeedCorpusButton />
           <TriggerButton label="Run All Sources" />
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {missingRequired.length > 0 && (
-        <Alert variant="destructive">
-          <i className="ri-error-warning-line text-base" />
-          <AlertDescription>
+        <Callout.Root color="red">
+          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Text>
             <strong>{missingRequired.length} required env var{missingRequired.length !== 1 ? 's' : ''} not set:</strong>{' '}
             {missingRequired.map(v => v.key).join(', ')}
-          </AlertDescription>
-        </Alert>
+          </Callout.Text>
+        </Callout.Root>
       )}
 
       {/* Environment Variables */}
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <Box px="4" pt="4" pb="3">
+          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Environment Variables
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="divide-y divide-border">
+          </Text>
+        </Box>
+        <Box px="4" pb="4">
+          <div className="divide-y divide-[var(--gray-6)]">
             {ENV_VARS.map((v) => (
               <EnvRow key={v.key} keyName={v.key} label={v.label} required={v.required} />
             ))}
           </div>
-        </CardContent>
+        </Box>
       </Card>
 
       {/* Sources */}
       <Card>
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <Box px="4" pt="4" pb="3">
+          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Sources ({sources?.length ?? 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Source</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Last Fetched</TableHead>
-                <TableHead>Changes</TableHead>
-                <TableHead className="text-right">Trigger</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          </Text>
+        </Box>
+        <Box p="0">
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Method</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Last Fetched</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Changes</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell justify="end">Trigger</Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
               {(sources ?? []).map((source) => {
                 const urls = (source.source_urls ?? []) as Array<{
                   id: string
@@ -174,74 +163,74 @@ export default async function SystemPage() {
                 const changes = countBySource[source.id] ?? 0
 
                 return (
-                  <TableRow key={source.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${source.is_active ? 'bg-green-500' : 'bg-muted-foreground/40'}`} />
-                        <span className="text-sm font-medium text-foreground">{source.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
+                  <Table.Row key={source.id}>
+                    <Table.Cell>
+                      <Flex align="center" gap="2">
+                        <span className={`w-1.5 h-1.5 rounded-full ${source.is_active ? 'bg-[var(--green-9)]' : 'bg-[var(--gray-8)]'}`} />
+                        <Text size="2" weight="medium">{source.name}</Text>
+                      </Flex>
+                    </Table.Cell>
+                    <Table.Cell>
                       <Badge variant="outline" className="text-xs font-mono">
                         {actualMethod ?? source.fetch_method}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {timeAgo(lastFetch)}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {changes}
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text size="2" color="gray">{timeAgo(lastFetch)}</Text>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text size="2" color="gray">{changes}</Text>
+                    </Table.Cell>
+                    <Table.Cell justify="end">
                       <TriggerButton label="Run" sourceId={source.id} />
-                    </TableCell>
-                  </TableRow>
+                    </Table.Cell>
+                  </Table.Row>
                 )
               })}
-            </TableBody>
-          </Table>
-        </CardContent>
+            </Table.Body>
+          </Table.Root>
+        </Box>
       </Card>
 
       {/* Recent Changes */}
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <Box px="4" pt="4" pb="3">
+          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Recent Changes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </Text>
+        </Box>
+        <Box px="4" pb="4">
           {!recentChanges || recentChanges.length === 0 ? (
-            <p className="text-sm text-muted-foreground italic py-4 text-center">
+            <Text size="2" color="gray" className="italic py-4 text-center block">
               No changes recorded yet
-            </p>
+            </Text>
           ) : (
-            <div className="space-y-3">
+            <Flex direction="column" gap="3">
               {recentChanges.map((c) => {
                 const src = c.sources as { name: string } | null
                 const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
                 return (
-                  <div key={c.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <Flex key={c.id} align="center" justify="between">
+                    <Flex align="center" gap="3">
                       <Badge variant="outline" className={`text-xs ${cls}`}>
                         {c.severity ?? 'unknown'}
                       </Badge>
-                      <span className="text-sm text-foreground">{src?.name ?? '—'}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
+                      <Text size="2">{src?.name ?? '—'}</Text>
+                    </Flex>
+                    <Text size="1" color="gray">
                       {timeAgo(c.detected_at)}
-                    </span>
-                  </div>
+                    </Text>
+                  </Flex>
                 )
               })}
-            </div>
+            </Flex>
           )}
-          <Separator className="mt-4 mb-3" />
-          <p className="text-xs text-muted-foreground">
+          <Separator size="4" className="mt-4 mb-3" />
+          <Text size="1" color="gray">
             Total changes: <strong>{Object.values(countBySource).reduce((a, b) => a + b, 0)}</strong>
-          </p>
-        </CardContent>
+          </Text>
+        </Box>
       </Card>
-    </div>
+    </Flex>
   )
 }

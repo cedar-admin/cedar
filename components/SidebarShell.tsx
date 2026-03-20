@@ -16,7 +16,7 @@ export function SidebarShell({ user, practice, role, children }: SidebarShellPro
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-[var(--color-background)]">
       <Sidebar
         user={user}
         practice={practice}
@@ -29,7 +29,7 @@ export function SidebarShell({ user, practice, role, children }: SidebarShellPro
       {/* Tablet scrim: visible only below lg, only when sidebar is open */}
       {!collapsed && (
         <div
-          className="fixed inset-0 z-[30] bg-scrim animate-scrim-in lg:hidden !m-0"
+          className="fixed inset-0 z-[30] bg-[var(--scrim)] animate-scrim-in lg:hidden !m-0"
           onClick={() => setCollapsed(true)}
           aria-hidden="true"
         />

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Button, TextArea, Flex } from '@radix-ui/themes'
 
 interface ReviewActionsProps {
   changeId: string
@@ -60,8 +59,8 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
 
   if (showRejectDialog) {
     return (
-      <div className="flex flex-col gap-2 min-w-56">
-        <Textarea
+      <Flex direction="column" gap="2" className="min-w-56">
+        <TextArea
           placeholder="Reason for rejection (optional)"
           rows={2}
           value={notes}
@@ -70,12 +69,12 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
           className="resize-none"
         />
         {error && (
-          <p className="text-xs text-destructive">{error}</p>
+          <p className="text-xs text-[var(--red-9)]">{error}</p>
         )}
-        <div className="flex gap-2">
+        <Flex gap="2">
           <Button
-            variant="destructive"
-            size="sm"
+            color="red"
+            size="1"
             onClick={handleReject}
             disabled={loading === 'reject'}
             className="flex-1"
@@ -84,25 +83,25 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            size="1"
             onClick={() => { setShowRejectDialog(false); setNotes(''); setError(null) }}
           >
             Cancel
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     )
   }
 
   return (
-    <div className="flex flex-col gap-2 items-end">
+    <Flex direction="column" gap="2" align="end">
       {error && (
-        <p className="text-xs text-destructive text-right">{error}</p>
+        <p className="text-xs text-[var(--red-9)] text-right">{error}</p>
       )}
-      <div className="flex gap-2">
+      <Flex gap="2">
         <Button
-          variant="default"
-          size="sm"
+          variant="solid"
+          size="1"
           onClick={handleApprove}
           disabled={loading !== null}
         >
@@ -110,14 +109,14 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="1"
           onClick={() => setShowRejectDialog(true)}
           disabled={loading !== null}
-          className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+          className="text-[var(--red-9)] border-[var(--red-6)] hover:bg-[var(--red-a3)] hover:text-[var(--red-9)]"
         >
           Reject
         </Button>
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   )
 }

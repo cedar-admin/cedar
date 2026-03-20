@@ -56,16 +56,16 @@ export function BreadcrumbNav() {
   if (pathname.startsWith('/library/')) return null
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[var(--gray-11)] mb-6">
       {crumbs.map((crumb, i) => (
         <span key={crumb.href} className="flex items-center gap-1.5">
-          {i > 0 && <i className="ri-arrow-right-s-line text-muted-foreground/50 text-base leading-none" />}
+          {i > 0 && <i className="ri-arrow-right-s-line text-[var(--gray-9)] text-base leading-none" />}
           {crumb.isLast ? (
-            <span className="text-foreground font-medium">{crumb.label}</span>
+            <span className="text-[var(--gray-12)] font-medium">{crumb.label}</span>
           ) : (
             <Link
               href={crumb.href}
-              className="hover:text-foreground transition-colors"
+              className="hover:text-[var(--gray-12)] transition-colors"
             >
               {crumb.label}
             </Link>

@@ -4,10 +4,7 @@ import { withAuth } from '@workos-inc/authkit-nextjs'
 import { createServerClient } from '../../lib/db/client'
 import { getEnv } from '../../lib/env'
 import { createCheckoutSession } from '../actions/billing'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Badge, Button, Card, Box, Flex, Heading, Text, Separator } from '@radix-ui/themes'
 
 const FEATURES_MONITOR = [
   'Regulatory change feed (FL)',
@@ -49,114 +46,118 @@ export default async function PricingPage() {
   const isActive = currentStatus === 'active' || currentStatus === 'trialing'
 
   return (
-    <div className="min-h-screen bg-background py-16 px-4">
-      <div className="max-w-4xl mx-auto">
+    <Box className="min-h-screen bg-[var(--color-background)]" py="9" px="4">
+      <Box style={{ maxWidth: '56rem', margin: '0 auto' }}>
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <i className="ri-leaf-line text-primary text-3xl" />
-          </div>
-          <h1 className="text-3xl font-semibold text-foreground mb-3">Cedar Plans</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
+        <Flex direction="column" align="center" mb="9">
+          <Box mb="4">
+            <i className="ri-leaf-line text-[var(--accent-9)] text-3xl" />
+          </Box>
+          <Heading size="7" weight="bold" mb="3">Cedar Plans</Heading>
+          <Text color="gray" style={{ maxWidth: '36rem', textAlign: 'center' }}>
             Florida regulatory intelligence for medical practices. Cancel anytime.
-          </p>
-        </div>
+          </Text>
+        </Flex>
 
         {/* Plan cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Monitor */}
           <Card className={
             isActive && currentTier === 'monitor'
-              ? 'border-primary ring-1 ring-primary'
+              ? 'border-[var(--accent-9)] ring-1 ring-[var(--accent-9)]'
               : ''
           }>
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-lg font-semibold text-foreground">Monitor</h2>
+            <Box px="5" pt="5" pb="4">
+              <Flex align="center" justify="between" mb="1">
+                <Heading size="4" weight="bold">Monitor</Heading>
                 {isActive && currentTier === 'monitor' && (
-                  <Badge variant="outline" className="text-primary border-primary/30 bg-primary/5">
+                  <Badge variant="outline" color="green">
                     Current plan
                   </Badge>
                 )}
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">$99</span>
-                <span className="text-muted-foreground text-sm">/month</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <ul className="space-y-2.5">
-                {FEATURES_MONITOR.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                    <i className="ri-checkbox-circle-line text-primary mt-0.5 shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Separator />
-              <form action={createCheckoutSession.bind(null, env.STRIPE_MONITOR_PRICE_ID ?? '')}>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isActive && currentTier === 'monitor'}
-                >
-                  {isActive && currentTier === 'monitor' ? 'Current plan' : 'Subscribe to Monitor'}
-                </Button>
-              </form>
-            </CardContent>
+              </Flex>
+              <Flex align="baseline" gap="1">
+                <Text size="8" weight="bold">$99</Text>
+                <Text color="gray" size="2">/month</Text>
+              </Flex>
+            </Box>
+            <Box px="5" pb="5">
+              <Flex direction="column" gap="6">
+                <ul className="space-y-2.5">
+                  {FEATURES_MONITOR.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm text-[var(--gray-12)]">
+                      <i className="ri-checkbox-circle-line text-[var(--accent-9)] mt-0.5 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Separator size="4" />
+                <form action={createCheckoutSession.bind(null, env.STRIPE_MONITOR_PRICE_ID ?? '')}>
+                  <Button
+                    type="submit"
+                    style={{ width: '100%' }}
+                    disabled={isActive && currentTier === 'monitor'}
+                  >
+                    {isActive && currentTier === 'monitor' ? 'Current plan' : 'Subscribe to Monitor'}
+                  </Button>
+                </form>
+              </Flex>
+            </Box>
           </Card>
 
           {/* Intelligence */}
           <Card className={
             isActive && currentTier === 'intelligence'
-              ? 'border-primary ring-1 ring-primary'
+              ? 'border-[var(--accent-9)] ring-1 ring-[var(--accent-9)]'
               : ''
           }>
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-lg font-semibold text-foreground">Intelligence</h2>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">Most popular</Badge>
+            <Box px="5" pt="5" pb="4">
+              <Flex align="center" justify="between" mb="1">
+                <Heading size="4" weight="bold">Intelligence</Heading>
+                <Flex align="center" gap="2">
+                  <Badge variant="soft">Most popular</Badge>
                   {isActive && currentTier === 'intelligence' && (
-                    <Badge variant="outline" className="text-primary border-primary/30 bg-primary/5">
+                    <Badge variant="outline" color="green">
                       Current plan
                     </Badge>
                   )}
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">$199</span>
-                <span className="text-muted-foreground text-sm">/month</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <ul className="space-y-2.5">
-                {FEATURES_INTELLIGENCE.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                    <i className="ri-checkbox-circle-line text-primary mt-0.5 shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Separator />
-              <form action={createCheckoutSession.bind(null, env.STRIPE_INTELLIGENCE_PRICE_ID ?? '')}>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isActive && currentTier === 'intelligence'}
-                >
-                  {isActive && currentTier === 'intelligence' ? 'Current plan' : 'Subscribe to Intelligence'}
-                </Button>
-              </form>
-            </CardContent>
+                </Flex>
+              </Flex>
+              <Flex align="baseline" gap="1">
+                <Text size="8" weight="bold">$199</Text>
+                <Text color="gray" size="2">/month</Text>
+              </Flex>
+            </Box>
+            <Box px="5" pb="5">
+              <Flex direction="column" gap="6">
+                <ul className="space-y-2.5">
+                  {FEATURES_INTELLIGENCE.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm text-[var(--gray-12)]">
+                      <i className="ri-checkbox-circle-line text-[var(--accent-9)] mt-0.5 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Separator size="4" />
+                <form action={createCheckoutSession.bind(null, env.STRIPE_INTELLIGENCE_PRICE_ID ?? '')}>
+                  <Button
+                    type="submit"
+                    style={{ width: '100%' }}
+                    disabled={isActive && currentTier === 'intelligence'}
+                  >
+                    {isActive && currentTier === 'intelligence' ? 'Current plan' : 'Subscribe to Intelligence'}
+                  </Button>
+                </form>
+              </Flex>
+            </Box>
           </Card>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
+        <Text size="1" color="gray" as="p" mt="8" style={{ textAlign: 'center' }}>
           All plans billed monthly. Cancel anytime from your account settings.
           Content is for informational purposes only and does not constitute legal advice.
-        </p>
-      </div>
-    </div>
+        </Text>
+      </Box>
+    </Box>
   )
 }

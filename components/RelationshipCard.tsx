@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, Box, Flex, Text, Badge } from '@radix-ui/themes'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
 import { RELATIONSHIP_TYPE_LABEL } from '@/lib/ui-constants'
 
@@ -31,24 +30,26 @@ export function RelationshipCard({ relationship, domainSlug }: RelationshipCardP
 
   return (
     <Link href={href} className="block group">
-      <Card className="transition-interactive hover:shadow-md hover:border-primary/30">
-        <CardContent className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs shrink-0">
-              {typeLabel}
-            </Badge>
-            <ConfidenceBadge confidence={relationship.confidence} />
-          </div>
-          <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2">
-            {relationship.target.name}
-          </p>
-          {relationship.target.citation && (
-            <p className="text-xs text-muted-foreground">{relationship.target.citation}</p>
-          )}
-          {relationship.fr_citation && (
-            <p className="text-xs text-muted-foreground">FR: {relationship.fr_citation}</p>
-          )}
-        </CardContent>
+      <Card className="transition-interactive hover:shadow-[var(--shadow-3)]">
+        <Box p="4">
+          <Flex direction="column" gap="1">
+            <Flex align="center" gap="2">
+              <Badge variant="outline" size="1" className="shrink-0">
+                {typeLabel}
+              </Badge>
+              <ConfidenceBadge confidence={relationship.confidence} />
+            </Flex>
+            <Text size="2" weight="medium" className="group-hover:text-[var(--accent-11)] transition-colors line-clamp-2 text-[var(--gray-12)]">
+              {relationship.target.name}
+            </Text>
+            {relationship.target.citation && (
+              <Text size="1" color="gray">{relationship.target.citation}</Text>
+            )}
+            {relationship.fr_citation && (
+              <Text size="1" color="gray">FR: {relationship.fr_citation}</Text>
+            )}
+          </Flex>
+        </Box>
       </Card>
     </Link>
   )

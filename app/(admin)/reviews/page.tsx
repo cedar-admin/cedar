@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge, Callout, Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { SEVERITY_CLASS, SEVERITY_DOT } from '@/lib/ui-constants'
@@ -70,16 +68,16 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
   const highCount = filter === 'pending' ? changes.filter(c => c.severity === 'high').length : 0
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex align="center" justify="between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Review Queue</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <Heading size="6" weight="bold">Review Queue</Heading>
+          <Text size="2" color="gray" className="mt-1 block">
             Changes requiring attorney review before delivery to practices
-          </p>
+          </Text>
         </div>
-        <div className="flex items-center gap-3">
+        <Flex align="center" gap="3">
           {criticalCount > 0 && (
             <Badge variant="outline" className={`gap-1.5 ${SEVERITY_CLASS['critical']}`}>
               <span className={`w-1.5 h-1.5 ${SEVERITY_DOT['critical']} rounded-full animate-pulse`} />
@@ -91,103 +89,105 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
               {highCount} High — 24h SLA
             </Badge>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Filter tabs */}
-      <div className="flex items-center gap-1 border-b border-border">
+      <div className="flex items-center gap-1 border-b border-[var(--gray-6)]">
         {TABS.map((tab) => (
           <Link
             key={tab.value}
             href={tab.value === 'pending' ? '/reviews' : `/reviews?filter=${tab.value}`}
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               filter === tab.value
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
+                ? 'border-[var(--accent-9)] text-[var(--gray-12)]'
+                : 'border-transparent text-[var(--gray-11)] hover:text-[var(--gray-12)] hover:border-[var(--gray-6)]'
             }`}
           >
             {tab.label}
             {filter === tab.value && (
-              <span className="ml-2 text-xs text-muted-foreground">({changes.length})</span>
+              <span className="ml-2 text-xs text-[var(--gray-11)]">({changes.length})</span>
             )}
           </Link>
         ))}
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <i className="ri-error-warning-line text-base" />
-          <AlertDescription>Failed to load queue: {error.message}</AlertDescription>
-        </Alert>
+        <Callout.Root color="red">
+          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Text>Failed to load queue: {error.message}</Callout.Text>
+        </Callout.Root>
       )}
 
       {/* Empty state */}
       {changes.length === 0 && !error && (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-12 h-12 bg-green-50 dark:bg-green-950 flex items-center justify-center mx-auto mb-4">
-              <i className="ri-checkbox-circle-fill text-2xl text-green-600 dark:text-green-400" />
-            </div>
-            <h3 className="text-base font-semibold text-foreground mb-1">
-              {filter === 'pending' ? 'Queue is clear' : `No ${filter} changes`}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {filter === 'pending'
-                ? 'No changes are awaiting review. Check back after the next monitoring run.'
-                : `No changes with status "${filter}" found.`}
-            </p>
-          </CardContent>
+          <Box p="4">
+            <Flex direction="column" align="center" justify="center" py="9" className="text-center">
+              <div className="w-12 h-12 bg-[var(--green-a3)] flex items-center justify-center mx-auto mb-4">
+                <i className="ri-checkbox-circle-fill text-2xl text-[var(--green-11)]" />
+              </div>
+              <Text size="3" weight="bold" className="mb-1 block">
+                {filter === 'pending' ? 'Queue is clear' : `No ${filter} changes`}
+              </Text>
+              <Text size="2" color="gray">
+                {filter === 'pending'
+                  ? 'No changes are awaiting review. Check back after the next monitoring run.'
+                  : `No changes with status "${filter}" found.`}
+              </Text>
+            </Flex>
+          </Box>
         </Card>
       )}
 
       {/* Queue list — each row links to detail page */}
       {changes.length > 0 && (
         <Card>
-          <CardContent className="p-0">
-            <div className="divide-y divide-border">
+          <Box p="0">
+            <div className="divide-y divide-[var(--gray-6)]">
               {changes.map((change) => {
                 const sourceName = change.sources?.name ?? 'Unknown Source'
                 return (
                   <Link
                     key={change.id}
                     href={`/reviews/${change.id}`}
-                    className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
+                    className="flex items-center gap-4 px-4 py-3 hover:bg-[var(--gray-a2)] transition-colors"
                   >
                     <SeverityBadge severity={change.severity} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground line-clamp-1">
+                      <p className="text-sm font-medium text-[var(--gray-12)] line-clamp-1">
                         {change.summary ?? (
-                          <span className="text-muted-foreground italic">No summary available</span>
+                          <span className="text-[var(--gray-11)] italic">No summary available</span>
                         )}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs text-[var(--gray-11)] mt-0.5">
                         {sourceName} · {change.jurisdiction ?? 'FL'}
                       </p>
                     </div>
                     {filter === 'all' && (
                       <StatusBadge status={change.review_status} />
                     )}
-                    <span className="text-xs text-muted-foreground shrink-0">
+                    <span className="text-xs text-[var(--gray-11)] shrink-0">
                       {timeAgo(change.detected_at)}
                     </span>
-                    <i className="ri-arrow-right-s-line text-muted-foreground/50" />
+                    <i className="ri-arrow-right-s-line text-[var(--gray-11)]" />
                   </Link>
                 )
               })}
             </div>
-          </CardContent>
+          </Box>
         </Card>
       )}
 
       {/* Review rules reference */}
-      <Alert>
-        <i className="ri-information-line text-base" />
-        <AlertDescription>
+      <Callout.Root>
+        <Callout.Icon><i className="ri-information-line text-base" /></Callout.Icon>
+        <Callout.Text>
           <strong className="font-semibold">Review Rules:</strong>{' '}
           <strong>Critical &amp; High</strong> → attorney review required before delivery.{' '}
           <strong>Medium, Low, Informational</strong> → auto-approved and delivered without review.
-        </AlertDescription>
-      </Alert>
-    </div>
+        </Callout.Text>
+      </Callout.Root>
+    </Flex>
   )
 }

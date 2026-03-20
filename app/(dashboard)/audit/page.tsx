@@ -1,16 +1,6 @@
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Badge, Card, Box, Flex, Heading, Text, Button, Table } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { timeAgo, formatDate } from '@/lib/format'
 
@@ -56,150 +46,154 @@ export default async function AuditPage() {
   }>
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex align="center" justify="between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Audit Trail</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <Heading size="6" weight="bold">Audit Trail</Heading>
+          <Text size="2" color="gray" as="p" mt="1">
             Tamper-evident, timestamped record of all detected changes and hash chain integrity
-          </p>
+          </Text>
         </div>
-        <Button variant="outline" size="sm" asChild>
+        <Button variant="outline" size="1" asChild>
           <Link href="/audit/export" target="_blank" rel="noopener noreferrer">
             <i className="ri-download-line" />
             Export PDF
           </Link>
         </Button>
-      </div>
+      </Flex>
 
       {/* Section 1: Chain Validation Runs */}
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Chain Validation Runs</h2>
-        {logs.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <i className="ri-shield-check-line text-3xl text-muted-foreground/40 mb-2" />
-              <p className="text-sm text-muted-foreground">
-                No validation runs yet. The weekly cron runs every Sunday at 3 AM UTC.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Run At</TableHead>
-                    <TableHead className="w-24 text-center">Sources</TableHead>
-                    <TableHead className="w-24 text-center">Valid</TableHead>
-                    <TableHead className="w-24 text-center">Broken</TableHead>
-                    <TableHead className="w-24 text-center">Changes</TableHead>
-                    <TableHead>Summary</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+      <section>
+        <Flex direction="column" gap="3">
+          <h2 className="text-sm font-semibold text-[var(--gray-12)]">Chain Validation Runs</h2>
+          {logs.length === 0 ? (
+            <Card>
+              <Box p="4">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <i className="ri-shield-check-line text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
+                  <p className="text-sm text-[var(--gray-11)]">
+                    No validation runs yet. The weekly cron runs every Sunday at 3 AM UTC.
+                  </p>
+                </div>
+              </Box>
+            </Card>
+          ) : (
+            <Card>
+              <Table.Root>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeaderCell>Run At</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-24 text-center">Sources</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-24 text-center">Valid</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-24 text-center">Broken</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-24 text-center">Changes</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Summary</Table.ColumnHeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
                   {logs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="text-sm text-foreground whitespace-nowrap">
+                    <Table.Row key={log.id}>
+                      <Table.Cell className="text-sm text-[var(--gray-12)] whitespace-nowrap">
                         {formatDate(log.run_at)}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground text-center">
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
                         {log.sources_checked}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                      </Table.Cell>
+                      <Table.Cell className="text-center">
+                        <span className="text-sm font-medium text-[var(--green-11)]">
                           {log.chains_valid}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-center">
+                      </Table.Cell>
+                      <Table.Cell className="text-center">
                         {log.chains_broken > 0 ? (
                           <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800">
                             {log.chains_broken}
                           </Badge>
                         ) : (
-                          <span className="text-sm text-muted-foreground">0</span>
+                          <span className="text-sm text-[var(--gray-11)]">0</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground text-center">
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
                         {log.total_changes}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                      </Table.Cell>
+                      <Table.Cell className="text-xs text-[var(--gray-11)] max-w-xs truncate">
                         {log.summary ?? '—'}
-                      </TableCell>
-                    </TableRow>
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
+                </Table.Body>
+              </Table.Root>
+            </Card>
+          )}
+        </Flex>
       </section>
 
       {/* Section 2: Audit Trail */}
-      <section className="space-y-3">
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-sm font-semibold text-foreground">Change Audit Trail</h2>
-          <span className="text-xs text-muted-foreground">most recent 50 records</span>
-        </div>
-        {changes.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <i className="ri-list-check-3 text-3xl text-muted-foreground/40 mb-2" />
-              <p className="text-sm text-muted-foreground">No changes with hash chain data yet.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-20">Seq #</TableHead>
-                    <TableHead className="w-40">Source</TableHead>
-                    <TableHead className="w-28">Severity</TableHead>
-                    <TableHead>Summary</TableHead>
-                    <TableHead className="w-24">Detected</TableHead>
-                    <TableHead className="w-32">Hash</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+      <section>
+        <Flex direction="column" gap="3">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-sm font-semibold text-[var(--gray-12)]">Change Audit Trail</h2>
+            <span className="text-xs text-[var(--gray-11)]">most recent 50 records</span>
+          </div>
+          {changes.length === 0 ? (
+            <Card>
+              <Box p="4">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <i className="ri-list-check-3 text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
+                  <p className="text-sm text-[var(--gray-11)]">No changes with hash chain data yet.</p>
+                </div>
+              </Box>
+            </Card>
+          ) : (
+            <Card>
+              <Table.Root>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeaderCell className="w-20">Seq #</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-40">Source</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-28">Severity</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Summary</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-24">Detected</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-32">Hash</Table.ColumnHeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
                   {changes.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="text-sm font-mono text-muted-foreground">
+                    <Table.Row key={c.id}>
+                      <Table.Cell className="text-sm font-mono text-[var(--gray-11)]">
                         #{c.chain_sequence}
-                      </TableCell>
-                      <TableCell className="text-sm text-foreground">
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-[var(--gray-12)]">
                         {c.sources?.name ?? '—'}
-                      </TableCell>
-                      <TableCell>
+                      </Table.Cell>
+                      <Table.Cell>
                         <SeverityBadge severity={c.severity} />
-                      </TableCell>
-                      <TableCell>
+                      </Table.Cell>
+                      <Table.Cell>
                         <Link
                           href={`/changes/${c.id}`}
-                          className="text-sm text-foreground hover:text-primary line-clamp-1 transition-colors"
+                          className="text-sm text-[var(--gray-12)] hover:text-primary line-clamp-1 transition-colors"
                         >
                           {c.summary ?? (
-                            <span className="text-muted-foreground italic">No summary</span>
+                            <span className="text-[var(--gray-11)] italic">No summary</span>
                           )}
                         </Link>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                      </Table.Cell>
+                      <Table.Cell className="text-xs text-[var(--gray-11)] whitespace-nowrap">
                         {timeAgo(c.detected_at)}
-                      </TableCell>
-                      <TableCell className="text-xs font-mono text-muted-foreground">
+                      </Table.Cell>
+                      <Table.Cell className="text-xs font-mono text-[var(--gray-11)]">
                         {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
-                      </TableCell>
-                    </TableRow>
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
+                </Table.Body>
+              </Table.Root>
+            </Card>
+          )}
+        </Flex>
       </section>
-    </div>
+    </Flex>
   )
 }

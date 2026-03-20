@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button, Flex, Text } from '@radix-ui/themes'
 
 export default function SeedCorpusButton() {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
@@ -31,26 +31,26 @@ export default function SeedCorpusButton() {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <Flex align="center" gap="3">
       <Button
-        variant={state === 'done' ? 'outline' : 'secondary'}
-        size="sm"
+        variant={state === 'done' ? 'outline' : 'soft'}
+        size="1"
         onClick={handleSeed}
         disabled={state === 'loading'}
       >
         {state === 'loading' ? (
           <><i className="ri-loader-4-line animate-spin" /> Queuing…</>
         ) : state === 'done' ? (
-          <><i className="ri-checkbox-circle-line text-green-500" /> Queued</>
+          <><i className="ri-checkbox-circle-line text-[var(--green-9)]" /> Queued</>
         ) : (
           <><i className="ri-database-2-line" /> Seed Corpus</>
         )}
       </Button>
       {result && (
-        <span className={`text-xs ${state === 'error' ? 'text-destructive' : 'text-muted-foreground'}`}>
+        <Text size="1" color={state === 'error' ? 'red' : 'gray'}>
           {result}
-        </span>
+        </Text>
       )}
-    </div>
+    </Flex>
   )
 }

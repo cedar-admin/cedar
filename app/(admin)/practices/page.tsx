@@ -1,6 +1,5 @@
 import { createServerClient } from '../../../lib/db/client'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Card, CardContent } from '@/components/ui/card'
+import { Callout, Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { PracticesTable } from '@/components/admin/PracticesTable'
 import type { Database } from '@/lib/db/types'
 
@@ -32,30 +31,32 @@ export default async function PracticesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Practices</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <Heading size="6" weight="bold">Practices</Heading>
+        <Text size="2" color="gray" className="mt-1 block">
           All registered practices — {practices.length} active
-        </p>
+        </Text>
       </div>
 
       {/* Error state */}
       {error && (
-        <Alert variant="destructive">
-          <i className="ri-error-warning-line text-base" />
-          <AlertDescription>Failed to load practices: {error.message}</AlertDescription>
-        </Alert>
+        <Callout.Root color="red">
+          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Text>Failed to load practices: {error.message}</Callout.Text>
+        </Callout.Root>
       )}
 
       {/* Empty state (no practices at all) */}
       {practices.length === 0 && !error && (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <i className="ri-building-line text-3xl text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No practices registered yet.</p>
-          </CardContent>
+          <Box p="4">
+            <Flex direction="column" align="center" justify="center" py="9" className="text-center">
+              <i className="ri-building-line text-3xl text-[var(--gray-11)] mb-2" />
+              <Text size="2" color="gray">No practices registered yet.</Text>
+            </Flex>
+          </Box>
         </Card>
       )}
 
@@ -63,6 +64,6 @@ export default async function PracticesPage() {
       {practices.length > 0 && (
         <PracticesTable practices={practices} ackCounts={ackCounts} />
       )}
-    </div>
+    </Flex>
   )
 }

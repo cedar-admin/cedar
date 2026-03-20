@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeProvider } from 'next-themes'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Theme } from '@radix-ui/themes'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -11,9 +11,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <TooltipProvider>
+      <Theme
+        accentColor="green"
+        grayColor="gray"
+        radius="large"
+        scaling="100%"
+        panelBackground="translucent"
+      >
         {children}
-      </TooltipProvider>
+      </Theme>
     </ThemeProvider>
   )
 }

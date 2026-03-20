@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button, Card, Box, Flex, Text, Badge } from '@radix-ui/themes'
 import { ContentReader } from '@/components/ContentReader'
 import { RelationshipCard } from '@/components/RelationshipCard'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
@@ -125,7 +123,7 @@ export function RegulationTabs({
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-border mb-6">
+      <div className="flex gap-1 border-b border-[var(--gray-6)] mb-6">
         {TABS.map((tab) => (
           <Button
             key={tab}
@@ -133,18 +131,18 @@ export function RegulationTabs({
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 h-auto rounded-none text-sm font-medium border-b-2 -mb-px transition-interactive ${
               activeTab === tab
-                ? 'border-primary text-foreground hover:bg-transparent'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'
+                ? 'border-[var(--accent-9)] text-[var(--gray-12)] hover:bg-transparent'
+                : 'border-transparent text-[var(--gray-11)] hover:text-[var(--gray-12)] hover:bg-transparent'
             }`}
           >
             {tab}
             {tab === 'Related' && (outgoingRelationships.length + incomingRelationships.length) > 0 && (
-              <Badge variant="secondary" className="ml-1.5 text-xs px-1.5 py-0">
+              <Badge variant="soft" className="ml-1.5 text-xs px-1.5 py-0">
                 {outgoingRelationships.length + incomingRelationships.length}
               </Badge>
             )}
             {tab === 'Timeline' && versions.length > 0 && (
-              <Badge variant="secondary" className="ml-1.5 text-xs px-1.5 py-0">
+              <Badge variant="soft" className="ml-1.5 text-xs px-1.5 py-0">
                 {versions.length}
               </Badge>
             )}
@@ -200,46 +198,46 @@ function OverviewTab({
       <div className="lg:col-span-2 space-y-6">
         {/* Summary */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <Box px="4" pt="4" pb="3">
+            <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
               Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </Text>
+          </Box>
+          <Box p="4" pt="0">
             {entity.description ? (
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+              <Text size="2" as="p" className="leading-relaxed whitespace-pre-wrap">
                 {entity.description}
-              </p>
+              </Text>
             ) : (
-              <p className="text-sm text-muted-foreground">No summary available.</p>
+              <Text size="2" color="gray" as="p">No summary available.</Text>
             )}
-          </CardContent>
+          </Box>
         </Card>
 
         {/* Classification audit trail */}
         {classificationLog.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Classification Audit Trail
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </Text>
+            </Box>
+            <Box p="4" pt="0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border text-left">
-                      <th className="pb-2 pr-4 font-medium text-muted-foreground">Date</th>
-                      <th className="pb-2 pr-4 font-medium text-muted-foreground">Stage</th>
-                      <th className="pb-2 pr-4 font-medium text-muted-foreground">Confidence</th>
-                      <th className="pb-2 pr-4 font-medium text-muted-foreground">Classified By</th>
-                      <th className="pb-2 font-medium text-muted-foreground">Review</th>
+                    <tr className="border-b border-[var(--gray-6)] text-left">
+                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Date</th>
+                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Stage</th>
+                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Confidence</th>
+                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Classified By</th>
+                      <th className="pb-2 font-medium text-[var(--gray-11)]">Review</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-[var(--gray-6)]">
                     {classificationLog.map((entry) => (
                       <tr key={entry.id}>
-                        <td className="py-2 pr-4 text-xs text-muted-foreground">
+                        <td className="py-2 pr-4 text-xs text-[var(--gray-11)]">
                           {formatDate(entry.classified_at)}
                         </td>
                         <td className="py-2 pr-4">
@@ -250,7 +248,7 @@ function OverviewTab({
                         <td className="py-2 pr-4">
                           <ConfidenceBadge confidence={entry.confidence} />
                         </td>
-                        <td className="py-2 pr-4 text-xs text-muted-foreground">
+                        <td className="py-2 pr-4 text-xs text-[var(--gray-11)]">
                           {entry.classified_by ?? '—'}
                         </td>
                         <td className="py-2">
@@ -259,7 +257,7 @@ function OverviewTab({
                               Needs review
                             </Badge>
                           ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
+                            <span className="text-xs text-[var(--gray-11)]">—</span>
                           )}
                         </td>
                       </tr>
@@ -267,7 +265,7 @@ function OverviewTab({
                   </tbody>
                 </table>
               </div>
-            </CardContent>
+            </Box>
           </Card>
         )}
       </div>
@@ -276,118 +274,120 @@ function OverviewTab({
       <div className="space-y-4">
         {/* Key details */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <Box px="4" pt="4" pb="3">
+            <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
               Key Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <DetailRow label="Authority" value={<AuthorityBadge level={entity.authority_level} />} />
-            <DetailRow label="Jurisdiction" value={entity.jurisdiction} />
-            {entity.issuing_agency && <DetailRow label="Agency" value={entity.issuing_agency} />}
-            {entity.status && <DetailRow label="Status" value={capitalize(entity.status)} />}
-            {entity.citation && <DetailRow label="Citation" value={entity.citation} />}
-            {entity.effective_date && (
-              <DetailRow
-                label="Effective"
-                value={new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-              />
-            )}
-            {entity.publication_date && (
-              <DetailRow
-                label="Published"
-                value={new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-              />
-            )}
-            {entity.classification_confidence != null && (
-              <DetailRow
-                label="Confidence"
-                value={<ConfidenceBadge confidence={entity.classification_confidence} />}
-              />
-            )}
-          </CardContent>
+            </Text>
+          </Box>
+          <Box p="4" pt="0">
+            <Flex direction="column" gap="3">
+              <DetailRow label="Authority" value={<AuthorityBadge level={entity.authority_level} />} />
+              <DetailRow label="Jurisdiction" value={entity.jurisdiction} />
+              {entity.issuing_agency && <DetailRow label="Agency" value={entity.issuing_agency} />}
+              {entity.status && <DetailRow label="Status" value={capitalize(entity.status)} />}
+              {entity.citation && <DetailRow label="Citation" value={entity.citation} />}
+              {entity.effective_date && (
+                <DetailRow
+                  label="Effective"
+                  value={new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                />
+              )}
+              {entity.publication_date && (
+                <DetailRow
+                  label="Published"
+                  value={new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                />
+              )}
+              {entity.classification_confidence != null && (
+                <DetailRow
+                  label="Confidence"
+                  value={<ConfidenceBadge confidence={entity.classification_confidence} />}
+                />
+              )}
+            </Flex>
+          </Box>
         </Card>
 
         {/* Domains */}
         {domains.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Categories
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
+              </Text>
+            </Box>
+            <Box p="4" pt="0">
+              <Flex wrap="wrap" gap="1">
                 {domains.map((d, i) => (
-                  <Badge key={i} variant={d.is_primary ? 'default' : 'outline'} className="text-xs">
+                  <Badge key={i} variant={d.is_primary ? 'solid' : 'outline'} className="text-xs">
                     {d.domain?.name ?? 'Unknown'}
                   </Badge>
                 ))}
-              </div>
-            </CardContent>
+              </Flex>
+            </Box>
           </Card>
         )}
 
         {/* Practice types */}
         {practiceRelevance.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Relevant Practice Types
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1.5">
+              </Text>
+            </Box>
+            <Box p="4" pt="0">
+              <Flex direction="column" gap="1">
                 {practiceRelevance.map((pr, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs">
-                    <span className="text-foreground">{pr.practice_type?.display_name ?? 'Unknown'}</span>
+                  <Flex key={i} align="center" justify="between">
+                    <Text size="1">{pr.practice_type?.display_name ?? 'Unknown'}</Text>
                     {pr.relevance_score != null && (
-                      <span className="text-muted-foreground">{Math.round(pr.relevance_score * 100)}%</span>
+                      <Text size="1" color="gray">{Math.round(pr.relevance_score * 100)}%</Text>
                     )}
-                  </div>
+                  </Flex>
                 ))}
-              </div>
-            </CardContent>
+              </Flex>
+            </Box>
           </Card>
         )}
 
         {/* Service lines */}
         {serviceLines.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Service Lines
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1.5">
+              </Text>
+            </Box>
+            <Box p="4" pt="0">
+              <Flex wrap="wrap" gap="1">
                 {serviceLines.map((sl, i) => (
                   <ServiceLineTag key={i} name={sl.service_line?.name ?? 'Unknown'} />
                 ))}
-              </div>
-            </CardContent>
+              </Flex>
+            </Box>
           </Card>
         )}
 
         {/* Source link */}
         {entity.external_url && (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <Box px="4" pt="4" pb="3">
+              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 Original Source
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </Text>
+            </Box>
+            <Box p="4" pt="0">
               <a
                 href={entity.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-9)] hover:underline"
               >
                 <i className="ri-external-link-line" />
                 View on .gov
               </a>
-            </CardContent>
+            </Box>
           </Card>
         )}
       </div>
@@ -397,10 +397,10 @@ function OverviewTab({
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium text-foreground">{value ?? '—'}</span>
-    </div>
+    <Flex align="center" justify="between">
+      <Text size="2" color="gray">{label}</Text>
+      <Text size="2" weight="medium" className="text-right">{value ?? '—'}</Text>
+    </Flex>
   )
 }
 
@@ -417,21 +417,21 @@ function ReaderTab({
 
   if (!latestContent && entity.external_url) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-        <i className="ri-file-text-line text-3xl text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">
+      <Flex direction="column" align="center" justify="center" py="9" className="text-center space-y-4">
+        <i className="ri-file-text-line text-3xl text-[var(--gray-a6)]" />
+        <Text size="2" color="gray">
           No content snapshot available for this regulation.
-        </p>
+        </Text>
         <a
           href={entity.external_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-9)] hover:underline"
         >
           <i className="ri-external-link-line" />
           View original source
         </a>
-      </div>
+      </Flex>
     )
   }
 
@@ -481,56 +481,56 @@ function TimelineTab({
   return (
     <div className="relative pl-6">
       {/* Vertical line */}
-      <div className="absolute left-2 top-2 bottom-2 w-px bg-border" />
+      <div className="absolute left-2 top-2 bottom-2 w-px bg-[var(--gray-6)]" />
 
-      <div className="space-y-6">
+      <Flex direction="column" gap="6">
         {events.map((event, i) => (
           <div key={i} className="relative">
             {/* Dot */}
             <div
-              className={`absolute -left-6 top-1.5 w-3 h-3 rounded-full border-2 border-background ${
-                event.type === 'version' ? 'bg-primary' : 'bg-muted-foreground/50'
+              className={`absolute -left-6 top-1.5 w-3 h-3 rounded-full border-2 border-[var(--color-background)] ${
+                event.type === 'version' ? 'bg-[var(--accent-9)]' : 'bg-[var(--gray-a6)]'
               }`}
             />
 
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">
+            <Flex direction="column" gap="1">
+              <Text size="1" color="gray">
                 {formatDate(event.date)}
-              </p>
+              </Text>
 
               {event.type === 'version' && event.version && (
-                <div>
-                  <p className="text-sm font-medium text-foreground">
+                <Box>
+                  <Text size="2" weight="medium" as="p">
                     Version {event.version.version_number}
-                  </p>
+                  </Text>
                   {event.version.change_summary && (
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <Text size="2" color="gray" as="p" mt="1">
                       {event.version.change_summary}
-                    </p>
+                    </Text>
                   )}
                   {event.version.fr_document_number && (
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <Text size="1" color="gray" as="p" mt="1">
                       FR Doc: {event.version.fr_document_number}
-                    </p>
+                    </Text>
                   )}
-                </div>
+                </Box>
               )}
 
               {event.type === 'classification' && event.classification && (
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="2">
                   <Badge variant="outline" className="text-xs">
                     {event.classification.stage ?? 'classified'}
                   </Badge>
                   <ConfidenceBadge confidence={event.classification.confidence} />
-                  <span className="text-xs text-muted-foreground">
+                  <Text size="1" color="gray">
                     by {event.classification.classified_by ?? 'system'}
-                  </span>
-                </div>
+                  </Text>
+                </Flex>
               )}
-            </div>
+            </Flex>
           </div>
         ))}
-      </div>
+      </Flex>
     </div>
   )
 }
@@ -571,46 +571,46 @@ function RelatedTab({
   const inGroups = groupByType(incoming)
 
   return (
-    <div className="space-y-8">
+    <Flex direction="column" gap="8">
       {outgoing.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <Flex direction="column" gap="4">
+          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Outgoing — This regulation affects
-          </h3>
+          </Text>
           {Object.entries(outGroups).map(([type, rels]) => (
-            <div key={type} className="space-y-2">
-              <p className="text-sm font-medium text-foreground">
+            <Flex key={type} direction="column" gap="2">
+              <Text size="2" weight="medium">
                 {RELATIONSHIP_TYPE_LABEL[type] ?? type.replace(/_/g, ' ')} ({rels.length})
-              </p>
+              </Text>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rels.map((rel) => (
                   <RelationshipCard key={rel.id} relationship={rel} domainSlug={domainSlug} />
                 ))}
               </div>
-            </div>
+            </Flex>
           ))}
-        </div>
+        </Flex>
       )}
 
       {incoming.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <Flex direction="column" gap="4">
+          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Incoming — Affected by
-          </h3>
+          </Text>
           {Object.entries(inGroups).map(([type, rels]) => (
-            <div key={type} className="space-y-2">
-              <p className="text-sm font-medium text-foreground">
+            <Flex key={type} direction="column" gap="2">
+              <Text size="2" weight="medium">
                 {RELATIONSHIP_TYPE_LABEL[type] ?? type.replace(/_/g, ' ')} ({rels.length})
-              </p>
+              </Text>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rels.map((rel) => (
                   <RelationshipCard key={rel.id} relationship={rel} domainSlug={domainSlug} />
                 ))}
               </div>
-            </div>
+            </Flex>
           ))}
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   )
 }

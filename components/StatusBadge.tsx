@@ -1,5 +1,6 @@
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@radix-ui/themes'
 import { STATUS_CLASS, STATUS_LABEL } from '@/lib/ui-constants'
+import { cn } from '@/lib/utils'
 
 interface StatusBadgeProps {
   status: string
@@ -8,7 +9,7 @@ interface StatusBadgeProps {
 export function StatusBadge({ status }: StatusBadgeProps) {
   if (status === 'approved') {
     return (
-      <Badge variant="outline" className="gap-1.5 text-green-700 border-green-200 bg-green-50 dark:text-green-400 dark:border-green-800 dark:bg-green-950">
+      <Badge variant="outline" className="gap-1.5 text-[var(--green-11)] border-[var(--green-6)] bg-[var(--green-a3)]">
         <i className="ri-shield-check-line text-xs" />
         Reviewed
       </Badge>
@@ -16,7 +17,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   }
   if (status === 'auto_approved' || status === 'not_required') {
     return (
-      <Badge variant="secondary" className="gap-1.5">
+      <Badge variant="soft" className="gap-1.5">
         <i className="ri-robot-line text-xs" />
         Auto
       </Badge>
@@ -25,7 +26,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   const cls = STATUS_CLASS[status] ?? ''
   const label = STATUS_LABEL[status] ?? status
   return (
-    <Badge variant="outline" className={cls}>
+    <Badge variant="outline" className={cn(cls)}>
       {label}
     </Badge>
   )

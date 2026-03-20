@@ -1,8 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge, Card, Box, Flex, Heading, Text, Callout } from '@radix-ui/themes'
 import { LegalDisclaimer } from '@/components/LegalDisclaimer'
 import { getLayoutData } from '@/lib/layout-data'
 
@@ -142,7 +140,7 @@ function renderMarkdown(text: string) {
   for (const line of lines) {
     if (line.startsWith('**') && line.endsWith('**') && line.slice(2, -2).length > 0) {
       elements.push(
-        <h4 key={key++} className="text-sm font-semibold text-foreground mt-5 mb-1.5 first:mt-0">
+        <h4 key={key++} className="text-sm font-semibold text-[var(--gray-12)] mt-5 mb-1.5 first:mt-0">
           {line.slice(2, -2)}
         </h4>
       )
@@ -150,7 +148,7 @@ function renderMarkdown(text: string) {
       const content = line.slice(2)
       const parts = content.split(/(\*\*[^*]+\*\*)/)
       elements.push(
-        <li key={key++} className="text-sm text-foreground ml-4 mb-1 list-disc">
+        <li key={key++} className="text-sm text-[var(--gray-12)] ml-4 mb-1 list-disc">
           {parts.map((p, i) =>
             p.startsWith('**') && p.endsWith('**') ? (
               <strong key={i}>{p.slice(2, -2)}</strong>
@@ -163,7 +161,7 @@ function renderMarkdown(text: string) {
     } else {
       const parts = line.split(/(\*\*[^*]+\*\*)/)
       elements.push(
-        <p key={key++} className="text-sm text-foreground leading-relaxed">
+        <p key={key++} className="text-sm text-[var(--gray-12)] leading-relaxed">
           {parts.map((p, i) =>
             p.startsWith('**') && p.endsWith('**') ? (
               <strong key={i}>{p.slice(2, -2)}</strong>
@@ -208,22 +206,22 @@ export default async function FaqDetailPage({ params }: Props) {
     .filter(Boolean)
 
   return (
-    <div className="max-w-4xl">
+    <Box style={{ maxWidth: '56rem' }}>
       {/* Back */}
       <Link
         href="/faq"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--gray-11)] hover:text-[var(--gray-12)] mb-6 transition-colors"
       >
         <i className="ri-arrow-left-line" />
         Regulatory FAQ
       </Link>
 
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <Badge variant="secondary" className="text-xs">{faq.topic}</Badge>
-          <Badge variant="outline" className="text-xs text-muted-foreground">{faq.subtopic}</Badge>
-          <Badge variant="outline" className="text-xs text-muted-foreground">{faq.jurisdiction}</Badge>
+      <Box mb="6">
+        <Flex align="center" gap="2" mb="3" wrap="wrap">
+          <Badge variant="soft" className="text-xs">{faq.topic}</Badge>
+          <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.subtopic}</Badge>
+          <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.jurisdiction}</Badge>
           <DifficultyBadge difficulty={faq.difficulty} />
           {faq.attorneyReviewed && (
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 px-2 py-0.5">
@@ -231,32 +229,34 @@ export default async function FaqDetailPage({ params }: Props) {
               Attorney Reviewed
             </span>
           )}
-        </div>
-        <h1 className="text-xl font-semibold text-foreground">{faq.question}</h1>
-        <p className="text-xs text-muted-foreground mt-2">
+        </Flex>
+        <Heading size="5" weight="bold" as="h1">{faq.question}</Heading>
+        <Text size="1" color="gray" as="p" mt="2">
           Last reviewed{' '}
           {new Date(faq.lastReviewed).toLocaleDateString('en-US', { dateStyle: 'medium' })}
           {faq.reviewedBy && ` · ${faq.reviewedBy}`}
-        </p>
-      </div>
+        </Text>
+      </Box>
 
       <div className="grid grid-cols-3 gap-6">
         {/* Answer */}
         <div className="col-span-2 space-y-4">
           <Card>
-            <CardContent className="pt-5 pb-5">
+            <Box p="5">
               {renderMarkdown(faq.answer)}
-            </CardContent>
+            </Box>
           </Card>
 
           {/* Custom disclaimer if present */}
           {faq.disclaimer && (
-            <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-              <i className="ri-error-warning-line text-amber-600 dark:text-amber-400 text-base" />
-              <AlertDescription className="text-amber-800 dark:text-amber-300 text-xs">
+            <Callout.Root color="amber" variant="surface" className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
+              <Callout.Icon>
+                <i className="ri-error-warning-line text-amber-600 dark:text-amber-400 text-base" />
+              </Callout.Icon>
+              <Callout.Text className="text-amber-800 dark:text-amber-300 text-xs">
                 {faq.disclaimer}
-              </AlertDescription>
-            </Alert>
+              </Callout.Text>
+            </Callout.Root>
           )}
 
           <LegalDisclaimer />
@@ -267,65 +267,67 @@ export default async function FaqDetailPage({ params }: Props) {
           {/* Source regulations */}
           {sourceRegs.length > 0 && (
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <Box px="4" pt="4" pb="3">
+                <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                   Source Regulations
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {sourceRegs.map((reg, i) => (
-                  <div key={reg.id} className={i > 0 ? 'pt-3 border-t border-border' : ''}>
-                    <Link
-                      href={`/library/${reg.id}`}
-                      className="text-xs font-medium text-foreground hover:text-primary transition-colors flex items-start gap-1.5 group"
-                    >
-                      <i className="ri-book-open-line text-muted-foreground group-hover:text-primary shrink-0 mt-0.5 transition-colors" />
-                      {reg.title}
-                    </Link>
-                  </div>
-                ))}
-              </CardContent>
+                </Text>
+              </Box>
+              <Box p="4" pt="0">
+                <Flex direction="column" gap="3">
+                  {sourceRegs.map((reg, i) => (
+                    <Box key={reg.id} pt={i > 0 ? '3' : undefined} style={i > 0 ? { borderTop: '1px solid var(--gray-6)' } : undefined}>
+                      <Link
+                        href={`/library/${reg.id}`}
+                        className="text-xs font-medium text-[var(--gray-12)] hover:text-[var(--accent-9)] transition-colors flex items-start gap-1.5 group"
+                      >
+                        <i className="ri-book-open-line text-[var(--gray-11)] group-hover:text-[var(--accent-9)] shrink-0 mt-0.5 transition-colors" />
+                        {reg.title}
+                      </Link>
+                    </Box>
+                  ))}
+                </Flex>
+              </Box>
             </Card>
           )}
 
           {/* Attorney reviewed card */}
           {faq.attorneyReviewed && (
             <Card className="border-purple-200 dark:border-purple-800">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-center gap-2 mb-1.5">
+              <Box p="4">
+                <Flex align="center" gap="2" mb="1">
                   <i className="ri-shield-check-fill text-purple-600 dark:text-purple-400 text-base" />
-                  <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
+                  <Text size="1" weight="bold" className="text-purple-700 dark:text-purple-300">
                     Attorney Reviewed
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
+                  </Text>
+                </Flex>
+                <Text size="1" color="gray" as="p">
                   This answer has been reviewed by the Cedar Legal Panel for accuracy and completeness.
                   It reflects the regulatory landscape as of the review date.
-                </p>
-              </CardContent>
+                </Text>
+              </Box>
             </Card>
           )}
 
           {/* Ask a question prompt */}
           <Card>
-            <CardContent className="pt-4 pb-4">
-              <div className="flex items-center gap-2 mb-1.5">
-                <i className="ri-question-answer-line text-primary text-base" />
-                <span className="text-xs font-semibold text-foreground">Have a follow-up?</span>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Use the FAQ search to find related questions, or ask Cedar's AI assistant directly.
-              </p>
+            <Box p="4">
+              <Flex align="center" gap="2" mb="1">
+                <i className="ri-question-answer-line text-[var(--accent-9)] text-base" />
+                <Text size="1" weight="bold">Have a follow-up?</Text>
+              </Flex>
+              <Text size="1" color="gray" as="p" mb="3">
+                Use the FAQ search to find related questions, or ask Cedar&apos;s AI assistant directly.
+              </Text>
               <Link
                 href="/faq"
-                className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                className="text-xs text-[var(--accent-9)] hover:text-[var(--accent-10)] font-medium transition-colors"
               >
                 Browse all FAQs →
               </Link>
-            </CardContent>
+            </Box>
           </Card>
         </aside>
       </div>
-    </div>
+    </Box>
   )
 }

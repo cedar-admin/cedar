@@ -5,16 +5,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { RegulationRow } from '@/components/RegulationRow'
 import { EmptyState } from '@/components/EmptyState'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Badge, Button, TextField, Flex, Box, Heading, Text } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,9 +28,9 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
 
   if (isGated) {
     return (
-      <div className="space-y-6">
+      <Flex direction="column" gap="6">
         <UpgradeBanner feature="Regulation Library" />
-      </div>
+      </Flex>
     )
   }
 
@@ -181,98 +172,98 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
     .order('sort_order')
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+      <nav className="flex items-center gap-1.5 text-sm text-[var(--gray-11)]">
         {breadcrumbs.map((crumb, i) => (
           <span key={crumb.href} className="flex items-center gap-1.5">
             {i > 0 && <i className="ri-arrow-right-s-line text-xs" />}
-            <Link href={crumb.href} className="hover:text-foreground transition-colors">
+            <Link href={crumb.href} className="hover:text-[var(--gray-12)] transition-colors">
               {crumb.label}
             </Link>
           </span>
         ))}
         <i className="ri-arrow-right-s-line text-xs" />
-        <span className="text-foreground font-medium truncate">{domain.name}</span>
+        <span className="text-[var(--gray-12)] font-medium truncate">{domain.name}</span>
       </nav>
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">{domain.name}</h1>
+      <Box>
+        <Heading size="6" weight="bold">{domain.name}</Heading>
         {domain.description && (
-          <p className="text-sm text-muted-foreground mt-1">{domain.description}</p>
+          <Text size="2" color="gray" as="p" mt="1">{domain.description}</Text>
         )}
-        <p className="text-xs text-muted-foreground mt-2">
+        <Text size="1" color="gray" as="p" mt="2">
           {totalCount.toLocaleString()} regulation{totalCount !== 1 ? 's' : ''}
-        </p>
-      </div>
+        </Text>
+      </Box>
 
       {/* Sub-domains navigation (if this domain has children) */}
       {(subDomains ?? []).length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <Flex wrap="wrap" gap="2">
           {(subDomains ?? []).map((sub) => (
             <Link key={sub.id} href={`/library/${sub.slug}`}>
               <Badge
                 variant="outline"
-                className="text-xs hover:border-primary/50 hover:text-foreground transition-colors cursor-pointer"
+                className="text-xs hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)] transition-colors cursor-pointer"
               >
                 {sub.name}
               </Badge>
             </Link>
           ))}
-        </div>
+        </Flex>
       )}
 
       {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <form className="flex-1" action={`/library/${slug}`}>
           <div className="relative">
-            <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
+            <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-[var(--gray-11)]" style={{ zIndex: 1 }} />
+            <TextField.Root
               name="q"
               defaultValue={q}
               placeholder="Search regulations..."
-              className="pl-9"
+              style={{ paddingLeft: '2.25rem' }}
             />
           </div>
           {typeFilter && <input type="hidden" name="type" value={typeFilter} />}
           {statusFilter && <input type="hidden" name="status" value={statusFilter} />}
           {sort !== 'date' && <input type="hidden" name="sort" value={sort} />}
         </form>
-        <div className="flex gap-2">
+        <Flex gap="2">
           <Link href={buildUrl({ sort: sort === 'name' ? 'date' : 'name', page: '1' })}>
-            <Button variant="outline" size="sm" className="text-xs gap-1">
+            <Button variant="outline" size="1" className="text-xs gap-1">
               <i className={sort === 'name' ? 'ri-sort-alpha-asc' : 'ri-sort-number-desc'} />
               {sort === 'name' ? 'A-Z' : 'Newest'}
             </Button>
           </Link>
-        </div>
+        </Flex>
       </div>
 
       {/* Active filter indicators */}
       {(q || typeFilter || statusFilter) && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{totalCount} results</span>
+        <Flex align="center" gap="2">
+          <Text size="1" color="gray">{totalCount} results</Text>
           {q && (
-            <Badge variant="secondary" className="text-xs gap-1">
+            <Badge variant="soft" className="text-xs gap-1">
               &quot;{q}&quot;
-              <Link href={buildUrl({ q: '', page: '1' })} className="hover:text-foreground">
+              <Link href={buildUrl({ q: '', page: '1' })} className="hover:text-[var(--gray-12)]">
                 <i className="ri-close-line" />
               </Link>
             </Badge>
           )}
           <Link
             href={`/library/${slug}`}
-            className="text-xs text-primary hover:underline"
+            className="text-xs text-[var(--accent-9)] hover:underline"
           >
             Clear all
           </Link>
-        </div>
+        </Flex>
       )}
 
       {/* Entity list */}
       {(entities ?? []).length > 0 ? (
-        <div className="divide-y divide-border border border-border rounded-md overflow-hidden">
+        <div className="divide-y divide-[var(--gray-6)] border border-[var(--gray-6)] rounded-md overflow-hidden">
           {(entities ?? []).map((entity) => (
             <RegulationRow
               key={entity.id}
@@ -291,29 +282,29 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
+        <Flex align="center" justify="between">
+          <Text size="1" color="gray">
             Showing {from + 1}–{Math.min(from + PAGE_SIZE, totalCount)} of{' '}
             {totalCount.toLocaleString()}
-          </p>
-          <div className="flex gap-2">
+          </Text>
+          <Flex gap="2">
             {safePage > 1 && (
               <Link href={buildUrl({ page: String(safePage - 1) })}>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="1">
                   Previous
                 </Button>
               </Link>
             )}
             {safePage < totalPages && (
               <Link href={buildUrl({ page: String(safePage + 1) })}>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="1">
                   Next
                 </Button>
               </Link>
             )}
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       )}
-    </div>
+    </Flex>
   )
 }
