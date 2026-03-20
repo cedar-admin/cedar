@@ -708,6 +708,33 @@ export type Database = {
           },
         ]
       }
+      kg_domain_practice_type_map: {
+        Row: {
+          applies_to_all_types: boolean
+          created_at: string
+          domain_slug: string
+          id: string
+          practice_type_slug: string
+          relevance_weight: number
+        }
+        Insert: {
+          applies_to_all_types?: boolean
+          created_at?: string
+          domain_slug: string
+          id?: string
+          practice_type_slug: string
+          relevance_weight?: number
+        }
+        Update: {
+          applies_to_all_types?: boolean
+          created_at?: string
+          domain_slug?: string
+          id?: string
+          practice_type_slug?: string
+          relevance_weight?: number
+        }
+        Relationships: []
+      }
       kg_domains: {
         Row: {
           color: string | null
@@ -1112,6 +1139,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "kg_practice_types"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_entity_practice_relevance_practice_type_id_fkey"
+            columns: ["practice_type_id"]
+            isOneToOne: false
+            referencedRelation: "mv_practice_relevance_summary"
+            referencedColumns: ["practice_type_id"]
           },
         ]
       }
@@ -1582,6 +1616,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "kg_practice_types"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kg_service_lines_practice_type_id_fkey"
+            columns: ["practice_type_id"]
+            isOneToOne: false
+            referencedRelation: "mv_practice_relevance_summary"
+            referencedColumns: ["practice_type_id"]
           },
         ]
       }
@@ -2123,6 +2164,19 @@ export type Database = {
         }
         Relationships: []
       }
+      mv_practice_relevance_summary: {
+        Row: {
+          avg_relevance_score: number | null
+          display_name: string | null
+          high_relevance_count: number | null
+          is_cedar_target: boolean | null
+          medium_relevance_count: number | null
+          practice_type_id: string | null
+          practice_type_slug: string | null
+          total_regulations: number | null
+        }
+        Relationships: []
+      }
       v_active_rules: {
         Row: {
           action: Json | null
@@ -2280,6 +2334,7 @@ export type Database = {
     Functions: {
       each: { Args: { hs: unknown }; Returns: Record<string, unknown>[] }
       refresh_corpus_facets: { Args: never; Returns: undefined }
+      refresh_practice_relevance_summary: { Args: never; Returns: undefined }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

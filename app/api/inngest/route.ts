@@ -10,6 +10,9 @@ import { corpusSeed } from '../../../inngest/corpus-seed'
 import { corpusClassify } from '../../../inngest/corpus-classify'
 import { frDailyPoll } from '../../../inngest/fr-daily-poll'
 import { ecfrDailyCheck } from '../../../inngest/ecfr-daily-check'
+import { corpusAuthorityClassify } from '../../../inngest/corpus-authority-classify'
+import { corpusPracticeScore } from '../../../inngest/corpus-practice-score'
+import { corpusServiceLineMap } from '../../../inngest/corpus-service-line-map'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -25,6 +28,9 @@ export const { GET, POST, PUT } = serve({
     corpusClassify,
     frDailyPoll,
     ecfrDailyCheck,
+    corpusAuthorityClassify,
+    corpusPracticeScore,
+    corpusServiceLineMap,
   ],
   signingKey: process.env.INNGEST_SIGNING_KEY,
 })
