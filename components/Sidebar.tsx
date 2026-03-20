@@ -13,10 +13,11 @@ const MAIN_NAV = [
   { href: '/home',     label: 'Home',               icon: 'ri-home-4-line' },
   { href: '/changes',  label: 'Changes',             icon: 'ri-pulse-line' },
   { href: '/library',  label: 'Regulation Library',  icon: 'ri-book-2-line' },
+  { href: '#',         label: 'Ask Cedar',           icon: 'ri-chat-ai-line', disabled: true, badge: 'SOON' },
   { href: '/faq',      label: 'FAQ',                 icon: 'ri-question-answer-line' },
   { href: '/sources',  label: 'Sources',             icon: 'ri-database-2-line' },
   { href: '/audit',    label: 'Audit Trail',         icon: 'ri-shield-check-line' },
-  { href: '/settings', label: 'Settings',            icon: 'ri-settings-3-line' },
+  { href: '/settings', label: 'My Practice',         icon: 'ri-stethoscope-line' },
 ]
 
 const ADMIN_NAV = [
@@ -119,7 +120,14 @@ export function Sidebar({ user, practice, role, collapsed, onCollapse, onExpand 
       {/* Main nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         {MAIN_NAV.map((item) => (
-          <SidebarLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
+          <SidebarLink
+            key={item.label}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
+            disabled={'disabled' in item ? item.disabled : undefined}
+            badge={'badge' in item ? item.badge : undefined}
+          />
         ))}
 
         {/* Admin section */}
