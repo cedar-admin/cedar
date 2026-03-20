@@ -387,6 +387,7 @@ All visual tokens live in `src/styles/globals.css`. Reference docs live in `spec
 ## Reference Documents
 - `docs/architecture/data-architecture-research.md` — taxonomy, classification, relationship model, schema additions
 - `docs/wireframes/library-v2.jsx` — regulatory library wireframe with architectural context in header comments
+- `docs/sources/FL-Cedar_Regulatory_Monitoring_Sources.xlsx` — 71+ monitoring sources across 4 sheets (primary sources, priority matrix, board meetings, additional sources)
 
 ## Generating Updated Types
 
