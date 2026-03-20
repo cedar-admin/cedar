@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Sonnet Session 16
+Last updated: March 19, 2026 by Opus Session 17
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,27 +13,27 @@ Last updated: March 19, 2026 by Sonnet Session 16
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Library page now queries real kg_entities. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Library rewritten as hierarchical category grid → regulation list → 4-tab detail view. Settings toggles persist. |
 
 ## Codebase Stats
-- **~18,236 lines** TypeScript/TSX across ~139 files
+- **~18,529 lines** TypeScript/TSX across ~152 files
 - **27** Supabase migrations (001-027)
-- **15** dashboard routes, **9** API routes
-- **29** shadcn/ui components, **5** custom shared components
-- **71** git commits on main
+- **16** dashboard routes, **9** API routes
+- **29** shadcn/ui components, **13** custom shared components
+- **79** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 16 implemented Phase 3 of the taxonomy/knowledge-graph architecture: practice-type relevance scoring, service line mapping, and authority level classification. Migration 027 adds `kg_domain_practice_type_map` (200+ seeded domain→practice-type rows with relevance weights, including 4 cross-cutting sentinel rows that fan out to all 14 practice types) and `mv_practice_relevance_summary` materialized view with a `refresh_practice_relevance_summary()` RPC. Three new Inngest functions follow the two-pass pattern (rule-based first, Claude API ML fallback at 15 entities/batch): `corpus-authority-classify` populates `authority_level` + `issuing_agency` on `kg_entities` using source name/doc type heuristics; `corpus-practice-score` populates `kg_entity_practice_relevance` via the domain→practice-type map and refreshes both materialized views; `corpus-service-line-map` populates `kg_service_line_regulations` using `regulation_domains` on each service line. All three registered in the Inngest route. Types regenerated (Supabase CLI via cached npx path). Build clean, Vercel deployed. Functions not yet triggered against live data.
+Session 17 implemented the Phase 4 Regulatory Library Dashboard (PRP: `phase-4-regulatory-library-dashboard.md`). Replaced the flat-list library page with a hierarchical, category-driven experience: category grid landing → regulation list → 4-tab detail view (Overview, Reader, Timeline, Related). Created 8 new shared components (ConfidenceBadge, AuthorityBadge, ServiceLineTag, DeadlineChip, DomainCard, RegulationRow, ContentReader, RelationshipCard). Added practice-type filter pills to the landing page using `kg_domain_practice_type_map`. Category detail page uses full-text search via `search_vector` (@@) replacing old `ilike` pattern, with sub-domain navigation badges and pagination. Regulation detail page fetches all tab data in parallel (classification log, versions, relationships, service lines, domains, practice relevance). Sidebar updated with "Ask Cedar" (disabled, SOON badge) and "My Practice". BreadcrumbNav suppressed on library sub-pages (custom DB-powered breadcrumbs instead). Token audit and build both pass clean. **Note: Phase 3 scoring pipelines have NOT been triggered yet — `kg_entity_domains`, `kg_entity_practice_relevance`, `kg_service_line_regulations`, and `authority_level` are all empty. The library UI handles this gracefully with empty states but will not show categorized data until the pipelines run.**
 
 ## Next Session Priority
-1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
-   - `cedar/corpus.classify` — if `kg_entity_domains` is empty (`SELECT COUNT(*) FROM kg_entity_domains`)
+1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard) — this is the critical prerequisite for the library to show real categorized data:
+   - `cedar/corpus.classify` — populates `kg_entity_domains` (assigns ~99K entities to taxonomy domains)
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes both views
    - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-2. **Verify scoring results** using validation SQL from PRP (now in `PRPs/completed/`): check `kg_entities WHERE authority_level IS NOT NULL` > 80K, `kg_entity_practice_relevance` > 100K rows, all 10 service lines ≥ 50 entities.
-3. **Phase 3 Library UI** — add practice-type filter sidebar to the library page (drives off `kg_entity_practice_relevance`), wire full-text search to `search_vector` (`@@` operator), show service line tags on entity cards. Generate a PRP from `docs/architecture/data-architecture-research.md` Phase 3 UI section.
+2. **Verify scoring results** and confirm library UI populates: category grid shows regulation counts, practice-type filter pills filter domains, category detail lists entities with badges, detail page shows classification audit trail
+3. **LibraryBrowser cleanup** — `components/LibraryBrowser.tsx` is no longer imported by any page (replaced by inline search/filter in category detail); consider removing or repurposing
 
 ### Pipeline Test Setup
 ```bash
@@ -89,7 +89,7 @@ SELECT COUNT(*) FROM kg_classification_log;
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
 - FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies — only Rules and Notices were ingested
-- Library text search still uses `ilike` (the new `search_vector` column exists but the library page query hasn't been updated to use it yet — Phase 3 UI work)
+- `components/LibraryBrowser.tsx` is now orphaned — no longer imported after library page rewrite; can be removed
 - Phase 3 scoring functions not yet triggered — `kg_entity_practice_relevance`, `kg_service_line_regulations`, `authority_level` are all empty until the pipeline runs; `mv_practice_relevance_summary` will show 0 `total_regulations` for all rows
 - Supabase CLI binary not installed via npm (broken symlink in node_modules/.bin); use cached npx path: `/Users/anthonyrilling/.npm/_npx/b96a6bd565c470ce/node_modules/supabase/bin/supabase` with `SUPABASE_ACCESS_TOKEN` env var set
 
