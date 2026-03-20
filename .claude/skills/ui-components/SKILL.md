@@ -1,92 +1,105 @@
-# Skill: UI Component Creation
+# Skill: UI Component Creation (Radix Themes)
 
 ## Before building any UI
 
 1. Read `docs/design-system/design-standards.md` for patterns and principles
-2. Read `specs/tokens/token-reference.md` for available tokens
-3. Check `src/components/ui/` for existing components that cover your need
-4. If building a component that already has a spec in `specs/components/`, follow it
+2. Determine: does a Radix Themes component cover this need?
+3. Check `components/` for existing Cedar composite components
 
-## Creating a new reusable component
+## Component decision framework
 
-### Decision: reusable or one-off?
-- **3+ uses across the app** → create in `src/components/ui/` (primitives) or `src/components/` (composites)
-- **1-2 uses, complex business logic** → keep local in the feature directory
-- **Existing component almost works** → extend it with a new CVA variant
+### Use a Radix Themes component (default path)
+If the component exists in Radix Themes, use it directly. Import from `@radix-ui/themes`:
 
-### Implementation checklist
-1. Write a spec in `specs/components/[name].md` first (use the 8-section template below)
-2. Use CVA for variants:
-   ```tsx
-   import { cva, type VariantProps } from "class-variance-authority"
-   import { cn } from "@/lib/utils"
-   ```
-3. Accept `className` prop and merge with `cn()`
-4. Support `asChild` via Radix `Slot` when polymorphism is needed
-5. Export the variants config for external composition
-6. All colors via semantic tokens — no raw hex/rgb/oklch
-7. All spacing via Tailwind scale — no arbitrary pixel values
-8. Test both light and dark mode
-
-### 8-section component spec template
-
-```markdown
-# [Component Name]
-
-## Metadata
-- Location: `src/components/ui/[name].tsx`
-- Dependencies: [Radix primitives, if any]
-- Added: [date]
-
-## Overview
-When to use this component and what problem it solves.
-
-## Anatomy
-The parts that make up this component (root, trigger, content, etc.)
-
-## Tokens Used
-List of design tokens this component references.
-
-## Props / API
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-
-## States
-Visual states: default, hover, focus, active, disabled, loading, error.
-
-## Code Example
-A complete usage example.
-
-## Cross-References
-Related components and patterns.
+```tsx
+import { Button, Flex, Text, Heading, Card, Table, Badge, Dialog, Select, TextField } from "@radix-ui/themes"
 ```
 
-## Styling rules
+Style through props — no className for visual styling:
+```tsx
+<Button variant="soft" size="2" color="green">Save</Button>
+<Badge variant="outline" color="red">Critical</Badge>
+<TextField.Root placeholder="Search..." size="2" />
+```
 
-### Colors
-- Use semantic classes: `bg-background`, `text-foreground`, `border-border`, etc.
-- For opacity variants: `bg-primary/10`, `text-muted-foreground/60`
-- For status colors that need light/dark variants: use explicit `dark:` prefix
-  ```tsx
-  className="bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800"
-  ```
+**Available Radix Themes components:**
+Button, IconButton, TextField, TextArea, Select, Checkbox, CheckboxGroup, RadioGroup, Switch, Slider, Dialog, AlertDialog, DropdownMenu, ContextMenu, Popover, HoverCard, Tooltip, Tabs, TabNav, Table, DataList, Badge, Callout, Card, Avatar, Separator, ScrollArea, Skeleton, Spinner, Progress, SegmentedControl, AspectRatio, Box, Flex, Grid, Container, Section, Heading, Text, Code, Blockquote, Em, Kbd, Link, Quote, Strong, Inset, Reset, Theme, Portal, Slot, AccessibleIcon, VisuallyHidden
 
-### Spacing
-- Use Tailwind scale: `p-4`, `gap-2`, `space-y-6`, `mt-1`
-- Never use arbitrary values like `p-[13px]`
+### Build with Radix Primitives + Tailwind (custom path)
+When Radix Themes doesn't have the component. Currently needed for:
+- Accordion → `@radix-ui/react-accordion`
+- Sheet/SlideOver → `@radix-ui/react-dialog` (styled as side panel)
+- Sidebar → custom layout component
+- Breadcrumb → custom with `<Text>` and `<Link>`
+- Pagination → custom with `<Button>` and `<IconButton>`
+- Command palette → `cmdk` package
+- Toast → `sonner` package
 
-### Radius
-- Use token classes: `rounded-md`, `rounded-lg`, `rounded-xl`
-- For nested radius: `rounded-[max(0px,calc(var(--radius-xl)-1rem))]`
-- Buttons/badges use their own radius (via component defaults)
+Style with Tailwind referencing Radix CSS variables:
+```tsx
+<div className="bg-[var(--color-panel-solid)] border border-[var(--gray-6)] rounded-[var(--radius-3)] p-4 shadow-[var(--shadow-4)]">
+  <p className="text-[var(--gray-12)]">Custom content</p>
+</div>
+```
 
-### Motion
-- Interactive hover/focus: `transition-interactive` or `transition-colors`
-- Panel slides: use `.animate-panel-in-right`, `.animate-panel-in-left`, etc.
-- Dialogs: use `.animate-scale-in` / `.animate-scale-out`
-- Duration tokens: reference `--duration-fast`, `--duration-base`, `--duration-moderate`
+For portalled content, wrap with `<Theme>`:
+```tsx
+<Dialog.Portal>
+  <Theme>
+    <Dialog.Overlay className="fixed inset-0 bg-[var(--color-overlay)]" />
+    <Dialog.Content>...</Dialog.Content>
+  </Theme>
+</Dialog.Portal>
+```
 
-### Icons
+### Creating a new Cedar composite component
+When a pattern appears **3+ times** across the app:
+1. Build in `components/[name].tsx`
+2. Use Radix Themes components as building blocks
+3. Accept relevant props and pass them through
+4. Name by what it is, never where it's used
+
+### Keep one-off
+Unique to a single page with complex business logic → keep local in the feature directory.
+
+## Layout patterns
+
+Use Radix layout primitives for structure:
+```tsx
+// Page layout
+<Flex direction="column" gap="6">
+  <Heading size="6" weight="bold">Title</Heading>
+  <Text size="2" color="gray">Subtitle</Text>
+  {/* Content */}
+</Flex>
+
+// Grid layout
+<Grid columns={{ initial: "1", md: "2" }} gap="4">
+  <Card>...</Card>
+  <Card>...</Card>
+</Grid>
+
+// Data display
+<DataList.Root>
+  <DataList.Item>
+    <DataList.Label>Name</DataList.Label>
+    <DataList.Value>Cedar Health</DataList.Value>
+  </DataList.Item>
+</DataList.Root>
+```
+
+## Icons
 - Remix Icon only: `<i className="ri-[name]-line" />`
-- Size via text class: `text-sm`, `text-base`, `text-lg`
-- Color via text color class
+- Icon-only buttons: `<IconButton variant="ghost" size="2"><i className="ri-close-line" /></IconButton>`
+- Size via Tailwind: `text-sm`, `text-base`, `text-lg`
+- Color via Radix tokens: `text-[var(--gray-11)]`
+
+## Interaction states checklist
+Every component must handle:
+- [ ] Hover state
+- [ ] Focus-visible state
+- [ ] Disabled state (where applicable)
+- [ ] Loading state (for async actions — use `<Button loading>` or `<Spinner>`)
+- [ ] Error state (for form fields)
+- [ ] Empty state (for data views)
+- [ ] Exit animation (if it has an entrance animation)
