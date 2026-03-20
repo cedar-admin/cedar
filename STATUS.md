@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 19, 2026 by Sonnet Session 15
+Last updated: March 19, 2026 by Sonnet Session 16
 
 ## Module Status
 | Module | Status | Notes |
@@ -11,27 +11,29 @@ Last updated: March 19, 2026 by Sonnet Session 15
 | 5. Change Detection | ✅ Complete | SHA-256, chain hash, structured diff (DiffBlock[] JSONB) |
 | 6. Intelligence | ⚙️ MVP Complete | 2-agent pipeline (relevance filter + classifier). Agent 3 (Ontology) deferred to 1.0 Full |
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
-| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. audit/snapshot.ts is a stub |
+| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
 | 9. Dashboard | ⚙️ Partial | 15 pages rendering with real data. Library page now queries real kg_entities. Settings toggles persist. |
 
 ## Codebase Stats
-- **~17,032 lines** TypeScript/TSX across ~136 files
-- **26** Supabase migrations (001-026)
+- **~18,236 lines** TypeScript/TSX across ~139 files
+- **27** Supabase migrations (001-027)
 - **15** dashboard routes, **9** API routes
 - **29** shadcn/ui components, **5** custom shared components
-- **69** git commits on main
+- **71** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 15 implemented Phase 2 of the taxonomy/knowledge-graph architecture: relationship enrichment schema, entity version content-hashing, and two automated daily ingestion pipelines. Migrations 025–026 were applied directly via the Supabase Management API (Supabase CLI binary was not installed; resolved with a downloaded binary for type regeneration only). The `relationship_type_enum` Postgres type (16 values) and 5 new columns on `kg_relationships` (rel_type, effective_date, end_date, provenance, fr_citation) are live. Five new columns on `kg_entity_versions` (version_date, content_hash, content_snapshot, fr_document_number, change_summary) with a partial unique index on (entity_id, version_date) are live. `system_config` now holds `fr_last_poll_date` (initialized to 2026-03-17) and `ecfr_last_checked_date` (2026-03-16). `lib/corpus/relationship-linker.ts` provides `createRelationships()` and `matchCFREntitiesToRefs()`. `lib/corpus/cascade-detect.ts` provides `detectCascades()` (BFS depth-5, writes `kg_classification_log` with `needs_review=true`). `inngest/fr-daily-poll.ts` polls CFR titles 21/29/42/45 daily at 7 AM ET; `inngest/ecfr-daily-check.ts` detects per-part SHA-256 changes at 7:30 AM ET. Both registered in Inngest serve() route. Build clean, Vercel deployed.
+Session 16 implemented Phase 3 of the taxonomy/knowledge-graph architecture: practice-type relevance scoring, service line mapping, and authority level classification. Migration 027 adds `kg_domain_practice_type_map` (200+ seeded domain→practice-type rows with relevance weights, including 4 cross-cutting sentinel rows that fan out to all 14 practice types) and `mv_practice_relevance_summary` materialized view with a `refresh_practice_relevance_summary()` RPC. Three new Inngest functions follow the two-pass pattern (rule-based first, Claude API ML fallback at 15 entities/batch): `corpus-authority-classify` populates `authority_level` + `issuing_agency` on `kg_entities` using source name/doc type heuristics; `corpus-practice-score` populates `kg_entity_practice_relevance` via the domain→practice-type map and refreshes both materialized views; `corpus-service-line-map` populates `kg_service_line_regulations` using `regulation_domains` on each service line. All three registered in the Inngest route. Types regenerated (Supabase CLI via cached npx path). Build clean, Vercel deployed. Functions not yet triggered against live data.
 
 ## Next Session Priority
-1. **Test FR daily poll** — trigger `cedar/corpus.fr-daily-poll` from Inngest dev dashboard, verify all 6 steps complete, check `kg_entities` for new rows and `kg_relationships` for `provenance='api_cfr_references'` rows.
-2. **Test eCFR daily check** — trigger `cedar/corpus.ecfr-daily-check`, verify `kg_entity_versions` gets rows with `version_date IS NOT NULL`, verify `ecfr_last_checked_date` updated to today.
-3. **Run corpus-classify** — trigger `cedar/corpus.classify` to populate `kg_entity_domains` and `kg_classification_log`. This validates Phase 1 end-to-end.
-4. **Phase 3: Library UI** — add domain facets sidebar to the library page (query `mv_corpus_facets`), wire full-text search to `search_vector` (`@@` operator), add domain breadcrumb navigation. Generate a PRP from `docs/architecture/data-architecture-research.md` Phase 3 section.
-5. **Pipeline test execution** — trigger all 10 sources via Inngest, document results, fix any broken selectors.
+1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
+   - `cedar/corpus.classify` — if `kg_entity_domains` is empty (`SELECT COUNT(*) FROM kg_entity_domains`)
+   - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
+   - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes both views
+   - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
+2. **Verify scoring results** using validation SQL from PRP (now in `PRPs/completed/`): check `kg_entities WHERE authority_level IS NOT NULL` > 80K, `kg_entity_practice_relevance` > 100K rows, all 10 service lines ≥ 50 entities.
+3. **Phase 3 Library UI** — add practice-type filter sidebar to the library page (drives off `kg_entity_practice_relevance`), wire full-text search to `search_vector` (`@@` operator), show service line tags on entity cards. Generate a PRP from `docs/architecture/data-architecture-research.md` Phase 3 UI section.
 
 ### Pipeline Test Setup
 ```bash
@@ -87,9 +89,9 @@ SELECT COUNT(*) FROM kg_classification_log;
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number; may return empty content on first fetch
 - FR ingest: `PROPOSED_RULE` filter returns 0 results from the `/documents` endpoint for these agencies — only Rules and Notices were ingested
-- Library text search still uses `ilike` (the new `search_vector` column exists but the library page query hasn't been updated to use it yet — Phase 3 work)
-- `corpus-classify` not yet triggered — classification data not yet in `kg_entity_domains`; `mv_corpus_facets` will have limited rows until it runs
-- Supabase CLI binary not installed via npm (broken symlink in node_modules/.bin); used downloaded binary for type gen this session. Consider `brew install supabase/tap/supabase` for future sessions.
+- Library text search still uses `ilike` (the new `search_vector` column exists but the library page query hasn't been updated to use it yet — Phase 3 UI work)
+- Phase 3 scoring functions not yet triggered — `kg_entity_practice_relevance`, `kg_service_line_regulations`, `authority_level` are all empty until the pipeline runs; `mv_practice_relevance_summary` will show 0 `total_regulations` for all rows
+- Supabase CLI binary not installed via npm (broken symlink in node_modules/.bin); use cached npx path: `/Users/anthonyrilling/.npm/_npx/b96a6bd565c470ce/node_modules/supabase/bin/supabase` with `SUPABASE_ACCESS_TOKEN` env var set
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
