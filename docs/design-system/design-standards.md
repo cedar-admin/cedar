@@ -302,6 +302,28 @@ Default variant: **`surface`** — subtle border with translucent background.
 
 Clickable cards: `className="hover:bg-[var(--cedar-card-hover)] transition-colors"`.
 
+### Nested Component Surfaces
+
+When a component with its own background treatment (`variant="surface"`, `<Card>`, `<Callout>`,
+`<Table>`) is placed inside another component that already provides a visual boundary, the inner
+component should use `variant="ghost"` to avoid redundant layered surfaces.
+
+| Scenario | Inner component treatment |
+|---|---|
+| Table as the primary content of a Card | `<Table.Root variant="ghost">` |
+| Table inside a slide-over panel | `<Table.Root variant="ghost">` |
+| Card inside a Card (same visual purpose) | Inner card uses `variant="ghost"` |
+| DataList inside a Card | No extra surface needed — DataList is already chrome-free |
+
+**When to keep the inner surface:** If the inner component has a *different* background that
+communicates something — an amber `<Callout>` warning inside a neutral card, a green-tinted
+success card inside a dashboard grid, a highlighted card within a list — that contrast is
+intentional and the inner surface should stay. The rule targets redundant same-purpose surfaces,
+not intentional visual differentiation.
+
+**Quick test:** If removing the inner component's surface/border makes the layout look cleaner
+without losing information, it should be `variant="ghost"`.
+
 ---
 
 ## 9. Tables
