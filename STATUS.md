@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 21, 2026 by Session 22
+Last updated: March 21, 2026 by Session 23
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,7 +13,7 @@ Last updated: March 21, 2026 by Session 22
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phase 1 (foundations) + Phase 2 (shell & navigation) complete. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phase 1 (foundations) + Phase 2 (shell & navigation) + Phase 3 (dashboard pages) complete. Settings toggles persist. |
 
 ## Codebase Stats
 - **~16,794 lines** TypeScript/TSX
@@ -24,11 +24,26 @@ Last updated: March 21, 2026 by Session 22
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 22 executed the Design System Phase 2 PRP — shell & navigation compliance pass. Fixed all 5 shell components (`ThemeToggle`, `BreadcrumbNav`, `SidebarLink`, `Sidebar`, `SidebarShell`) to fully comply with design standards and frontend structural standards. Key changes: removed `<main>` from `SidebarShell` (root layout provides it); replaced all raw Radix step variables (`--gray-6`, `--accent-a3`, `--color-panel-translucent`, etc.) with Cedar semantic tokens across all shell files; added `<nav aria-label="Main navigation">` → `<ul>`/`<li>` structure to Sidebar; added `aria-current="page"` to active SidebarLink; converted BreadcrumbNav to `<ol>`/`<li>` with Radix `<Link asChild>`; added animated scrim exit (`animate-scrim-out`) via `isClosing` state machine; implemented full focus trap (Tab/Shift+Tab/Escape + focus restoration) for overlay sidebar below lg breakpoint; converted `RoleBadge` to Radix `color` prop; fixed `CedarLogo` to use `.logo-light`/`.logo-dark` CSS classes. Token audit confirms zero raw Radix step variables remain in shell files. Build: 0 errors, 0 warnings.
+Session 23 executed the Design System Phase 3 PRP — full compliance pass over all 16 dashboard pages, plus auth/public pages (sign-in, onboarding, pricing) and `app/layout.tsx`. Key changes:
+- **Heading hierarchy**: explicit `as` props (`h1`/`h2`/`h3`) on every `Heading` throughout all pages
+- **Metadata**: added `export const metadata` or `generateMetadata` on every page; `audit/export/layout.tsx` created as server wrapper to export metadata for the `'use client'` export page
+- **Timestamps**: all displayed dates wrapped in `<time dateTime={ISO}>` elements
+- **Zero `dark:` classes**: confirmed none remain in dashboard/auth pages
+- **Cedar semantic tokens**: replaced all raw Radix step vars (`--gray-6`, `--accent-9`, `--color-panel`, `--color-background`, etc.) with `--cedar-*` tokens; 19 new tokens added to `globals.css`
+- **Table variants**: `Table.Root variant="surface"` on all tables
+- **Button variants**: `variant="soft" color="gray" highContrast` for secondary, `variant="classic" color="gray" highContrast` for primary CTAs
+- **Filter pills**: use `--cedar-filter-active-*` tokens for active state (high-contrast inverted)
+- **Breadcrumbs**: converted to `<nav aria-label="Breadcrumb"><ol><li>` structure
+- **`aria-hidden="true"`** on every decorative icon
+- **RegulationTabs**: converted from manual `useState` tab machine to Radix `<Tabs.Root>` (no more custom tab bar)
+- **DiffViewer**: `dark:bg-green-950/40` etc. replaced with `--cedar-diff-*` tokens
+- **Onboarding**: plan card buttons use Cedar tokens; step indicators use `--cedar-filter-active-bg`
+- **Pricing**: plan card active border uses `--cedar-interactive-focus`; feature check icons use `--cedar-accent-text`
+- Build: ✅ 0 errors, 0 warnings. Deployed to cedar-beta.vercel.app.
 
 ## Next Session Priority
-1. **Design System Phase 3 — Dashboard Pages** — audit all 16 dashboard page files for: raw Radix step variables, missing `as` props on `Heading`/`Text`, missing `aria-label` on icon-only buttons, hardcoded pixel sizes, and forbidden `<p>` inside `<Text>` nesting. Fix in page order (home → changes → library → faq → sources → audit → settings → practices → reviews → system).
-2. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode; confirm sidebar nav structure, focus trap, and scrim animation work at mobile viewport.
+1. **Verify visual rendering** — start dev server and navigate all dashboard pages to confirm Phase 3 tokens render correctly in both light and dark mode; spot-check filter pills, DiffViewer, RegulationTabs, and plan cards.
+2. **Admin pages design pass** — `(admin)/reviews/`, `(admin)/system/`, `(admin)/practices/` still use raw Radix step vars (`--gray-6`, `--accent-9`, `--green-11`, etc.). Phase 3 PRP scoped to dashboard only — create a Phase 4 PRP if a compliance pass is desired.
 3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
