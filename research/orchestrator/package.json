@@ -1,0 +1,23 @@
+{
+  "name": "cedar-research-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "orchestrator": "tsx --env-file=../../.env.local index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
+    "js-yaml": "^4.1.0",
+    "p-queue": "^8.0.1",
+    "unified": "^11.0.0",
+    "remark-parse": "^11.0.0",
+    "mdast-util-to-string": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "tsx": "^4.19.0"
+  }
+}

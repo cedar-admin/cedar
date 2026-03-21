@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 21, 2026 by Session 24
+Last updated: March 21, 2026 by Session 25
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,22 +24,52 @@ Last updated: March 21, 2026 by Session 24
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 24 executed the Design System Phase 4 PRP — final compliance pass over all 9 admin files plus a codebase-wide sweep that caught 5 additional dashboard components. The design system refactor is now complete across all 54 UI files.
-- **Admin pages** (`system/`, `practices/`, `reviews/`, `reviews/[id]/`): `Heading as="h1"` on every page, `metadata`/`generateMetadata` exports, all raw Radix step vars replaced with `--cedar-*` tokens, `Table.Root variant="surface"`, `<time>` elements on all timestamps
-- **SlideOverPanel** migrated from raw div overlay to `@radix-ui/react-dialog` primitive: automatic focus trapping, Escape-to-close, focus restoration on dismiss; entrance/exit animations preserved via controlled open state + `startClose` pattern; `Dialog.Title asChild` with `Heading as="h2"`
-- **PracticesTable**: removed `onClick` from `<Table.Row>` — replaced with dedicated `<IconButton>` "View" column; `Table.RowHeaderCell` for practice name column
-- **ReviewActions**: `variant="classic" color="gray" highContrast` approve; `variant="soft" color="red"` reject; `variant="solid" color="red"` confirm reject; cedar error token
-- **Final sweep** fixed `RelationshipCard`, `RegulationRow`, `DataList`, `ContentReader` (removed `dark:prose-invert`), `UpgradeBanner` — zero raw Radix step vars remain in any `.tsx` file
-- Build: ✅ 0 errors, 0 warnings. Deployed to cedar-beta.vercel.app.
+Session 25 (Session 1 of 2) built the Cedar Research Orchestrator — a standalone TypeScript CLI tool for managing the 100-session regulatory classification research DAG. This session completed Phases 1–3 of the architecture spec.
+
+**Phase 1 — Directory structure and file placement:**
+- Created full `research/` directory tree: `orchestrator/`, `prompts/` (templates, part1-3), `outputs/` (part1-3), `context-packs/` (part1-3), `prefetch/`
+- Placed 5 completed research outputs into `research/outputs/part1/` (P1_S1, P1_S2-A/B/C, P1_S3)
+- Placed 8 research prompts into `research/prompts/part1/`, `part2/`, `part3/` with canonical names matching the manifest
+- Created 3 template files: `system-prompt.md`, `compression-prompt.md`, `splintering-prompt.md`
+- Initialized orchestrator package (`package.json`, `tsconfig.json`), `npm install` succeeded (86 packages)
+
+**Phase 2 — Manifest initialization:**
+- Created `research/manifest.yaml` with all 14 sessions (P1_S1 through P3), correct statuses, dependencies, file paths, and metadata
+- DAG validates with no cycles, topological sort succeeds
+
+**Phase 3 — Orchestrator TypeScript modules (8 files, ~800 lines):**
+- `types.ts` — Session, Manifest, enums (SessionStatus with 6 stored values, "ready" computed)
+- `utils.ts` — File I/O with repo-root resolution, logging helpers
+- `manifest.ts` — YAML load/save via js-yaml, session lookup, status updates
+- `dag.ts` — Kahn's algorithm topological sort, ready-session computation, critical path, status counts
+- `token-counter.ts` — Wraps `anthropic.messages.countTokens()`, `estimateSessionSize()`
+- `compressor.ts` — Two-pass compression (remark-parse AST extraction + Haiku AI), validation
+- `splinter.ts` — Size estimation, AI-based prompt analysis, sub-session generation
+- `runner.ts` — `runApiSession()`, `prepareWebSession()`, `runBatch()`, command guards
+- `index.ts` — CLI entry point routing 9 commands: status, next, run, run-batch, complete, compress, splinter, validate, cost
+
+**Verification results:**
+- `npm install`: ✅ 86 packages, 0 vulnerabilities
+- TypeScript compilation: ✅ 0 errors (one minor type fix: `stop_reason` null → undefined coercion)
+- `npm run research -- status`: ✅ Shows 5 complete, 1 splintered, 1 blocked, 7 planned, 1 ready (P1_S4)
+- `npm run research -- next`: ✅ Correctly identifies P1_S4 as the only ready session
+- Critical path computed: P1_S4 → P1_S5 → P1_S6 → P1_S7 → P1_S8 → P2
+
+**Deviation from spec:** Created stub prompt files for completed sessions (S1, S2, S2-A/B/C, S3) since the original prompts weren't available as separate files — the manifest references them but they're only needed for provenance. Added convenience script `npm run research` to root `package.json`.
 
 ## Next Session Priority
-1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
+**Session 2 of 2 — Research Orchestrator Phases 4–5:**
+1. **Phase 4: Generate context packs** — Run `compress` on each of the 5 completed sessions (P1_S1, P1_S2-A, P1_S2-B, P1_S2-C, P1_S3). Run `validate` to confirm all context packs are complete.
+2. **Phase 5: Verification** — Run every check in the post-build verification checklist from the architecture spec (V1–V8). Fix any failures and re-run. Run `status` and `next` to display final DAG state.
+
+**Previous priorities (still pending after orchestrator work):**
+3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes views
    - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-2. **Verify library UI** after pipeline runs — category grid should show regulation counts; domain cards should have accurate counts
-3. **Visual spot-check** — navigate admin pages (`/system`, `/practices`, `/reviews`) in dark mode to confirm cedar tokens render correctly; test SlideOver (Escape key, scrim click, focus return)
+4. **Verify library UI** after pipeline runs
+5. **Visual spot-check** admin pages in dark mode
 
 ### Dev Server Startup
 ```bash
