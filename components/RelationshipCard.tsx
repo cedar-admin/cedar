@@ -30,7 +30,7 @@ export function RelationshipCard({ relationship, domainSlug }: RelationshipCardP
 
   return (
     <Link href={href} className="block group">
-      <Card className="transition-interactive hover:shadow-[var(--shadow-3)]">
+      <Card variant="surface" className="transition-interactive hover:shadow-[var(--shadow-3)]">
         <Box p="4">
           <Flex direction="column" gap="1">
             <Flex align="center" gap="2">
@@ -39,14 +39,15 @@ export function RelationshipCard({ relationship, domainSlug }: RelationshipCardP
               </Badge>
               <ConfidenceBadge confidence={relationship.confidence} />
             </Flex>
-            <Text size="2" weight="medium" className="group-hover:text-[var(--accent-11)] transition-colors line-clamp-2 text-[var(--gray-12)]">
+            <Text as="span" size="2" weight="medium"
+              className="group-hover:text-[var(--accent-11)] transition-colors line-clamp-2 text-[var(--gray-12)]">
               {relationship.target.name}
             </Text>
             {relationship.target.citation && (
-              <Text size="1" color="gray">{relationship.target.citation}</Text>
+              <Text as="span" size="1" color="gray">{relationship.target.citation}</Text>
             )}
             {relationship.fr_citation && (
-              <Text size="1" color="gray">FR: {relationship.fr_citation}</Text>
+              <Text as="span" size="1" color="gray">FR: {relationship.fr_citation}</Text>
             )}
           </Flex>
         </Box>

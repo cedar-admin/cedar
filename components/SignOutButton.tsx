@@ -8,9 +8,10 @@ export function SignOutButton() {
     <form action={handleSignOut}>
       <Button
         variant="ghost"
+        color="gray"
         size="1"
         type="submit"
-        className="text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+        className="hover:text-[var(--cedar-error-text)]"
       >
         <i className="ri-logout-box-line" />
         Sign out

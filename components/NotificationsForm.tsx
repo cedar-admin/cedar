@@ -35,6 +35,7 @@ export function NotificationsForm({ initial }: NotificationsFormProps) {
         </Box>
         <Switch
           id="email-alerts"
+          color="gray"
           checked={prefs.email_alerts}
           onCheckedChange={(checked) => update({ email_alerts: checked })}
           disabled={isPending}
@@ -80,6 +81,7 @@ export function NotificationsForm({ initial }: NotificationsFormProps) {
         </Box>
         <Switch
           id="weekly-digest"
+          color="gray"
           checked={prefs.weekly_digest}
           onCheckedChange={(checked) => update({ weekly_digest: checked })}
           disabled={isPending}

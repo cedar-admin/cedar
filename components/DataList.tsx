@@ -30,9 +30,9 @@ export function DataList({
     return (
       <Card>
         <Flex direction="column" align="center" justify="center" py="9" className="text-center">
-          <i className={`${emptyIcon} text-4xl text-[var(--gray-9)] mb-3`} />
-          <Text size="3" weight="medium" mb="1">{emptyTitle}</Text>
-          <Text size="2" color="gray" className="max-w-sm">{emptyDescription}</Text>
+          <i className={`${emptyIcon} text-4xl text-[var(--cedar-text-muted)] mb-3`} />
+          <Text as="span" size="3" weight="medium" mb="1">{emptyTitle}</Text>
+          <Text as="span" size="2" color="gray" className="max-w-sm">{emptyDescription}</Text>
         </Flex>
       </Card>
     )
@@ -50,15 +50,15 @@ export function DataList({
             >
               <SeverityBadge severity={item.severity} />
               <div className="flex-1 min-w-0">
-                <Text size="2" className="line-clamp-1 text-[var(--gray-12)]">
+                <Text as="span" size="2" className="line-clamp-1 text-[var(--gray-12)]">
                   {item.title || <span className="text-[var(--gray-9)] italic">No summary available</span>}
                 </Text>
                 {item.subtitle && (
-                  <Text size="1" color="gray" className="mt-0.5">{item.subtitle}</Text>
+                  <Text as="span" size="1" color="gray" className="mt-0.5">{item.subtitle}</Text>
                 )}
               </div>
               {item.timestamp && (
-                <Text size="1" color="gray" className="shrink-0">
+                <Text as="span" size="1" color="gray" className="shrink-0">
                   {timeAgo(item.timestamp)}
                 </Text>
               )}

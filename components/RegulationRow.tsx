@@ -36,12 +36,12 @@ export function RegulationRow({ entity, domainSlug, serviceTags, className }: Re
     >
       <Flex align="start" justify="between" gap="3">
         <Flex direction="column" gap="1" className="min-w-0 flex-1">
-          <Text size="2" weight="medium" className="line-clamp-2 text-[var(--gray-12)]">{entity.name}</Text>
+          <Text as="span" size="2" weight="medium" className="line-clamp-2 text-[var(--gray-12)]">{entity.name}</Text>
           {entity.citation && (
-            <Text size="1" color="gray">{entity.citation}</Text>
+            <Text as="span" size="1" color="gray">{entity.citation}</Text>
           )}
           {entity.description && (
-            <Text size="1" color="gray" className="line-clamp-2">{entity.description}</Text>
+            <Text as="span" size="1" color="gray" className="line-clamp-2">{entity.description}</Text>
           )}
           <Flex wrap="wrap" align="center" gap="1" mt="1">
             {entity.entity_type && (
@@ -59,7 +59,7 @@ export function RegulationRow({ entity, domainSlug, serviceTags, className }: Re
         </Flex>
         <div className="shrink-0 text-right">
           {entity.publication_date && (
-            <Text size="1" color="gray">
+            <Text as="span" size="1" color="gray">
               <time>{new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}</time>
             </Text>
           )}

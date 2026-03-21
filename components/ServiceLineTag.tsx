@@ -1,5 +1,4 @@
 import { Badge } from '@radix-ui/themes'
-import { cn } from '@/lib/utils'
 
 interface ServiceLineTagProps {
   name: string
@@ -8,7 +7,7 @@ interface ServiceLineTagProps {
 
 export function ServiceLineTag({ name, className }: ServiceLineTagProps) {
   return (
-    <Badge variant="soft" className={cn('text-xs', className)}>
+    <Badge color="gray" variant="soft" className={`text-xs ${className ?? ''}`}>
       {name}
     </Badge>
   )

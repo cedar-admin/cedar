@@ -3,7 +3,6 @@ import { createServerClient } from '../../../lib/db/client'
 import { Badge, Callout, Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
-import { SEVERITY_CLASS, SEVERITY_DOT } from '@/lib/ui-constants'
 import { timeAgo } from '@/lib/format'
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -79,13 +78,13 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
         </div>
         <Flex align="center" gap="3">
           {criticalCount > 0 && (
-            <Badge variant="outline" className={`gap-1.5 ${SEVERITY_CLASS['critical']}`}>
-              <span className={`w-1.5 h-1.5 ${SEVERITY_DOT['critical']} rounded-full animate-pulse`} />
+            <Badge color="red" variant="soft" className="gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[var(--red-9)] rounded-full animate-pulse" />
               {criticalCount} Critical — 4h SLA
             </Badge>
           )}
           {highCount > 0 && (
-            <Badge variant="outline" className={`gap-1.5 ${SEVERITY_CLASS['high']}`}>
+            <Badge color="orange" variant="soft" className="gap-1.5">
               {highCount} High — 24h SLA
             </Badge>
           )}

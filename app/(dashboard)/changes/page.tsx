@@ -5,7 +5,15 @@ import { createServerClient } from '../../../lib/db/client'
 import { Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
-import { SEVERITY_CLASS, SEVERITIES } from '@/lib/ui-constants'
+import { SEVERITIES } from '@/lib/ui-constants'
+
+const SEVERITY_ACTIVE_CLASS: Record<string, string> = {
+  critical:      'bg-[var(--red-a3)] text-[var(--red-11)] border-[var(--red-6)]',
+  high:          'bg-[var(--orange-a3)] text-[var(--orange-11)] border-[var(--orange-6)]',
+  medium:        'bg-[var(--amber-a3)] text-[var(--amber-11)] border-[var(--amber-6)]',
+  low:           'bg-[var(--green-a3)] text-[var(--green-11)] border-[var(--green-6)]',
+  informational: 'bg-[var(--blue-a3)] text-[var(--blue-11)] border-[var(--blue-6)]',
+}
 import { timeAgo } from '@/lib/format'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -126,7 +134,7 @@ export default async function ChangesPage({ searchParams }: Props) {
                   href={`/changes?severity=${s}${page > 1 ? `&page=${page}` : ''}`}
                   className={`px-3 py-1.5 text-sm font-medium border transition-colors ${
                     active
-                      ? SEVERITY_CLASS[s]
+                      ? SEVERITY_ACTIVE_CLASS[s]
                       : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
                   }`}
                 >

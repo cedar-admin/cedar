@@ -1,32 +1,26 @@
 import { Badge } from '@radix-ui/themes'
-import { STATUS_CLASS, STATUS_LABEL } from '@/lib/ui-constants'
-import { cn } from '@/lib/utils'
+import { STATUS_COLOR, STATUS_LABEL } from '@/lib/ui-constants'
+
+const STATUS_ICON: Record<string, string | undefined> = {
+  approved:       'ri-shield-check-line',
+  auto_approved:  'ri-robot-line',
+  pending:        'ri-time-line',
+  pending_review: 'ri-time-line',
+  rejected:       'ri-close-circle-line',
+  not_required:   'ri-robot-line',
+}
 
 interface StatusBadgeProps {
   status: string
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  if (status === 'approved') {
-    return (
-      <Badge variant="outline" className="gap-1.5 text-[var(--green-11)] border-[var(--green-6)] bg-[var(--green-a3)]">
-        <i className="ri-shield-check-line text-xs" />
-        Reviewed
-      </Badge>
-    )
-  }
-  if (status === 'auto_approved' || status === 'not_required') {
-    return (
-      <Badge variant="soft" className="gap-1.5">
-        <i className="ri-robot-line text-xs" />
-        Auto
-      </Badge>
-    )
-  }
-  const cls = STATUS_CLASS[status] ?? ''
+  const color = (STATUS_COLOR[status] ?? 'gray') as any
   const label = STATUS_LABEL[status] ?? status
+  const icon = STATUS_ICON[status]
   return (
-    <Badge variant="outline" className={cn(cls)}>
+    <Badge color={color} variant="soft" className="gap-1.5">
+      {icon && <i className={`${icon} text-xs`} />}
       {label}
     </Badge>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Button, IconButton, Card, Box } from '@radix-ui/themes'
+import { Button, IconButton, Card, Box, Heading, Text } from '@radix-ui/themes'
 
 interface ContentReaderProps {
   content: string | null
@@ -25,10 +25,10 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
 
   if (!content) {
     return (
-      <div className={`flex flex-col items-center justify-center py-12 text-center ${className ?? ''}`}>
-        <i className="ri-file-unknow-line text-3xl text-[var(--gray-9)] mb-2" />
-        <p className="text-sm text-[var(--gray-11)]">No content snapshot available</p>
-      </div>
+      <Box className={`flex flex-col items-center justify-center py-12 text-center ${className ?? ''}`}>
+        <i className="ri-file-unknow-line text-3xl text-[var(--cedar-text-muted)] mb-2" />
+        <Text as="p" size="2" color="gray">No content snapshot available</Text>
+      </Box>
     )
   }
 
@@ -42,7 +42,9 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
     return (
       <div className="fixed inset-0 z-50 bg-[var(--color-background)] animate-fade-in overflow-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--gray-6)] bg-[var(--color-background)] px-6 py-3">
-          <h2 className="text-base font-semibold text-[var(--gray-12)] truncate">{title ?? 'Document'}</h2>
+          <Heading as="h2" size="3" className="truncate">
+            {title ?? 'Document'}
+          </Heading>
           <IconButton variant="ghost" size="1" onClick={() => setFullscreen(false)}>
             <i className="ri-close-line text-lg" />
           </IconButton>

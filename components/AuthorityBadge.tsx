@@ -1,6 +1,5 @@
 import { Badge } from '@radix-ui/themes'
-import { AUTHORITY_LEVEL_LABEL, AUTHORITY_LEVEL_CLASS } from '@/lib/ui-constants'
-import { cn } from '@/lib/utils'
+import { AUTHORITY_LEVEL_LABEL, AUTHORITY_LEVEL_COLOR } from '@/lib/ui-constants'
 
 interface AuthorityBadgeProps {
   level: string | null
@@ -10,9 +9,9 @@ interface AuthorityBadgeProps {
 export function AuthorityBadge({ level, className }: AuthorityBadgeProps) {
   if (!level) return null
   const label = AUTHORITY_LEVEL_LABEL[level] ?? level.replace(/_/g, ' ')
-  const cls = AUTHORITY_LEVEL_CLASS[level] ?? 'bg-[var(--gray-a3)] text-[var(--gray-11)] border-[var(--gray-6)]'
+  const color = (AUTHORITY_LEVEL_COLOR[level] ?? 'gray') as any
   return (
-    <Badge variant="outline" className={cn('font-medium', cls, className)}>
+    <Badge color={color} variant="outline" className={className}>
       {label}
     </Badge>
   )

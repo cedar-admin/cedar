@@ -2,7 +2,7 @@ import { createServerClient } from '../../../lib/db/client'
 import TriggerButton from './TriggerButton'
 import SeedCorpusButton from './SeedCorpusButton'
 import { Badge, Callout, Card, Box, Flex, Heading, Text, Table, Separator } from '@radix-ui/themes'
-import { SEVERITY_CLASS } from '@/lib/ui-constants'
+import { SEVERITY_COLOR } from '@/lib/ui-constants'
 import { timeAgo } from '@/lib/format'
 
 // ── Env var check ────────────────────────────────────────────────────────────
@@ -208,11 +208,11 @@ export default async function SystemPage() {
             <Flex direction="column" gap="3">
               {recentChanges.map((c) => {
                 const src = c.sources as { name: string } | null
-                const cls = SEVERITY_CLASS[c.severity ?? ''] ?? ''
+                const color = (SEVERITY_COLOR[c.severity ?? ''] ?? 'gray') as any
                 return (
                   <Flex key={c.id} align="center" justify="between">
                     <Flex align="center" gap="3">
-                      <Badge variant="outline" className={`text-xs ${cls}`}>
+                      <Badge color={color} variant="soft" size="1">
                         {c.severity ?? 'unknown'}
                       </Badge>
                       <Text size="2">{src?.name ?? '—'}</Text>
