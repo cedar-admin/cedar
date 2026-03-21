@@ -313,6 +313,7 @@ Cedar follows a **neutral-interactive, colorful-informational** design philosoph
 1. Read `docs/design-system/design-standards.md` — the comprehensive reference for all component styling, variant choices, color decisions, token usage, shared component inventory, forbidden patterns, and quality checklist
 2. Walk the decision tree in `.claude/skills/design-tokens/SKILL.md` to choose the right styling approach for the value you need
 3. Follow the component routing in `.claude/skills/ui-components/SKILL.md` to determine whether to use a Radix Themes component, a custom build, or an existing Cedar composite
+4. Read `docs/design-system/frontend-standards.md` for semantic HTML structure — heading hierarchy (`as` prop on every `<Heading>`), landmark elements, `<Text>` nesting rules (`as="span"`), keyboard/focus management, and forbidden structural patterns
 
 ### Two styling systems (quick orientation)
 
@@ -335,8 +336,17 @@ Cedar follows a **neutral-interactive, colorful-informational** design philosoph
 | Shared color/status mappings | `lib/ui-constants.ts` |
 | Shared format utilities | `lib/format.ts` |
 | Cedar composite components | `components/` |
+| Frontend structural standards | `docs/design-system/frontend-standards.md` |
+
+## Frontend Structure
+
+Before creating new pages, modifying layouts, or changing component hierarchy, read
+`docs/design-system/frontend-standards.md` for semantic HTML rules, heading hierarchy,
+landmark structure, and accessibility markup. This document complements the design system —
+the design system governs visual styling, this document governs HTML structure.
 
 ## Reference Documents
+
 - `docs/architecture/data-architecture-research.md` — taxonomy, classification, relationship model, schema additions
 - `docs/wireframes/library-v2.jsx` — regulatory library wireframe with architectural context in header comments
 - `docs/sources/FL-Cedar_Regulatory_Monitoring_Sources.xlsx` — 71+ monitoring sources across 4 sheets (primary sources, priority matrix, board meetings, additional sources)
