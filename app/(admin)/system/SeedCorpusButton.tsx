@@ -33,21 +33,22 @@ export default function SeedCorpusButton() {
   return (
     <Flex align="center" gap="3">
       <Button
-        variant={state === 'done' ? 'outline' : 'soft'}
+        variant={state === 'done' ? 'outline' : 'classic'}
+        color="gray"
+        highContrast
         size="1"
+        type="button"
         onClick={handleSeed}
-        disabled={state === 'loading'}
+        loading={state === 'loading'}
       >
-        {state === 'loading' ? (
-          <><i className="ri-loader-4-line animate-spin" /> Queuing…</>
-        ) : state === 'done' ? (
-          <><i className="ri-checkbox-circle-line text-[var(--green-9)]" /> Queued</>
+        {state === 'done' ? (
+          <><i className="ri-checkbox-circle-line text-[var(--cedar-success-solid)]" aria-hidden="true" /> Queued</>
         ) : (
-          <><i className="ri-database-2-line" /> Seed Corpus</>
+          <><i className="ri-database-2-line" aria-hidden="true" /> Seed Corpus</>
         )}
       </Button>
       {result && (
-        <Text size="1" color={state === 'error' ? 'red' : 'gray'}>
+        <Text as="span" size="1" color={state === 'error' ? 'red' : 'gray'}>
           {result}
         </Text>
       )}

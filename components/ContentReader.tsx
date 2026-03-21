@@ -33,15 +33,15 @@ export function ContentReader({ content, title, className }: ContentReaderProps)
   }
 
   const body = (
-    <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap font-mono text-sm leading-relaxed">
+    <div className="prose prose-sm max-w-none whitespace-pre-wrap font-mono text-sm leading-relaxed">
       {content}
     </div>
   )
 
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-50 bg-[var(--color-background)] animate-fade-in overflow-auto">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--gray-6)] bg-[var(--color-background)] px-6 py-3">
+      <div className="fixed inset-0 z-50 bg-[var(--cedar-page-bg)] animate-fade-in overflow-auto">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--cedar-border-subtle)] bg-[var(--cedar-page-bg)] px-6 py-3">
           <Heading as="h2" size="3" className="truncate">
             {title ?? 'Document'}
           </Heading>

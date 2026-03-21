@@ -69,21 +69,25 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
           className="resize-none"
         />
         {error && (
-          <p className="text-xs text-[var(--red-9)]">{error}</p>
+          <p className="text-xs text-[var(--cedar-error-solid)]">{error}</p>
         )}
         <Flex gap="2">
           <Button
+            variant="solid"
             color="red"
             size="1"
+            type="button"
+            loading={loading === 'reject'}
             onClick={handleReject}
-            disabled={loading === 'reject'}
             className="flex-1"
           >
             {loading === 'reject' ? 'Rejecting…' : 'Confirm Reject'}
           </Button>
           <Button
             variant="ghost"
+            color="gray"
             size="1"
+            type="button"
             onClick={() => { setShowRejectDialog(false); setNotes(''); setError(null) }}
           >
             Cancel
@@ -96,23 +100,28 @@ export default function ReviewActions({ changeId, sourceName }: ReviewActionsPro
   return (
     <Flex direction="column" gap="2" align="end">
       {error && (
-        <p className="text-xs text-[var(--red-9)] text-right">{error}</p>
+        <p className="text-xs text-[var(--cedar-error-solid)] text-right">{error}</p>
       )}
       <Flex gap="2">
         <Button
-          variant="solid"
+          variant="classic"
+          color="gray"
+          highContrast
           size="1"
+          type="button"
+          loading={loading === 'approve'}
           onClick={handleApprove}
-          disabled={loading !== null}
+          disabled={loading !== null && loading !== 'approve'}
         >
           {loading === 'approve' ? 'Approving…' : 'Approve'}
         </Button>
         <Button
-          variant="outline"
+          variant="soft"
+          color="red"
           size="1"
+          type="button"
           onClick={() => setShowRejectDialog(true)}
           disabled={loading !== null}
-          className="text-[var(--red-9)] border-[var(--red-6)] hover:bg-[var(--red-a3)] hover:text-[var(--red-9)]"
         >
           Reject
         </Button>

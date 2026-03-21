@@ -13,10 +13,10 @@ export function UpgradeBanner({ feature }: UpgradeBannerProps) {
           <Flex
             align="center"
             justify="center"
-            className="w-9 h-9 bg-[var(--accent-a3)] shrink-0"
+            className="w-9 h-9 bg-[var(--cedar-accent-bg)] shrink-0"
             style={{ borderRadius: 'var(--radius-2)' }}
           >
-            <i className="ri-lock-2-line text-[var(--accent-11)] text-lg" />
+            <i className="ri-lock-2-line text-[var(--cedar-accent-text)] text-lg" aria-hidden="true" />
           </Flex>
           <Box className="flex-1 min-w-0">
             <Text size="2" weight="medium">
@@ -38,10 +38,10 @@ export function UpgradeBanner({ feature }: UpgradeBannerProps) {
       <div className="relative mt-4 overflow-hidden pointer-events-none select-none">
         <div className="opacity-30 blur-sm space-y-3">
           {[80, 60, 70, 50, 65].map((w, i) => (
-            <div key={i} className="h-10 bg-[var(--gray-a3)] border border-[var(--gray-6)]" style={{ width: `${w}%` }} />
+            <div key={i} className="h-10 bg-[var(--cedar-interactive-hover)] border border-[var(--cedar-border-subtle)]" style={{ width: `${w}%` }} />
           ))}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--color-background)]/70 to-[var(--color-background)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--cedar-page-bg)]/70 to-[var(--cedar-page-bg)]" />
       </div>
     </Box>
   )

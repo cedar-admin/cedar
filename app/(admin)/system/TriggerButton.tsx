@@ -47,21 +47,22 @@ export default function TriggerButton({ label, sourceId }: TriggerButtonProps) {
   return (
     <Flex align="center" gap="3">
       <Button
-        variant={state === 'done' ? 'outline' : 'solid'}
+        variant={state === 'done' ? 'outline' : 'classic'}
+        color="gray"
+        highContrast
         size="1"
+        type="button"
         onClick={handleTrigger}
-        disabled={state === 'loading'}
+        loading={state === 'loading'}
       >
-        {state === 'loading' ? (
-          <><i className="ri-loader-4-line animate-spin" /> Running…</>
-        ) : state === 'done' ? (
-          <><i className="ri-checkbox-circle-line text-[var(--green-9)]" /> Triggered</>
+        {state === 'done' ? (
+          <><i className="ri-checkbox-circle-line text-[var(--cedar-success-solid)]" aria-hidden="true" /> Triggered</>
         ) : (
-          <><i className="ri-play-circle-line" /> {label}</>
+          <><i className="ri-play-circle-line" aria-hidden="true" /> {label}</>
         )}
       </Button>
       {result && (
-        <Text size="1" color={state === 'error' ? 'red' : 'gray'}>
+        <Text as="span" size="1" color={state === 'error' ? 'red' : 'gray'}>
           {result}
         </Text>
       )}

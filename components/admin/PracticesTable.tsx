@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Badge, Button, Card, Box, Flex, Text, Select, Table } from '@radix-ui/themes'
+import { Badge, Button, Card, Box, Flex, IconButton, Text, Select, Table } from '@radix-ui/themes'
 import { formatDate } from '@/lib/format'
 import { SlideOverPanel } from '@/components/admin/SlideOverPanel'
 import type { Database } from '@/lib/db/types'
@@ -113,18 +113,20 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
           {hasActiveFilters(filters) && (
             <Button
               variant="ghost"
+              color="gray"
               size="1"
+              type="button"
               onClick={clear}
-              className="text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+              className="text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)]"
             >
-              <i className="ri-close-line mr-1" />
+              <i className="ri-close-line mr-1" aria-hidden="true" />
               Clear filters
             </Button>
           )}
         </Flex>
 
         {/* Count label */}
-        <Text size="1" color="gray" className="-mt-2 block">
+        <Text as="span" size="1" color="gray" className="-mt-2 block">
           {filtered.length} practice{filtered.length !== 1 ? 's' : ''}
           {hasActiveFilters(filters) ? ` (filtered from ${localPractices.length})` : ''}
         </Text>
@@ -134,10 +136,10 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
           <Card>
             <Box p="4">
               <Flex direction="column" align="center" justify="center" py="9" className="text-center">
-                <i className="ri-filter-off-line text-3xl text-[var(--gray-8)] mb-2" />
-                <Text size="2" color="gray">No practices match the current filters.</Text>
+                <i className="ri-filter-off-line text-3xl text-[var(--cedar-border-strong)] mb-2" aria-hidden="true" />
+                <Text as="span" size="2" color="gray">No practices match the current filters.</Text>
                 {hasActiveFilters(filters) && (
-                  <Button variant="ghost" size="1" onClick={clear} className="mt-3 text-[var(--gray-11)]">
+                  <Button variant="ghost" color="gray" size="1" type="button" onClick={clear} className="mt-3 text-[var(--cedar-text-secondary)]">
                     Clear filters
                   </Button>
                 )}
@@ -150,12 +152,12 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
         {filtered.length > 0 && (
           <Card>
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
+              <Text as="span" size="1" weight="bold" color="gray" className="uppercase tracking-wide">
                 All Practices
               </Text>
             </Box>
             <Box p="0">
-              <Table.Root>
+              <Table.Root variant="surface">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Practice</Table.ColumnHeaderCell>
@@ -165,24 +167,21 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
                     <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>Phone</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell />
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
                   {filtered.map((p) => (
-                    <Table.Row
-                      key={p.id}
-                      onClick={() => setSelectedPractice(p)}
-                      className="cursor-pointer hover:bg-[var(--gray-a2)]"
-                    >
+                    <Table.Row key={p.id}>
+                      <Table.RowHeaderCell>
+                        <Text as="span" size="2" weight="medium">{p.name}</Text>
+                      </Table.RowHeaderCell>
                       <Table.Cell>
-                        <Text size="2" weight="medium">{p.name}</Text>
+                        <Text as="span" size="2" className="block">{p.owner_name ?? '—'}</Text>
+                        <Text as="span" size="1" color="gray">{p.owner_email}</Text>
                       </Table.Cell>
                       <Table.Cell>
-                        <Text size="2" className="block">{p.owner_name ?? '—'}</Text>
-                        <Text size="1" color="gray">{p.owner_email}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text size="2" color="gray">{p.practice_type ?? '—'}</Text>
+                        <Text as="span" size="2" color="gray">{p.practice_type ?? '—'}</Text>
                       </Table.Cell>
                       <Table.Cell>
                         <TierBadge tier={p.tier} />
@@ -191,10 +190,24 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
                         <SubscriptionBadge status={p.subscription_status} />
                       </Table.Cell>
                       <Table.Cell>
-                        <Text size="2" color="gray">{p.phone ?? '—'}</Text>
+                        <Text as="span" size="2" color="gray">{p.phone ?? '—'}</Text>
                       </Table.Cell>
                       <Table.Cell>
-                        <Text size="2" color="gray">{formatDate(p.created_at)}</Text>
+                        <Text as="span" size="2" color="gray">
+                          <time dateTime={p.created_at}>{formatDate(p.created_at)}</time>
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell justify="end">
+                        <IconButton
+                          variant="ghost"
+                          color="gray"
+                          size="1"
+                          type="button"
+                          aria-label={`View ${p.name}`}
+                          onClick={() => setSelectedPractice(p)}
+                        >
+                          <i className="ri-arrow-right-s-line" aria-hidden="true" />
+                        </IconButton>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -236,7 +249,7 @@ function TierBadge({ tier }: { tier: string }) {
 }
 
 function SubscriptionBadge({ status }: { status: string | null }) {
-  if (!status) return <span className="text-xs text-[var(--gray-11)]">—</span>
+  if (!status) return <Text as="span" size="1" color="gray">—</Text>
   const colorMap: Record<string, 'green' | 'blue' | 'amber' | 'red' | 'gray'> = {
     active:   'green',
     trialing: 'blue',

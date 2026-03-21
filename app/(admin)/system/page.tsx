@@ -1,9 +1,14 @@
+import type { Metadata } from 'next'
 import { createServerClient } from '../../../lib/db/client'
 import TriggerButton from './TriggerButton'
 import SeedCorpusButton from './SeedCorpusButton'
 import { Badge, Callout, Card, Box, Flex, Heading, Text, Table, Separator } from '@radix-ui/themes'
 import { SEVERITY_COLOR } from '@/lib/ui-constants'
 import { timeAgo } from '@/lib/format'
+
+export const metadata: Metadata = {
+  title: 'System Health — Cedar Admin',
+}
 
 // ── Env var check ────────────────────────────────────────────────────────────
 
@@ -23,8 +28,8 @@ function EnvRow({ keyName, label, required }: { keyName: string; label: string; 
   return (
     <Flex align="center" justify="between" py="2">
       <Flex align="center" gap="2">
-        <span className="text-sm font-mono text-[var(--gray-12)]">{keyName}</span>
-        <Text size="1" color="gray">{label}</Text>
+        <span className="text-sm font-mono text-[var(--cedar-text-primary)]">{keyName}</span>
+        <Text as="span" size="1" color="gray">{label}</Text>
         {required && !isSet && (
           <Badge variant="outline" color="red" size="1">
             Required
@@ -32,12 +37,12 @@ function EnvRow({ keyName, label, required }: { keyName: string; label: string; 
         )}
       </Flex>
       {isSet ? (
-        <span className="flex items-center gap-1 text-xs text-[var(--green-11)] font-medium">
-          <i className="ri-checkbox-circle-fill" /> Set
+        <span className="flex items-center gap-1 text-xs text-[var(--cedar-success-text)] font-medium">
+          <i className="ri-checkbox-circle-fill" aria-hidden="true" /> Set
         </span>
       ) : (
-        <span className="flex items-center gap-1 text-xs text-[var(--gray-11)]">
-          <i className="ri-close-circle-line" /> Not set
+        <span className="flex items-center gap-1 text-xs text-[var(--cedar-text-secondary)]">
+          <i className="ri-close-circle-line" aria-hidden="true" /> Not set
         </span>
       )}
     </Flex>
@@ -92,8 +97,8 @@ export default async function SystemPage() {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <Heading size="6" weight="bold">System Health</Heading>
-          <Text size="2" color="gray" className="mt-1 block">
+          <Heading as="h1" size="6" weight="bold">System Health</Heading>
+          <Text as="span" size="2" color="gray" className="mt-1 block">
             Environment status, source monitoring, and manual trigger controls
           </Text>
         </div>
@@ -105,7 +110,7 @@ export default async function SystemPage() {
 
       {missingRequired.length > 0 && (
         <Callout.Root color="red">
-          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Icon><i className="ri-error-warning-line text-base" aria-hidden="true" /></Callout.Icon>
           <Callout.Text>
             <strong>{missingRequired.length} required env var{missingRequired.length !== 1 ? 's' : ''} not set:</strong>{' '}
             {missingRequired.map(v => v.key).join(', ')}
@@ -116,12 +121,12 @@ export default async function SystemPage() {
       {/* Environment Variables */}
       <Card>
         <Box px="4" pt="4" pb="3">
-          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
+          <Heading as="h2" size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Environment Variables
-          </Text>
+          </Heading>
         </Box>
         <Box px="4" pb="4">
-          <div className="divide-y divide-[var(--gray-6)]">
+          <div className="divide-y divide-[var(--cedar-border-subtle)]">
             {ENV_VARS.map((v) => (
               <EnvRow key={v.key} keyName={v.key} label={v.label} required={v.required} />
             ))}
@@ -132,12 +137,12 @@ export default async function SystemPage() {
       {/* Sources */}
       <Card>
         <Box px="4" pt="4" pb="3">
-          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
+          <Heading as="h2" size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Sources ({sources?.length ?? 0})
-          </Text>
+          </Heading>
         </Box>
         <Box p="0">
-          <Table.Root>
+          <Table.Root variant="surface">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
@@ -166,8 +171,8 @@ export default async function SystemPage() {
                   <Table.Row key={source.id}>
                     <Table.Cell>
                       <Flex align="center" gap="2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${source.is_active ? 'bg-[var(--green-9)]' : 'bg-[var(--gray-8)]'}`} />
-                        <Text size="2" weight="medium">{source.name}</Text>
+                        <span className={`w-1.5 h-1.5 rounded-full ${source.is_active ? 'bg-[var(--cedar-status-dot-success)]' : 'bg-[var(--cedar-border-strong)]'}`} aria-hidden="true" />
+                        <Text as="span" size="2" weight="medium">{source.name}</Text>
                       </Flex>
                     </Table.Cell>
                     <Table.Cell>
@@ -176,10 +181,12 @@ export default async function SystemPage() {
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text size="2" color="gray">{timeAgo(lastFetch)}</Text>
+                      <Text as="span" size="2" color="gray">
+                        <time dateTime={lastFetch ?? ''}>{timeAgo(lastFetch)}</time>
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text size="2" color="gray">{changes}</Text>
+                      <Text as="span" size="2" color="gray">{changes}</Text>
                     </Table.Cell>
                     <Table.Cell justify="end">
                       <TriggerButton label="Run" sourceId={source.id} />
@@ -195,13 +202,13 @@ export default async function SystemPage() {
       {/* Recent Changes */}
       <Card>
         <Box px="4" pt="4" pb="3">
-          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
+          <Heading as="h2" size="1" weight="bold" color="gray" className="uppercase tracking-wide">
             Recent Changes
-          </Text>
+          </Heading>
         </Box>
         <Box px="4" pb="4">
           {!recentChanges || recentChanges.length === 0 ? (
-            <Text size="2" color="gray" className="italic py-4 text-center block">
+            <Text as="span" size="2" color="gray" className="italic py-4 text-center block">
               No changes recorded yet
             </Text>
           ) : (
@@ -215,10 +222,10 @@ export default async function SystemPage() {
                       <Badge color={color} variant="soft" size="1">
                         {c.severity ?? 'unknown'}
                       </Badge>
-                      <Text size="2">{src?.name ?? '—'}</Text>
+                      <Text as="span" size="2">{src?.name ?? '—'}</Text>
                     </Flex>
-                    <Text size="1" color="gray">
-                      {timeAgo(c.detected_at)}
+                    <Text as="span" size="1" color="gray">
+                      <time dateTime={c.detected_at}>{timeAgo(c.detected_at)}</time>
                     </Text>
                   </Flex>
                 )
@@ -226,7 +233,7 @@ export default async function SystemPage() {
             </Flex>
           )}
           <Separator size="4" className="mt-4 mb-3" />
-          <Text size="1" color="gray">
+          <Text as="span" size="1" color="gray">
             Total changes: <strong>{Object.values(countBySource).reduce((a, b) => a + b, 0)}</strong>
           </Text>
         </Box>

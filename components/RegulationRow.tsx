@@ -32,11 +32,11 @@ export function RegulationRow({ entity, domainSlug, serviceTags, className }: Re
   return (
     <Link
       href={`/library/${domainSlug}/${entity.id}`}
-      className={cn('block px-4 py-3 hover:bg-[var(--gray-a2)] transition-colors', className)}
+      className={cn('block px-4 py-3 hover:bg-[var(--cedar-card-hover)] transition-colors', className)}
     >
       <Flex align="start" justify="between" gap="3">
         <Flex direction="column" gap="1" className="min-w-0 flex-1">
-          <Text as="span" size="2" weight="medium" className="line-clamp-2 text-[var(--gray-12)]">{entity.name}</Text>
+          <Text as="span" size="2" weight="medium" className="line-clamp-2 text-[var(--cedar-text-primary)]">{entity.name}</Text>
           {entity.citation && (
             <Text as="span" size="1" color="gray">{entity.citation}</Text>
           )}

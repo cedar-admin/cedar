@@ -1,9 +1,12 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
 import { Badge, Callout, Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { timeAgo } from '@/lib/format'
+
+export const metadata: Metadata = { title: 'Review Queue — Cedar Admin' }
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -71,15 +74,15 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <Heading size="6" weight="bold">Review Queue</Heading>
-          <Text size="2" color="gray" className="mt-1 block">
+          <Heading as="h1" size="6" weight="bold">Review Queue</Heading>
+          <Text as="span" size="2" color="gray" className="mt-1 block">
             Changes requiring attorney review before delivery to practices
           </Text>
         </div>
         <Flex align="center" gap="3">
           {criticalCount > 0 && (
             <Badge color="red" variant="soft" className="gap-1.5">
-              <span className="w-1.5 h-1.5 bg-[var(--red-9)] rounded-full animate-pulse" />
+              <span className="w-1.5 h-1.5 bg-[var(--cedar-status-dot-error)] rounded-full animate-pulse" aria-hidden="true" />
               {criticalCount} Critical — 4h SLA
             </Badge>
           )}
@@ -92,20 +95,20 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
       </Flex>
 
       {/* Filter tabs */}
-      <div className="flex items-center gap-1 border-b border-[var(--gray-6)]">
+      <div className="flex items-center gap-1 border-b border-[var(--cedar-border-subtle)]">
         {TABS.map((tab) => (
           <Link
             key={tab.value}
             href={tab.value === 'pending' ? '/reviews' : `/reviews?filter=${tab.value}`}
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               filter === tab.value
-                ? 'border-[var(--accent-9)] text-[var(--gray-12)]'
-                : 'border-transparent text-[var(--gray-11)] hover:text-[var(--gray-12)] hover:border-[var(--gray-6)]'
+                ? 'border-[var(--cedar-interactive-focus)] text-[var(--cedar-text-primary)]'
+                : 'border-transparent text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] hover:border-[var(--cedar-border-subtle)]'
             }`}
           >
             {tab.label}
             {filter === tab.value && (
-              <span className="ml-2 text-xs text-[var(--gray-11)]">({changes.length})</span>
+              <span className="ml-2 text-xs text-[var(--cedar-text-secondary)]">({changes.length})</span>
             )}
           </Link>
         ))}
@@ -113,7 +116,7 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
 
       {error && (
         <Callout.Root color="red">
-          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Icon><i className="ri-error-warning-line text-base" aria-hidden="true" /></Callout.Icon>
           <Callout.Text>Failed to load queue: {error.message}</Callout.Text>
         </Callout.Root>
       )}
@@ -123,13 +126,13 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
         <Card>
           <Box p="4">
             <Flex direction="column" align="center" justify="center" py="9" className="text-center">
-              <div className="w-12 h-12 bg-[var(--green-a3)] flex items-center justify-center mx-auto mb-4">
-                <i className="ri-checkbox-circle-fill text-2xl text-[var(--green-11)]" />
+              <div className="w-12 h-12 bg-[var(--cedar-success-bg)] flex items-center justify-center mx-auto mb-4">
+                <i className="ri-checkbox-circle-fill text-2xl text-[var(--cedar-success-text)]" aria-hidden="true" />
               </div>
-              <Text size="3" weight="bold" className="mb-1 block">
+              <Text as="span" size="3" weight="bold" className="mb-1 block">
                 {filter === 'pending' ? 'Queue is clear' : `No ${filter} changes`}
               </Text>
-              <Text size="2" color="gray">
+              <Text as="span" size="2" color="gray">
                 {filter === 'pending'
                   ? 'No changes are awaiting review. Check back after the next monitoring run.'
                   : `No changes with status "${filter}" found.`}
@@ -143,33 +146,33 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
       {changes.length > 0 && (
         <Card>
           <Box p="0">
-            <div className="divide-y divide-[var(--gray-6)]">
+            <div className="divide-y divide-[var(--cedar-border-subtle)]">
               {changes.map((change) => {
                 const sourceName = change.sources?.name ?? 'Unknown Source'
                 return (
                   <Link
                     key={change.id}
                     href={`/reviews/${change.id}`}
-                    className="flex items-center gap-4 px-4 py-3 hover:bg-[var(--gray-a2)] transition-colors"
+                    className="flex items-center gap-4 px-4 py-3 hover:bg-[var(--cedar-card-hover)] transition-colors"
                   >
                     <SeverityBadge severity={change.severity} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[var(--gray-12)] line-clamp-1">
+                      <p className="text-sm font-medium text-[var(--cedar-text-primary)] line-clamp-1">
                         {change.summary ?? (
-                          <span className="text-[var(--gray-11)] italic">No summary available</span>
+                          <span className="text-[var(--cedar-text-secondary)] italic">No summary available</span>
                         )}
                       </p>
-                      <p className="text-xs text-[var(--gray-11)] mt-0.5">
+                      <p className="text-xs text-[var(--cedar-text-secondary)] mt-0.5">
                         {sourceName} · {change.jurisdiction ?? 'FL'}
                       </p>
                     </div>
                     {filter === 'all' && (
                       <StatusBadge status={change.review_status} />
                     )}
-                    <span className="text-xs text-[var(--gray-11)] shrink-0">
-                      {timeAgo(change.detected_at)}
+                    <span className="text-xs text-[var(--cedar-text-secondary)] shrink-0">
+                      <time dateTime={change.detected_at}>{timeAgo(change.detected_at)}</time>
                     </span>
-                    <i className="ri-arrow-right-s-line text-[var(--gray-11)]" />
+                    <i className="ri-arrow-right-s-line text-[var(--cedar-text-secondary)]" aria-hidden="true" />
                   </Link>
                 )
               })}
@@ -180,7 +183,7 @@ export default async function ReviewQueuePage({ searchParams }: Props) {
 
       {/* Review rules reference */}
       <Callout.Root>
-        <Callout.Icon><i className="ri-information-line text-base" /></Callout.Icon>
+        <Callout.Icon><i className="ri-information-line text-base" aria-hidden="true" /></Callout.Icon>
         <Callout.Text>
           <strong className="font-semibold">Review Rules:</strong>{' '}
           <strong>Critical &amp; High</strong> → attorney review required before delivery.{' '}

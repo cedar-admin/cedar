@@ -41,17 +41,17 @@ export function DataList({
   return (
     <Card>
       <Box p="0">
-        <div className="divide-y divide-[var(--gray-6)]">
+        <div className="divide-y divide-[var(--cedar-border-subtle)]">
           {items.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--gray-a2)] transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--cedar-card-hover)] transition-colors"
             >
               <SeverityBadge severity={item.severity} />
               <div className="flex-1 min-w-0">
-                <Text as="span" size="2" className="line-clamp-1 text-[var(--gray-12)]">
-                  {item.title || <span className="text-[var(--gray-9)] italic">No summary available</span>}
+                <Text as="span" size="2" className="line-clamp-1 text-[var(--cedar-text-primary)]">
+                  {item.title || <span className="text-[var(--cedar-text-muted)] italic">No summary available</span>}
                 </Text>
                 {item.subtitle && (
                   <Text as="span" size="1" color="gray" className="mt-0.5">{item.subtitle}</Text>

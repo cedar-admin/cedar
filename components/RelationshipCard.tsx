@@ -40,7 +40,7 @@ export function RelationshipCard({ relationship, domainSlug }: RelationshipCardP
               <ConfidenceBadge confidence={relationship.confidence} />
             </Flex>
             <Text as="span" size="2" weight="medium"
-              className="group-hover:text-[var(--accent-11)] transition-colors line-clamp-2 text-[var(--gray-12)]">
+              className="group-hover:text-[var(--cedar-accent-text)] transition-colors line-clamp-2 text-[var(--cedar-text-primary)]">
               {relationship.target.name}
             </Text>
             {relationship.target.citation && (

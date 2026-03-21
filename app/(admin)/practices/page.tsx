@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import { createServerClient } from '../../../lib/db/client'
 import { Callout, Card, Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { PracticesTable } from '@/components/admin/PracticesTable'
 import type { Database } from '@/lib/db/types'
+
+export const metadata: Metadata = { title: 'Practices — Cedar Admin' }
 
 export const dynamic = 'force-dynamic'
 
@@ -34,8 +37,8 @@ export default async function PracticesPage() {
     <Flex direction="column" gap="6">
       {/* Header */}
       <div>
-        <Heading size="6" weight="bold">Practices</Heading>
-        <Text size="2" color="gray" className="mt-1 block">
+        <Heading as="h1" size="6" weight="bold">Practices</Heading>
+        <Text as="span" size="2" color="gray" className="mt-1 block">
           All registered practices — {practices.length} active
         </Text>
       </div>
@@ -43,7 +46,7 @@ export default async function PracticesPage() {
       {/* Error state */}
       {error && (
         <Callout.Root color="red">
-          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Icon><i className="ri-error-warning-line text-base" aria-hidden="true" /></Callout.Icon>
           <Callout.Text>Failed to load practices: {error.message}</Callout.Text>
         </Callout.Root>
       )}
@@ -53,8 +56,8 @@ export default async function PracticesPage() {
         <Card>
           <Box p="4">
             <Flex direction="column" align="center" justify="center" py="9" className="text-center">
-              <i className="ri-building-line text-3xl text-[var(--gray-11)] mb-2" />
-              <Text size="2" color="gray">No practices registered yet.</Text>
+              <i className="ri-building-line text-3xl text-[var(--cedar-text-secondary)] mb-2" aria-hidden="true" />
+              <Text as="span" size="2" color="gray">No practices registered yet.</Text>
             </Flex>
           </Box>
         </Card>
