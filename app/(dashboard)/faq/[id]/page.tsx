@@ -140,15 +140,15 @@ function renderMarkdown(text: string) {
   for (const line of lines) {
     if (line.startsWith('**') && line.endsWith('**') && line.slice(2, -2).length > 0) {
       elements.push(
-        <h4 key={key++} className="text-sm font-semibold text-[var(--gray-12)] mt-5 mb-1.5 first:mt-0">
+        <strong key={key++} className="block text-sm font-semibold text-[var(--cedar-text-primary)] mt-5 mb-1.5 first:mt-0">
           {line.slice(2, -2)}
-        </h4>
+        </strong>
       )
     } else if (line.startsWith('- ')) {
       const content = line.slice(2)
       const parts = content.split(/(\*\*[^*]+\*\*)/)
       elements.push(
-        <li key={key++} className="text-sm text-[var(--gray-12)] ml-4 mb-1 list-disc">
+        <li key={key++} className="text-sm text-[var(--cedar-text-primary)] ml-4 mb-1 list-disc">
           {parts.map((p, i) =>
             p.startsWith('**') && p.endsWith('**') ? (
               <strong key={i}>{p.slice(2, -2)}</strong>
@@ -161,7 +161,7 @@ function renderMarkdown(text: string) {
     } else {
       const parts = line.split(/(\*\*[^*]+\*\*)/)
       elements.push(
-        <p key={key++} className="text-sm text-[var(--gray-12)] leading-relaxed">
+        <p key={key++} className="text-sm text-[var(--cedar-text-primary)] leading-relaxed">
           {parts.map((p, i) =>
             p.startsWith('**') && p.endsWith('**') ? (
               <strong key={i}>{p.slice(2, -2)}</strong>
@@ -176,13 +176,13 @@ function renderMarkdown(text: string) {
 }
 
 function DifficultyBadge({ difficulty }: { difficulty: string }) {
-  const map: Record<string, string> = {
-    Straightforward: 'text-green-700 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800',
-    Moderate: 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950 dark:border-yellow-800',
-    Complex: 'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800',
+  const colorMap: Record<string, 'green' | 'yellow' | 'red'> = {
+    Straightforward: 'green',
+    Moderate: 'yellow',
+    Complex: 'red',
   }
   return (
-    <Badge variant="outline" className={`text-xs ${map[difficulty] ?? ''}`}>
+    <Badge variant="outline" color={colorMap[difficulty] ?? 'gray'}>
       {difficulty}
     </Badge>
   )
@@ -192,6 +192,12 @@ function DifficultyBadge({ difficulty }: { difficulty: string }) {
 
 interface Props {
   params: Promise<{ id: string }>
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params
+  const faq = MOCK_FAQS.find((f) => f.id === id)
+  return { title: faq ? `${faq.question.slice(0, 60)}… — Cedar` : 'FAQ — Cedar' }
 }
 
 export default async function FaqDetailPage({ params }: Props) {
@@ -210,30 +216,32 @@ export default async function FaqDetailPage({ params }: Props) {
       {/* Back */}
       <Link
         href="/faq"
-        className="inline-flex items-center gap-1.5 text-sm text-[var(--gray-11)] hover:text-[var(--gray-12)] mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] mb-6 transition-colors"
       >
-        <i className="ri-arrow-left-line" />
+        <i className="ri-arrow-left-line" aria-hidden="true" />
         Regulatory FAQ
       </Link>
 
       {/* Header */}
       <Box mb="6">
         <Flex align="center" gap="2" mb="3" wrap="wrap">
-          <Badge variant="soft" className="text-xs">{faq.topic}</Badge>
-          <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.subtopic}</Badge>
-          <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.jurisdiction}</Badge>
+          <Badge variant="soft" color="gray" className="text-xs">{faq.topic}</Badge>
+          <Badge variant="outline" color="gray" className="text-xs">{faq.subtopic}</Badge>
+          <Badge variant="outline" color="gray" className="text-xs">{faq.jurisdiction}</Badge>
           <DifficultyBadge difficulty={faq.difficulty} />
           {faq.attorneyReviewed && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 px-2 py-0.5">
-              <i className="ri-shield-check-fill text-xs" />
+            <Badge variant="soft" color="purple" className="text-xs">
+              <i className="ri-shield-check-fill text-xs" aria-hidden="true" />
               Attorney Reviewed
-            </span>
+            </Badge>
           )}
         </Flex>
-        <Heading size="5" weight="bold" as="h1">{faq.question}</Heading>
+        <Heading as="h1" size="6" weight="bold">{faq.question}</Heading>
         <Text size="1" color="gray" as="p" mt="2">
           Last reviewed{' '}
-          {new Date(faq.lastReviewed).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+          <time dateTime={faq.lastReviewed}>
+            {new Date(faq.lastReviewed).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+          </time>
           {faq.reviewedBy && ` · ${faq.reviewedBy}`}
         </Text>
       </Box>
@@ -241,7 +249,7 @@ export default async function FaqDetailPage({ params }: Props) {
       <div className="grid grid-cols-3 gap-6">
         {/* Answer */}
         <div className="col-span-2 space-y-4">
-          <Card>
+          <Card variant="surface">
             <Box p="5">
               {renderMarkdown(faq.answer)}
             </Box>
@@ -249,11 +257,11 @@ export default async function FaqDetailPage({ params }: Props) {
 
           {/* Custom disclaimer if present */}
           {faq.disclaimer && (
-            <Callout.Root color="amber" variant="surface" className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
+            <Callout.Root color="amber" variant="surface">
               <Callout.Icon>
-                <i className="ri-error-warning-line text-amber-600 dark:text-amber-400 text-base" />
+                <i className="ri-error-warning-line text-base" aria-hidden="true" />
               </Callout.Icon>
-              <Callout.Text className="text-amber-800 dark:text-amber-300 text-xs">
+              <Callout.Text className="text-xs">
                 {faq.disclaimer}
               </Callout.Text>
             </Callout.Root>
@@ -266,21 +274,19 @@ export default async function FaqDetailPage({ params }: Props) {
         <aside className="space-y-4">
           {/* Source regulations */}
           {sourceRegs.length > 0 && (
-            <Card>
+            <Card variant="surface">
               <Box px="4" pt="4" pb="3">
-                <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                  Source Regulations
-                </Text>
+                <Heading as="h2" size="2" weight="bold">Source Regulations</Heading>
               </Box>
               <Box p="4" pt="0">
                 <Flex direction="column" gap="3">
                   {sourceRegs.map((reg, i) => (
-                    <Box key={reg.id} pt={i > 0 ? '3' : undefined} style={i > 0 ? { borderTop: '1px solid var(--gray-6)' } : undefined}>
+                    <Box key={reg.id} pt={i > 0 ? '3' : undefined} style={i > 0 ? { borderTop: `1px solid var(--cedar-border)` } : undefined}>
                       <Link
                         href={`/library/${reg.id}`}
-                        className="text-xs font-medium text-[var(--gray-12)] hover:text-[var(--accent-9)] transition-colors flex items-start gap-1.5 group"
+                        className="text-xs font-medium text-[var(--cedar-text-primary)] hover:text-[var(--cedar-accent-text)] transition-colors flex items-start gap-1.5 group"
                       >
-                        <i className="ri-book-open-line text-[var(--gray-11)] group-hover:text-[var(--accent-9)] shrink-0 mt-0.5 transition-colors" />
+                        <i className="ri-book-open-line text-[var(--cedar-text-secondary)] group-hover:text-[var(--cedar-accent-text)] shrink-0 mt-0.5 transition-colors" aria-hidden="true" />
                         {reg.title}
                       </Link>
                     </Box>
@@ -292,15 +298,13 @@ export default async function FaqDetailPage({ params }: Props) {
 
           {/* Attorney reviewed card */}
           {faq.attorneyReviewed && (
-            <Card className="border-purple-200 dark:border-purple-800">
+            <Card variant="surface">
               <Box p="4">
                 <Flex align="center" gap="2" mb="1">
-                  <i className="ri-shield-check-fill text-purple-600 dark:text-purple-400 text-base" />
-                  <Text size="1" weight="bold" className="text-purple-700 dark:text-purple-300">
-                    Attorney Reviewed
-                  </Text>
+                  <i className="ri-shield-check-fill text-base" aria-hidden="true" />
+                  <Heading as="h2" size="2" weight="bold">Attorney Reviewed</Heading>
                 </Flex>
-                <Text size="1" color="gray" as="p">
+                <Text size="1" color="purple" as="p">
                   This answer has been reviewed by the Cedar Legal Panel for accuracy and completeness.
                   It reflects the regulatory landscape as of the review date.
                 </Text>
@@ -309,19 +313,16 @@ export default async function FaqDetailPage({ params }: Props) {
           )}
 
           {/* Ask a question prompt */}
-          <Card>
+          <Card variant="surface">
             <Box p="4">
               <Flex align="center" gap="2" mb="1">
-                <i className="ri-question-answer-line text-[var(--accent-9)] text-base" />
-                <Text size="1" weight="bold">Have a follow-up?</Text>
+                <i className="ri-question-answer-line text-base" aria-hidden="true" />
+                <Heading as="h2" size="2" weight="bold">Have a follow-up?</Heading>
               </Flex>
               <Text size="1" color="gray" as="p" mb="3">
                 Use the FAQ search to find related questions, or ask Cedar&apos;s AI assistant directly.
               </Text>
-              <Link
-                href="/faq"
-                className="text-xs text-[var(--accent-9)] hover:text-[var(--accent-10)] font-medium transition-colors"
-              >
+              <Link href="/faq" className="text-xs font-medium text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] transition-colors">
                 Browse all FAQs →
               </Link>
             </Box>

@@ -34,7 +34,7 @@ export function DomainCard({
               <Heading
                 as={headingLevel}
                 size="3"
-                className="group-hover:text-[var(--accent-11)] transition-colors line-clamp-2"
+                className="group-hover:text-[var(--cedar-accent-text)] transition-colors line-clamp-2"
               >
                 {domain.name}
               </Heading>
@@ -47,12 +47,12 @@ export function DomainCard({
             )}
             <Flex align="center" gap="4">
               <Text as="span" size="1" color="gray" className="flex items-center gap-1">
-                <i className="ri-file-list-3-line" />
+                <i className="ri-file-list-3-line" aria-hidden="true" />
                 {regulationCount.toLocaleString()} regulations
               </Text>
               {recentChangeCount > 0 && (
-                <Text as="span" size="1" className="flex items-center gap-1 text-[var(--accent-11)]">
-                  <i className="ri-refresh-line" />
+                <Text as="span" size="1" className="flex items-center gap-1 text-[var(--cedar-accent-text)]">
+                  <i className="ri-refresh-line" aria-hidden="true" />
                   {recentChangeCount} recent
                 </Text>
               )}

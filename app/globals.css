@@ -478,6 +478,36 @@
   --cedar-accent-text:    var(--green-11);        /* Accent text / icons                       */
   --cedar-accent-solid:   var(--green-9);         /* Accent solid fill                         */
   --cedar-accent-border:  var(--green-6);         /* Accent border                             */
+
+  /* ── Border convenience alias ── */
+  --cedar-border:         var(--gray-6);          /* Default border — alias for cedar-border-subtle */
+
+  /* ── Surface convenience alias ── */
+  --cedar-surface:        var(--color-surface);   /* Alias for cedar-surface-bg                */
+
+  /* ── Brand primary (green accent, used sparingly for brand moments) ── */
+  --cedar-brand-primary:  var(--green-9);         /* Brand-moment accent fill                  */
+
+  /* ── Interactive focus (active card borders, selected rings) ── */
+  --cedar-interactive-focus: var(--gray-8);       /* Active/focused border ring                */
+
+  /* ── Diff viewer tokens (DiffViewer component) ── */
+  --cedar-diff-added-bg:      var(--green-a3);    /* Added line background                     */
+  --cedar-diff-added-text:    var(--green-11);    /* Added line text                           */
+  --cedar-diff-added-border:  var(--green-6);     /* Added line border                         */
+  --cedar-diff-removed-bg:    var(--red-a3);      /* Removed line background                   */
+  --cedar-diff-removed-text:  var(--red-11);      /* Removed line text                         */
+  --cedar-diff-removed-border: var(--red-6);      /* Removed line border                       */
+
+  /* ── Filter pill active state (severity filters, practice type filters) ── */
+  --cedar-filter-active-bg:     var(--gray-12);   /* Active filter pill background             */
+  --cedar-filter-active-text:   var(--gray-1);    /* Active filter pill text (inverted)        */
+  --cedar-filter-active-border: var(--gray-12);   /* Active filter pill border                 */
+
+  /* ── Status indicator dots ── */
+  --cedar-status-dot-success:  var(--green-9);    /* Green dot — active / healthy              */
+  --cedar-status-dot-warning:  var(--amber-9);    /* Amber dot — warning / degraded            */
+  --cedar-status-dot-error:    var(--red-9);      /* Red dot — error / critical                */
 }
 
 

@@ -5,7 +5,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { RegulationRow } from '@/components/RegulationRow'
 import { EmptyState } from '@/components/EmptyState'
-import { Badge, Button, TextField, Flex, Box, Heading, Text } from '@radix-ui/themes'
+import { Badge, Button, TextField, Flex, Box, Heading, Text, Link as RadixLink } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,6 +20,13 @@ interface Props {
     type?: string
     status?: string
   }>
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+  const supabase = createServerClient()
+  const { data: domain } = await supabase.from('kg_domains').select('name').eq('slug', slug).maybeSingle()
+  return { title: domain ? `${domain.name} — Cedar` : 'Regulation Library — Cedar' }
 }
 
 export default async function CategoryDetailPage({ params, searchParams }: Props) {
@@ -174,22 +181,26 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
   return (
     <Flex direction="column" gap="6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-[var(--gray-11)]">
-        {breadcrumbs.map((crumb, i) => (
-          <span key={crumb.href} className="flex items-center gap-1.5">
-            {i > 0 && <i className="ri-arrow-right-s-line text-xs" />}
-            <Link href={crumb.href} className="hover:text-[var(--gray-12)] transition-colors">
-              {crumb.label}
-            </Link>
-          </span>
-        ))}
-        <i className="ri-arrow-right-s-line text-xs" />
-        <span className="text-[var(--gray-12)] font-medium truncate">{domain.name}</span>
+      <nav aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1.5 text-sm text-[var(--cedar-text-secondary)]">
+          {breadcrumbs.map((crumb, i) => (
+            <li key={crumb.href} className="flex items-center gap-1.5">
+              {i > 0 && <i className="ri-arrow-right-s-line text-xs" aria-hidden="true" />}
+              <Link href={crumb.href} className="hover:text-[var(--cedar-text-primary)] transition-colors">
+                {crumb.label}
+              </Link>
+            </li>
+          ))}
+          <li className="flex items-center gap-1.5">
+            <i className="ri-arrow-right-s-line text-xs" aria-hidden="true" />
+            <span aria-current="page" className="text-[var(--cedar-text-primary)] font-medium truncate">{domain.name}</span>
+          </li>
+        </ol>
       </nav>
 
       {/* Header */}
       <Box>
-        <Heading size="6" weight="bold">{domain.name}</Heading>
+        <Heading as="h1" size="6" weight="bold">{domain.name}</Heading>
         {domain.description && (
           <Text size="2" color="gray" as="p" mt="1">{domain.description}</Text>
         )}
@@ -203,10 +214,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
         <Flex wrap="wrap" gap="2">
           {(subDomains ?? []).map((sub) => (
             <Link key={sub.id} href={`/library/${sub.slug}`}>
-              <Badge
-                variant="outline"
-                className="text-xs hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)] transition-colors cursor-pointer"
-              >
+              <Badge variant="outline" color="gray" className="text-xs cursor-pointer">
                 {sub.name}
               </Badge>
             </Link>
@@ -218,9 +226,12 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
       <div className="flex flex-col sm:flex-row gap-3">
         <form className="flex-1" action={`/library/${slug}`}>
           <div className="relative">
-            <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-[var(--gray-11)]" style={{ zIndex: 1 }} />
+            <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-[var(--cedar-text-secondary)]" style={{ zIndex: 1 }} aria-hidden="true" />
+            <label htmlFor="regulation-search" className="sr-only">Search regulations</label>
             <TextField.Root
+              id="regulation-search"
               name="q"
+              type="search"
               defaultValue={q}
               placeholder="Search regulations..."
               style={{ paddingLeft: '2.25rem' }}
@@ -232,8 +243,8 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
         </form>
         <Flex gap="2">
           <Link href={buildUrl({ sort: sort === 'name' ? 'date' : 'name', page: '1' })}>
-            <Button variant="outline" size="1" className="text-xs gap-1">
-              <i className={sort === 'name' ? 'ri-sort-alpha-asc' : 'ri-sort-number-desc'} />
+            <Button variant="soft" color="gray" highContrast size="1" className="text-xs gap-1">
+              <i className={sort === 'name' ? 'ri-sort-alpha-asc' : 'ri-sort-number-desc'} aria-hidden="true" />
               {sort === 'name' ? 'A-Z' : 'Newest'}
             </Button>
           </Link>
@@ -245,25 +256,28 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
         <Flex align="center" gap="2">
           <Text size="1" color="gray">{totalCount} results</Text>
           {q && (
-            <Badge variant="soft" className="text-xs gap-1">
+            <Badge variant="soft" color="gray" size="1">
               &quot;{q}&quot;
-              <Link href={buildUrl({ q: '', page: '1' })} className="hover:text-[var(--gray-12)]">
-                <i className="ri-close-line" />
+              <Link href={buildUrl({ q: '', page: '1' })} className="ml-1">
+                <i className="ri-close-line" aria-hidden="true" />
               </Link>
             </Badge>
           )}
-          <Link
+          <RadixLink
             href={`/library/${slug}`}
-            className="text-xs text-[var(--accent-9)] hover:underline"
+            color="gray"
+            highContrast
+            underline="always"
+            asChild
           >
-            Clear all
-          </Link>
+            <Link href={`/library/${slug}`}>Clear all</Link>
+          </RadixLink>
         </Flex>
       )}
 
       {/* Entity list */}
       {(entities ?? []).length > 0 ? (
-        <div className="divide-y divide-[var(--gray-6)] border border-[var(--gray-6)] rounded-md overflow-hidden">
+        <div className="divide-y divide-[var(--cedar-border)] border border-[var(--cedar-border)] rounded-md overflow-hidden">
           {(entities ?? []).map((entity) => (
             <RegulationRow
               key={entity.id}
@@ -290,14 +304,14 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
           <Flex gap="2">
             {safePage > 1 && (
               <Link href={buildUrl({ page: String(safePage - 1) })}>
-                <Button variant="outline" size="1">
+                <Button variant="soft" color="gray" highContrast size="1">
                   Previous
                 </Button>
               </Link>
             )}
             {safePage < totalPages && (
               <Link href={buildUrl({ page: String(safePage + 1) })}>
-                <Button variant="outline" size="1">
+                <Button variant="soft" color="gray" highContrast size="1">
                   Next
                 </Button>
               </Link>

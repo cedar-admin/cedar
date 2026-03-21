@@ -15,6 +15,13 @@ interface Props {
   params: Promise<{ slug: string; id: string }>
 }
 
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params
+  const supabase = createServerClient()
+  const { data } = await supabase.from('kg_entities').select('name').eq('id', id).maybeSingle()
+  return { title: data ? `${data.name} — Cedar` : 'Regulation — Cedar' }
+}
+
 export default async function RegulationDetailPage({ params }: Props) {
   const { role } = await getLayoutData()
   const isGated = role === 'monitor'
@@ -140,47 +147,50 @@ export default async function RegulationDetailPage({ params }: Props) {
       entity_type: '',
       citation: null,
     },
-    // Flip the relationship for display — incoming means the *other* entity is the source
     rel_type: r.rel_type,
   }))
 
   return (
     <Flex direction="column" gap="6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-[var(--gray-11)]">
-        {breadcrumbs.map((crumb, i) => (
-          <span key={crumb.href} className="flex items-center gap-1.5">
-            {i > 0 && <i className="ri-arrow-right-s-line text-xs" />}
-            <Link href={crumb.href} className="hover:text-[var(--gray-12)] transition-colors">
-              {crumb.label}
-            </Link>
-          </span>
-        ))}
-        <i className="ri-arrow-right-s-line text-xs" />
-        <span className="text-[var(--gray-12)] font-medium truncate max-w-xs">{entity.name}</span>
+      <nav aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1.5 text-sm text-[var(--cedar-text-secondary)]">
+          {breadcrumbs.map((crumb, i) => (
+            <li key={crumb.href} className="flex items-center gap-1.5">
+              {i > 0 && <i className="ri-arrow-right-s-line text-xs" aria-hidden="true" />}
+              <Link href={crumb.href} className="hover:text-[var(--cedar-text-primary)] transition-colors">
+                {crumb.label}
+              </Link>
+            </li>
+          ))}
+          <li className="flex items-center gap-1.5">
+            <i className="ri-arrow-right-s-line text-xs" aria-hidden="true" />
+            <span aria-current="page" className="text-[var(--cedar-text-primary)] font-medium truncate max-w-xs">{entity.name}</span>
+          </li>
+        </ol>
       </nav>
 
       {/* Back link */}
       <Link
         href={`/library/${slug}`}
-        className="inline-flex items-center gap-1.5 text-sm text-[var(--gray-11)] hover:text-[var(--gray-12)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] transition-colors"
       >
-        <i className="ri-arrow-left-line" />
+        <i className="ri-arrow-left-line" aria-hidden="true" />
         Back to {domain?.name ?? 'category'}
       </Link>
 
       {/* Badge row */}
       <Flex wrap="wrap" align="center" gap="2">
         {entity.entity_type && (
-          <Badge variant="soft">{capitalize(entity.entity_type.replace(/_/g, ' '))}</Badge>
+          <Badge variant="soft" color="gray">{capitalize(entity.entity_type.replace(/_/g, ' '))}</Badge>
         )}
         {entity.document_type && (
-          <Badge variant="outline">{entity.document_type.replace(/_/g, ' ')}</Badge>
+          <Badge variant="outline" color="gray">{entity.document_type.replace(/_/g, ' ')}</Badge>
         )}
-        <Badge variant="outline">{entity.jurisdiction}</Badge>
+        <Badge variant="outline" color="gray">{entity.jurisdiction}</Badge>
         <AuthorityBadge level={entity.authority_level} />
         {entity.status && (
-          <Badge variant="outline">{capitalize(entity.status)}</Badge>
+          <Badge variant="outline" color="gray">{capitalize(entity.status)}</Badge>
         )}
       </Flex>
 
@@ -191,20 +201,26 @@ export default async function RegulationDetailPage({ params }: Props) {
       <Flex wrap="wrap" align="center" gap="4">
         {entity.citation && (
           <Text size="2" color="gray" className="flex items-center gap-1">
-            <i className="ri-file-text-line" />
+            <i className="ri-file-text-line" aria-hidden="true" />
             {entity.citation}
           </Text>
         )}
         {entity.effective_date && (
           <Text size="2" color="gray" className="flex items-center gap-1">
-            <i className="ri-calendar-check-line" />
-            Effective: {new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            <i className="ri-calendar-check-line" aria-hidden="true" />
+            Effective:{' '}
+            <time dateTime={entity.effective_date}>
+              {new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            </time>
           </Text>
         )}
         {entity.publication_date && (
           <Text size="2" color="gray" className="flex items-center gap-1">
-            <i className="ri-calendar-line" />
-            Published: {new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            <i className="ri-calendar-line" aria-hidden="true" />
+            Published:{' '}
+            <time dateTime={entity.publication_date}>
+              {new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+            </time>
           </Text>
         )}
       </Flex>

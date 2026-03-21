@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { Button, Card, Box, Flex, Text, Badge } from '@radix-ui/themes'
+import { Tabs, Box, Card, Flex, Text, Badge, Heading, Table } from '@radix-ui/themes'
 import { ContentReader } from '@/components/ContentReader'
 import { RelationshipCard } from '@/components/RelationshipCard'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
@@ -11,9 +10,6 @@ import { EmptyState } from '@/components/EmptyState'
 import { capitalize, formatDate } from '@/lib/format'
 import { RELATIONSHIP_TYPE_LABEL } from '@/lib/ui-constants'
 import type { Json } from '@/lib/db/types'
-
-const TABS = ['Overview', 'Reader', 'Timeline', 'Related'] as const
-type Tab = (typeof TABS)[number]
 
 interface Entity {
   id: string
@@ -118,62 +114,56 @@ export function RegulationTabs({
   practiceRelevance,
   domainSlug,
 }: RegulationTabsProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('Overview')
+  const relCount = outgoingRelationships.length + incomingRelationships.length
 
   return (
-    <div>
-      {/* Tab bar */}
-      <div className="flex gap-1 border-b border-[var(--gray-6)] mb-6">
-        {TABS.map((tab) => (
-          <Button
-            key={tab}
-            variant="ghost"
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 h-auto rounded-none text-sm font-medium border-b-2 -mb-px transition-interactive ${
-              activeTab === tab
-                ? 'border-[var(--accent-9)] text-[var(--gray-12)] hover:bg-transparent'
-                : 'border-transparent text-[var(--gray-11)] hover:text-[var(--gray-12)] hover:bg-transparent'
-            }`}
-          >
-            {tab}
-            {tab === 'Related' && (outgoingRelationships.length + incomingRelationships.length) > 0 && (
-              <Badge variant="soft" className="ml-1.5 text-xs px-1.5 py-0">
-                {outgoingRelationships.length + incomingRelationships.length}
-              </Badge>
-            )}
-            {tab === 'Timeline' && versions.length > 0 && (
-              <Badge variant="soft" className="ml-1.5 text-xs px-1.5 py-0">
-                {versions.length}
-              </Badge>
-            )}
-          </Button>
-        ))}
-      </div>
+    <Tabs.Root defaultValue="overview">
+      <Tabs.List>
+        <Tabs.Trigger value="overview">
+          <Text as="span">Overview</Text>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="reader">
+          <Text as="span">Reader</Text>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="timeline">
+          <Text as="span">Timeline</Text>
+          {versions.length > 0 && (
+            <Badge variant="soft" color="gray" ml="1" size="1">{versions.length}</Badge>
+          )}
+        </Tabs.Trigger>
+        <Tabs.Trigger value="related">
+          <Text as="span">Related</Text>
+          {relCount > 0 && (
+            <Badge variant="soft" color="gray" ml="1" size="1">{relCount}</Badge>
+          )}
+        </Tabs.Trigger>
+      </Tabs.List>
 
-      {/* Tab content */}
-      {activeTab === 'Overview' && (
-        <OverviewTab
-          entity={entity}
-          classificationLog={classificationLog}
-          serviceLines={serviceLines}
-          domains={domains}
-          practiceRelevance={practiceRelevance}
-        />
-      )}
-      {activeTab === 'Reader' && (
-        <ReaderTab entity={entity} versions={versions} />
-      )}
-      {activeTab === 'Timeline' && (
-        <TimelineTab versions={versions} classificationLog={classificationLog} />
-      )}
-      {activeTab === 'Related' && (
-        <RelatedTab
-          outgoing={outgoingRelationships}
-          incoming={incomingRelationships}
-          domainSlug={domainSlug}
-        />
-      )}
-    </div>
+      <Box pt="4">
+        <Tabs.Content value="overview">
+          <OverviewTab
+            entity={entity}
+            classificationLog={classificationLog}
+            serviceLines={serviceLines}
+            domains={domains}
+            practiceRelevance={practiceRelevance}
+          />
+        </Tabs.Content>
+        <Tabs.Content value="reader">
+          <ReaderTab entity={entity} versions={versions} />
+        </Tabs.Content>
+        <Tabs.Content value="timeline">
+          <TimelineTab versions={versions} classificationLog={classificationLog} />
+        </Tabs.Content>
+        <Tabs.Content value="related">
+          <RelatedTab
+            outgoing={outgoingRelationships}
+            incoming={incomingRelationships}
+            domainSlug={domainSlug}
+          />
+        </Tabs.Content>
+      </Box>
+    </Tabs.Root>
   )
 }
 
@@ -197,11 +187,9 @@ function OverviewTab({
       {/* Main content */}
       <div className="lg:col-span-2 space-y-6">
         {/* Summary */}
-        <Card>
+        <Card variant="surface">
           <Box px="4" pt="4" pb="3">
-            <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-              Summary
-            </Text>
+            <Heading as="h2" size="2" weight="bold">Summary</Heading>
           </Box>
           <Box p="4" pt="0">
             {entity.description ? (
@@ -216,55 +204,53 @@ function OverviewTab({
 
         {/* Classification audit trail */}
         {classificationLog.length > 0 && (
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Classification Audit Trail
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Classification Audit Trail</Heading>
             </Box>
             <Box p="4" pt="0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--gray-6)] text-left">
-                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Date</th>
-                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Stage</th>
-                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Confidence</th>
-                      <th className="pb-2 pr-4 font-medium text-[var(--gray-11)]">Classified By</th>
-                      <th className="pb-2 font-medium text-[var(--gray-11)]">Review</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--gray-6)]">
-                    {classificationLog.map((entry) => (
-                      <tr key={entry.id}>
-                        <td className="py-2 pr-4 text-xs text-[var(--gray-11)]">
+              <Table.Root variant="surface">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Stage</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Confidence</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Classified By</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Review</Table.ColumnHeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {classificationLog.map((entry) => (
+                    <Table.Row key={entry.id}>
+                      <Table.Cell>
+                        <time dateTime={new Date(entry.classified_at).toISOString()} className="text-xs text-[var(--cedar-text-secondary)]">
                           {formatDate(entry.classified_at)}
-                        </td>
-                        <td className="py-2 pr-4">
-                          <Badge variant="outline" className="text-xs">
-                            {entry.stage ?? 'unknown'}
+                        </time>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge variant="outline" color="gray" className="text-xs">
+                          {entry.stage ?? 'unknown'}
+                        </Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <ConfidenceBadge confidence={entry.confidence} />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text size="1" color="gray">{entry.classified_by ?? '—'}</Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {entry.needs_review ? (
+                          <Badge variant="outline" color="yellow" className="text-xs">
+                            Needs review
                           </Badge>
-                        </td>
-                        <td className="py-2 pr-4">
-                          <ConfidenceBadge confidence={entry.confidence} />
-                        </td>
-                        <td className="py-2 pr-4 text-xs text-[var(--gray-11)]">
-                          {entry.classified_by ?? '—'}
-                        </td>
-                        <td className="py-2">
-                          {entry.needs_review ? (
-                            <Badge variant="outline" className="text-xs text-yellow-700 border-yellow-200 dark:text-yellow-400 dark:border-yellow-800">
-                              Needs review
-                            </Badge>
-                          ) : (
-                            <span className="text-xs text-[var(--gray-11)]">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        ) : (
+                          <Text size="1" color="gray">—</Text>
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Root>
             </Box>
           </Card>
         )}
@@ -273,11 +259,9 @@ function OverviewTab({
       {/* Sidebar */}
       <div className="space-y-4">
         {/* Key details */}
-        <Card>
+        <Card variant="surface">
           <Box px="4" pt="4" pb="3">
-            <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-              Key Details
-            </Text>
+            <Heading as="h2" size="2" weight="bold">Key Details</Heading>
           </Box>
           <Box p="4" pt="0">
             <Flex direction="column" gap="3">
@@ -289,13 +273,21 @@ function OverviewTab({
               {entity.effective_date && (
                 <DetailRow
                   label="Effective"
-                  value={new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                  value={
+                    <time dateTime={entity.effective_date}>
+                      {new Date(entity.effective_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                    </time>
+                  }
                 />
               )}
               {entity.publication_date && (
                 <DetailRow
                   label="Published"
-                  value={new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                  value={
+                    <time dateTime={entity.publication_date}>
+                      {new Date(entity.publication_date).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                    </time>
+                  }
                 />
               )}
               {entity.classification_confidence != null && (
@@ -310,16 +302,14 @@ function OverviewTab({
 
         {/* Domains */}
         {domains.length > 0 && (
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Categories
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Categories</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex wrap="wrap" gap="1">
                 {domains.map((d, i) => (
-                  <Badge key={i} variant={d.is_primary ? 'solid' : 'outline'} className="text-xs">
+                  <Badge key={i} variant={d.is_primary ? 'solid' : 'outline'} color="gray" className="text-xs">
                     {d.domain?.name ?? 'Unknown'}
                   </Badge>
                 ))}
@@ -330,11 +320,9 @@ function OverviewTab({
 
         {/* Practice types */}
         {practiceRelevance.length > 0 && (
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Relevant Practice Types
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Relevant Practice Types</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="1">
@@ -353,11 +341,9 @@ function OverviewTab({
 
         {/* Service lines */}
         {serviceLines.length > 0 && (
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Service Lines
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Service Lines</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex wrap="wrap" gap="1">
@@ -371,20 +357,18 @@ function OverviewTab({
 
         {/* Source link */}
         {entity.external_url && (
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Original Source
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Original Source</Heading>
             </Box>
             <Box p="4" pt="0">
               <a
                 href={entity.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-9)] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm text-[var(--cedar-accent-text)] hover:underline"
               >
-                <i className="ri-external-link-line" />
+                <i className="ri-external-link-line" aria-hidden="true" />
                 View on .gov
               </a>
             </Box>
@@ -418,7 +402,7 @@ function ReaderTab({
   if (!latestContent && entity.external_url) {
     return (
       <Flex direction="column" align="center" justify="center" py="9" className="text-center space-y-4">
-        <i className="ri-file-text-line text-3xl text-[var(--gray-a6)]" />
+        <i className="ri-file-text-line text-3xl text-[var(--cedar-text-secondary)] opacity-40" aria-hidden="true" />
         <Text size="2" color="gray">
           No content snapshot available for this regulation.
         </Text>
@@ -426,9 +410,9 @@ function ReaderTab({
           href={entity.external_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-9)] hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--cedar-accent-text)] hover:underline"
         >
-          <i className="ri-external-link-line" />
+          <i className="ri-external-link-line" aria-hidden="true" />
           View original source
         </a>
       </Flex>
@@ -447,7 +431,6 @@ function TimelineTab({
   versions: Version[]
   classificationLog: ClassificationEntry[]
 }) {
-  // Merge versions and classification events into a single timeline
   type TimelineEvent = {
     date: string
     type: 'version' | 'classification'
@@ -481,22 +464,22 @@ function TimelineTab({
   return (
     <div className="relative pl-6">
       {/* Vertical line */}
-      <div className="absolute left-2 top-2 bottom-2 w-px bg-[var(--gray-6)]" />
+      <div className="absolute left-2 top-2 bottom-2 w-px bg-[var(--cedar-border)]" />
 
       <Flex direction="column" gap="6">
         {events.map((event, i) => (
           <div key={i} className="relative">
             {/* Dot */}
             <div
-              className={`absolute -left-6 top-1.5 w-3 h-3 rounded-full border-2 border-[var(--color-background)] ${
-                event.type === 'version' ? 'bg-[var(--accent-9)]' : 'bg-[var(--gray-a6)]'
+              className={`absolute -left-6 top-1.5 w-3 h-3 rounded-full border-2 border-[var(--cedar-page-bg)] ${
+                event.type === 'version' ? 'bg-[var(--cedar-status-dot-success)]' : 'bg-[var(--cedar-interactive-hover)]'
               }`}
             />
 
             <Flex direction="column" gap="1">
-              <Text size="1" color="gray">
-                {formatDate(event.date)}
-              </Text>
+              <time dateTime={new Date(event.date).toISOString()}>
+                <Text size="1" color="gray">{formatDate(event.date)}</Text>
+              </time>
 
               {event.type === 'version' && event.version && (
                 <Box>
@@ -518,7 +501,7 @@ function TimelineTab({
 
               {event.type === 'classification' && event.classification && (
                 <Flex align="center" gap="2">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" color="gray" className="text-xs">
                     {event.classification.stage ?? 'classified'}
                   </Badge>
                   <ConfidenceBadge confidence={event.classification.confidence} />
@@ -556,7 +539,6 @@ function RelatedTab({
     )
   }
 
-  // Group by relationship type
   const groupByType = (rels: Relationship[]) => {
     const groups: Record<string, Relationship[]> = {}
     for (const rel of rels) {
@@ -574,14 +556,12 @@ function RelatedTab({
     <Flex direction="column" gap="8">
       {outgoing.length > 0 && (
         <Flex direction="column" gap="4">
-          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-            Outgoing — This regulation affects
-          </Text>
+          <Heading as="h2" size="2" weight="bold">Outgoing — This regulation affects</Heading>
           {Object.entries(outGroups).map(([type, rels]) => (
             <Flex key={type} direction="column" gap="2">
-              <Text size="2" weight="medium">
+              <Heading as="h3" size="2" weight="bold">
                 {RELATIONSHIP_TYPE_LABEL[type] ?? type.replace(/_/g, ' ')} ({rels.length})
-              </Text>
+              </Heading>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rels.map((rel) => (
                   <RelationshipCard key={rel.id} relationship={rel} domainSlug={domainSlug} />
@@ -594,14 +574,12 @@ function RelatedTab({
 
       {incoming.length > 0 && (
         <Flex direction="column" gap="4">
-          <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-            Incoming — Affected by
-          </Text>
+          <Heading as="h2" size="2" weight="bold">Incoming — Affected by</Heading>
           {Object.entries(inGroups).map(([type, rels]) => (
             <Flex key={type} direction="column" gap="2">
-              <Text size="2" weight="medium">
+              <Heading as="h3" size="2" weight="bold">
                 {RELATIONSHIP_TYPE_LABEL[type] ?? type.replace(/_/g, ' ')} ({rels.length})
-              </Text>
+              </Heading>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rels.map((rel) => (
                   <RelationshipCard key={rel.id} relationship={rel} domainSlug={domainSlug} />

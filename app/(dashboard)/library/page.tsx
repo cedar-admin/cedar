@@ -4,9 +4,10 @@ import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { DomainCard } from '@/components/DomainCard'
 import { EmptyState } from '@/components/EmptyState'
 import Link from 'next/link'
-import { Flex, Heading, Text, Box } from '@radix-ui/themes'
+import { Flex, Heading, Text, Box, Grid } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
+export const metadata = { title: 'Regulation Library — Cedar' }
 
 interface Props {
   searchParams: Promise<{ practice_type?: string }>
@@ -22,7 +23,7 @@ export default async function LibraryPage({ searchParams }: Props) {
     return (
       <Flex direction="column" gap="6">
         <Box>
-          <Heading size="6" weight="bold">Regulation Library</Heading>
+          <Heading as="h1" size="6" weight="bold">Regulation Library</Heading>
           <Text size="2" color="gray" as="p" mt="1">
             Federal and Florida healthcare regulations
           </Text>
@@ -50,7 +51,6 @@ export default async function LibraryPage({ searchParams }: Props) {
     .order('sort_order')
 
   // Get regulation counts per domain
-  // Use mv_corpus_facets which has domain-level doc counts
   const domainStats: Record<string, { count: number }> = {}
 
   // When practice type filter is active, only show domains that map to that practice type
@@ -71,8 +71,6 @@ export default async function LibraryPage({ searchParams }: Props) {
     .select('id, parent_id')
     .in('parent_id', domainIds)
 
-  // Get per-domain counts efficiently: one count query per top-level domain
-  // For small number of domains (~10 L0), this is acceptable
   await Promise.all(
     (domains ?? []).map(async (domain) => {
       const childIds = (childDomains ?? [])
@@ -95,7 +93,7 @@ export default async function LibraryPage({ searchParams }: Props) {
   return (
     <Flex direction="column" gap="6">
       <Box>
-        <Heading size="6" weight="bold">Regulation Library</Heading>
+        <Heading as="h1" size="6" weight="bold">Regulation Library</Heading>
         <Text size="2" color="gray" as="p" mt="1">
           {totalEntities
             ? `${totalEntities.toLocaleString()} regulations, rules, and enforcement records`
@@ -110,8 +108,8 @@ export default async function LibraryPage({ searchParams }: Props) {
             href="/library"
             className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
               !practiceTypeSlug
-                ? 'bg-[var(--accent-9)] text-white border-[var(--accent-9)]'
-                : 'bg-[var(--color-panel)] text-[var(--gray-11)] border-[var(--gray-6)] hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)]'
+                ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
+                : 'bg-[var(--cedar-panel-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-interactive)] hover:text-[var(--cedar-text-primary)]'
             }`}
           >
             All
@@ -122,8 +120,8 @@ export default async function LibraryPage({ searchParams }: Props) {
               href={`/library?practice_type=${pt.slug}`}
               className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
                 practiceTypeSlug === pt.slug
-                  ? 'bg-[var(--accent-9)] text-white border-[var(--accent-9)]'
-                  : 'bg-[var(--color-panel)] text-[var(--gray-11)] border-[var(--gray-6)] hover:border-[var(--accent-a6)] hover:text-[var(--gray-12)]'
+                  ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
+                  : 'bg-[var(--cedar-panel-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-interactive)] hover:text-[var(--cedar-text-primary)]'
               }`}
             >
               {pt.display_name}
@@ -133,31 +131,34 @@ export default async function LibraryPage({ searchParams }: Props) {
       )}
 
       {/* Domain card grid */}
-      {(domains ?? []).length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(domains ?? []).map((domain) => {
-            const stats = domainStats[domain.id]
-            const count = stats?.count ?? 0
-            // When filtering by practice type, hide irrelevant domains
-            if (relevantDomainSlugs && !relevantDomainSlugs.has(domain.slug)) return null
-            return (
-              <DomainCard
-                key={domain.id}
-                domain={domain}
-                regulationCount={count}
-                recentChangeCount={0}
-                highestSeverity={null}
-              />
-            )
-          })}
-        </div>
-      ) : (
-        <EmptyState
-          icon="ri-book-2-line"
-          title="No categories available"
-          description="The regulation taxonomy has not been configured yet."
-        />
-      )}
+      <section aria-labelledby="browse-heading">
+        <Heading id="browse-heading" as="h2" size="3" weight="bold" mb="4">Browse by Category</Heading>
+        {(domains ?? []).length > 0 ? (
+          <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="4">
+            {(domains ?? []).map((domain) => {
+              const stats = domainStats[domain.id]
+              const count = stats?.count ?? 0
+              if (relevantDomainSlugs && !relevantDomainSlugs.has(domain.slug)) return null
+              return (
+                <DomainCard
+                  key={domain.id}
+                  domain={domain}
+                  regulationCount={count}
+                  recentChangeCount={0}
+                  highestSeverity={null}
+                  headingLevel="h3"
+                />
+              )
+            })}
+          </Grid>
+        ) : (
+          <EmptyState
+            icon="ri-book-2-line"
+            title="No categories available"
+            description="The regulation taxonomy has not been configured yet."
+          />
+        )}
+      </section>
     </Flex>
   )
 }

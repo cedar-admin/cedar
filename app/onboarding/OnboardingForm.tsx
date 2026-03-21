@@ -71,8 +71,8 @@ export function OnboardingForm({ email }: Props) {
       <Card>
         <Box px="5" pt="5" pb="4">
           <Flex align="center" gap="2" mb="1">
-            <span className="w-6 h-6 bg-[var(--accent-9)] text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
-            <Heading size="5">Set up your practice</Heading>
+            <span className="w-6 h-6 bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] text-xs font-bold flex items-center justify-center shrink-0" aria-hidden="true">1</span>
+            <Heading as="h1" size="6" weight="bold">Set up your practice</Heading>
           </Flex>
           <Text size="2" color="gray" as="p">
             Cedar monitors Florida regulatory sources for your practice.
@@ -145,9 +145,9 @@ export function OnboardingForm({ email }: Props) {
                 </Box>
               </Box>
 
-              <Button type="submit" style={{ width: '100%', marginTop: '0.5rem' }}>
+              <Button type="submit" variant="classic" color="gray" highContrast style={{ width: '100%', marginTop: '0.5rem' }}>
                 Continue
-                <i className="ri-arrow-right-line" />
+                <i className="ri-arrow-right-line" aria-hidden="true" />
               </Button>
             </Flex>
           </form>
@@ -161,8 +161,8 @@ export function OnboardingForm({ email }: Props) {
     <Card>
       <Box px="5" pt="5" pb="4">
         <Flex align="center" gap="2" mb="1">
-          <span className="w-6 h-6 bg-[var(--accent-9)] text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
-          <Heading size="5">Choose your plan</Heading>
+          <span className="w-6 h-6 bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] text-xs font-bold flex items-center justify-center shrink-0" aria-hidden="true">2</span>
+          <Heading as="h1" size="6" weight="bold">Choose your plan</Heading>
         </Flex>
         <Text size="2" color="gray" as="p">
           You can change plans at any time from settings.
@@ -179,22 +179,22 @@ export function OnboardingForm({ email }: Props) {
               onClick={() => setTier('monitor')}
               className={`h-auto text-left p-4 border rounded-none w-full justify-start transition-interactive ${
                 tier === 'monitor'
-                  ? 'border-[var(--accent-9)] bg-[var(--accent-a2)] hover:bg-[var(--accent-a2)]'
-                  : 'border-[var(--gray-6)] bg-[var(--color-panel)] hover:bg-[var(--gray-a2)]'
+                  ? 'border-[var(--cedar-interactive-focus)] bg-[var(--cedar-interactive-hover)] hover:bg-[var(--cedar-interactive-hover)]'
+                  : 'border-[var(--cedar-border)] bg-[var(--cedar-panel-bg)] hover:bg-[var(--cedar-interactive-hover)]'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-[var(--gray-12)]">Monitor</span>
+                <span className="text-sm font-semibold text-[var(--cedar-text-primary)]">Monitor</span>
                 {tier === 'monitor' && (
-                  <i className="ri-checkbox-circle-fill text-[var(--accent-9)] text-base" />
+                  <i className="ri-checkbox-circle-fill text-[var(--cedar-accent-text)] text-base" aria-hidden="true" />
                 )}
               </div>
-              <p className="text-xl font-bold text-[var(--gray-12)]">$99</p>
-              <p className="text-xs text-[var(--gray-11)] mb-3">/month</p>
+              <p className="text-xl font-bold text-[var(--cedar-text-primary)]">$99</p>
+              <p className="text-xs text-[var(--cedar-text-secondary)] mb-3">/month</p>
               <ul className="space-y-1.5">
                 {PLAN_FEATURES.monitor.map((f) => (
-                  <li key={f} className="flex items-start gap-1.5 text-xs text-[var(--gray-11)]">
-                    <i className="ri-check-line text-[var(--accent-9)] mt-0.5 shrink-0" />
+                  <li key={f} className="flex items-start gap-1.5 text-xs text-[var(--cedar-text-secondary)]">
+                    <i className="ri-check-line text-[var(--cedar-accent-text)] mt-0.5 shrink-0" aria-hidden="true" />
                     {f}
                   </li>
                 ))}
@@ -208,22 +208,22 @@ export function OnboardingForm({ email }: Props) {
               onClick={() => setTier('intelligence')}
               className={`h-auto text-left p-4 border rounded-none w-full justify-start transition-interactive ${
                 tier === 'intelligence'
-                  ? 'border-[var(--accent-9)] bg-[var(--accent-a2)] hover:bg-[var(--accent-a2)]'
-                  : 'border-[var(--gray-6)] bg-[var(--color-panel)] hover:bg-[var(--gray-a2)]'
+                  ? 'border-[var(--cedar-interactive-focus)] bg-[var(--cedar-interactive-hover)] hover:bg-[var(--cedar-interactive-hover)]'
+                  : 'border-[var(--cedar-border)] bg-[var(--cedar-panel-bg)] hover:bg-[var(--cedar-interactive-hover)]'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-[var(--gray-12)]">Intelligence</span>
+                <span className="text-sm font-semibold text-[var(--cedar-text-primary)]">Intelligence</span>
                 {tier === 'intelligence' && (
-                  <i className="ri-checkbox-circle-fill text-[var(--accent-9)] text-base" />
+                  <i className="ri-checkbox-circle-fill text-[var(--cedar-accent-text)] text-base" aria-hidden="true" />
                 )}
               </div>
-              <p className="text-xl font-bold text-[var(--gray-12)]">$199</p>
-              <p className="text-xs text-[var(--gray-11)] mb-3">/month</p>
+              <p className="text-xl font-bold text-[var(--cedar-text-primary)]">$199</p>
+              <p className="text-xs text-[var(--cedar-text-secondary)] mb-3">/month</p>
               <ul className="space-y-1.5">
                 {PLAN_FEATURES.intelligence.map((f) => (
-                  <li key={f} className="flex items-start gap-1.5 text-xs text-[var(--gray-11)]">
-                    <i className="ri-check-line text-[var(--accent-9)] mt-0.5 shrink-0" />
+                  <li key={f} className="flex items-start gap-1.5 text-xs text-[var(--cedar-text-secondary)]">
+                    <i className="ri-check-line text-[var(--cedar-accent-text)] mt-0.5 shrink-0" aria-hidden="true" />
                     {f}
                   </li>
                 ))}
@@ -236,23 +236,28 @@ export function OnboardingForm({ email }: Props) {
           <Flex gap="3">
             <Button
               type="button"
-              variant="outline"
+              variant="soft"
+              color="gray"
+              highContrast
               onClick={() => setStep(1)}
               style={{ flex: 1 }}
             >
-              <i className="ri-arrow-left-line" />
+              <i className="ri-arrow-left-line" aria-hidden="true" />
               Back
             </Button>
             <Button
               type="button"
+              variant="classic"
+              color="gray"
+              highContrast
               onClick={handleFinalSubmit}
               disabled={isPending}
               style={{ flex: 1 }}
             >
               {isPending ? (
-                <><i className="ri-loader-4-line animate-spin" /> Setting up…</>
+                <><i className="ri-loader-4-line animate-spin" aria-hidden="true" /> Setting up…</>
               ) : (
-                <>Get started <i className="ri-arrow-right-line" /></>
+                <>Get started <i className="ri-arrow-right-line" aria-hidden="true" /></>
               )}
             </Button>
           </Flex>

@@ -7,19 +7,14 @@ import { capitalize } from '@/lib/format'
 import { NotificationsForm } from '@/components/NotificationsForm'
 import type { NotificationPreferences } from '@/app/actions/settings'
 
+export const metadata = { title: 'Settings — Cedar' }
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function TierBadge({ tier }: { tier: string }) {
   const isIntelligence = tier.toLowerCase() === 'intelligence'
   return (
-    <Badge
-      variant="outline"
-      className={
-        isIntelligence
-          ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800'
-          : ''
-      }
-    >
+    <Badge variant="outline" color={isIntelligence ? 'purple' : 'gray'}>
       {capitalize(tier)}
     </Badge>
   )
@@ -29,32 +24,36 @@ function SubscriptionStatus({ status }: { status: string | null }) {
   const s = status ?? 'inactive'
   if (s === 'active' || s === 'trialing') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-        {s === 'trialing' ? 'Trialing' : 'Active'}
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--cedar-status-dot-success)]" aria-hidden="true" />
+        <Text as="span" size="2" weight="medium" color="green">
+          {s === 'trialing' ? 'Trialing' : 'Active'}
+        </Text>
       </span>
     )
   }
   if (s === 'past_due') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-yellow-700 dark:text-yellow-400">
-        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-        Past due
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--cedar-status-dot-warning)]" aria-hidden="true" />
+        <Text as="span" size="2" weight="medium" color="yellow">Past due</Text>
       </span>
     )
   }
   if (s === 'canceled') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-700 dark:text-red-400">
-        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-        Canceled
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--cedar-status-dot-error)]" aria-hidden="true" />
+        <Text as="span" size="2" weight="medium" color="red">Canceled</Text>
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--gray-11)]">
-      <span className="w-1.5 h-1.5 rounded-full bg-[var(--gray-a6)]" />
-      {s === 'inactive' ? 'No subscription' : capitalize(s)}
+    <span className="inline-flex items-center gap-1.5">
+      <span className="w-1.5 h-1.5 rounded-full bg-[var(--cedar-text-secondary)] opacity-40" aria-hidden="true" />
+      <Text as="span" size="2" weight="medium" color="gray">
+        {s === 'inactive' ? 'No subscription' : capitalize(s)}
+      </Text>
     </span>
   )
 }
@@ -89,18 +88,16 @@ export default async function SettingsPage() {
     <Flex direction="column" gap="6">
       {/* Header */}
       <Box>
-        <Heading size="6" weight="bold">Settings</Heading>
+        <Heading as="h1" size="6" weight="bold">Settings</Heading>
         <Text size="2" color="gray" as="p" mt="1">Account, notifications, and billing</Text>
       </Box>
 
       {/* Admin role card — no practice/billing info */}
       {isAdmin && (
         <div className="grid grid-cols-1 gap-5 max-w-2xl">
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Account
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Account</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -111,9 +108,7 @@ export default async function SettingsPage() {
                 <Separator size="4" />
                 <Flex align="center" justify="between">
                   <Text size="2" color="gray">Role</Text>
-                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800">
-                    Admin
-                  </Badge>
+                  <Badge variant="outline" color="orange">Admin</Badge>
                 </Flex>
               </Flex>
             </Box>
@@ -125,7 +120,7 @@ export default async function SettingsPage() {
       {!isAdmin && !practice && (
         <Callout.Root className="max-w-lg">
           <Callout.Icon>
-            <i className="ri-hospital-line text-base" />
+            <i className="ri-hospital-line text-base" aria-hidden="true" />
           </Callout.Icon>
           <Callout.Text>
             No practice configured. Contact{' '}
@@ -140,11 +135,9 @@ export default async function SettingsPage() {
       {!isAdmin && practice && (
         <div className="grid grid-cols-1 gap-5 max-w-2xl">
           {/* Practice Info */}
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Practice
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Practice</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -165,20 +158,20 @@ export default async function SettingsPage() {
                 <Separator size="4" />
                 <Flex align="center" justify="between">
                   <Text size="2" color="gray">Member Since</Text>
-                  <Text size="2">
-                    {new Date(practice.created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-                  </Text>
+                  <time dateTime={new Date(practice.created_at).toISOString()}>
+                    <Text size="2">
+                      {new Date(practice.created_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                    </Text>
+                  </time>
                 </Flex>
               </Flex>
             </Box>
           </Card>
 
           {/* Subscription */}
-          <Card id="billing">
+          <Card variant="surface" id="billing">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Subscription
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Subscription</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -189,32 +182,38 @@ export default async function SettingsPage() {
                 <Separator size="4" />
                 <Flex align="center" justify="between">
                   <Text size="2" color="gray">Renewal</Text>
-                  <Text size="2">{formatRenewal(practice.current_period_end)}</Text>
+                  {practice.current_period_end ? (
+                    <time dateTime={new Date(practice.current_period_end).toISOString()}>
+                      <Text size="2">{formatRenewal(practice.current_period_end)}</Text>
+                    </time>
+                  ) : (
+                    <Text size="2">—</Text>
+                  )}
                 </Flex>
                 <Separator size="4" />
                 <Flex align="center" justify="between">
                   <Text size="2" color="gray">Stripe Customer</Text>
-                  <Text size="2" className="font-mono text-[var(--gray-11)]">{mask(practice.stripe_customer_id)}</Text>
+                  <Text size="2" className="font-mono" color="gray">{mask(practice.stripe_customer_id)}</Text>
                 </Flex>
                 <Separator size="4" />
                 <Flex align="center" justify="between">
                   <Text size="2" color="gray">Stripe Subscription</Text>
-                  <Text size="2" className="font-mono text-[var(--gray-11)]">{mask(practice.stripe_subscription_id)}</Text>
+                  <Text size="2" className="font-mono" color="gray">{mask(practice.stripe_subscription_id)}</Text>
                 </Flex>
 
                 {/* Billing actions */}
                 <Box pt="2">
                   {practice.stripe_customer_id ? (
                     <form action={createBillingPortalSession}>
-                      <Button type="submit" variant="outline" size="1">
-                        <i className="ri-bank-card-line" />
+                      <Button type="submit" variant="soft" color="gray" highContrast size="1">
+                        <i className="ri-bank-card-line" aria-hidden="true" />
                         Manage Billing
                       </Button>
                     </form>
                   ) : (
-                    <Button variant="outline" size="1" asChild>
+                    <Button variant="soft" color="gray" highContrast size="1" asChild>
                       <Link href="/pricing">
-                        <i className="ri-arrow-up-circle-line" />
+                        <i className="ri-arrow-up-circle-line" aria-hidden="true" />
                         Upgrade Plan
                       </Link>
                     </Button>
@@ -225,11 +224,9 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Notifications */}
-          <Card id="notifications">
+          <Card variant="surface" id="notifications">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Notifications
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Notifications</Heading>
             </Box>
             <Box p="4" pt="0">
               {(() => {
@@ -247,11 +244,9 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Team Members */}
-          <Card id="team">
+          <Card variant="surface" id="team">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Team Members
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Team Members</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="4">
@@ -259,20 +254,23 @@ export default async function SettingsPage() {
                 <Box>
                   <Text size="2" weight="medium" as="p" mb="2">Invite a team member</Text>
                   <Flex gap="2">
+                    <label htmlFor="invite-email" className="sr-only">Invite email</label>
                     <TextField.Root
+                      id="invite-email"
                       type="email"
                       placeholder="colleague@practice.com"
                       style={{ flex: 1 }}
                     />
+                    <label htmlFor="invite-role" className="sr-only">Role</label>
                     <Select.Root defaultValue="monitor">
-                      <Select.Trigger className="w-32" />
+                      <Select.Trigger id="invite-role" className="w-32" />
                       <Select.Content>
                         <Select.Item value="monitor">Monitor</Select.Item>
                         <Select.Item value="intelligence">Intelligence</Select.Item>
                       </Select.Content>
                     </Select.Root>
-                    <Button variant="outline" size="1" disabled>
-                      <i className="ri-mail-send-line" />
+                    <Button variant="soft" color="gray" highContrast size="1" disabled>
+                      <i className="ri-mail-send-line" aria-hidden="true" />
                       Invite
                     </Button>
                   </Flex>
@@ -289,9 +287,9 @@ export default async function SettingsPage() {
                       <Box
                         width="7"
                         height="7"
-                        className="bg-[var(--accent-a3)] flex items-center justify-center shrink-0"
+                        className="bg-[var(--cedar-interactive-hover)] flex items-center justify-center shrink-0"
                       >
-                        <i className="ri-user-line text-[var(--accent-9)] text-sm" />
+                        <i className="ri-user-line text-[var(--cedar-text-secondary)] text-sm" aria-hidden="true" />
                       </Box>
                       <Box>
                         <Text size="2" weight="medium" as="p">
@@ -300,7 +298,7 @@ export default async function SettingsPage() {
                         <Text size="1" color="gray" as="p">Owner</Text>
                       </Box>
                     </Flex>
-                    <Badge variant="outline" className="text-xs">Owner</Badge>
+                    <Badge variant="outline" color="gray" className="text-xs">Owner</Badge>
                   </Flex>
                 </Box>
               </Flex>
@@ -308,15 +306,13 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Jurisdictions */}
-          <Card>
+          <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">
-                Jurisdictions
-              </Text>
+              <Heading as="h2" size="2" weight="bold">Jurisdictions</Heading>
             </Box>
             <Box p="4" pt="0">
               <Flex align="center" gap="2">
-                <i className="ri-map-pin-2-line text-[var(--accent-9)]" />
+                <i className="ri-map-pin-2-line text-[var(--cedar-accent-text)]" aria-hidden="true" />
                 <Text size="2" weight="medium">Florida (FL)</Text>
                 <Text size="2" color="gray">— 10 sources monitored</Text>
               </Flex>

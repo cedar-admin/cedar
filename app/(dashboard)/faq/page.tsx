@@ -5,6 +5,7 @@ import { Card, Box, Flex, Heading, Text, Badge } from '@radix-ui/themes'
 import { TextField } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
+export const metadata = { title: 'FAQ — Cedar' }
 
 const MOCK_FAQS = [
   {
@@ -100,13 +101,13 @@ const MOCK_FAQS = [
 const TOPICS = [...new Set(MOCK_FAQS.map((f) => f.topic))].sort()
 
 function DifficultyBadge({ difficulty }: { difficulty: string }) {
-  const map: Record<string, string> = {
-    Straightforward: 'text-green-700 bg-green-50 border-green-200 dark:text-green-400 dark:bg-green-950 dark:border-green-800',
-    Moderate: 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950 dark:border-yellow-800',
-    Complex: 'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800',
+  const colorMap: Record<string, 'green' | 'yellow' | 'red'> = {
+    Straightforward: 'green',
+    Moderate: 'yellow',
+    Complex: 'red',
   }
   return (
-    <Badge variant="outline" className={`text-xs ${map[difficulty] ?? ''}`}>
+    <Badge variant="outline" color={colorMap[difficulty] ?? 'gray'}>
       {difficulty}
     </Badge>
   )
@@ -116,7 +117,6 @@ export default async function FaqPage() {
   const { role } = await getLayoutData()
   const isGated = role === 'monitor'
 
-  // Group by topic for the grouped view
   const grouped = TOPICS.map((topic) => ({
     topic,
     items: MOCK_FAQS.filter((f) => f.topic === topic),
@@ -126,7 +126,7 @@ export default async function FaqPage() {
     <Flex direction="column" gap="6">
       {/* Header */}
       <Box>
-        <Heading size="6" weight="bold">Regulatory FAQ</Heading>
+        <Heading as="h1" size="6" weight="bold">Regulatory FAQ</Heading>
         <Text size="2" color="gray" as="p" mt="1">
           Plain-language answers to common Florida &amp; federal healthcare regulatory questions
         </Text>
@@ -135,8 +135,10 @@ export default async function FaqPage() {
       {/* Search shell */}
       <Flex gap="2">
         <Box flexGrow="1" style={{ position: 'relative' }}>
-          <i className="ri-search-line" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-11)' }} />
+          <i className="ri-search-line" style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--cedar-text-secondary)' }} aria-hidden="true" />
+          <label htmlFor="faq-search" className="sr-only">Search FAQs</label>
           <TextField.Root
+            id="faq-search"
             placeholder="Search questions… (Intelligence plan feature)"
             disabled={isGated}
             style={{ paddingLeft: '2.25rem' }}
@@ -145,7 +147,7 @@ export default async function FaqPage() {
       </Flex>
       {isGated && (
         <Text size="1" color="gray" mt="-3">
-          <i className="ri-lock-2-line mr-1" />
+          <i className="ri-lock-2-line mr-1" aria-hidden="true" />
           Full FAQ search is available on the Intelligence plan.
         </Text>
       )}
@@ -158,7 +160,7 @@ export default async function FaqPage() {
           {grouped.map(({ topic, items }) => (
             <Box key={topic}>
               <Flex align="center" gap="2" mb="3">
-                <Text size="2" weight="bold" color="gray">{topic}</Text>
+                <Heading as="h2" size="3" weight="bold">{topic}</Heading>
                 <Text size="1" color="gray">
                   {items.length} {items.length === 1 ? 'question' : 'questions'}
                 </Text>
@@ -166,26 +168,26 @@ export default async function FaqPage() {
               <Flex direction="column" gap="2">
                 {items.map((faq) => (
                   <Link key={faq.id} href={`/faq/${faq.id}`}>
-                    <Card className="hover:bg-[var(--gray-a2)] transition-colors cursor-pointer">
+                    <Card variant="surface" className="hover:bg-[var(--cedar-card-hover)] transition-colors">
                       <Box p="4">
                         <Flex align="start" justify="between" gap="4">
                           <Box flexGrow="1" style={{ minWidth: 0 }}>
                             <Flex align="center" gap="2" mb="1" wrap="wrap">
-                              <Badge variant="soft" className="text-xs">{faq.subtopic}</Badge>
-                              <Badge variant="outline" className="text-xs text-[var(--gray-11)]">{faq.jurisdiction}</Badge>
+                              <Badge variant="soft" color="gray" className="text-xs">{faq.subtopic}</Badge>
+                              <Badge variant="outline" color="gray" className="text-xs">{faq.jurisdiction}</Badge>
                               <DifficultyBadge difficulty={faq.difficulty} />
                               {faq.attorneyReviewed && (
-                                <span className="inline-flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 font-medium">
-                                  <i className="ri-shield-check-line text-xs" />
+                                <Badge variant="soft" color="purple" className="text-xs">
+                                  <i className="ri-shield-check-line" aria-hidden="true" />
                                   Attorney Reviewed
-                                </span>
+                                </Badge>
                               )}
                             </Flex>
                             <Text size="2" weight="medium" as="p">{faq.question}</Text>
                             <Text size="1" color="gray" as="p" mt="1" className="line-clamp-2">{faq.excerpt}</Text>
                           </Box>
                           <Box flexShrink="0">
-                            <i className="ri-arrow-right-s-line text-[var(--gray-11)] text-lg" />
+                            <i className="ri-arrow-right-s-line text-[var(--cedar-text-secondary)] text-lg" aria-hidden="true" />
                           </Box>
                         </Flex>
                       </Box>

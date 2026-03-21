@@ -64,7 +64,7 @@ export default function AuditExportPage() {
             <p className="text-xs text-gray-500">Florida Regulatory Intelligence</p>
           </div>
           <div className="text-right text-xs text-gray-500">
-            <p className="font-semibold text-gray-700">Audit Trail Export</p>
+            <h1 className="font-semibold text-gray-700 text-sm">Audit Trail Export</h1>
             <p>Generated {now}</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function AuditExportPage() {
                     <td className="py-2 pr-3 text-gray-700 max-w-xs">
                       {c.summary ? (c.summary.length > 120 ? c.summary.slice(0, 120) + '…' : c.summary) : '—'}
                     </td>
-                    <td className="py-2 pr-3 text-gray-500 whitespace-nowrap">{formatDate(c.detected_at)}</td>
+                    <td className="py-2 pr-3 text-gray-500 whitespace-nowrap"><time dateTime={new Date(c.detected_at).toISOString()}>{formatDate(c.detected_at)}</time></td>
                     <td className="py-2 font-mono text-gray-400">{c.hash ? c.hash.slice(0, 12) + '…' : '—'}</td>
                   </tr>
                 ))}

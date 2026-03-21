@@ -1,6 +1,8 @@
 import { getSignInUrl } from '@workos-inc/authkit-nextjs'
 import { redirect } from 'next/navigation'
 
+export const metadata = { title: 'Sign In — Cedar' }
+
 interface Props {
   searchParams: Promise<{ redirect?: string }>
 }

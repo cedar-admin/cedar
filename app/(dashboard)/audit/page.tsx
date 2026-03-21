@@ -4,6 +4,8 @@ import { Badge, Card, Box, Flex, Heading, Text, Button, Table } from '@radix-ui/
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { timeAgo, formatDate } from '@/lib/format'
 
+export const metadata = { title: 'Audit Trail — Cedar' }
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function AuditPage() {
@@ -50,37 +52,37 @@ export default async function AuditPage() {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <Heading size="6" weight="bold">Audit Trail</Heading>
+          <Heading as="h1" size="6" weight="bold">Audit Trail</Heading>
           <Text size="2" color="gray" as="p" mt="1">
             Tamper-evident, timestamped record of all detected changes and hash chain integrity
           </Text>
         </div>
-        <Button variant="outline" size="1" asChild>
+        <Button variant="soft" color="gray" highContrast size="1" asChild>
           <Link href="/audit/export" target="_blank" rel="noopener noreferrer">
-            <i className="ri-download-line" />
+            <i className="ri-download-line" aria-hidden="true" />
             Export PDF
           </Link>
         </Button>
       </Flex>
 
       {/* Section 1: Chain Validation Runs */}
-      <section>
+      <section aria-labelledby="validation-heading">
         <Flex direction="column" gap="3">
-          <h2 className="text-sm font-semibold text-[var(--gray-12)]">Chain Validation Runs</h2>
+          <Heading id="validation-heading" as="h2" size="3" weight="bold">Chain Validation Runs</Heading>
           {logs.length === 0 ? (
-            <Card>
+            <Card variant="surface">
               <Box p="4">
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <i className="ri-shield-check-line text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
-                  <p className="text-sm text-[var(--gray-11)]">
+                  <i className="ri-shield-check-line text-3xl text-[var(--cedar-text-secondary)] opacity-40 mb-2" aria-hidden="true" />
+                  <Text as="p" size="2" color="gray">
                     No validation runs yet. The weekly cron runs every Sunday at 3 AM UTC.
-                  </p>
+                  </Text>
                 </div>
               </Box>
             </Card>
           ) : (
-            <Card>
-              <Table.Root>
+            <Card variant="surface">
+              <Table.Root variant="surface">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Run At</Table.ColumnHeaderCell>
@@ -94,31 +96,31 @@ export default async function AuditPage() {
                 <Table.Body>
                   {logs.map((log) => (
                     <Table.Row key={log.id}>
-                      <Table.Cell className="text-sm text-[var(--gray-12)] whitespace-nowrap">
-                        {formatDate(log.run_at)}
-                      </Table.Cell>
-                      <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
-                        {log.sources_checked}
+                      <Table.Cell>
+                        <time dateTime={new Date(log.run_at).toISOString()} className="text-sm whitespace-nowrap">
+                          {formatDate(log.run_at)}
+                        </time>
                       </Table.Cell>
                       <Table.Cell className="text-center">
-                        <span className="text-sm font-medium text-[var(--green-11)]">
-                          {log.chains_valid}
-                        </span>
+                        <Text as="span" size="2" color="gray">{log.sources_checked}</Text>
+                      </Table.Cell>
+                      <Table.Cell className="text-center">
+                        <Text as="span" size="2" weight="medium" color="green">{log.chains_valid}</Text>
                       </Table.Cell>
                       <Table.Cell className="text-center">
                         {log.chains_broken > 0 ? (
-                          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800">
-                            {log.chains_broken}
-                          </Badge>
+                          <Badge variant="outline" color="red">{log.chains_broken}</Badge>
                         ) : (
-                          <span className="text-sm text-[var(--gray-11)]">0</span>
+                          <Text as="span" size="2" color="gray">0</Text>
                         )}
                       </Table.Cell>
-                      <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
-                        {log.total_changes}
+                      <Table.Cell className="text-center">
+                        <Text as="span" size="2" color="gray">{log.total_changes}</Text>
                       </Table.Cell>
-                      <Table.Cell className="text-xs text-[var(--gray-11)] max-w-xs truncate">
-                        {log.summary ?? '—'}
+                      <Table.Cell>
+                        <Text as="span" size="1" color="gray" className="max-w-xs truncate block">
+                          {log.summary ?? '—'}
+                        </Text>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -130,24 +132,24 @@ export default async function AuditPage() {
       </section>
 
       {/* Section 2: Audit Trail */}
-      <section>
+      <section aria-labelledby="changes-heading">
         <Flex direction="column" gap="3">
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-sm font-semibold text-[var(--gray-12)]">Change Audit Trail</h2>
-            <span className="text-xs text-[var(--gray-11)]">most recent 50 records</span>
-          </div>
+          <Flex align="baseline" gap="2">
+            <Heading id="changes-heading" as="h2" size="3" weight="bold">Change Audit Trail</Heading>
+            <Text as="span" size="1" color="gray">most recent 50 records</Text>
+          </Flex>
           {changes.length === 0 ? (
-            <Card>
+            <Card variant="surface">
               <Box p="4">
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <i className="ri-list-check-3 text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
-                  <p className="text-sm text-[var(--gray-11)]">No changes with hash chain data yet.</p>
+                  <i className="ri-list-check-3 text-3xl text-[var(--cedar-text-secondary)] opacity-40 mb-2" aria-hidden="true" />
+                  <Text as="p" size="2" color="gray">No changes with hash chain data yet.</Text>
                 </div>
               </Box>
             </Card>
           ) : (
-            <Card>
-              <Table.Root>
+            <Card variant="surface">
+              <Table.Root variant="surface">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-20">Seq #</Table.ColumnHeaderCell>
@@ -161,11 +163,11 @@ export default async function AuditPage() {
                 <Table.Body>
                   {changes.map((c) => (
                     <Table.Row key={c.id}>
-                      <Table.Cell className="text-sm font-mono text-[var(--gray-11)]">
-                        #{c.chain_sequence}
+                      <Table.Cell className="font-mono">
+                        <Text as="span" size="2" color="gray">#{c.chain_sequence}</Text>
                       </Table.Cell>
-                      <Table.Cell className="text-sm text-[var(--gray-12)]">
-                        {c.sources?.name ?? '—'}
+                      <Table.Cell>
+                        <Text as="span" size="2">{c.sources?.name ?? '—'}</Text>
                       </Table.Cell>
                       <Table.Cell>
                         <SeverityBadge severity={c.severity} />
@@ -173,18 +175,22 @@ export default async function AuditPage() {
                       <Table.Cell>
                         <Link
                           href={`/changes/${c.id}`}
-                          className="text-sm text-[var(--gray-12)] hover:text-primary line-clamp-1 transition-colors"
+                          className="text-sm text-[var(--cedar-text-primary)] hover:underline line-clamp-1 transition-colors"
                         >
                           {c.summary ?? (
-                            <span className="text-[var(--gray-11)] italic">No summary</span>
+                            <span className="text-[var(--cedar-text-secondary)] italic">No summary</span>
                           )}
                         </Link>
                       </Table.Cell>
-                      <Table.Cell className="text-xs text-[var(--gray-11)] whitespace-nowrap">
-                        {timeAgo(c.detected_at)}
+                      <Table.Cell>
+                        <time dateTime={new Date(c.detected_at).toISOString()} className="text-xs text-[var(--cedar-text-secondary)] whitespace-nowrap">
+                          {timeAgo(c.detected_at)}
+                        </time>
                       </Table.Cell>
-                      <Table.Cell className="text-xs font-mono text-[var(--gray-11)]">
-                        {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
+                      <Table.Cell className="font-mono">
+                        <Text as="span" size="1" color="gray">
+                          {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
+                        </Text>
                       </Table.Cell>
                     </Table.Row>
                   ))}

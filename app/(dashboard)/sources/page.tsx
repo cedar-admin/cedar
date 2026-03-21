@@ -1,18 +1,16 @@
 import { createServerClient } from '../../../lib/db/client'
 import { Badge, Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
+import { timeAgo } from '@/lib/format'
+
+export const metadata = { title: 'Sources — Cedar' }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function MonitoringTierBadge({ tier }: { tier: string | null }) {
   const key = tier?.toLowerCase() ?? 'standard'
-  const cls =
-    key === 'critical'
-      ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800'
-      : key === 'low'
-      ? ''
-      : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800'
+  const color = key === 'critical' ? 'red' : key === 'low' ? 'gray' : 'blue'
   return (
-    <Badge variant="outline" className={`font-medium ${cls}`}>
+    <Badge variant="outline" color={color as 'red' | 'gray' | 'blue'} className="font-medium">
       {tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : 'Standard'}
     </Badge>
   )
@@ -21,33 +19,24 @@ function MonitoringTierBadge({ tier }: { tier: string | null }) {
 function FreshnessIndicator({ lastFetchedAt }: { lastFetchedAt: string | null }) {
   if (!lastFetchedAt) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--gray-11)]">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--gray-11)] opacity-30" />
+      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--cedar-text-secondary)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--cedar-text-secondary)] opacity-30" aria-hidden="true" />
         Never checked
       </span>
     )
   }
   const ageH = (Date.now() - new Date(lastFetchedAt).getTime()) / 3_600_000
-  let dotColor = 'bg-[var(--gray-11)] opacity-30'
+  let dotColor = 'bg-[var(--cedar-text-secondary)] opacity-30'
   let label = 'Stale'
-  if (ageH < 25)       { dotColor = 'bg-[var(--green-9)]'; label = 'Fresh' }
-  else if (ageH < 168) { dotColor = 'bg-yellow-400'; label = 'Aging' }
+  if (ageH < 25)       { dotColor = 'bg-[var(--cedar-status-dot-success)]'; label = 'Fresh' }
+  else if (ageH < 168) { dotColor = 'bg-[var(--cedar-status-dot-warning)]'; label = 'Aging' }
 
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs text-[var(--gray-11)]">
-      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
+    <span className="inline-flex items-center gap-1.5 text-xs text-[var(--cedar-text-secondary)]">
+      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} aria-hidden="true" />
       {label}
     </span>
   )
-}
-
-function timeAgo(iso: string | null): string {
-  if (!iso) return '—'
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return `${Math.floor(diff / 60_000)}m ago`
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -92,7 +81,7 @@ export default async function SourcesPage() {
     <Flex direction="column" gap="6">
       {/* Header */}
       <div>
-        <Heading size="6" weight="bold">Source Library</Heading>
+        <Heading as="h1" size="6" weight="bold">Source Library</Heading>
         <Text size="2" color="gray" as="p" mt="1">
           {sources.length} active source{sources.length !== 1 ? 's' : ''} &mdash; Florida regulatory coverage
         </Text>
@@ -100,7 +89,7 @@ export default async function SourcesPage() {
 
       {error && (
         <Callout.Root color="red">
-          <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+          <Callout.Icon><i className="ri-error-warning-line text-base" aria-hidden="true" /></Callout.Icon>
           <Callout.Text>
             Failed to load sources: {error.message}
           </Callout.Text>
@@ -108,17 +97,17 @@ export default async function SourcesPage() {
       )}
 
       {sources.length === 0 && !error ? (
-        <Card>
+        <Card variant="surface">
           <Box p="4">
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <i className="ri-database-2-line text-3xl text-[var(--gray-11)] opacity-40 mb-2" />
-              <p className="text-sm text-[var(--gray-11)]">No active sources found.</p>
+              <i className="ri-database-2-line text-3xl text-[var(--cedar-text-secondary)] opacity-40 mb-2" aria-hidden="true" />
+              <Text as="p" size="2" color="gray">No active sources found.</Text>
             </div>
           </Box>
         </Card>
       ) : (
-        <Card>
-          <Table.Root>
+        <Card variant="surface">
+          <Table.Root variant="surface">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
@@ -133,22 +122,28 @@ export default async function SourcesPage() {
               {withMeta.map((source) => (
                 <Table.Row key={source.id}>
                   <Table.Cell>
-                    <div className="text-sm font-medium text-[var(--gray-12)]">{source.name}</div>
-                    <div className="text-xs text-[var(--gray-11)] mt-0.5">
+                    <Text as="span" size="2" weight="medium">{source.name}</Text>
+                    <Text as="span" size="1" color="gray" className="block mt-0.5">
                       {source.jurisdiction ?? 'FL'}
-                    </div>
+                    </Text>
                   </Table.Cell>
                   <Table.Cell>
                     <MonitoringTierBadge tier={source.tier} />
                   </Table.Cell>
-                  <Table.Cell className="text-sm text-[var(--gray-11)]">
-                    {source.fetchMethod}
+                  <Table.Cell>
+                    <Text as="span" size="2" color="gray">{source.fetchMethod}</Text>
                   </Table.Cell>
-                  <Table.Cell className="text-sm text-[var(--gray-11)] text-center">
-                    {source.urlCount}
+                  <Table.Cell className="text-center">
+                    <Text as="span" size="2" color="gray">{source.urlCount}</Text>
                   </Table.Cell>
-                  <Table.Cell className="text-sm text-[var(--gray-11)] whitespace-nowrap">
-                    {timeAgo(source.latestFetchedAt)}
+                  <Table.Cell>
+                    {source.latestFetchedAt ? (
+                      <time dateTime={new Date(source.latestFetchedAt).toISOString()} className="text-sm text-[var(--cedar-text-secondary)] whitespace-nowrap">
+                        {timeAgo(source.latestFetchedAt)}
+                      </time>
+                    ) : (
+                      <Text as="span" size="2" color="gray">—</Text>
+                    )}
                   </Table.Cell>
                   <Table.Cell>
                     <FreshnessIndicator lastFetchedAt={source.latestFetchedAt} />

@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className="antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--color-background)] focus:text-[var(--gray-12)] focus:rounded-[var(--radius-3)] focus:border focus:border-[var(--gray-6)]"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--cedar-page-bg)] focus:text-[var(--cedar-text-primary)] focus:rounded-[var(--radius-3)] focus:border focus:border-[var(--cedar-border)]"
         >
           Skip to main content
         </a>

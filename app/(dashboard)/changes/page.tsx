@@ -6,15 +6,21 @@ import { Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { SEVERITIES } from '@/lib/ui-constants'
-
-const SEVERITY_ACTIVE_CLASS: Record<string, string> = {
-  critical:      'bg-[var(--red-a3)] text-[var(--red-11)] border-[var(--red-6)]',
-  high:          'bg-[var(--orange-a3)] text-[var(--orange-11)] border-[var(--orange-6)]',
-  medium:        'bg-[var(--amber-a3)] text-[var(--amber-11)] border-[var(--amber-6)]',
-  low:           'bg-[var(--green-a3)] text-[var(--green-11)] border-[var(--green-6)]',
-  informational: 'bg-[var(--blue-a3)] text-[var(--blue-11)] border-[var(--blue-6)]',
-}
 import { timeAgo } from '@/lib/format'
+
+export const metadata = { title: 'Changes — Cedar' }
+
+// Severity-specific active classes using Cedar semantic tokens where possible,
+// with severity-specific colors for informational purposes (these ARE intentional
+// color-coding, not interactive state — so raw Radix vars are used via Cedar's
+// pattern for semantic color differentiation in informational pills)
+const SEVERITY_ACTIVE_CLASS: Record<string, string> = {
+  critical:      'bg-[var(--cedar-error-bg)] text-[var(--cedar-error-text)] border-[var(--cedar-error-border)]',
+  high:          'bg-[var(--orange-a3)] text-[var(--orange-11)] border-[var(--orange-6)]',
+  medium:        'bg-[var(--cedar-warning-bg)] text-[var(--cedar-warning-text)] border-[var(--cedar-warning-border)]',
+  low:           'bg-[var(--cedar-success-bg)] text-[var(--cedar-success-text)] border-[var(--cedar-success-border)]',
+  informational: 'bg-[var(--cedar-info-bg)] text-[var(--cedar-info-text)] border-[var(--cedar-info-border)]',
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -89,7 +95,7 @@ export default async function ChangesPage({ searchParams }: Props) {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <Heading size="6" weight="bold">Regulatory Changes</Heading>
+          <Heading as="h1" size="6" weight="bold">Changes</Heading>
           {practice ? (
             <Text size="2" color="gray" as="p" mt="1">
               {practice.name} &middot; {total.toLocaleString()} change{total !== 1 ? 's' : ''}
@@ -103,7 +109,7 @@ export default async function ChangesPage({ searchParams }: Props) {
       {/* Practice gate */}
       {!practice && (
         <Callout.Root color="gray" className="max-w-lg">
-          <Callout.Icon><i className="ri-hospital-line text-base" /></Callout.Icon>
+          <Callout.Icon><i className="ri-hospital-line text-base" aria-hidden="true" /></Callout.Icon>
           <Callout.Text>
             Your account is not linked to a practice. Contact{' '}
             <a href="mailto:cedaradmin@gmail.com" className="underline font-medium">cedaradmin@gmail.com</a>{' '}
@@ -118,10 +124,10 @@ export default async function ChangesPage({ searchParams }: Props) {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href="/changes"
-              className={`px-3 py-1.5 text-sm font-medium border transition-colors ${
+              className={`px-3 py-1.5 text-sm font-medium border rounded-md transition-colors ${
                 !severity
-                  ? 'bg-foreground text-background border-foreground'
-                  : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
+                  ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
+                  : 'bg-[var(--cedar-page-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-strong)] hover:text-[var(--cedar-text-primary)]'
               }`}
             >
               All
@@ -132,10 +138,10 @@ export default async function ChangesPage({ searchParams }: Props) {
                 <Link
                   key={s}
                   href={`/changes?severity=${s}${page > 1 ? `&page=${page}` : ''}`}
-                  className={`px-3 py-1.5 text-sm font-medium border transition-colors ${
+                  className={`px-3 py-1.5 text-sm font-medium border rounded-md transition-colors ${
                     active
                       ? SEVERITY_ACTIVE_CLASS[s]
-                      : 'bg-background text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground'
+                      : 'bg-[var(--cedar-page-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-strong)] hover:text-[var(--cedar-text-primary)]'
                   }`}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -147,7 +153,7 @@ export default async function ChangesPage({ searchParams }: Props) {
           {/* Error state */}
           {error && (
             <Callout.Root color="red">
-              <Callout.Icon><i className="ri-error-warning-line text-base" /></Callout.Icon>
+              <Callout.Icon><i className="ri-error-warning-line text-base" aria-hidden="true" /></Callout.Icon>
               <Callout.Text>
                 Failed to load changes: {(error as { message: string }).message}
               </Callout.Text>
@@ -156,15 +162,15 @@ export default async function ChangesPage({ searchParams }: Props) {
 
           {/* Empty state */}
           {changes.length === 0 && !error && (
-            <Card>
+            <Card variant="surface">
               <Box p="4">
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <i className="ri-leaf-line text-4xl text-[var(--gray-11)] opacity-40 mb-3" />
-                  <h2 className="text-base font-semibold text-[var(--gray-12)] mb-1">No changes detected yet</h2>
-                  <p className="text-sm text-[var(--gray-11)] max-w-sm">
+                  <i className="ri-leaf-line text-4xl text-[var(--cedar-text-secondary)] opacity-40 mb-3" aria-hidden="true" />
+                  <Heading as="h2" size="3" weight="bold" mb="1">No changes detected yet</Heading>
+                  <Text as="p" size="2" color="gray" className="max-w-sm">
                     Cedar is monitoring Florida regulatory sources. Detected changes will appear here
                     after the next monitoring run.
-                  </p>
+                  </Text>
                 </div>
               </Box>
             </Card>
@@ -172,8 +178,8 @@ export default async function ChangesPage({ searchParams }: Props) {
 
           {/* Table */}
           {changes.length > 0 && (
-            <Card>
-              <Table.Root>
+            <Card variant="surface">
+              <Table.Root variant="surface">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-36">Severity</Table.ColumnHeaderCell>
@@ -190,24 +196,24 @@ export default async function ChangesPage({ searchParams }: Props) {
                         <SeverityBadge severity={change.severity} />
                       </Table.Cell>
                       <Table.Cell>
-                        <span className="text-sm font-medium text-[var(--gray-12)]">
-                          {change.sources?.name ?? 'Unknown Source'}
-                        </span>
-                        <span className="block text-xs text-[var(--gray-11)] mt-0.5">
+                        <Text as="span" size="2" weight="medium">{change.sources?.name ?? 'Unknown Source'}</Text>
+                        <Text as="span" size="1" color="gray" className="block mt-0.5">
                           {change.jurisdiction ?? 'FL'}
-                        </span>
+                        </Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Link href={`/changes/${change.id}`} className="group">
-                          <p className="text-sm text-[var(--gray-12)] line-clamp-2 group-hover:text-primary transition-colors">
+                          <Text as="p" size="2" className="line-clamp-2 group-hover:underline transition-colors">
                             {change.summary ?? (
-                              <span className="text-[var(--gray-11)] italic">No summary available</span>
+                              <Text as="span" color="gray" className="italic">No summary available</Text>
                             )}
-                          </p>
+                          </Text>
                         </Link>
                       </Table.Cell>
-                      <Table.Cell className="text-sm text-[var(--gray-11)] whitespace-nowrap">
-                        {timeAgo(change.detected_at)}
+                      <Table.Cell>
+                        <time dateTime={new Date(change.detected_at).toISOString()} className="text-sm text-[var(--cedar-text-secondary)] whitespace-nowrap">
+                          {timeAgo(change.detected_at)}
+                        </time>
                       </Table.Cell>
                       <Table.Cell>
                         <StatusBadge status={change.review_status} />
@@ -222,35 +228,37 @@ export default async function ChangesPage({ searchParams }: Props) {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-[var(--gray-11)]">
+              <Text as="p" size="2" color="gray">
                 Showing {from + 1}&ndash;{Math.min(to + 1, total)} of {total.toLocaleString()}
-              </p>
+              </Text>
               <div className="flex items-center gap-2">
                 {safePage > 1 ? (
                   <Link
                     href={`/changes?page=${safePage - 1}${severity ? `&severity=${severity}` : ''}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+                    aria-label="Go to previous page"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--cedar-border)] rounded-md hover:bg-[var(--cedar-interactive-hover)] transition-colors"
                   >
-                    <i className="ri-arrow-left-line" /> Previous
+                    <i className="ri-arrow-left-line" aria-hidden="true" /> Previous
                   </Link>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md text-muted-foreground/50 cursor-not-allowed">
-                    <i className="ri-arrow-left-line" /> Previous
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--cedar-border)] rounded-md text-[var(--cedar-disabled-text)] cursor-not-allowed">
+                    <i className="ri-arrow-left-line" aria-hidden="true" /> Previous
                   </span>
                 )}
-                <span className="text-sm text-[var(--gray-11)] px-2">
+                <Text as="span" size="2" color="gray" className="px-2">
                   {safePage} / {totalPages}
-                </span>
+                </Text>
                 {safePage < totalPages ? (
                   <Link
                     href={`/changes?page=${safePage + 1}${severity ? `&severity=${severity}` : ''}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+                    aria-label="Go to next page"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--cedar-border)] rounded-md hover:bg-[var(--cedar-interactive-hover)] transition-colors"
                   >
-                    Next <i className="ri-arrow-right-line" />
+                    Next <i className="ri-arrow-right-line" aria-hidden="true" />
                   </Link>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md text-muted-foreground/50 cursor-not-allowed">
-                    Next <i className="ri-arrow-right-line" />
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--cedar-border)] rounded-md text-[var(--cedar-disabled-text)] cursor-not-allowed">
+                    Next <i className="ri-arrow-right-line" aria-hidden="true" />
                   </span>
                 )}
               </div>
