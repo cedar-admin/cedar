@@ -448,7 +448,7 @@ Cedar primarily uses: **gray, red, orange, amber, green, blue, purple, indigo, c
 
 ---
 
-## 20. Spacing
+## 20. Spacing & Units
 
 **Important:** Radix Themes and Tailwind use different numbering for the same pixel values. Radix `gap="5"` = 24px = Tailwind `gap-6`. Always verify the target pixel value when switching between systems, and avoid mixing Radix layout props with Tailwind spacing on the same element.
 
@@ -467,6 +467,24 @@ Cedar primarily uses: **gray, red, orange, amber, green, blue, purple, indigo, c
 **Rule of thumb:** Radix Themes components use Radix props for spacing. Custom Primitive-based components use Tailwind classes for spacing. The pixel value column is the shared reference when converting between them.
 
 **Standard patterns:** Page wrapper `gap="6"`, card padding `size="3"` or `p="4"`, section spacing `gap="6"` between / `gap="2"` within, form fields `gap="4"`.
+
+### Unit selection
+
+Choose CSS units based on what the value represents:
+
+| Unit | Use for | Examples |
+|------|---------|---------|
+| `rem` | Font sizes, spacing in custom components | `text-sm` (0.875rem), `gap-4` (1rem). Scales with user's browser font-size preference. |
+| `px` | Borders, outlines, box-shadows, fine details | `border`, `outline-2`, `ring-2`, `shadow-sm`. Fixed-size details that should remain crisp at any zoom level. |
+| `%` | Relative sizing within a parent container | `w-full`, `max-w-[50%]`. Fluid proportional layouts. |
+| `ch` | Text container max-widths | `max-w-prose` (~65ch). Character-count-based widths for readable line lengths. |
+| `dvh` / `dvw` | Viewport-relative dimensions on mobile-aware layouts | `min-h-dvh` for full-height app shells. Dynamic viewport units account for mobile browser chrome. Prefer `dvh` over `vh`. |
+| Radix scale values | Spacing and sizing on Radix Themes layout components | `gap="4"`, `p="5"`, `size="2"`. These map to the spacing table above. |
+
+**Forbidden unit patterns:**
+- `px` for font-size — breaks browser accessibility settings; use `rem` via Tailwind size classes
+- `vh` / `vw` for layout dimensions — use `dvh` / `dvw` (dynamic viewport units account for mobile browser chrome)
+- Arbitrary pixel values (`p-[13px]`, `mt-[7px]`) when a Tailwind scale value exists — use the scale
 
 ---
 
@@ -616,7 +634,50 @@ Single-line: `<Text truncate>` or `truncate`. Multi-line: `line-clamp-2/3`. Scro
 
 ## 32. Responsive Behavior
 
-Desktop-first, functional to 768px. Radix responsive props: `columns={{ initial: "1", md: "2" }}`. Tailwind: `md:`, `lg:`. Test at 1440, 1024, 768.
+Cedar is desktop-first and functional down to 768px. The primary users are practice administrators at desktop workstations; tablet is a supported secondary context; mobile is a future consideration.
+
+### Breakpoints
+
+| Breakpoint | Tailwind prefix | Pixel value | Context |
+|---|---|---|---|
+| Default (no prefix) | — | 0–767px | Narrow / mobile (baseline styles) |
+| `md:` | `md` | 768px+ | Tablet — minimum supported width |
+| `lg:` | `lg` | 1024px+ | Desktop — sidebar switches to inline |
+| `xl:` | `xl` | 1280px+ | Wide desktop |
+| `2xl:` | `2xl` | 1536px+ | Ultra-wide |
+
+Radix Themes responsive props use the same breakpoints: `columns={{ initial: "1", md: "2", lg: "3" }}`.
+
+### Sidebar responsive behavior
+
+The sidebar is the primary responsive inflection point in the app:
+
+| Breakpoint | Behavior |
+|---|---|
+| `lg:` (1024px+) | Sidebar renders inline, sharing horizontal space with `<main>`. Expand/collapse via `translateX` with `transition-transform`. |
+| Below `lg:` | Sidebar renders as a fixed overlay with scrim. Opens via hamburger trigger. Requires focus trapping, Escape-to-close, and focus restoration (see `frontend-standards.md §13` and `§15.3`). |
+
+### Layout adaptation patterns
+
+| Pattern | Implementation |
+|---|---|
+| Card grids | Radix `<Grid columns={{ initial: "1", md: "2", lg: "3" }}>` |
+| Page padding | Radix `<Box p={{ initial: "4", md: "6" }}>` |
+| Side-by-side → stacked | `<Flex direction={{ initial: "column", md: "row" }}>` |
+| Table → card list | Hide `<Table>` at `md:` breakpoint, show card layout below. Or use `overflow-x-auto` to allow horizontal scroll. |
+| Typography scaling | Keep fixed sizes (Radix `size` prop handles readability). Reduce heading `size` props at `initial:` if needed for narrow viewports. |
+
+### Testing checkpoints
+
+Every UI change must be verified at these widths:
+
+| Width | What it represents |
+|---|---|
+| **1440px** | Standard desktop — primary development target |
+| **1024px** | Sidebar inline/overlay transition point |
+| **768px** | Minimum supported width — nothing should break below this |
+
+Test both sidebar states (expanded and collapsed) at 1024px and above. Test the overlay sidebar at widths below 1024px. Verify no horizontal overflow at any checkpoint.
 
 ---
 
@@ -652,11 +713,13 @@ Name by what it **is**, never where it's used. `SlideOverPanel`, not `PracticeSl
 - [ ] Destructive actions confirmed via AlertDialog
 - [ ] Focus trapped in overlays
 - [ ] Truncation on long text
-- [ ] Tested at 1440px and 768px
+- [ ] Tested at 1440px, 1024px, and 768px
+- [ ] Sidebar tested in both inline and overlay states
 - [ ] `aria-label` on icon buttons
 - [ ] No hardcoded colors anywhere
 - [ ] No `dark:` prefixes — tokens auto-swap
 - [ ] No raw Tailwind spacing on Radix Themes layout components
+- [ ] No `px` for font sizes, no `vh`/`vw` (use `dvh`/`dvw`)
 - [ ] Shared utilities used (`lib/format.ts`, `lib/ui-constants.ts`)
 
 ---
@@ -689,6 +752,7 @@ Before building a new component, check for existing Cedar composites and shared 
 |------|-------|
 | All `--cedar-*` token definitions | `app/globals.css` |
 | Design standards (this file) | `docs/design-system/design-standards.md` |
+| Frontend structural standards | `docs/design-system/frontend-standards.md` |
 | Design tokens skill (decision tree) | `.claude/skills/design-tokens/SKILL.md` |
 | UI components skill (build checklist) | `.claude/skills/ui-components/SKILL.md` |
 | Cedar composite components | `components/` |
