@@ -1,85 +1,456 @@
 # Cedar Design Standards
 
-> **Read this before writing any UI code.** This document defines how Cedar's interface is built.
+> **Read this before writing any UI code.** This document defines how Cedar's interface is built — from architecture decisions down to specific variant and color choices for every component.
 
 ---
 
-## 1. Component Architecture
+## 1. Design Philosophy
+
+Cedar's UI follows a **neutral-interactive, colorful-informational** model. Interactive elements (buttons, toggles, nav links, form controls) are neutral gray by default. Color is reserved for communicating information — severity, status, roles, deadlines, success/error states.
+
+This separation keeps the interface clean and professional, and lets color carry meaning wherever it appears. Green remains loaded as the theme accent for future use (CTAs, upsells, brand moments) but is currently treated as a semantic color (approved, success) alongside other Radix color scales.
+
+### Core rules
+
+- **Buttons and interactive controls:** Gray with `highContrast` by default. Color only for semantic purpose (red for destructive, green for success confirmation).
+- **Badges and status indicators:** Specific Radix color per semantic meaning. Always via the `color` prop — never via className overrides.
+- **Links:** Gray color, underline style. Visually distinct from body text through contrast and decoration.
+- **Focus rings:** Gray. Overridden in `globals.css` to replace the default accent-colored focus ring.
+- **No one-off custom colors.** Every color must resolve to either a Radix Themes `color` prop or a Cedar semantic token (`--cedar-*`). Hardcoded hex, rgb, hsl, oklch, or non-Radix Tailwind colors (`bg-green-500`) are forbidden in components.
+
+---
+
+## 2. Theme Configuration
+
+```tsx
+// providers.tsx
+<Theme
+  accentColor="green"       // Available for explicit use; not the default for interactive elements
+  grayColor="gray"
+  radius="large"
+  scaling="100%"
+  panelBackground="translucent"
+>
+```
+
+The accent stays green so it's available when needed via `color="green"`. The behavioral shift happens at the component level: every interactive element explicitly sets `color="gray"` (and `highContrast` where appropriate) to opt out of the green accent default.
+
+Focus rings are overridden to gray in `globals.css` so that all focus indicators remain neutral regardless of component color.
+
+---
+
+## 3. Component Architecture
 
 Cedar uses **Radix Themes** as its primary component library and **Radix Primitives + Tailwind** for custom components that Themes doesn't cover.
 
 ### Decision framework
-1. **Does a Radix Themes component exist for this?** → Use it. Style through props (`variant`, `size`, `color`, `highContrast`). Import from `@radix-ui/themes`.
-2. **Does a Radix Primitive exist but no Themes component?** → Build with the Primitive + Tailwind, using Radix Themes CSS variables for colors (`var(--accent-9)`, `var(--gray-6)`, `var(--color-panel-solid)`).
-3. **Neither exists?** → Build with standard HTML + Tailwind, referencing Radix Themes CSS variables for visual consistency.
 
-### Radix Themes components (use these for standard UI)
+1. **Does a Radix Themes component exist for this?** → Use it. Style through props (`variant`, `size`, `color`, `highContrast`). Import from `@radix-ui/themes`.
+2. **Does a Radix Primitive exist but no Themes component?** → Build with the Primitive + Tailwind, using **Cedar semantic tokens** (`--cedar-*`) for all visual properties.
+3. **Neither exists?** → Build with standard HTML + Tailwind, using **Cedar semantic tokens** for all visual properties.
+
+### Radix Themes components (use for standard UI)
+
 Button, IconButton, TextField, TextArea, Select, Checkbox, CheckboxGroup, RadioGroup, Switch, Slider, Dialog, AlertDialog, DropdownMenu, ContextMenu, Popover, HoverCard, Tooltip, Tabs, TabNav, Table, DataList, Badge, Callout, Card, Avatar, Separator, ScrollArea, Skeleton, Spinner, Progress, SegmentedControl, AspectRatio
 
 ### Layout primitives (use instead of raw Tailwind flex/grid)
+
 `<Flex>`, `<Box>`, `<Grid>`, `<Container>`, `<Section>` — use their props (`gap`, `p`, `direction`, `align`, `justify`, `wrap`) and responsive objects (`gap={{ initial: "2", md: "4" }}`).
 
 ### Typography components (use instead of raw HTML headings/paragraphs)
+
 `<Heading>`, `<Text>`, `<Code>`, `<Blockquote>`, `<Em>`, `<Kbd>`, `<Link>`, `<Quote>`, `<Strong>` — use `size` (1–9), `weight`, `color`, `highContrast` props.
 
-### Custom builds required (Radix Primitives + Tailwind)
+### Custom builds required (Radix Primitives + Tailwind + Cedar tokens)
+
 Accordion, Sheet/SlideOver, Sidebar, Breadcrumb, Pagination, Command palette (cmdk), Toast (Sonner)
 
 ---
 
-## 2. Styling Rules
+## 4. Styling Rules
 
 ### For Radix Themes components
-- Style through **props** (`variant="soft"`, `size="2"`, `color="green"`) — this is the primary styling mechanism
-- Use **layout props** on Themes components for spacing: `<Flex gap="4" p="5">` — these reference the Radix spacing scale
-- `className` on Themes components is OK for: margin overrides (`className="mt-4"`), positioning (`fixed`, `absolute`), custom widths, and anything Themes props don't cover
-- Do **not** override Themes component internals (backgrounds, borders, typography) with Tailwind — use the component's props or build a custom component instead
+
+- Style through **props** (`variant="soft"`, `size="2"`, `color="gray"`, `highContrast`) — this is the primary styling mechanism
+- Use **layout props** on Themes components for spacing: `<Flex gap="4" p="5">`
+- `className` on Themes components is OK for: margin overrides, positioning (`fixed`, `absolute`), custom widths, and anything Themes props don't cover
+- Do **not** override Themes component color internals (backgrounds, borders, text colors) with Tailwind — use the component's `color` and `variant` props
 
 ### For custom Primitive-based components
-- Style with **Tailwind classes** referencing **Radix Themes CSS variables**: `bg-[var(--accent-9)]`, `border-[var(--gray-6)]`, `text-[var(--gray-12)]`, `bg-[var(--color-panel-solid)]`
-- These variables swap automatically in dark mode — no `dark:` prefix needed
-- For portalled content (custom modals/sheets), wrap with `<Theme>` from `@radix-ui/themes` to inherit tokens
+
+- Style with **Tailwind classes** referencing **Cedar semantic tokens**: `bg-[var(--cedar-interactive-hover)]`, `border-[var(--cedar-border-subtle)]`, `text-[var(--cedar-text-primary)]`
+- **Never reference raw Radix step variables** (`var(--gray-6)`, `var(--gray-12)`) directly in component files. Always use the corresponding `--cedar-*` token. Raw Radix variables are mapped to Cedar tokens in `globals.css` — that is the only place they appear.
+- Cedar semantic tokens auto-swap in dark mode (they're built on Radix variables which swap automatically) — no `dark:` prefix needed
+- For portalled content (custom modals/sheets), wrap with `<Theme>` from `@radix-ui/themes` to inherit all tokens
 
 ### Forbidden patterns
-- Hardcoded hex, rgb, hsl, or oklch values in components
-- Tailwind color classes that don't reference Radix tokens (e.g., `bg-green-500` — use `bg-[var(--accent-9)]` instead)
-- Inline `style={{ }}` for colors or spacing (use for dynamic values only, like stagger delays or computed positions)
-- Raw HTML `<button>`, `<input>`, `<select>`, `<textarea>` — use Radix Themes components
+
+**Color violations:**
+- `var(--gray-6)` in a component file — use `var(--cedar-border-subtle)` instead
+- `var(--gray-12)` in a component file — use `var(--cedar-text-primary)` instead
+- `var(--color-panel-solid)` in a component file — use `var(--cedar-panel-bg-solid)` instead
+- `bg-green-500`, `text-red-600` — raw Tailwind color classes; use Cedar tokens or Radix `color` prop
+- `text-[#ff0000]`, `bg-[rgb(0,128,0)]` — hardcoded hex, rgb, hsl, or oklch values
+- `className="text-gray-500"` on a Radix Themes component — use the `color` prop instead
+- Inline `style={{ color: 'red' }}` — use Radix `color="red"` prop or `var(--cedar-error-text)`
+- `className` color overrides on Badge, Button, or IconButton when the `color` prop achieves the same result
+
+**Dark mode violations:**
+- `dark:bg-gray-800`, `dark:text-white` — Cedar tokens auto-swap via Radix Colors; `dark:` prefixes are unnecessary and create conflicts with the token system
+
+**Component violations:**
+- Raw HTML `<button>`, `<input>`, `<select>`, `<textarea>` — use Radix Themes `<Button>`, `<TextField>`, `<Select>`, `<TextArea>`
+- `import { Dialog } from '@radix-ui/react-dialog'` when the component exists in Radix Themes — import from `@radix-ui/themes` first; only use individual Primitive packages for components Themes doesn't cover (Accordion, etc.)
+- `className="rounded-lg"` on a Radix Themes component — use the `radius` prop
+- Overriding Radix Themes component backgrounds/borders with Tailwind classes — use variant/color props instead
+
+**Spacing violations:**
+- `p-[13px]`, `mt-[7px]` — arbitrary pixel spacing; use Tailwind scale values that align with the Radix spacing scale
+- `gap-4` on a `<Flex>` or `<Grid>` from `@radix-ui/themes` — use Radix layout props (`gap="4"`) on Themes layout components; Tailwind spacing is for custom components
+
+**Focus violations:**
+- `focus:ring-blue-500`, `focus:outline-green-400` — use `focus-visible:ring-[var(--cedar-focus-ring)]` for custom components; Radix Themes components handle focus automatically
+
+**Utility violations:**
+- Local `timeAgo()`, `formatDate()`, `capitalize()` functions — use shared utilities from `lib/format.ts`
+- Local severity/status color maps — use shared mappings from `lib/ui-constants.ts`
 
 ---
 
-## 3. Color System
+## 5. Cedar Semantic Tokens
 
-Cedar uses **Radix Colors** with a custom green accent and neutral gray, defined in `globals.css`. Both light and dark variants are provided — dark mode works automatically.
+Cedar defines a semantic token layer in `globals.css` (inside `.radix-themes`) that maps design intent to Radix CSS variables. Custom Primitive-based components reference these tokens exclusively. When Cedar's design language changes, the token mappings in `globals.css` are updated in one place and every custom component follows automatically.
+
+**Source of truth:** `app/globals.css` — all `--cedar-*` definitions live there and only there.
+
+### Token categories
+
+**Text** (`--cedar-text-*`): Controls all text color in custom components. Tokens: `primary`, `secondary`, `muted`, `contrast`, `link`, `link-hover`.
+
+**Interactive** (`--cedar-interactive-*`): Background colors for interactive elements — nav items, list rows, clickable regions. Tokens: `bg` (transparent default), `hover`, `active`, `selected`.
+
+**Surfaces & panels** (`--cedar-page-bg`, `--cedar-panel-bg`, `--cedar-panel-bg-solid`, `--cedar-surface-bg`, `--cedar-card-bg`, `--cedar-card-hover`): Background colors for structural regions.
+
+**Borders** (`--cedar-border-*`): Three levels — `subtle` (dividers, cards), `interactive` (inputs), `strong` (emphasized/headers).
+
+**Focus** (`--cedar-focus-*`): `ring` (focus ring color) and `offset` (gap between ring and element). Radix Themes components handle focus automatically — these tokens are for custom Primitive-based components only.
+
+**Overlays** (`--cedar-overlay`): Scrim behind modals, slide-overs, dialogs.
+
+**Status** (`--cedar-success-*`, `--cedar-warning-*`, `--cedar-error-*`, `--cedar-info-*`): Each status has four tokens — `bg`, `text`, `solid`, `border`. Use for custom status indicators that aren't Radix Themes components.
+
+**Disabled** (`--cedar-disabled-*`): `bg`, `text`, `border` for disabled elements in custom components.
+
+**Accent** (`--cedar-accent-*`): Brand green — `bg`, `text`, `solid`, `border`. Available but reserved for intentional use (approved badges, success states, future CTAs).
+
+### Using tokens in custom components
+
+```tsx
+// Custom sidebar nav item
+<button className="
+  text-[var(--cedar-text-secondary)]
+  hover:bg-[var(--cedar-interactive-hover)]
+  hover:text-[var(--cedar-text-primary)]
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cedar-focus-ring)]
+  transition-interactive
+">
+
+// Custom slide-over panel
+<div className="
+  bg-[var(--cedar-panel-bg-solid)]
+  border-l border-[var(--cedar-border-subtle)]
+  shadow-[var(--shadow-6)]
+">
+
+// Custom error state in a Primitive-based component
+<div className="
+  bg-[var(--cedar-error-bg)]
+  border border-[var(--cedar-error-border)]
+  text-[var(--cedar-error-text)]
+">
+```
+
+### When to use tokens vs Radix props
+
+| Building with... | Color method |
+|---|---|
+| Radix Themes component (Button, Badge, Card, etc.) | `variant`, `color`, `highContrast` props |
+| Radix Primitive + Tailwind (Sidebar, Sheet, Accordion) | `--cedar-*` tokens via Tailwind classes |
+| Mixed (custom wrapper containing Radix children) | Wrapper uses `--cedar-*` tokens; children use Radix props |
+| Portalled custom component | Wrap in `<Theme>`, then use `--cedar-*` tokens |
+
+---
+
+## 6. Buttons & Interactive Elements
+
+All buttons default to **gray with highContrast**. In light mode this renders as crisp black; in dark mode as bright white. The `classic` variant is used for primary actions — it has a subtle 3D pressed effect that distinguishes it from the flat `solid` variant.
+
+| Use case | Component | Props |
+|---|---|---|
+| **Primary action** (save, submit, confirm) | `<Button>` | `variant="classic" color="gray" highContrast` |
+| **Secondary action** (cancel, back, reset) | `<Button>` | `variant="soft" color="gray" highContrast` |
+| **Tertiary / utility** (card actions, filters) | `<Button>` or `<IconButton>` | `variant="ghost" color="gray"` |
+| **Destructive (low-stakes)** (remove item, clear) | `<Button>` | `variant="soft" color="red"` |
+| **Destructive (high-stakes)** (delete account, in AlertDialog) | `<Button>` | `variant="solid" color="red"` |
+| **Sign out** | `<Button>` | `variant="ghost" color="gray"` + `className="hover:text-[var(--cedar-error-text)]"` |
+| **Theme toggle** | `<IconButton>` | `variant="ghost" color="gray"` |
+| **Sidebar collapse/expand** | `<IconButton>` | `variant="ghost" color="gray"` |
+| **Icon-only actions** (edit, delete, close) | `<IconButton>` | `variant="ghost" color="gray"` — add `aria-label` |
+
+### Loading states
+
+Use the Radix `loading` prop on Button for submissions: `<Button loading>Saving...</Button>`. For icon buttons, use `disabled` + adjacent `<Spinner size="1">`.
+
+### Future accent reintroduction
+
+To bring green (or any color) back on primary buttons: remove `color="gray" highContrast` — they will inherit the theme's `accentColor`. Or set `color="green"` explicitly on individual components.
+
+---
+
+## 7. Badges
+
+All badges use the Radix `color` prop. **No manual className color overrides.** Radix handles light/dark adaptation automatically.
+
+### Variant strategy
+
+- **`soft`** — default for most badges. Tinted background with readable text. Use for severity, status, roles, service lines.
+- **`outline`** — lighter visual weight. Use for metadata labels: authority levels, confidence scores, deadlines, relationship types.
+
+### Severity
+
+| Level | Props |
+|---|---|
+| Critical | `variant="soft" color="red"` |
+| High | `variant="soft" color="orange"` |
+| Medium | `variant="soft" color="amber"` |
+| Low | `variant="soft" color="green"` |
+| Informational | `variant="soft" color="blue"` |
+
+No severity dot. The `soft` variant's tinted background carries the color signal.
+
+### Status
+
+| Status | Props | Icon |
+|---|---|---|
+| Approved / Reviewed | `variant="soft" color="green"` | `ri-shield-check-line` |
+| Pending / Pending Review | `variant="soft" color="amber"` | — |
+| Rejected | `variant="soft" color="red"` | — |
+| Auto-approved / Not Required | `variant="soft" color="gray"` | `ri-robot-line` |
+
+### Role & Tier
+
+| Badge | Props |
+|---|---|
+| Admin | `variant="soft" color="amber"` |
+| Intelligence tier | `variant="soft" color="purple"` |
+| Monitor tier | `variant="soft" color="gray"` |
+
+### Authority Level
+
+| Authority | Props |
+|---|---|
+| Federal Statute | `variant="outline" color="red"` |
+| Federal Regulation | `variant="outline" color="orange"` |
+| Sub-Regulatory Guidance | `variant="outline" color="amber"` |
+| National Coverage Determination | `variant="outline" color="blue"` |
+| Local Coverage Determination | `variant="outline" color="cyan"` |
+| State Statute | `variant="outline" color="purple"` |
+| State Board Rule | `variant="outline" color="indigo"` |
+| Professional Standard | `variant="outline" color="gray"` |
+
+### Confidence
+
+| Range | Props |
+|---|---|
+| > 80% | `variant="outline" color="green"` |
+| 50–80% | `variant="outline" color="amber"` |
+| < 50% | `variant="outline" color="red"` |
+
+### Deadline
+
+| Condition | Props |
+|---|---|
+| Urgent (≤ 7 days) | `variant="outline" color="red"` |
+| Soon (≤ 30 days) | `variant="outline" color="amber"` |
+| Passed / Normal | `variant="outline" color="gray"` |
+
+### Other badges
+
+| Badge | Props |
+|---|---|
+| "SOON" (disabled features) | `variant="soft" color="gray"` |
+| Service line tags | `variant="soft" color="gray"` |
+| Relationship type | `variant="outline" color="gray"` |
+| Regulation type | `variant="soft" color="gray"` |
+
+### Implementation: `ui-constants.ts`
+
+Replace all `_CLASS` / `_DOT` mappings with `_COLOR` mappings that export Radix color names. Components use these via `color={SEVERITY_COLOR[key] as any}`. Remove `SEVERITY_CLASS`, `SEVERITY_DOT`, `STATUS_CLASS`, `AUTHORITY_LEVEL_CLASS`.
+
+---
+
+## 8. Cards
+
+Default variant: **`surface`** — subtle border with translucent background.
+
+| Use case | Props |
+|---|---|
+| Standard content card | `<Card variant="surface">` |
+| Clickable/interactive card | `<Card variant="surface" asChild>` wrapping a link or button |
+| Dashboard stat card | `<Card variant="surface" size="2">` |
+| No-chrome inline grouping | `<Card variant="ghost">` |
+
+Clickable cards: `className="hover:bg-[var(--cedar-card-hover)] transition-colors"`.
+
+---
+
+## 9. Tables
+
+| Use case | Props |
+|---|---|
+| Data tables (default) | `<Table.Root variant="surface">` |
+| Inline/embedded tables | `<Table.Root variant="ghost">` |
+
+Size `2` for standard data tables. Size `1` for compact/dense views.
+
+---
+
+## 10. Form Controls
+
+All form controls use gray as the default.
+
+| Component | Default props |
+|---|---|
+| TextField | `variant="surface"` |
+| TextArea | `variant="surface"` |
+| Select | `variant="surface"` |
+| Switch | `color="gray"` |
+| Checkbox | `color="gray"` |
+| RadioGroup | `color="gray"` |
+| Slider | `color="gray"` |
+
+### Error states
+
+On validation errors, set `color="red"` on the field component and add `<Text size="1" color="red">` below.
+
+### Sizing
+
+Default `size="2"`. Use `size="3"` for prominent standalone forms. Use `size="1"` for compact/inline controls.
+
+---
+
+## 11. Links
+
+```tsx
+<Link href="/path" color="gray" highContrast underline="always">
+  Link text
+</Link>
+```
+
+For subtle links (breadcrumbs, back links): `underline="hover"`.
+
+---
+
+## 12. Tabs & Navigation
+
+| Component | Props or tokens |
+|---|---|
+| Tabs (page sections) | `<Tabs.Root>` — inherits gray from theme context |
+| TabNav | Same neutral treatment |
+| Sidebar active link | `bg-[var(--cedar-interactive-selected)] text-[var(--cedar-text-primary)] font-medium` |
+| Sidebar inactive link | `text-[var(--cedar-text-secondary)] hover:bg-[var(--cedar-interactive-hover)] hover:text-[var(--cedar-text-primary)]` |
+| Sidebar disabled link | `text-[var(--cedar-text-muted)] cursor-not-allowed` |
+
+---
+
+## 13. Callouts
+
+| Type | Props |
+|---|---|
+| Informational | `<Callout.Root color="blue">` |
+| Warning | `<Callout.Root color="amber">` |
+| Error | `<Callout.Root color="red">` |
+| Success | `<Callout.Root color="green">` |
+| Neutral/tip | `<Callout.Root color="gray">` |
+
+---
+
+## 14. Dialogs & AlertDialogs
+
+| Element | Props |
+|---|---|
+| Dialog | Primary: `<Button variant="classic" color="gray" highContrast>`. Cancel: `<Button variant="soft" color="gray">`. |
+| AlertDialog (destructive) | Confirm: `<Button variant="solid" color="red">`. Cancel: `<Button variant="soft" color="gray">`. |
+
+Button placement: cancel left, action right.
+
+---
+
+## 15. Dropdown Menus & Context Menus
+
+Standard items: no `color` override. Destructive items: `color="red"`.
+
+---
+
+## 16. Tooltips & Popovers
+
+Use Radix Themes defaults. No overrides needed.
+
+---
+
+## 17. Progress, Skeleton, Spinner
+
+| Component | Props |
+|---|---|
+| Progress bar | `<Progress color="gray">` |
+| Skeleton | Default |
+| Spinner | `size="1"` inline, `size="3"` page-level |
+
+---
+
+## 18. Separators
+
+`<Separator>` uses Radix defaults. Custom separators: `border-[var(--cedar-border-subtle)]`.
+
+---
+
+## 19. Color System
+
+Cedar uses **Radix Colors** with a custom green accent and neutral gray, defined in `globals.css`.
 
 ### The 12-step scale
+
 | Steps | Purpose | Use for |
 |-------|---------|---------|
 | 1–2 | App/subtle backgrounds | Page backgrounds, card backgrounds |
 | 3–5 | Interactive component backgrounds | Hover states, selected states, soft badges |
-| 6–8 | Borders | Subtle borders (6), interactive borders (7), strong borders (8) |
-| 9 | Solid backgrounds | Primary buttons, filled badges |
-| 10 | Hovered solid backgrounds | Primary button hover state |
-| 11–12 | Text | Low-contrast text (11), high-contrast text (12) |
+| 6–8 | Borders | Subtle (6), interactive (7), strong (8) |
+| 9 | Solid backgrounds | Filled badges, solid buttons |
+| 10 | Hovered solid backgrounds | Solid button hover |
+| 11–12 | Text | Low-contrast (11), high-contrast (12) |
 
-### Accessing colors
-- On Radix Themes components: `color="green"` prop
-- On custom components: `var(--accent-1)` through `var(--accent-12)`, `var(--gray-1)` through `var(--gray-12)`
-- Alpha variants: `var(--accent-a1)` through `var(--accent-a12)` — transparent versions for overlays
-- Semantic shortcuts: `var(--color-background)`, `var(--color-surface)`, `var(--color-overlay)`, `var(--color-panel-solid)`, `var(--color-panel-translucent)`
+### Semantic color usage
 
-### Status colors
-Use named Radix color scales for status indicators:
-- Success: `color="green"` or `var(--green-9)`
-- Warning: `color="amber"` or `var(--amber-9)`
-- Error/destructive: `color="red"` or `var(--red-9)`
-- Info: `color="blue"` or `var(--blue-9)`
+| Meaning | Radix color |
+|---------|-------------|
+| Success / Approved | `green` |
+| Warning / Pending | `amber` |
+| Error / Destructive | `red` |
+| Info | `blue` |
+| Neutral / Default | `gray` |
+| Premium tier | `purple` |
+| Admin | `amber` |
+| High urgency | `orange` |
+
+### Available Radix color scales
+
+Cedar primarily uses: **gray, red, orange, amber, green, blue, purple, indigo, cyan**. Full palette also includes: Gold, Bronze, Brown, Yellow, Tomato, Ruby, Crimson, Pink, Plum, Violet, Iris, Teal, Jade, Grass, Lime, Mint, Sky.
 
 ---
 
-## 4. Spacing
+## 20. Spacing
 
-Radix Themes provides a 9-step spacing scale. Use layout primitive props for Themes components, Tailwind for custom components.
+**Important:** Radix Themes and Tailwind use different numbering for the same pixel values. Radix `gap="5"` = 24px = Tailwind `gap-6`. Always verify the target pixel value when switching between systems, and avoid mixing Radix layout props with Tailwind spacing on the same element.
 
 | Step | Value | Themes prop | Tailwind |
 |------|-------|-------------|----------|
@@ -93,280 +464,234 @@ Radix Themes provides a 9-step spacing scale. Use layout primitive props for The
 | 8 | 48px | `gap="8"`, `p="8"` | `gap-12`, `p-12` |
 | 9 | 64px | `gap="9"`, `p="9"` | `gap-16`, `p-16` |
 
-**Standard patterns:**
-- Page outer wrapper: `<Flex direction="column" gap="6">`
-- Card internal padding: `<Card size="3">` or `<Box p="4">`
-- Section spacing: `gap="6"` between sections, `gap="2"` within
-- Form field spacing: `<Flex direction="column" gap="4">`
+**Rule of thumb:** Radix Themes components use Radix props for spacing. Custom Primitive-based components use Tailwind classes for spacing. The pixel value column is the shared reference when converting between them.
+
+**Standard patterns:** Page wrapper `gap="6"`, card padding `size="3"` or `p="4"`, section spacing `gap="6"` between / `gap="2"` within, form fields `gap="4"`.
 
 ---
 
-## 5. Typography
+## 21. Typography
 
-Use Radix Themes typography components with their `size` prop (1–9 scale).
-
-**Standard patterns:**
 - Page title: `<Heading size="6" weight="bold">`
 - Page subtitle: `<Text size="2" color="gray">`
-- Section headers: `<Text size="1" weight="bold" color="gray">` with `className="uppercase tracking-wide"`
+- Section headers: `<Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">`
 - Body text: `<Text size="2">`
 - Labels/captions: `<Text size="1" color="gray">`
 - Data values: `<Text size="2" weight="medium">` or `<Text size="5" weight="bold">` for stats
 
-Font: Geist (overridden via `--default-font-family` in globals.css).
+Font: Geist (via `--default-font-family` in globals.css).
 
 ---
 
-## 6. Border Radius
+## 22. Border Radius
 
-Controlled globally by `<Theme radius="large">`. Individual components accept a `radius` prop to override. The global setting produces consistent radius across all Themes components automatically.
-
-Radix Themes radius scale: `--radius-1` through `--radius-6`, derived from the theme's `radius` setting.
-
-For custom Primitive-based components, reference `var(--radius-3)` or similar tokens.
+Controlled globally by `<Theme radius="large">`. Override per-component via `radius` prop. Custom components: `var(--radius-3)` etc.
 
 ---
 
-## 7. Shadows
-
-Radix Themes provides `--shadow-1` through `--shadow-6`. These auto-adapt in dark mode.
+## 23. Shadows
 
 | Context | Token |
 |---------|-------|
-| Cards | `var(--shadow-2)` or Card component's built-in shadow |
-| Dropdowns, popovers | Handled by Themes components automatically |
-| Modals, slide-over panels | `var(--shadow-5)` or `var(--shadow-6)` |
-| Custom elevated elements | `shadow-[var(--shadow-3)]` in Tailwind |
+| Cards | Built-in via `variant="surface"` |
+| Dropdowns, popovers | Automatic |
+| Modals, slide-overs | `var(--shadow-5)` or `var(--shadow-6)` |
+| Custom elevated elements | `shadow-[var(--shadow-3)]` |
 
 ---
 
-## 8. Motion & Animation
+## 24. Motion & Animation
 
-Cedar's motion system uses custom keyframes and timing tokens defined in `globals.css`. Radix Themes does not provide motion tokens — Cedar defines its own.
+Duration tokens: `--duration-instant` (100ms) through `--duration-slower` (500ms). Easing: `--ease-standard`, `--ease-out`, `--ease-in`, `--ease-emphasized`, `--ease-spring`.
 
-### Duration tokens
-| Token | Value | Use for |
-|-------|-------|---------|
-| `--duration-instant` | 100ms | Toggles, color changes |
-| `--duration-fast` | 150ms | Hovers, tooltips |
-| `--duration-base` | 200ms | Standard transitions |
-| `--duration-moderate` | 300ms | Panels, drawers |
-| `--duration-slow` | 400ms | Large-scale entrances |
-| `--duration-slower` | 500ms | Complex orchestrations |
+### Animation library
 
-### Easing tokens
-| Token | Use for |
-|-------|---------|
-| `--ease-standard` | Default for most transitions |
-| `--ease-out` | Elements entering |
-| `--ease-in` | Elements exiting |
-| `--ease-emphasized` | Attention-grabbing (slight overshoot) |
-| `--ease-spring` | Playful interactions |
+All animation utility classes are defined in `globals.css`. Entrance animations use `ease-out` (decelerate into place). Exit animations use `ease-in` (accelerate away). Every animated entrance MUST have a corresponding exit.
 
-### Animation classes (defined in globals.css)
-| Interaction | Class(es) |
-|------------|-----------|
-| Slide-over panel enter | `.animate-panel-in-right` on panel, `.animate-scrim-in` on overlay |
-| Slide-over panel exit | `.animate-panel-out-right` on panel, `.animate-scrim-out` on overlay |
-| Sidebar expand/collapse | CSS transition on width with `--duration-base` and `--ease-standard` |
-| Dialog/modal enter | `.animate-scale-in` |
-| Dialog/modal exit | `.animate-scale-out` |
-| Hover/focus | `.transition-interactive` or Tailwind `transition-colors` |
+| Category | Entrance class | Exit class | Use for |
+|----------|---------------|------------|---------|
+| **Slide** | `.animate-slide-in-right` | `.animate-slide-out-right` | Simple positional — mobile nav, toasts |
+| | `.animate-slide-in-left` | `.animate-slide-out-left` | Reverse direction panels |
+| | `.animate-slide-in-bottom` | `.animate-slide-out-bottom` | Bottom sheets, action bars |
+| **Panel** | `.animate-panel-in-right` | `.animate-panel-out-right` | Slide-overs, drawers (slide + opacity) |
+| | `.animate-panel-in-left` | `.animate-panel-out-left` | Left-side drawers (slide + opacity) |
+| **Scrim** | `.animate-scrim-in` | `.animate-scrim-out` | Overlay backdrop behind panels/dialogs |
+| **Fade** | `.animate-fade-in` | `.animate-fade-out` | Opacity-only transitions |
+| **Scale** | `.animate-scale-in` | `.animate-scale-out` | Dialogs, popovers, dropdown menus (fade + subtle scale) |
 
-### Motion completeness rule
-**Every animated entrance MUST have a corresponding animated exit.** Implementation pattern:
-1. Track an `isClosing` state alongside the `open` state
-2. When closing: set `isClosing = true`, apply exit animation class
-3. Listen for `animationend`, then unmount and reset state
+### Transition utilities
 
-### Principles
-- Entering = `ease-out`, exiting = `ease-in`
-- Only animate `transform` and `opacity` (GPU-composited, 60fps)
-- Desktop: 150–300ms. Reserve 400ms+ for large-scale motion.
-- `prefers-reduced-motion` safety net in globals.css kills all animation automatically.
+| Class | Properties | Use for |
+|-------|-----------|---------|
+| `.transition-interactive` | color, background-color, border-color, box-shadow, opacity | Hover/focus state changes |
+| `.transition-transform` | transform, opacity | Sidebar expand/collapse |
+
+### Common patterns
+
+| Interaction | Classes |
+|------------|---------|
+| Slide-over panel | `.animate-panel-in-right` / `.animate-panel-out-right` + `.animate-scrim-in` / `.animate-scrim-out` |
+| Sidebar | CSS transition with `--duration-base` and `--ease-standard` |
+| Dialog | `.animate-scale-in` / `.animate-scale-out` + `.animate-scrim-in` / `.animate-scrim-out` |
+| Bottom sheet | `.animate-slide-in-bottom` / `.animate-slide-out-bottom` + `.animate-scrim-in` / `.animate-scrim-out` |
+| Hover/focus | `.transition-interactive` or `transition-colors` |
+
+### Rules
+
+- Only animate `transform` and `opacity` — these are GPU-composited and performant.
+- `prefers-reduced-motion` kills all animation globally (handled in globals.css).
 
 ---
 
-## 9. Dark Mode
+## 25. Dark Mode
 
-Radix Themes handles dark mode automatically through the color token system.
-
-- `next-themes` applies `.dark` to `<html>` → Radix Colors swap all 12-step scales
-- Radix Themes components adapt automatically — no `dark:` prefixes needed
-- Custom Primitive-based components: use `var(--accent-*)` and `var(--gray-*)` tokens — they swap automatically
-- Avoid raw Tailwind color classes (`bg-green-500`) on custom components — use `bg-[var(--accent-9)]` instead so dark mode works
+- `next-themes` applies `.dark` to `<html>` → Radix Colors + Cedar tokens swap automatically
+- Radix Themes components: no `dark:` prefixes needed
+- Cedar tokens: auto-swap (built on Radix variables)
+- Logo switching: use `.logo-light` / `.logo-dark` classes (defined in globals.css), controlled by `.dark` parent
 - Test both modes for every new UI element
 
 ---
 
-## 10. Icons
+## 26. Icons
 
-Cedar uses **Remix Icon** exclusively:
-```html
-<i className="ri-[name]-line" />   <!-- outline -->
-<i className="ri-[name]-fill" />   <!-- filled -->
-```
-- Prefer `-line` for UI chrome, `-fill` for active/selected states
-- Wrap icon-only buttons with Radix `<IconButton>`: `<IconButton variant="ghost" size="2"><i className="ri-settings-3-line" /></IconButton>`
-- Size icons via Tailwind text classes: `text-sm`, `text-base`, `text-lg`
-- Color via Radix token references: `text-[var(--gray-11)]`, `text-[var(--accent-11)]`
+Remix Icon only: `<i className="ri-[name]-line" />` (outline) / `ri-[name]-fill` (filled). Prefer `-line` for chrome, `-fill` for active states. Icon-only buttons: `<IconButton variant="ghost" color="gray" aria-label="...">`. Size via `text-sm`, `text-base`, `text-lg`. Color via Cedar tokens.
 
 ---
 
-## 11. Page Layout Patterns
-
-Use Radix Themes layout primitives for structure:
+## 27. Page Layout Patterns
 
 ```tsx
-// Page wrapper
 <Flex direction="column" gap="6">
-
-// Page title
-<Heading size="6" weight="bold">Page Title</Heading>
-
-// Page subtitle
-<Text size="2" color="gray">Description text</Text>
-
-// Section header
-<Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">Section</Text>
+  <Heading size="6" weight="bold">Page Title</Heading>
+  <Text size="2" color="gray">Description</Text>
+  {/* content */}
+</Flex>
 
 // Empty state
 <Flex direction="column" align="center" justify="center" py="9">
-  <i className="ri-filter-off-line text-3xl text-[var(--gray-a8)]" />
+  <i className="ri-filter-off-line text-3xl text-[var(--cedar-text-muted)]" />
   <Text size="2" color="gray" mt="2">No items found.</Text>
 </Flex>
 ```
 
 ---
 
-## 12. Interaction State Coverage
+## 28. Interaction State Coverage
 
-Every interactive element must account for ALL of its possible states.
-
-**Buttons:** Default, hover, focus-visible, active, disabled, loading (use Radix `<Button loading>` prop or swap text to "Saving…")
-
-**Inputs:** Default, focus, filled, error (red border + error message), disabled, placeholder
-
-**Clickable rows/cards:** Default, hover (subtle background shift), focus-visible
-
-**Toggles:** Off, on, hover (both), focus-visible, disabled (both)
-
-### Loading states
-- **Button submissions:** Use Radix Button's `loading` prop or `disabled` + text change
-- **Page data fetching:** Use Radix `<Skeleton>` wrapping content placeholders
-- **Inline updates:** Use Radix `<Spinner size="1">` next to the element
-- Never leave the user without feedback after they click something
-
-### Empty states
-Every data-driven view must handle the empty case with an icon, message, and optional action.
-
-### Error states
-- Form validation: `color="red"` on the field + `<Text size="1" color="red">` message below
-- API errors: toast via Sonner
-- Failed data loads: error state with retry option
+Every interactive element: default, hover, focus-visible, active, disabled, loading. Every data view: loading skeleton, empty state, error with retry. Destructive actions always require confirmation (`<AlertDialog>`).
 
 ---
 
-## 13. Overlay & Fixed Element Isolation
+## 29. Overlay & Fixed Element Isolation
 
-- Fixed/overlay elements must render at the top level or use portals
-- Radix Themes overlays (Dialog, Popover, DropdownMenu, etc.) handle portals automatically
-- Custom overlays built with Primitives must wrap portalled content in `<Theme>`
-- Overlays must never inherit parent `gap-*` or spacing
-- Test overlays at multiple viewport sizes
+Portals for fixed/overlay elements. Radix Themes overlays handle this automatically. Custom overlays: wrap in `<Theme>`. No parent `gap-*` inheritance. Test at multiple viewport sizes.
 
 ---
 
-## 14. Focus Management & Keyboard Navigation
+## 30. Focus Management & Keyboard Navigation
 
-- Radix Themes components handle focus trapping and restoration automatically
-- Custom overlays must implement focus trapping manually or use Radix Dialog Primitive
-- `Escape` closes the topmost overlay
-- All interactive elements reachable via Tab
-- Visible focus indicators in both light and dark mode
+Radix Themes handles focus trapping/restoration automatically. Custom Primitive-based components must implement focus styling manually using Cedar focus tokens:
 
----
+```tsx
+// Custom focusable element
+<button className="
+  focus-visible:outline-none
+  focus-visible:ring-2
+  focus-visible:ring-[var(--cedar-focus-ring)]
+  focus-visible:ring-offset-2
+  focus-visible:ring-offset-[var(--cedar-focus-offset)]
+">
+```
 
-## 15. Content Overflow & Truncation
-
-- Single-line overflow: use Radix `<Text truncate>` or Tailwind `truncate`
-- Multi-line: Tailwind `line-clamp-2` or `line-clamp-3`
-- Scrollable panels: `overflow-y-auto` on body, `shrink-0` on header/footer
-- Tables: `overflow-x-auto` wrapper
-- Test with 2 items and 200 items
-
----
-
-## 16. Responsive Behavior
-
-Desktop-first SaaS, functional down to 768px.
-
-- Radix Themes supports responsive props: `<Grid columns={{ initial: "1", md: "2" }}>`
-- Tailwind responsive prefixes (`md:`, `lg:`) for custom components
-- Test at 1440px, 1024px, 768px
+`Escape` closes topmost overlay. All interactive elements must be Tab-reachable. The gray double-ring focus pattern is set globally in `globals.css` via the Radix `--focus-*` override.
 
 ---
 
-## 17. Accessibility
+## 31. Content Overflow & Truncation
 
-- Radix Themes components are WCAG-compliant by default (WAI-ARIA patterns built in)
-- Radix Colors guarantee APCA contrast (step 11 = Lc 60, step 12 = Lc 90)
-- Icon-only buttons: `aria-label` on `<IconButton>`
-- Form inputs: associated labels
-- Color meaning paired with text/icon
-- `<Callout>` for alerts (accessible by default)
+Single-line: `<Text truncate>` or `truncate`. Multi-line: `line-clamp-2/3`. Scrollable panels: `overflow-y-auto` body + `shrink-0` header/footer. Tables: `overflow-x-auto`. Test with 2 and 200 items.
 
 ---
 
-## 18. System Feedback Patterns
+## 32. Responsive Behavior
 
-| Action type | Feedback pattern |
-|------------|-----------------|
-| Form submission | Button loading state → success toast or error |
-| Delete action | Confirmation (inline or AlertDialog) → loading → toast |
-| Toggle/switch | Immediate visual change + optional toast |
-| Navigation | Route change; Skeleton loading for data |
-| Filter/search | Immediate update; show result count |
-
-**Destructive actions** always require confirmation. Use `<AlertDialog>` for high-severity.
+Desktop-first, functional to 768px. Radix responsive props: `columns={{ initial: "1", md: "2" }}`. Tailwind: `md:`, `lg:`. Test at 1440, 1024, 768.
 
 ---
 
-## 19. Component Naming
+## 33. Accessibility
 
-Name components by **what they are**, never by **where they're used**. A slide-over panel is `SlideOverPanel`, not `PracticeSlideOver`. Props and calling code determine context.
-
----
-
-## 20. Quality Checklist
-
-Before considering any UI work complete:
-
-- [ ] All standard UI uses Radix Themes components (no raw HTML for covered elements)
-- [ ] Custom components reference Radix CSS variables for colors (no hardcoded values)
-- [ ] Dark mode tested — both themes look correct
-- [ ] All interactive states implemented (hover, focus, disabled, loading, error)
-- [ ] Every entrance animation has a corresponding exit animation
-- [ ] Loading states for all async operations (use Skeleton, Spinner, or button loading)
-- [ ] Empty states for all data views
-- [ ] Error states with recovery path
-- [ ] Confirmation step for all destructive actions
-- [ ] Overlays not affected by parent spacing
-- [ ] Focus trapped in modals/panels
-- [ ] Long text truncated appropriately
-- [ ] Tested at 1440px and 768px width
-- [ ] Icon-only buttons have `aria-label`
+WCAG via Radix Themes. APCA contrast via Radix Colors. `aria-label` on icon buttons. Labels on inputs. Color + text/icon pairing. `<Callout>` for alerts.
 
 ---
 
-## 21. File Locations
+## 34. System Feedback Patterns
+
+Form submission → button loading → toast. Delete → AlertDialog → loading → toast. Toggle → immediate visual. Navigation → skeleton. Filter → immediate + count.
+
+---
+
+## 35. Component Naming
+
+Name by what it **is**, never where it's used. `SlideOverPanel`, not `PracticeSlideOver`.
+
+---
+
+## 36. Quality Checklist
+
+- [ ] Radix Themes components styled via props only
+- [ ] Buttons: `color="gray" highContrast` for primary/secondary
+- [ ] Badges: `color` prop with Radix color name
+- [ ] Custom components: `--cedar-*` tokens only — no raw Radix variables
+- [ ] Custom focus: `focus-visible:ring-[var(--cedar-focus-ring)]`
+- [ ] Dark mode tested
+- [ ] All states: hover, focus, disabled, loading, error
+- [ ] Animated entrances have exits
+- [ ] Loading, empty, and error states for all data views
+- [ ] Destructive actions confirmed via AlertDialog
+- [ ] Focus trapped in overlays
+- [ ] Truncation on long text
+- [ ] Tested at 1440px and 768px
+- [ ] `aria-label` on icon buttons
+- [ ] No hardcoded colors anywhere
+- [ ] No `dark:` prefixes — tokens auto-swap
+- [ ] No raw Tailwind spacing on Radix Themes layout components
+- [ ] Shared utilities used (`lib/format.ts`, `lib/ui-constants.ts`)
+
+---
+
+## 37. Shared Components & Utilities
+
+Before building a new component, check for existing Cedar composites and shared utilities.
+
+### Cedar composite components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| SeverityBadge | `components/SeverityBadge.tsx` | Severity badge using `SEVERITY_COLOR` from `ui-constants.ts` via Radix `color` prop |
+| StatusBadge | `components/StatusBadge.tsx` | Status badge using `STATUS_COLOR` via Radix `color` prop |
+| EmptyState | `components/EmptyState.tsx` | Standard "no data" state — use for all empty views |
+| DataList | `components/DataList.tsx` | Clickable list of items with severity indicator + timestamp |
+
+### Shared utilities
+
+| File | Exports | Rule |
+|------|---------|------|
+| `lib/ui-constants.ts` | `SEVERITY_COLOR`, `STATUS_COLOR`, `AUTHORITY_LEVEL_COLOR` | Single source of truth for color mappings. Exports Radix color names. Never create local color maps. |
+| `lib/format.ts` | `timeAgo()`, `formatDate()`, `capitalize()` | Never define these locally — always import from here. |
+
+---
+
+## 38. File Locations
 
 | What | Where |
 |------|-------|
-| Design tokens + custom colors | `app/globals.css` |
+| All `--cedar-*` token definitions | `app/globals.css` |
 | Design standards (this file) | `docs/design-system/design-standards.md` |
-| Component specs | `specs/components/[name].md` |
+| Design tokens skill (decision tree) | `.claude/skills/design-tokens/SKILL.md` |
+| UI components skill (build checklist) | `.claude/skills/ui-components/SKILL.md` |
 | Cedar composite components | `components/` |
-| Shared utilities (cn, etc.) | `lib/utils.ts` |
+| Shared utilities | `lib/utils.ts` |
 | Format utilities | `lib/format.ts` |
-| UI constants | `lib/ui-constants.ts` |
+| UI constants (color name mappings) | `lib/ui-constants.ts` |
