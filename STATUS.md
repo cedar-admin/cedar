@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 21, 2026 by Session 23
+Last updated: March 21, 2026 by Session 24
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,43 +13,33 @@ Last updated: March 21, 2026 by Session 23
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phase 1 (foundations) + Phase 2 (shell & navigation) + Phase 3 (dashboard pages) complete. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete — all 54 UI files compliant. Settings toggles persist. |
 
 ## Codebase Stats
-- **~16,794 lines** TypeScript/TSX
+- **~15,867 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
 - **16** dashboard routes, **9** API routes
 - **0** shadcn/ui components, **21** Radix Themes composite components
-- **115** git commits on main
+- **119** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 23 executed the Design System Phase 3 PRP — full compliance pass over all 16 dashboard pages, plus auth/public pages (sign-in, onboarding, pricing) and `app/layout.tsx`. Key changes:
-- **Heading hierarchy**: explicit `as` props (`h1`/`h2`/`h3`) on every `Heading` throughout all pages
-- **Metadata**: added `export const metadata` or `generateMetadata` on every page; `audit/export/layout.tsx` created as server wrapper to export metadata for the `'use client'` export page
-- **Timestamps**: all displayed dates wrapped in `<time dateTime={ISO}>` elements
-- **Zero `dark:` classes**: confirmed none remain in dashboard/auth pages
-- **Cedar semantic tokens**: replaced all raw Radix step vars (`--gray-6`, `--accent-9`, `--color-panel`, `--color-background`, etc.) with `--cedar-*` tokens; 19 new tokens added to `globals.css`
-- **Table variants**: `Table.Root variant="surface"` on all tables
-- **Button variants**: `variant="soft" color="gray" highContrast` for secondary, `variant="classic" color="gray" highContrast` for primary CTAs
-- **Filter pills**: use `--cedar-filter-active-*` tokens for active state (high-contrast inverted)
-- **Breadcrumbs**: converted to `<nav aria-label="Breadcrumb"><ol><li>` structure
-- **`aria-hidden="true"`** on every decorative icon
-- **RegulationTabs**: converted from manual `useState` tab machine to Radix `<Tabs.Root>` (no more custom tab bar)
-- **DiffViewer**: `dark:bg-green-950/40` etc. replaced with `--cedar-diff-*` tokens
-- **Onboarding**: plan card buttons use Cedar tokens; step indicators use `--cedar-filter-active-bg`
-- **Pricing**: plan card active border uses `--cedar-interactive-focus`; feature check icons use `--cedar-accent-text`
+Session 24 executed the Design System Phase 4 PRP — final compliance pass over all 9 admin files plus a codebase-wide sweep that caught 5 additional dashboard components. The design system refactor is now complete across all 54 UI files.
+- **Admin pages** (`system/`, `practices/`, `reviews/`, `reviews/[id]/`): `Heading as="h1"` on every page, `metadata`/`generateMetadata` exports, all raw Radix step vars replaced with `--cedar-*` tokens, `Table.Root variant="surface"`, `<time>` elements on all timestamps
+- **SlideOverPanel** migrated from raw div overlay to `@radix-ui/react-dialog` primitive: automatic focus trapping, Escape-to-close, focus restoration on dismiss; entrance/exit animations preserved via controlled open state + `startClose` pattern; `Dialog.Title asChild` with `Heading as="h2"`
+- **PracticesTable**: removed `onClick` from `<Table.Row>` — replaced with dedicated `<IconButton>` "View" column; `Table.RowHeaderCell` for practice name column
+- **ReviewActions**: `variant="classic" color="gray" highContrast` approve; `variant="soft" color="red"` reject; `variant="solid" color="red"` confirm reject; cedar error token
+- **Final sweep** fixed `RelationshipCard`, `RegulationRow`, `DataList`, `ContentReader` (removed `dark:prose-invert`), `UpgradeBanner` — zero raw Radix step vars remain in any `.tsx` file
 - Build: ✅ 0 errors, 0 warnings. Deployed to cedar-beta.vercel.app.
 
 ## Next Session Priority
-1. **Verify visual rendering** — start dev server and navigate all dashboard pages to confirm Phase 3 tokens render correctly in both light and dark mode; spot-check filter pills, DiffViewer, RegulationTabs, and plan cards.
-2. **Admin pages design pass** — `(admin)/reviews/`, `(admin)/system/`, `(admin)/practices/` still use raw Radix step vars (`--gray-6`, `--accent-9`, `--green-11`, etc.). Phase 3 PRP scoped to dashboard only — create a Phase 4 PRP if a compliance pass is desired.
-3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
+1. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes views
    - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-4. **Verify library UI** after Phase 3 pipeline runs — category grid should show regulation counts
+2. **Verify library UI** after pipeline runs — category grid should show regulation counts; domain cards should have accurate counts
+3. **Visual spot-check** — navigate admin pages (`/system`, `/practices`, `/reviews`) in dark mode to confirm cedar tokens render correctly; test SlideOver (Escape key, scrim click, focus return)
 
 ### Dev Server Startup
 ```bash
