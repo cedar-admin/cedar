@@ -307,78 +307,34 @@ All secrets are stored in `.env.local` (local dev) and Vercel environment variab
 
 ## Design System
 
-Cedar uses **Radix Themes** for standard UI components and **Radix Primitives + Tailwind** for custom creative components. The color system is Radix Colors with a custom green accent, defined in `globals.css`.
+Cedar follows a **neutral-interactive, colorful-informational** design philosophy. Gray for interaction, color for information.
 
 ### Before writing or modifying ANY UI code:
-1. Read `docs/design-system/design-standards.md` for patterns and principles
-2. Determine: does a Radix Themes component cover this? If yes, use it. If no, build with Primitives + Tailwind + Radix CSS variables.
+1. Read `docs/design-system/design-standards.md` — the comprehensive reference for all component styling, variant choices, color decisions, token usage, shared component inventory, forbidden patterns, and quality checklist
+2. Walk the decision tree in `.claude/skills/design-tokens/SKILL.md` to choose the right styling approach for the value you need
+3. Follow the component routing in `.claude/skills/ui-components/SKILL.md` to determine whether to use a Radix Themes component, a custom build, or an existing Cedar composite
 
-### Component decision framework
-- **Radix Themes component exists** → import from `@radix-ui/themes`, style via props (`variant`, `size`, `color`, `highContrast`). Use layout primitives (`Flex`, `Box`, `Grid`) and typography components (`Heading`, `Text`) for structure.
-- **Radix Themes component does NOT exist** (Accordion, Sheet/SlideOver, Sidebar, Breadcrumb, Pagination, Command, Toast) → build with Radix Primitives + Tailwind, using Radix CSS variables for colors: `bg-[var(--accent-9)]`, `border-[var(--gray-6)]`, `text-[var(--gray-12)]`.
-- **Portalled custom components** → wrap portal content with `<Theme>` from `@radix-ui/themes`.
+### Two styling systems (quick orientation)
 
-### Core rules
-- **Colors:** Radix Themes props (`color="green"`) for Themes components. Radix CSS variables (`var(--accent-9)`, `var(--gray-12)`) for custom components. No hardcoded hex, rgb, hsl, or oklch in components.
-- **Spacing:** Radix layout props (`<Flex gap="4" p="5">`) for Themes components. Tailwind scale (`p-4`, `gap-6`) for custom components. No arbitrary pixel values.
-- **Typography:** Radix `<Heading>` and `<Text>` with `size` props (1–9). For custom components, Tailwind text classes are acceptable.
-- **Radius:** Controlled globally by `<Theme radius="large">`. Individual overrides via `radius` prop. Custom components: `var(--radius-3)` etc.
-- **Shadows:** Radix `--shadow-1` through `--shadow-6`. Auto-adapt in dark mode.
-- **Motion:** Cedar's custom animation classes from globals.css (`.animate-panel-in-right`, `.animate-scrim-in`, `.transition-interactive`). Duration tokens: `--duration-fast` through `--duration-slower`. Easing: `--ease-standard`, `--ease-out`, `--ease-in`.
-- **No inline styles** except for dynamic values (stagger delays, computed positions).
-
-### Icons
-- Remix Icon only (`<i className="ri-[name]-line" />`)
-- Wrap icon-only buttons with Radix `<IconButton>`
-- No Phosphor icons, no Lucide, no Heroicons
-
-### Dark mode
-- Radix Themes handles it automatically — Radix Colors swap when `.dark` is applied to `<html>`
-- Custom Primitive-based components: use `var(--accent-*)` and `var(--gray-*)` — they swap automatically
-- Avoid raw Tailwind colors (`bg-green-500`) — use `bg-[var(--accent-9)]` so dark mode works
-- Test both modes for every new UI element
-
-### Animation patterns
-- Slide-over panels: `.animate-panel-in-right` / `.animate-panel-out-right` on panel, `.animate-scrim-in` on overlay
-- Sidebar: CSS transition on width with `--duration-base` and `--ease-standard`
-- Dialogs: `.animate-scale-in` / `.animate-scale-out`
-- Hover/focus: `.transition-interactive` or `transition-colors`
-- Every animated entrance MUST have a corresponding animated exit
-
-## UI Standards
-
-### Shared Components
-- **SeverityBadge** (`components/SeverityBadge.tsx`) — use for all severity indicators
-- **StatusBadge** (`components/StatusBadge.tsx`) — use for all review status badges
-- **EmptyState** (`components/EmptyState.tsx`) — use for all "no data" states
-- **DataList** (`components/DataList.tsx`) — use for any clickable list of items with severity + timestamp
-
-### Shared Utilities
-- **`lib/ui-constants.ts`** — single source of truth for severity/status mappings
-- **`lib/format.ts`** — shared `timeAgo()`, `formatDate()`, `capitalize()` — never define these locally
-
-### Page Layout Patterns
-- Outer wrapper: `<Flex direction="column" gap="6">`
-- Page title: `<Heading size="6" weight="bold">`
-- Page subtitle: `<Text size="2" color="gray">`
-- Section header: `<Text size="1" weight="bold" color="gray" className="uppercase tracking-wide">`
-- Empty states: centered Flex with icon + Text
-- Back links: `<Link size="2" color="gray">` with arrow icon
+- **Radix Themes components** (Button, Badge, Card, Table, etc.) → style via props (`variant`, `size`, `color`, `highContrast`). Layout via `<Flex>`, `<Box>`, `<Grid>`. Typography via `<Heading>`, `<Text>`. Import from `@radix-ui/themes`.
+- **Custom Primitive-based components** (Sidebar, Sheet/SlideOver, Accordion, etc.) → style with Tailwind classes referencing **Cedar semantic tokens** (`--cedar-*`). Never reference raw Radix step variables (`var(--gray-6)`) in component files. Portalled custom components must wrap content in `<Theme>`.
 
 ### Role vs Tier
 - **Role** (admin, intelligence, monitor) — determines permissions and nav visibility
 - **Tier** (monitor, intelligence) — determines subscription features and billing
 - Never conflate these. Admin accounts have no subscription tier.
 
-### Interactive Elements
-- All buttons: Radix `<Button>` or `<IconButton>`
-- All toggles: Radix `<Switch>`
-- All selects: Radix `<Select.Root>`
-- All inputs: Radix `<TextField.Root>` or `<TextArea>`
-- No raw HTML form elements
+### Key file locations
 
-### Token source of truth
-All visual tokens live in `app/globals.css`. Design principles live in `docs/design-system/design-standards.md`.
+| What | Where |
+|------|-------|
+| All `--cedar-*` token definitions | `app/globals.css` |
+| Design standards (full reference) | `docs/design-system/design-standards.md` |
+| Design tokens skill (decision tree) | `.claude/skills/design-tokens/SKILL.md` |
+| UI components skill (build routing) | `.claude/skills/ui-components/SKILL.md` |
+| Shared color/status mappings | `lib/ui-constants.ts` |
+| Shared format utilities | `lib/format.ts` |
+| Cedar composite components | `components/` |
 
 ## Reference Documents
 - `docs/architecture/data-architecture-research.md` — taxonomy, classification, relationship model, schema additions
