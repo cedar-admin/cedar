@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Badge } from '@radix-ui/themes'
+import { Badge, Text } from '@radix-ui/themes'
 
 interface SidebarLinkProps {
   href: string
@@ -19,13 +19,13 @@ export function SidebarLink({ href, label, icon, disabled, badge }: SidebarLinkP
   if (disabled) {
     return (
       <span
-        className="flex items-center gap-3 px-3 py-2 text-sm text-[var(--gray-9)] cursor-not-allowed"
+        className="flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--cedar-text-muted)] cursor-not-allowed min-h-[44px]"
         aria-disabled="true"
       >
-        <i className={`${icon} text-base shrink-0`} />
-        <span className="flex-1">{label}</span>
+        <i className={`${icon} text-base shrink-0`} aria-hidden="true" />
+        <Text as="span" size="2" className="flex-1">{label}</Text>
         {badge && (
-          <Badge variant="outline" size="1" className="text-[var(--gray-9)] border-[var(--gray-6)]">
+          <Badge variant="outline" size="1" color="gray">
             {badge}
           </Badge>
         )}
@@ -36,14 +36,15 @@ export function SidebarLink({ href, label, icon, disabled, badge }: SidebarLinkP
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-[var(--radius-2)] ${
+      aria-current={isActive ? 'page' : undefined}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-2)] min-h-[44px] transition-interactive ${
         isActive
-          ? 'bg-[var(--accent-a3)] text-[var(--accent-11)] font-medium'
-          : 'text-[var(--gray-11)] hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)]'
+          ? 'bg-[var(--cedar-interactive-selected)] text-[var(--cedar-text-primary)] font-medium'
+          : 'text-[var(--cedar-text-secondary)] hover:bg-[var(--cedar-interactive-hover)] hover:text-[var(--cedar-text-primary)]'
       }`}
     >
-      <i className={`${icon} text-base shrink-0`} />
-      {label}
+      <i className={`${icon} text-base shrink-0`} aria-hidden="true" />
+      <Text as="span" size="2">{label}</Text>
     </Link>
   )
 }

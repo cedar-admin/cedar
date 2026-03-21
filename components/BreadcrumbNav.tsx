@@ -1,21 +1,22 @@
 'use client'
 
 import Link from 'next/link'
+import { Link as RadixLink, Text } from '@radix-ui/themes'
 import { usePathname } from 'next/navigation'
 
 // Map URL segments to human-readable labels
 const SEGMENT_LABELS: Record<string, string> = {
-  home:     'Home',
-  changes:  'Changes',
-  library:  'Regulation Library',
-  faq:      'FAQ',
-  sources:  'Sources',
-  audit:    'Audit Trail',
-  settings: 'Settings',
-  reviews:  'Review Queue',
-  system:   'System Health',
+  home:       'Home',
+  changes:    'Changes',
+  library:    'Regulation Library',
+  faq:        'FAQ',
+  sources:    'Sources',
+  audit:      'Audit Trail',
+  settings:   'Settings',
+  reviews:    'Review Queue',
+  system:     'System Health',
   onboarding: 'Onboarding',
-  export:   'Export',
+  export:     'Export',
 }
 
 interface Crumb {
@@ -56,22 +57,34 @@ export function BreadcrumbNav() {
   if (pathname.startsWith('/library/')) return null
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[var(--gray-11)] mb-6">
-      {crumbs.map((crumb, i) => (
-        <span key={crumb.href} className="flex items-center gap-1.5">
-          {i > 0 && <i className="ri-arrow-right-s-line text-[var(--gray-9)] text-base leading-none" />}
-          {crumb.isLast ? (
-            <span className="text-[var(--gray-12)] font-medium">{crumb.label}</span>
-          ) : (
-            <Link
-              href={crumb.href}
-              className="hover:text-[var(--gray-12)] transition-colors"
-            >
-              {crumb.label}
-            </Link>
-          )}
-        </span>
-      ))}
+    <nav aria-label="Breadcrumb" className="mb-6">
+      <ol className="flex items-center gap-1.5 text-sm">
+        {crumbs.map((crumb, i) => (
+          <li key={crumb.href} className="flex items-center gap-1.5">
+            {i > 0 && (
+              <i
+                className="ri-arrow-right-s-line text-[var(--cedar-text-muted)] text-base leading-none"
+                aria-hidden="true"
+              />
+            )}
+            {crumb.isLast ? (
+              <Text
+                as="span"
+                size="2"
+                weight="medium"
+                className="text-[var(--cedar-text-primary)]"
+                aria-current="page"
+              >
+                {crumb.label}
+              </Text>
+            ) : (
+              <RadixLink asChild color="gray" highContrast underline="hover" size="2">
+                <Link href={crumb.href}>{crumb.label}</Link>
+              </RadixLink>
+            )}
+          </li>
+        ))}
+      </ol>
     </nav>
   )
 }
