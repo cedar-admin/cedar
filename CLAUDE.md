@@ -10,6 +10,14 @@ Cedar shrinks the delay between a regulation being updated and a practice owner 
 
 **Long-term vision:** The most reliable third-party legal aggregation and summary service in the medical industry — making law and regulations accessible and understandable in real-time. The go-to platform for regulation compliance, and eventually for all operational guidance for small to mid-size medical practices.
 
+## Session Startup — Read in This Order
+
+0. Run `git pull origin main` to sync local files with the remote before doing anything else
+1. Read this file (automatic)
+2. Read `STATUS.md` for current build state, last session summary, and next priority
+3. If a PRP exists in `PRPs/active/`, read it — that is your task for this session
+4. Read relevant source files before modifying them — always verify against the actual codebase
+
 ## Stack
 
 - **Framework:** Next.js 16 App Router, TypeScript
