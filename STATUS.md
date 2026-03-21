@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 20, 2026 by Session 20
+Last updated: March 21, 2026 by Session 21
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,34 +13,28 @@ Last updated: March 20, 2026 by Session 20
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system migrated to Radix Themes. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system foundations complete (Phase 1). Settings toggles persist. |
 
 ## Codebase Stats
-- **~15,000 lines** TypeScript/TSX (net reduction from removing shadcn boilerplate)
+- **~15,600 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
 - **16** dashboard routes, **9** API routes
 - **0** shadcn/ui components, **21** Radix Themes composite components
-- **80** git commits on main
+- **113** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 20 was a documentation and repo hygiene pass. No feature code was written.
-
-**What was changed:**
-- `CLAUDE.md`: removed stale page count from Module 9 status line; updated Dashboard status to "settings persist, some pages incomplete"; corrected architecture reference path to `docs/architecture/architecture.md`
-- `docs/supabase-prompts/create-migration.md`: added a blockquote note documenting the naming exception for legacy migrations 001–027 — no code impact
-- All changes are non-functional; no migrations, no schema changes, no new routes
+Session 21 executed the Design System Phase 1 PRP — foundations layer for all subsequent design system work. Replaced all `SEVERITY_CLASS`/`SEVERITY_DOT`/`STATUS_CLASS`/`AUTHORITY_LEVEL_CLASS` className string maps in `lib/ui-constants.ts` with Radix color name exports (`SEVERITY_COLOR`, `STATUS_COLOR`, `AUTHORITY_LEVEL_COLOR`), enabling dark mode adaptation via the Radix `color` prop on all Badge and Button components. Updated 16 shared components (`SeverityBadge`, `StatusBadge`, `AuthorityBadge`, `ConfidenceBadge`, `DeadlineChip`, `ServiceLineTag`, `EmptyState`, `LegalDisclaimer`, `DomainCard`, `RelationshipCard`, `RegulationRow`, `DataList`, `ContentReader`, `NotificationsForm`, `SignOutButton`, `UpgradeBanner` verified) to use color props, `as` props on `Heading`/`Text`, and Cedar semantic tokens (`--cedar-text-muted`, `--cedar-error-text`). Added skip-nav link, `<main id="main-content">` landmark, and `viewport` export to root layout. Fixed 3 page-level files (`system/page.tsx`, `reviews/page.tsx`, `changes/page.tsx`) that imported the removed exports. Deleted orphaned `components/LibraryBrowser.tsx`. Build: 0 errors, 0 warnings.
 
 ## Next Session Priority
-1. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode
-2. **Clean up components/ui/ directory** — stub files remain; delete manually or enable `rm` permission
-3. **Reset and re-apply migrations to production Supabase** — all 27 migrations were rewritten in Session 18 for best practices audit; production instance needs `supabase db reset` and re-apply
-4. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
+1. **Execute Design System Phase 2 PRP** (if exists in `PRPs/active/`) — builds on Phase 1 foundations
+2. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode; toggle dark mode on 3+ shared components
+3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes views
    - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-5. **Verify library UI** after Phase 3 pipeline runs — category grid should show regulation counts
+4. **Verify library UI** after Phase 3 pipeline runs — category grid should show regulation counts
 
 ### Dev Server Startup
 ```bash
@@ -75,7 +69,7 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 - Phase 3 scoring functions not yet triggered — library category counts will show 0 until pipeline runs
 - Supabase CLI binary not installed via npm (broken symlink); use cached npx path: `/Users/anthonyrilling/.npm/_npx/b96a6bd565c470ce/node_modules/supabase/bin/supabase` with `SUPABASE_ACCESS_TOKEN` env var set
 - Production Supabase instance needs migration reset — all 27 migrations rewritten for best practices audit
-- `components/ui/` stubs remain — can be deleted when `rm -rf` is available
+- `changes/page.tsx` severity filter tabs use a local `SEVERITY_ACTIVE_CLASS` map (Radix color props can't be used on `<Link>` elements directly) — acceptable but note for future design system audit
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)
