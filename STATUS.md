@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 21, 2026 by Session 21
+Last updated: March 21, 2026 by Session 22
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,22 +13,22 @@ Last updated: March 21, 2026 by Session 21
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system foundations complete (Phase 1). Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phase 1 (foundations) + Phase 2 (shell & navigation) complete. Settings toggles persist. |
 
 ## Codebase Stats
-- **~15,600 lines** TypeScript/TSX
+- **~16,794 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
 - **16** dashboard routes, **9** API routes
 - **0** shadcn/ui components, **21** Radix Themes composite components
-- **113** git commits on main
+- **115** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 21 executed the Design System Phase 1 PRP — foundations layer for all subsequent design system work. Replaced all `SEVERITY_CLASS`/`SEVERITY_DOT`/`STATUS_CLASS`/`AUTHORITY_LEVEL_CLASS` className string maps in `lib/ui-constants.ts` with Radix color name exports (`SEVERITY_COLOR`, `STATUS_COLOR`, `AUTHORITY_LEVEL_COLOR`), enabling dark mode adaptation via the Radix `color` prop on all Badge and Button components. Updated 16 shared components (`SeverityBadge`, `StatusBadge`, `AuthorityBadge`, `ConfidenceBadge`, `DeadlineChip`, `ServiceLineTag`, `EmptyState`, `LegalDisclaimer`, `DomainCard`, `RelationshipCard`, `RegulationRow`, `DataList`, `ContentReader`, `NotificationsForm`, `SignOutButton`, `UpgradeBanner` verified) to use color props, `as` props on `Heading`/`Text`, and Cedar semantic tokens (`--cedar-text-muted`, `--cedar-error-text`). Added skip-nav link, `<main id="main-content">` landmark, and `viewport` export to root layout. Fixed 3 page-level files (`system/page.tsx`, `reviews/page.tsx`, `changes/page.tsx`) that imported the removed exports. Deleted orphaned `components/LibraryBrowser.tsx`. Build: 0 errors, 0 warnings.
+Session 22 executed the Design System Phase 2 PRP — shell & navigation compliance pass. Fixed all 5 shell components (`ThemeToggle`, `BreadcrumbNav`, `SidebarLink`, `Sidebar`, `SidebarShell`) to fully comply with design standards and frontend structural standards. Key changes: removed `<main>` from `SidebarShell` (root layout provides it); replaced all raw Radix step variables (`--gray-6`, `--accent-a3`, `--color-panel-translucent`, etc.) with Cedar semantic tokens across all shell files; added `<nav aria-label="Main navigation">` → `<ul>`/`<li>` structure to Sidebar; added `aria-current="page"` to active SidebarLink; converted BreadcrumbNav to `<ol>`/`<li>` with Radix `<Link asChild>`; added animated scrim exit (`animate-scrim-out`) via `isClosing` state machine; implemented full focus trap (Tab/Shift+Tab/Escape + focus restoration) for overlay sidebar below lg breakpoint; converted `RoleBadge` to Radix `color` prop; fixed `CedarLogo` to use `.logo-light`/`.logo-dark` CSS classes. Token audit confirms zero raw Radix step variables remain in shell files. Build: 0 errors, 0 warnings.
 
 ## Next Session Priority
-1. **Execute Design System Phase 2 PRP** (if exists in `PRPs/active/`) — builds on Phase 1 foundations
-2. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode; toggle dark mode on 3+ shared components
+1. **Design System Phase 3 — Dashboard Pages** — audit all 16 dashboard page files for: raw Radix step variables, missing `as` props on `Heading`/`Text`, missing `aria-label` on icon-only buttons, hardcoded pixel sizes, and forbidden `<p>` inside `<Text>` nesting. Fix in page order (home → changes → library → faq → sources → audit → settings → practices → reviews → system).
+2. **Verify visual rendering** — start dev server and navigate all 16 dashboard pages to confirm Radix Themes renders correctly in both light and dark mode; confirm sidebar nav structure, focus trap, and scrim animation work at mobile viewport.
 3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
