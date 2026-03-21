@@ -1,0 +1,1321 @@
+session_id: "P1_S2"
+title: "Title 21 CFR Part-Level Allowlist for Cedar's Classification Pipeline"
+summary: |
+  Comprehensive part-level filtering for Title 21 (Food and Drugs) across FDA (Parts 1–1299) 
+  and DEA (Parts 1300–1321) subchapters. Of ~300 active parts, 95 parts classified RELEVANT 
+  or CONDITIONALLY RELEVANT to Cedar's 14 target practice types; remainder (food standards, 
+  animal drugs, tobacco) excluded. Resolves Session 1 ambiguities (Subchapter G cosmetics, 
+  Subchapter J radiological health) with definitive classifications structured for engineering 
+  implementation.
+
+key_decisions:
+  - decision: "Subchapter A (General, Parts 1–99): 19 parts RELEVANT"
+    value: [1, 2, 3, 4, 7, 10, 11, 16, 17, 50, 54, 56, 58, 70, 99]
+    notes: "Parts 1, 7, 11, 50, 56 classified CRITICAL; Parts 2–4, 10, 54, 58, 70, 99 HIGH/MODERATE"
+  
+  - decision: "Subchapter B (Food, Parts 100–199): 5 parts RELEVANT"
+    value: [101, 111, 119, 189, 190]
+    notes: "Parts 111, 190 CRITICAL (supplement cGMP, NDI); Parts 101, 119, 189 MODERATE/LOW. Remaining 95 parts (food standards, additives, GRAS listings) IRRELEVANT."
+  
+  - decision: "Subchapter C (Drug General, Parts 200–299): 15 parts RELEVANT"
+    value: [200, 201, 202, 203, 205, 206, 207, 208, 209, 210, 211, 216, 250, 251, 290, 299]
+    notes: "Parts 201, 207, 210–211, 216 CRITICAL; Part 202–203, 290 HIGH. Part 206 LOW."
+  
+  - decision: "Subchapter D (Drugs for Human Use, Parts 300–499): 22 parts RELEVANT"
+    value: [300, 310, 312, 314, 316, 320, 328, 329, 330, 333, 338, 340, 341, 343, 347, 348, 352, 357, 358, 361, 369]
+    notes: "Parts 310, 312, 330, 343, 348 MODERATE; Part 352 STAYED indefinitely but listed; remaining LOW/CONDITIONAL."
+  
+  - decision: "Subchapter E (Animal Drugs, Parts 500–599): 0 parts RELEVANT"
+    value: []
+    notes: "ENTIRE SUBCHAPTER IRRELEVANT. Animal drug manufacturing, labeling, residues, medicated feeds have no application to human medical practices."
+  
+  - decision: "Subchapter F (Biologics, Parts 600–680): 9 parts RELEVANT"
+    value: [600, 601, 606, 607, 610, 630, 640, 660, 680]
+    notes: "All 9 parts CRITICAL or HIGH. Parts 600, 601, 606, 610, 630, 640 CRITICAL for regenerative medicine, IV therapy, blood products."
+  
+  - decision: "Subchapter G (Cosmetics, Parts 700–799): 6 parts RELEVANT + reserved monitoring"
+    value: [700, 701, 710, 720, 740]
+    reserved_monitoring: [741, 799]
+    notes: "Parts 700–701, 740 CRITICAL for Med Spa compliance under MoCRA (effective Dec 2024). Parts 710, 720 superseded by MoCRA but retained in CFR. Parts 741–799 RESERVED; monitor Federal Register for cosmetic GMP, fragrance allergen, talc/asbestos testing rules (~2025–2026)."
+    session_1_resolution: "Subchapter G definitively RELEVANT. MoCRA imposed mandatory facility registration, product listing, serious adverse event reporting (15-day window), safety substantiation. Med spas routinely use/sell/private-label cosmetics."
+  
+  - decision: "Subchapter H (Medical Devices, Parts 800–898): 25 parts RELEVANT"
+    value: [800, 801, 803, 806, 807, 809, 810, 812, 814, 820, 821, 822, 830, 860, 862, 864, 866, 868, 870, 876, 878, 880, 882, 888, 890, 892, 895, 898]
+    notes: "Parts 803, 807, 812, 814, 820, 878, 880, 882, 890 CRITICAL. Parts 868, 870, 864, 892 HIGH. Excludes Parts 872 (dental), 874 (ENT), 884 (OB/GYN), 886 (ophthalmology)."
+  
+  - decision: "Subchapter I (Mammography, Part 900): 0 parts RELEVANT"
+    value: []
+    notes: "CONFIRMED IRRELEVANT. MQSA accreditation for mammography facilities. None of Cedar's 14 practice types perform mammography."
+  
+  - decision: "Subchapter J (Radiological Health, Parts 1000–1050): 7 parts RELEVANT"
+    value: [1000, 1002, 1005, 1010, 1020, 1040, 1050]
+    notes: "Parts 1020, 1040 CRITICAL. Part 1020 (X-ray standards) applies to chiropractic, primary care, pain management with imaging. Part 1040 (laser standards) applies to med spas with aesthetic lasers. Parts 1000, 1010 MODERATE framework parts."
+    session_1_resolution: "Subchapter J definitively RELEVANT. Part 1020 (diagnostic X-ray) and Part 1040 (lasers ≥Class III) are mandatory performance standards for devices in wide use by Cedar practices."
+  
+  - decision: "Subchapter K (Tobacco Products, Parts 1100–1150): 0 parts RELEVANT"
+    value: []
+    notes: "CONFIRMED IRRELEVANT. 8 parts (1100, 1105, 1107, 1114, 1140, 1141, 1143, 1150). None of Cedar's practices manufacture, distribute, retail tobacco."
+  
+  - decision: "Subchapter L (Other Acts, Parts 1210–1299): 2 parts RELEVANT"
+    value: [1240, 1271]
+    notes: "Part 1271 (HCT/Ps) CRITICAL — governs stem cells, amniotic tissue, exosomes, cord products, PRP. Part 1240 (communicable diseases) LOW but provides FDA authority. Part 1270 REVOKED — consolidated into 1271. All other parts irrelevant."
+  
+  - decision: "Chapter II DEA (Parts 1300–1321): 11 parts RELEVANT"
+    value: [1300, 1301, 1302, 1304, 1305, 1306, 1307, 1308, 1311, 1314, 1317]
+    notes: "Parts 1300–1308, 1311, 1317 CRITICAL for all prescribing practices. Part 1306 (prescriptions), 1308 (schedules), 1301 (registration), 1311 (EPCS) highest priority. Parts 1314 (pseudoephedrine), 1317 (disposal) HIGH."
+  
+  - decision: "Chapter III ONDCP (Parts 1400–1499): 0 parts RELEVANT"
+    value: []
+    notes: "CONFIRMED IRRELEVANT. Administrative housekeeping only (FOIA, declassification). No regulatory impact on medical practices."
+
+data_structures:
+  
+  practice_type_abbreviations:
+    FM: "Functional Medicine"
+    HRT: "Hormone Optimization / HRT"
+    CP: "Compounding Pharmacy"
+    MS: "Med Spa / Aesthetic Medicine"
+    WM: "Weight Management"
+    PT: "Peptide Therapy"
+    IV: "IV Therapy / Infusion"
+    RM: "Regenerative Medicine"
+    TH: "Telehealth"
+    CH: "Chiropractic"
+    IM: "Integrative Medicine"
+    AA: "Anti-Aging Medicine"
+    PM: "Pain Management"
+    PC: "Primary Care DPC / Concierge"
+  
+  chapter_i_subchapter_a_general:
+    title: "Chapter I, Subchapter A: General (Parts 1–99)"
+    relevant_parts:
+      part_1:
+        description: "General Enforcement Regulations"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Foundational enforcement provisions"
+          - "Labeling requirements (§§1.20–1.24)"
+          - "Import/export rules"
+          - "Administrative detention authority"
+      
+      part_2:
+        description: "General Administrative Rulings and Decisions"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, PT, IV, HRT, RM, MS]
+        regulatory_content:
+          - "Administrative interpretations"
+          - "§2.125: criteria for 'significant risk' devices"
+          - "Relevant when products straddle regulatory categories"
+      
+      part_3:
+        description: "Product Jurisdiction"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [CP, PT, RM, MS, IV, HRT, PM]
+        regulatory_content:
+          - "Rules for determining FDA center jurisdiction over combination products (drug/device, drug/biologic)"
+          - "Critical for PRP kits, drug-eluting devices, peptide delivery systems"
+      
+      part_4:
+        description: "Regulation of Combination Products"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [CP, PT, RM, MS, IV, HRT, PM]
+        regulatory_content:
+          - "GMP and postmarket reporting for combination products"
+          - "Extends Part 3 framework"
+      
+      part_5:
+        description: "Organization"
+        relevant: false
+        notes: "Internal FDA organizational structure only"
+      
+      parts_6_9:
+        description: "[Reserved]"
+        relevant: false
+      
+      part_7:
+        description: "Enforcement Policy"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Recall procedures (Class I/II/III)"
+          - "FDA enforcement discretion framework"
+          - "All practices using FDA-regulated products must understand recall response obligations"
+      
+      part_10:
+        description: "Administrative Practices and Procedures"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        conditional_applicability: "if engaging FDA"
+        regulatory_content:
+          - "Citizen petitions"
+          - "Advisory opinions"
+          - "Guidance documents"
+      
+      part_11:
+        description: "Electronic Records; Electronic Signatures"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Criteria for trustworthy electronic records/signatures (§11.100–11.300)"
+          - "Applies to any FDA-required records maintained electronically"
+          - "Audit trails (§11.10(e))"
+          - "System validation (§11.10(a))"
+          - "Identity verification (§11.70–11.100)"
+          - "CRITICAL for e-prescribing, compounding batch records, EHR documentation"
+      
+      parts_12_15:
+        description: "Formal/Public Hearings (various)"
+        relevant: false
+        notes: "Procedural rules for FDA hearings; no practical relevance to clinical practices"
+      
+      part_16:
+        description: "Regulatory Hearing Before FDA"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, RM, PT, MS]
+        conditional_applicability: "if enforcement"
+        regulatory_content:
+          - "Governs hearing rights before FDA enforcement actions"
+      
+      part_17:
+        description: "Civil Money Penalties Hearings"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        conditional_applicability: "if enforcement"
+        regulatory_content:
+          - "Hearing procedures for civil money penalties"
+      
+      parts_18_24:
+        description: "[Reserved] / Standards of Conduct (19) / Public Info (20) / Privacy (21)"
+        relevant: false
+        notes: "Parts 19 (FDA employee conduct), 20 (FOIA), 21 (Privacy Act) — minimal direct relevance; Parts 18, 22–24 reserved"
+      
+      parts_25_49:
+        description: "Environmental Impact (25) / Mutual Recognition (26) / [Reserved 27–49]"
+        relevant: false
+        notes: "Part 25 (NEPA compliance), Part 26 (US-EU agreements) — not applicable to clinical practices"
+      
+      part_50:
+        description: "Protection of Human Subjects"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        emphasis: "All prescribing, esp. RM, PT, FM, HRT, AA, IM"
+        regulatory_content:
+          - "Informed consent requirements for FDA-regulated clinical investigations"
+          - "Applies when practices conduct trials, use INDs/IDEs, or participate in FDA-regulated research"
+          - "Many regenerative/peptide therapies are investigational"
+      
+      parts_51_53:
+        description: "[Reserved]"
+        relevant: false
+      
+      part_54:
+        description: "Financial Disclosure by Clinical Investigators"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [RM, PT, FM, HRT, MS, AA, IM, PM]
+        regulatory_content:
+          - "Required when practice physicians serve as clinical investigators for FDA-regulated studies"
+          - "Financial interest disclosure obligations"
+      
+      part_55:
+        description: "[Reserved]"
+        relevant: false
+      
+      part_56:
+        description: "Institutional Review Boards"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [RM, PT, FM, HRT, MS, AA, IM, PM, PC]
+        regulatory_content:
+          - "IRB requirements for FDA-regulated research"
+          - "Any clinical investigation subject to FDA regs requires IRB review"
+          - "Practices must use central/commercial IRB if conducting research"
+      
+      part_57:
+        description: "[Reserved]"
+        relevant: false
+      
+      part_58:
+        description: "Good Laboratory Practice for Nonclinical Studies"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, RM, PT]
+        regulatory_content:
+          - "GLP standards for nonclinical safety studies submitted to FDA"
+          - "Primarily affects labs, not clinical practices, but relevant if practice sponsors preclinical work"
+      
+      parts_59_69:
+        description: "[Reserved] / Patent Term Restoration (60)"
+        relevant: false
+        notes: "Part 60 (patent restoration) applies to patent holders, not practices"
+      
+      part_70:
+        description: "Color Additives"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, MS]
+        regulatory_content:
+          - "General color additive provisions"
+          - "Relevant to compounding pharmacies using colorants and med spas with cosmetic products"
+      
+      parts_71_82:
+        description: "Color Additive Petitions/Listings/Certification (71–74) / Provisional Colors (75–82)"
+        relevant: false
+        notes: "Parts 73–74 (color additive listings) marginally relevant but excluded. Parts 71, 72, 75–80 procedural/reserved. Parts 81–82 very low relevance"
+      
+      parts_83_98:
+        description: "[Reserved]"
+        relevant: false
+      
+      part_99:
+        description: "Dissemination of Information on Unapproved/New Uses for Marketed Drugs, Biologics, Devices"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        emphasis: "All 14, esp. FM, HRT, PT, RM, WM, AA, IM, PM"
+        regulatory_content:
+          - "Governs manufacturer dissemination of off-label use information"
+          - "CRITICAL for practices relying heavily on off-label therapies (HRT, weight loss, peptides, pain management)"
+  
+  chapter_i_subchapter_b_food:
+    title: "Chapter I, Subchapter B: Food for Human Consumption (Parts 100–199)"
+    summary: "Of 100 part numbers, only 5 parts RELEVANT; remaining 95 IRRELEVANT (food standards, additives, GRAS listings, infant formula, canned foods, produce safety, etc.)."
+    relevant_parts:
+      part_101:
+        description: "Food Labeling"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, WM, IM, AA, PT, HRT]
+        regulatory_content:
+          - "Supplement Facts panel (§101.36)"
+          - "Structure/function claim disclaimers (§101.93)"
+          - "Health claims"
+          - "Any practice selling/private-labeling dietary supplements must comply"
+      
+      part_111:
+        description: "Current Good Manufacturing Practice for Dietary Supplements"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, IM, AA, WM, HRT, PT, CP]
+        regulatory_content:
+          - "Dietary supplement cGMP (21 CFR 111.1–111.540)"
+          - "Personnel, facilities, production controls, lab ops, records"
+          - "Any practice manufacturing, private-labeling, repackaging, or holding supplements for distribution must comply"
+      
+      part_119:
+        description: "Dietary Supplements That Present Significant or Unreasonable Risk"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, WM, IM, AA, PT, HRT]
+        regulatory_content:
+          - "Authorizes FDA to declare supplements adulterated"
+          - "Practices should monitor for banned ingredients"
+      
+      part_189:
+        description: "Substances Prohibited from Use in Human Food"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, IM, AA]
+        regulatory_content:
+          - "Lists banned food/supplement substances (calamus, coumarin, etc.)"
+          - "Practices should ensure supplements don't contain prohibited substances"
+      
+      part_190:
+        description: "Dietary Supplements"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, IM, AA, WM, PT, HRT, CP]
+        regulatory_content:
+          - "New Dietary Ingredient (NDI) notifications (§190.6)"
+          - "75-day premarket notification for supplements with novel ingredients"
+          - "CRITICAL for practices formulating/introducing novel supplement products"
+    
+    irrelevant_part_ranges:
+      parts_100_110:
+        description: "Food standards, infant formula, emergency permits, contaminants, cGMP (100, 103–110)"
+        notes: "Food manufacturing standards, not applicable to Cedar practices"
+      
+      parts_102_110:
+        description: "Additional food standards"
+        notes: "Including Part 102 (food standards), Part 104–110 (infant formula, emergency permits, contaminants, canned foods, acidified foods, shell eggs, produce safety)"
+      
+      parts_112_129:
+        description: "HACCP, food defense, fish/shellfish, bottled water"
+        notes: "Food manufacturing standards (FSMA compliance) unrelated to medical practices"
+      
+      parts_130_169:
+        description: "Food Standards of Identity (33 parts total)"
+        part_numbers: [130, 131, 133, 135, 136, 137, 139, 141, 145, 146, 150, 152, 155, 156, 158, 160, 161, 163, 164, 165, 166, 167, 168, 169]
+        examples: "milk, cheese, frozen desserts, bakery, cereals, pasta, fruits, vegetables, eggs, fish, cacao, nuts, beverages, margarine, sweeteners, dressings"
+        notes: "Standards of identity for conventional food products. No application to medical practices."
+      
+      parts_170_181:
+        description: "Food Additives (12 parts total)"
+        part_numbers: [170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181]
+        notes: "Food additive regulations for food manufacturing. Unrelated to Cedar practices."
+      
+      parts_182_186:
+        description: "GRAS listings"
+        notes: "GRAS substances affirmed as safe for food use. Background relevance only."
+  
+  chapter_i_subchapter_c_drug_general:
+    title: "Chapter I, Subchapter C: Drugs — General (Parts 200–299)"
+    summary: "15 parts RELEVANT; Parts 201, 207, 210–211, 216 CRITICAL for compounding and prescribing."
+    relevant_parts:
+      part_200:
+        description: "General"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "General drug provisions"
+          - "Sterility requirements (§200.50)"
+          - "Manufacturer/pharmacist communications"
+      
+      part_201:
+        description: "Labeling"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        emphasis: "All prescribing, esp. CP"
+        regulatory_content:
+          - "Comprehensive drug labeling rules"
+          - "OTC Drug Facts labels"
+          - "Rx labeling requirements"
+          - "Adequate directions for use"
+          - "Prescription legend (§201.56(c))"
+          - "CRITICAL for any practice dispensing or relabeling drugs"
+      
+      part_202:
+        description: "Prescription Drug Advertising"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        emphasis: "All prescribing, esp. MS, WM, AA, HRT"
+        regulatory_content:
+          - "Rx drug advertising rules"
+          - "Fair balance requirement (§202.1(e))"
+          - "Risk disclosure requirements"
+          - "Directly relevant to practices advertising prescription treatments (weight loss drugs, HRT, aesthetics)"
+      
+      part_203:
+        description: "Prescription Drug Marketing"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [CP, FM, HRT, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "PDMA implementation"
+          - "Drug sample distribution (§203.50–203.80)"
+          - "Wholesale distribution requirements (§203.1)"
+          - "Reimportation rules (§203.1)"
+          - "Governs sample handling at practices"
+      
+      part_205:
+        description: "Guidelines for State Licensing of Wholesale Rx Drug Distributors"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP]
+        regulatory_content:
+          - "Federal minimum standards for wholesale distribution licensing"
+          - "Relevant if practice engages in wholesale distribution"
+      
+      part_206:
+        description: "Imprinting of Solid Oral Dosage Forms"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP]
+        regulatory_content:
+          - "Imprint code requirements on tablets/capsules"
+          - "Relevant to compounding pharmacies producing solid orals"
+      
+      part_207:
+        description: "Establishment Registration and Listing / NDC"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [CP, IV]
+        regulatory_content:
+          - "FDA establishment registration requirements"
+          - "NDC (National Drug Code) assignment (§207.3)"
+          - "503B outsourcing facilities must register"
+          - "Practices producing IV admixtures may be affected"
+      
+      part_208:
+        description: "Medication Guides"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Requires distribution of Medication Guides with certain Rx drugs"
+          - "Compliance obligation for all dispensing practices"
+      
+      part_209:
+        description: "Side Effects Statements for Dispensers/Pharmacies"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [CP, FM, HRT, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Side effects statement distribution requirement for dispensing practices"
+      
+      part_210:
+        description: "Drug cGMP — General"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [CP, IV]
+        regulatory_content:
+          - "General cGMP framework for drug manufacturing"
+          - "Core regulation for 503A and 503B compounding pharmacies"
+          - "IV therapy practices preparing admixtures should be aware"
+      
+      part_211:
+        description: "Drug cGMP for Finished Pharmaceuticals"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [CP, IV]
+        regulatory_content:
+          - "Detailed cGMP for finished drugs (§211.1–211.280)"
+          - "Core regulation for 503B outsourcing facilities"
+          - "Quality benchmark for 503A compounding"
+      
+      part_212:
+        description: "cGMP for Positron Emission Tomography (PET) Drugs"
+        relevant: false
+        notes: "PET drug manufacturing; nuclear pharmacy only. Not applicable to Cedar practices."
+      
+      part_213:
+        description: "cGMP for Medical Gases"
+        relevant: false
+        notes: "Effective 12/18/2025. Manufacturer-side regulation. Not applicable to medical practices."
+      
+      part_216:
+        description: "Human Drug Compounding"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [CP, HRT, PT, AA, FM, IM, RM, WM]
+        regulatory_content:
+          - "Lists bulk substances that may NOT be compounded"
+          - "Prohibited list (§216.1–§216.24)"
+          - "References 503A/503B framework"
+          - "CRITICAL for any practice using compounded medications"
+      
+      parts_225_226:
+        description: "cGMP for Medicated Feeds / Type A Medicated Articles"
+        relevant: false
+        notes: "Animal feed manufacturing. Not applicable."
+      
+      part_230:
+        description: "Certification for Designated Medical Gases"
+        relevant: false
+        notes: "Effective 12/18/2025. Manufacturer-side only. Not applicable to medical practices."
+      
+      part_250:
+        description: "Special Requirements for Specific Human Drugs"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, IV, PM]
+        regulatory_content:
+          - "Special requirements for hexachlorophene and certain drugs"
+          - "Limited relevance"
+      
+      part_251:
+        description: "Section 804 Importation Program"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, FM, HRT, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Drug importation from Canada"
+          - "Florida has pursued a state importation program"
+          - "Could affect drug pricing/availability"
+      
+      part_290:
+        description: "Controlled Drugs"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [PM, WM, HRT, PC, FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA]
+        regulatory_content:
+          - "Controlled substance prescribing/dispensing rules"
+          - "Bridges to DEA regulations"
+          - "Relevant to any practice prescribing Schedule II–V drugs"
+      
+      part_299:
+        description: "Drugs; Official Names and Established Names"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP, FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Drug naming rules for labeling compliance"
+  
+  chapter_i_subchapter_d_drugs_human_use:
+    title: "Chapter I, Subchapter D: Drugs for Human Use (Parts 300–499)"
+    summary: "22 parts RELEVANT including new drug definitions (310), IND requirements (312), OTC monographs (330–369). Excludes reserved Parts 315–317."
+    relevant_parts:
+      part_300:
+        description: "General"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Fixed-combination drug policy"
+          - "CFC prohibition"
+          - "Right to Try provisions (§300.200) relevant to practices exploring experimental treatments"
+      
+      part_310:
+        description: "New Drugs"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        emphasis: "All prescribing, esp. CP, PT, WM"
+        regulatory_content:
+          - "Defines 'new drug' status"
+          - "Lists drugs removed from market for safety/efficacy concerns"
+          - "CRITICAL for determining which ingredients may be compounded"
+      
+      part_312:
+        description: "Investigational New Drug Application (IND)"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [RM, PT, AA, IM, FM]
+        regulatory_content:
+          - "IND requirements (§312.1–§312.330)"
+          - "Relevant if practices participate in clinical trials"
+          - "Expanded access/compassionate use provisions"
+          - "Investigational novel therapies (stem cells, peptides)"
+      
+      part_314:
+        description: "Applications for FDA Approval (NDA/ANDA)"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP]
+        regulatory_content:
+          - "NDA/ANDA process background"
+          - "Understanding drug approval status"
+      
+      part_315:
+        description: "Diagnostic Radiopharmaceuticals"
+        relevant: false
+        notes: "Nuclear medicine only. Not applicable."
+      
+      part_316:
+        description: "Orphan Drugs"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [RM, PT, IM]
+        regulatory_content:
+          - "Orphan drug designation"
+          - "Relevant if practices treat rare diseases or use orphan-designated products"
+      
+      part_317:
+        description: "Qualifying Pathogens"
+        relevant: false
+        notes: "GAIN Act pathogen designation for antibiotics. Not directly applicable."
+      
+      part_320:
+        description: "Bioavailability and Bioequivalence"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [CP]
+        regulatory_content:
+          - "BA/BE requirements"
+          - "Relevant to compounding pharmacies understanding equivalence of compounded vs. approved products"
+      
+      part_328:
+        description: "OTC Drug Products Containing Alcohol"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [PC, FM, IM]
+        regulatory_content:
+          - "Labeling for OTC products with alcohol content"
+      
+      part_329:
+        description: "Nonprescription Drug Products Subject to Section 760"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, IM, PC]
+        regulatory_content:
+          - "Newer provision for certain nonprescription products"
+      
+      part_330:
+        description: "OTC Human Drugs — GRASE Framework"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [MS, PC, FM, IM, PM, WM]
+        regulatory_content:
+          - "General OTC drug monograph framework"
+          - "GRAS, Generally Recognized As Safe; GRASE, Generally Recognized As Safe and Effective"
+          - "Important for practices recommending, selling, or private-labeling OTC products"
+      
+      part_331:
+        description: "Antacid Products for OTC Use"
+        relevant: false
+        notes: "OTC antacid monograph. Minimal relevance."
+      
+      part_332:
+        description: "Antiflatulent Products for OTC Use"
+        relevant: false
+        notes: "OTC antiflatulent monograph. Minimal relevance."
+      
+      part_333:
+        description: "Topical Antimicrobial Drug Products for OTC Use"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [MS, PC]
+        regulatory_content:
+          - "OTC antiseptic monograph"
+          - "Relevant to med spas using antiseptic products"
+      
+      parts_335_336:
+        description: "Antidiarrheal / Antiemetic OTC"
+        relevant: false
+        notes: "OTC monographs. Minimal relevance."
+      
+      part_338:
+        description: "Nighttime Sleep-Aid OTC Products"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, IM, AA, PC]
+        regulatory_content:
+          - "OTC sleep aid monograph"
+          - "Relevant if practices sell/recommend"
+      
+      part_340:
+        description: "Stimulant Drug Products OTC"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [WM, FM]
+        regulatory_content:
+          - "OTC stimulant (caffeine) monograph"
+          - "Relevant to weight management practices"
+      
+      part_341:
+        description: "Cold, Cough, Allergy, Bronchodilator OTC"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [PC, FM, IM]
+        regulatory_content:
+          - "OTC cold/allergy monograph"
+      
+      part_343:
+        description: "Internal Analgesic, Antipyretic, Antirheumatic OTC"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PM, PC, FM, IM]
+        regulatory_content:
+          - "OTC analgesic monograph"
+          - "Aspirin, acetaminophen, ibuprofen, naproxen"
+          - "Relevant to pain management and primary care"
+      
+      part_344:
+        description: "Topical Otic OTC"
+        relevant: false
+        notes: "OTC ear drops. Not applicable to Cedar practices."
+      
+      part_346:
+        description: "Anorectal Drug Products OTC"
+        relevant: false
+        notes: "OTC hemorrhoidal products. Not applicable."
+      
+      part_347:
+        description: "Skin Protectant Drug Products OTC"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [MS, AA]
+        regulatory_content:
+          - "OTC skin protectant monograph"
+          - "Dimethicone, petrolatum"
+          - "Relevant to med spas and aesthetic practices"
+      
+      part_348:
+        description: "External Analgesic Drug Products OTC"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PM, CH, RM, PC]
+        regulatory_content:
+          - "OTC topical analgesic monograph"
+          - "Menthol, capsaicin, lidocaine, methyl salicylate"
+          - "DIRECTLY RELEVANT to pain management and chiropractic"
+      
+      part_349:
+        description: "Ophthalmic OTC"
+        relevant: false
+        notes: "OTC eye care. Not applicable to Cedar practice types."
+      
+      part_350:
+        description: "Antiperspirant OTC"
+        relevant: false
+        notes: "OTC antiperspirant. Not applicable."
+      
+      part_352:
+        description: "Sunscreen Drug Products OTC"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [MS, AA]
+        regulatory_content:
+          - "OTC sunscreen monograph"
+          - "STAYED indefinitely pending OTC monograph reform"
+          - "Regulatory status in flux under OTC Monograph Reform provisions"
+          - "Relevant to med spas selling sunscreen"
+      
+      part_355:
+        description: "Anticaries OTC"
+        relevant: false
+        notes: "Fluoride products. Not applicable."
+      
+      part_357:
+        description: "Miscellaneous Internal OTC Products"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [WM, FM]
+        regulatory_content:
+          - "Includes certain weight control OTC products"
+      
+      part_358:
+        description: "Miscellaneous External Drug Products OTC"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [MS, PM, CH, PC]
+        regulatory_content:
+          - "Miscellaneous external OTC"
+          - "Dandruff, acne, corn/callus removers"
+          - "Relevant to med spas and skin care practices"
+      
+      part_361:
+        description: "Prescription Drugs in Research"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [RM, PT]
+        regulatory_content:
+          - "Radioactive drugs for research"
+          - "Narrow scope"
+      
+      part_369:
+        description: "Interpretative Statements Re Warnings on OTC Drugs/Devices"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        conditional_applicability: "if selling OTC"
+        regulatory_content:
+          - "FDA interpretive warning statements for OTC products"
+      
+      parts_370_499:
+        description: "[Reserved]"
+        relevant: false
+        notes: "No regulations codified"
+
+  chapter_i_subchapter_e_animal_drugs:
+    title: "Chapter I, Subchapter E: Animal Drugs, Feeds, Related Products (Parts 500–599)"
+    decision: "ENTIRE SUBCHAPTER IRRELEVANT"
+    summary: "30+ parts covering animal drug manufacturing, labeling, approval, residue tolerances, medicated feeds, and animal food additives. No application to human medical practices."
+    excluded_part_ranges:
+      parts_500_529:
+        description: "Animal drug general provisions, new animal drugs (investigational, applications, licensing), dosage forms"
+        example_parts: [500, 501, 502, 507, 509, 510, 511, 514, 515, 516, 520, 522, 524, 526, 528, 529]
+      parts_530_589:
+        description: "Extralabel use (530), residue tolerances (556), medicated feeds (558), animal food additives (570), GRAS for animals (571), prohibited substances (579, 589), etc."
+        example_parts: [530, 556, 558, 570, 571, 573, 579, 582, 584, 589]
+      parts_590_599:
+        description: "[Reserved]"
+
+  chapter_i_subchapter_f_biologics:
+    title: "Chapter I, Subchapter F: Biologics (Parts 600–680)"
+    summary: "9 parts RELEVANT, all CRITICAL or HIGH. Core regulations for regenerative medicine, blood products, IV therapies, growth factors."
+    relevant_parts:
+      part_600:
+        description: "Biological Products: General"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [RM, PT, IV, HRT, AA, MS]
+        regulatory_content:
+          - "Foundational biologic regulation (§600.1–§600.80)"
+          - "Defines 'biological product' (§600.3)"
+          - "Safety, purity, potency, sterility requirements"
+          - "Establishment standards and inspection requirements"
+          - "Adverse experience reporting (§600.80)"
+          - "Any practice using PRP, stem cells, blood products, growth factors, or biologic-classified peptides must understand"
+      
+      part_601:
+        description: "Licensing"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [RM, PT, IV, HRT, AA]
+        regulatory_content:
+          - "Biologics License Application (BLA) process (§601.2–§601.50)"
+          - "§601.2(c) covers therapeutic synthetic peptide products (≤40 amino acids)"
+          - "Recombinant DNA-derived products"
+          - "Monoclonal antibodies"
+          - "Accelerated approval (Subpart E) relevant to regenerative therapies"
+          - "ESSENTIAL for understanding which biologic products are legally marketed"
+      
+      part_606:
+        description: "cGMP for Blood and Blood Components"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [IV, RM, MS]
+        regulatory_content:
+          - "cGMP standards for blood establishments (§606.1–§606.210)"
+          - "Personnel, facilities, equipment, production controls, testing"
+          - "Labeling standards (§606.121)"
+          - "Adverse reaction reporting (§606.170)"
+          - "Product deviation reporting (§606.171)"
+          - "DIRECTLY RELEVANT to PRP preparation, autologous blood processing, blood-derived therapies"
+      
+      part_607:
+        description: "Establishment Registration for Blood Products"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [IV, RM]
+        regulatory_content:
+          - "Registration for blood product establishments"
+          - "Facilities manufacturing blood products (including PRP) may need to register"
+      
+      part_610:
+        description: "General Biological Products Standards"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [RM, PT, IV, HRT, AA, MS]
+        regulatory_content:
+          - "Core quality standards for ALL biologics (§610.1–§610.50)"
+          - "Potency (§610.10)"
+          - "Sterility (§610.12)"
+          - "Purity (§610.13)"
+          - "Identity (§610.14)"
+          - "Testing for transfusion-transmitted infections (§610.40): HIV, HBV, HCV, HTLV, syphilis"
+          - "Dating periods"
+          - "Labeling standards"
+          - "ESSENTIAL for any practice handling biologic products"
+      
+      part_630:
+        description: "Requirements for Blood and Blood Components"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [IV, RM, MS]
+        regulatory_content:
+          - "Donor/collection requirements (§630.1–§630.10)"
+          - "Donor eligibility (§630.10)"
+          - "Medical supervision (§630.5)"
+          - "Donor questionnaire"
+          - "Donor notification"
+          - "DIRECTLY RELEVANT to PRP preparation (autologous blood collection) and blood-derived regenerative therapies"
+      
+      part_640:
+        description: "Additional Standards for Human Blood and Blood Products"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [IV, RM, HRT, MS, AA]
+        regulatory_content:
+          - "Product-by-product blood standards"
+          - "Subpart C (Platelets) — DIRECTLY RELEVANT to PRP (§640.20–§640.28)"
+          - "Subpart D (Plasma) — relevant to IV infusion"
+          - "Subpart H (Albumin) — relevant to IV infusion"
+          - "Subpart J (Immune Globulin) — IVIG therapies"
+          - "Subpart G (Source Plasma) — plasma-derived therapies"
+      
+      part_660:
+        description: "Additional Standards for Diagnostic Substances"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Blood typing reagents, diagnostic substance standards"
+          - "Indirectly relevant for practices relying on blood testing (pre-PRP screening, infectious disease testing)"
+      
+      part_680:
+        description: "Additional Standards for Miscellaneous Products"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [RM, AA, MS]
+        regulatory_content:
+          - "Allergenic products and miscellaneous biologics"
+          - "Source material controls, potency requirements"
+          - "Relevant for growth factors and tissue-derived products used in regenerative/aesthetic medicine"
+
+  chapter_i_subchapter_g_cosmetics:
+    title: "Chapter I, Subchapter G: Cosmetics (Parts 700–799)"
+    session_1_resolution: |
+      Subchapter G definitively RELEVANT. MoCRA (Modernization of Cosmetics Regulation Act, 
+      enacted Dec 2022) imposed mandatory facility registration, product listing, serious adverse 
+      event reporting (15-day window), safety substantiation, and upcoming GMP requirements. 
+      Med spas routinely use, sell, and private-label cosmetic products. The cosmetic-vs-drug 
+      distinction is fundamental to aesthetic practice compliance.
+    relevant_parts:
+      part_700:
+        description: "General"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [MS]
+        regulatory_content:
+          - "Prohibited cosmetic ingredients (§700.11)"
+          - "Mercury, vinyl chloride, chloroform, methylene chloride, cattle-derived materials"
+          - "CRITICAL for practices private-labeling or compounding topicals"
+          - "Defines cosmetic product scope and FDA authority"
+      
+      part_701:
+        description: "Cosmetic Labeling"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [MS]
+        regulatory_content:
+          - "Labeling requirements for cosmetic products (§701.1–§701.4)"
+          - "MoCRA added contact-info requirements (effective Dec 2024)"
+          - "Name/address of responsible person on label"
+          - "Applies to products sold/distributed by med spas"
+      
+      part_710:
+        description: "Voluntary Registration of Cosmetic Establishments"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [MS]
+        regulatory_content:
+          - "SUPERSEDED BY MoCRA mandatory facility registration (enforced July 1, 2024)"
+          - "Part remains in CFR but inactive"
+          - "MoCRA mandatory registration is the current requirement"
+      
+      part_720:
+        description: "Voluntary Filing of Cosmetic Product Ingredient Statements"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [MS]
+        regulatory_content:
+          - "SUPERSEDED BY MoCRA mandatory product listing"
+          - "Same status as Part 710 — replaced by statutory requirements"
+      
+      part_740:
+        description: "Cosmetic Product Warning Statements"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [MS]
+        regulatory_content:
+          - "Warning requirements for cosmetic products"
+          - "Pressurized containers, coal tar dyes, feminine deodorant sprays"
+          - "Applicable to products used/sold by practices"
+      
+    reserved_monitoring:
+      parts_741_799:
+        description: "[Reserved]"
+        monitoring_rationale: "MoCRA rulemaking for cosmetic GMPs, fragrance allergen disclosure, asbestos/talc testing expected to populate these parts (~2025–2026). Cedar should monitor Federal Register for proposed rules in these part numbers."
+
+  chapter_i_subchapter_h_medical_devices:
+    title: "Chapter I, Subchapter H: Medical Devices (Parts 800–898)"
+    summary: "25 parts RELEVANT including MDR (803), IDE (812), device classification (860–898). Parts 872 (dental), 874 (ENT), 884 (OB/GYN), 886 (ophthalmology) excluded as not applicable to Cedar practice types."
+    relevant_parts:
+      part_800:
+        description: "General"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "General device provisions, exemptions"
+          - "Specific device classification requirements"
+      
+      part_801:
+        description: "Labeling"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Comprehensive device labeling requirements"
+          - "Important for practices distributing/reselling devices"
+      
+      part_803:
+        description: "Medical Device Reporting (MDR)"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Mandatory reporting of device-related deaths, serious injuries, malfunctions"
+          - "User facilities (clinics) must report deaths to FDA+manufacturer"
+          - "Serious injuries to manufacturer within 10 work days (§803.3)"
+          - "MDR form submission (§803.20)"
+          - "CRITICAL for all practices using FDA-regulated devices"
+      
+      part_806:
+        description: "Reports of Corrections and Removals"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [MS, PM, RM]
+        regulatory_content:
+          - "Primarily manufacturers/importers obligation"
+          - "Practices affected when receiving recall notices"
+      
+      part_807:
+        description: "Establishment Registration / Device Listing / 510(k)"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [CP, MS, RM]
+        regulatory_content:
+          - "Premarket notification (510(k)) in Subpart E (§807.85–§807.97)"
+          - "CRITICAL for understanding device clearance status"
+          - "Relevant if practice modifies/reprocesses devices"
+      
+      part_808:
+        description: "Exemptions from Federal Preemption"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Interplay of federal device regulation with Florida state requirements"
+      
+      part_809:
+        description: "In Vitro Diagnostic Products"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PC, IV, RM]
+        regulatory_content:
+          - "IVD regulation for point-of-care and lab tests"
+          - "Relevant to practices with in-house diagnostics"
+      
+      part_810:
+        description: "Medical Device Recall Authority"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "FDA mandatory recall authority (§810.1–§810.13)"
+          - "All practices must understand recall procedures and response obligations"
+      
+      part_812:
+        description: "Investigational Device Exemptions (IDE)"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [RM, MS, PM]
+        regulatory_content:
+          - "CRITICAL for practices in clinical trials for investigational devices"
+          - "PRP devices, novel energy devices, neuromodulation"
+          - "IDE application requirements (§812.1–§812.35)"
+      
+      part_814:
+        description: "Premarket Approval (PMA)"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "PMA for Class III devices (§814.1–§814.125)"
+          - "Humanitarian Device Exemptions (HDE) (§814.20)"
+          - "Relevant for verifying legal marketing status of high-risk devices"
+      
+      part_820:
+        description: "Quality System Regulation (QSR)"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [CP, MS, RM]
+        regulatory_content:
+          - "Device cGMP (§820.1–§820.200)"
+          - "Updated QMSR harmonized with ISO 13485, effective Feb 2026"
+          - "Primarily manufacturers, but practices servicing/reprocessing devices must be aware"
+      
+      part_821:
+        description: "Medical Device Tracking"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PM, RM]
+        regulatory_content:
+          - "Tracking for life-sustaining/implantable devices"
+          - "Relevant to practices implanting tracked devices (spinal cord stimulators)"
+      
+      part_822:
+        description: "Postmarket Surveillance"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "May require practice cooperation with manufacturer postmarket studies"
+      
+      part_830:
+        description: "Unique Device Identification (UDI)"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "UDI system for device identification (§830.1–§830.20)"
+          - "Practices should maintain UDI records, especially for implantables"
+          - "EHR integration increasingly expected"
+      
+      part_860:
+        description: "Medical Device Classification Procedures"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Class I/II/III classification framework (§860.1–§860.7)"
+          - "CRITICAL for understanding regulatory requirements for devices used in practice"
+      
+      part_861:
+        description: "Procedures for Performance Standards Development"
+        relevant: false
+        notes: "Internal FDA procedural rules. Not applicable to medical practices."
+      
+      part_862:
+        description: "Clinical Chemistry and Clinical Toxicology Devices"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PC, IV, RM, FM]
+        regulatory_content:
+          - "Blood chemistry analyzers, glucose monitors, toxicology screening"
+          - "Relevant for in-house labs and point-of-care testing"
+      
+      part_864:
+        description: "Hematology and Pathology Devices"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [PC, RM, IV]
+        regulatory_content:
+          - "Blood cell counters, coagulation instruments"
+          - "Centrifuges (including PRP preparation devices)"
+          - "CRITICAL for regenerative medicine practices using PRP"
+      
+      part_866:
+        description: "Immunology and Microbiology Devices"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [PC]
+        regulatory_content:
+          - "Immunoassay systems, rapid test kits"
+          - "Relevant if practice performs immunological testing"
+      
+      part_868:
+        description: "Anesthesiology Devices"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [PM, MS, IV]
+        regulatory_content:
+          - "Anesthesia machines, pulse oximeters, capnography, oxygen delivery"
+          - "CRITICAL for any practice performing procedures under sedation"
+          - "Including med spa deep sedation procedures"
+      
+      part_870:
+        description: "Cardiovascular Devices"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [PC, PM, IV]
+        regulatory_content:
+          - "BP monitors, ECG, cardiac monitors, defibrillators"
+          - "Infusion pumps (CRITICAL for IV therapy)"
+      
+      part_872:
+        description: "Dental Devices"
+        relevant: false
+        notes: "Dental-specific. Not relevant to Cedar's practice types."
+      
+      part_874:
+        description: "Ear, Nose, and Throat Devices"
+        relevant: false
+        notes: "ENT-specific. Not relevant to Cedar's practice types."
+      
+      part_876:
+        description: "Gastroenterology-Urology Devices"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [PC]
+        regulatory_content:
+          - "Endoscopes, catheters"
+          - "Limited relevance unless practice includes GI/urology"
+      
+      part_878:
+        description: "General and Plastic Surgery Devices"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [MS, RM]
+        regulatory_content:
+          - "MOST IMPORTANT device part for med spas"
+          - "Surgical lasers, liposuction devices, tissue expanders, electrosurgical devices"
+          - "Dermabrasion, RF/ultrasound aesthetic devices"
+          - "Many energy-based aesthetic devices classified here"
+      
+      part_880:
+        description: "General Hospital and Personal Use Devices"
+        relevant: true
+        relevance_level: HIGH
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Examination gloves, surgical masks, scales, thermometers"
+          - "Sterilization equipment, syringes, needles, sharps containers"
+          - "ESSENTIAL for all clinical settings"
+      
+      part_882:
+        description: "Neurological Devices"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [PM, CH]
+        regulatory_content:
+          - "TENS units, spinal cord stimulators, nerve stimulators"
+          - "Cranial electrotherapy, biofeedback"
+          - "CRITICAL for pain management and chiropractic"
+      
+      part_884:
+        description: "Obstetrical and Gynecological Devices"
+        relevant: false
+        notes: "OB/GYN-specific. Not relevant to Cedar's practice types."
+      
+      part_886:
+        description: "Ophthalmic Devices"
+        relevant: false
+        notes: "Ophthalmology-specific. Not relevant to Cedar's practice types."
+      
+      part_888:
+        description: "Orthopedic Devices"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PM, CH]
+        regulatory_content:
+          - "Orthopedic implants, joint replacements, spinal devices, braces"
+          - "Relevant for pain management and chiropractic"
+      
+      part_890:
+        description: "Physical Medicine Devices"
+        relevant: true
+        relevance_level: CRITICAL
+        practice_types: [PM, CH, RM, MS]
+        regulatory_content:
+          - "Therapeutic ultrasound, diathermy, traction, iontophoresis"
+          - "Muscle stimulators, infrared/UV lamps, compression devices"
+          - "CRITICAL for chiropractic, pain management, and physical-therapy-adjacent practices"
+      
+      part_892:
+        description: "Radiology Devices"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [PC, PM, CH]
+        regulatory_content:
+          - "X-ray systems, fluoroscopy, CT, MRI, ultrasound imaging"
+          - "Relevant for practices with diagnostic imaging (chiropractic X-ray, pain management fluoroscopy)"
+      
+      part_895:
+        description: "Banned Devices"
+        relevant: true
+        relevance_level: MODERATE
+        practice_types: [FM, HRT, CP, MS, WM, PT, IV, RM, TH, CH, IM, AA, PM, PC]
+        regulatory_content:
+          - "Devices banned by FDA (§895.1)"
+          - "Prosthetic hair fibers, powdered surgical/exam gloves"
+          - "All practices must ensure no banned devices in use"
+      
+      part_898:
+        description: "Performance Standard for Electrode Lead Wires"
+        relevant: true
+        relevance_level: LOW
+        practice_types: [PM, CH]
+        regulatory_content:
+          - "Performance standard for electrode leads/cables"
+          - "Relevant for electrotherapy and neurostimulation practices"
+
+  chapter_i_subchapter_i_mammography:
+    title: "Chapter I, Subchapter I: Mammography Quality Standards Act (Part 900)"
+    decision: "CONFIRMED IRRELEVANT"
+    summary: "MQSA accreditation/certification for mammography facilities. None of Cedar's 14 practice types perform mammography."
+
+  chapter_i_subchapter_j_radiological_health:
+    title: "Chapter I, Subchapter J: Radiological Health (Parts 1000–1050)"
+    session_1_resolution: |
+      Subchapter J definitively RELEVANT. Part 1020 (X-ray standards) applies to chiropractic 
+      and primary care; Part 1040 (laser standards) applies directly to med spas and aesthetic 
+      practices. These are not optional — they are mandatory performance standards for devices 
+      already in wide use

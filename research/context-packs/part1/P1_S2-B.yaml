@@ -1,0 +1,1501 @@
+session_id: "P2_S1"
+title: "Title 42 CFR Part-Level Allowlist and Classification"
+summary: |
+  Comprehensive part-level classification of Title 42 (Public Health and Welfare) across 
+  5 chapters and 62 relevant parts (11 Critical, 12 High, 18 Medium, 21 Low). Resolves 6 
+  previously ambiguous classifications and corrects structural errors including newly codified 
+  Parts 427–428 (IRA drug inflation rebates, December 2024) and Part 12 temporary status 
+  (expires 12/31/2026). Confirms Chapters II–III reserved; provides definitive practice-type 
+  relevance mappings for independent physician practices across 14 Cedar service types.
+
+key_decisions:
+  - decision: "Title 42 Chapter Structure — Confirmed Final"
+    value:
+      chapter_i: "Public Health Service (Parts 1–199): 19 relevant of ~68 active"
+      chapter_ii: "Reserved — No Content"
+      chapter_iii: "Reserved — No Content"
+      chapter_iv: "CMS (Parts 400–699): 43 relevant of ~60 active"
+      chapter_v: "OIG-HCS (Parts 1000–1008): 9 relevant (all active parts)"
+      total_title_42_relevant: 62
+      total_title_42_critical: 11
+      total_title_42_high: 12
+      total_title_42_medium: 18
+      total_title_42_low: 21
+  
+  - decision: "Critical Parts (11) — Immediate Compliance Obligations"
+    value:
+      - 2
+      - 12
+      - 402
+      - 405
+      - 410
+      - 411
+      - 414
+      - 424
+      - 438
+      - 447
+      - 455
+      - 1001
+      - 1003
+
+  - decision: "High Parts (12) — Significant Ongoing Impact"
+    value:
+      - 8
+      - 401
+      - 420
+      - 422
+      - 426
+      - 440
+      - 441
+      - 456
+      - 489
+      - 1002
+      - 1004
+      - 1005
+      - 1007
+      - 1008
+
+  - decision: "Medium Parts (18) — Type-Specific or Situational"
+    value:
+      - 5
+      - 10
+      - 73
+      - 100
+      - 400
+      - 403
+      - 407
+      - 416
+      - 423
+      - 425
+      - 427
+      - 431
+      - 433
+      - 457
+      - 476
+      - 478
+      - 485
+      - 486
+      - 488
+      - 491
+      - 493
+      - 495
+      - 498
+      - 512
+      - 1000
+      - 1006
+
+  - decision: "Low Parts (21) — Awareness-Level or Conditional"
+    value:
+      - 3
+      - 6
+      - 11
+      - 23
+      - 50
+      - 51c
+      - 59
+      - 62
+      - 70
+      - 75
+      - 93
+      - 110
+      - 406
+      - 409
+      - 412
+      - 413
+      - 415
+      - 417
+      - 419
+      - 428
+      - 430
+      - 434
+      - 435
+      - 437
+      - 475
+      - 480
+
+  - decision: "Irrelevant Parts (35+) — Institutional, Personnel, or Non-Healthcare"
+    value:
+      - 1
+      - 2a
+      - 4
+      - 7
+      - 9
+      - 21
+      - 22
+      - 24
+      - 31
+      - 34
+      - 35
+      - 37
+      - 38
+      - 39
+      - 41
+      - 43
+      - 44
+      - 46
+      - 48
+      - 51
+      - 51a
+      - 51b
+      - 51d
+      - 52
+      - 52a
+      - 52b
+      - 52c
+      - 52d
+      - 52e
+      - 52h
+      - 52i
+      - 53
+      - 54
+      - 54a
+      - 55a
+      - 56
+      - 57
+      - 61
+      - 63
+      - 63a
+      - 64
+      - 64a
+      - 65
+      - 65a
+      - 66
+      - 67
+      - 68
+      - 68b
+      - 71
+      - 72
+      - 80
+      - 81
+      - 82
+      - 83
+      - 84
+      - 85
+      - 85a
+      - 86
+      - 87
+      - 88
+      - 90
+      - 101
+      - 102
+      - 103
+      - 104
+      - 105
+      - 106
+      - 107
+      - 108
+      - 109
+      - 121
+      - 124
+      - 131
+      - 132
+      - 133
+      - 134
+      - 135
+      - 136
+      - 137
+      - 138_to_199
+      - 408
+      - 418
+      - 421
+      - 429
+      - 432
+      - 436
+      - 442
+      - 443
+      - 444
+      - 445
+      - 446
+      - 448
+      - 449
+      - 450
+      - 451
+      - 452
+      - 453
+      - 454
+      - 460
+      - 481
+      - 482
+      - 483
+      - 484
+      - 494
+      - 600
+      - 601_to_699
+      - 1009_to_1099
+
+  - decision: "Resolved Ambiguities (6 Definitive Resolutions)"
+    value:
+      - ambiguity_1_subchapter_f_quarantine:
+          status: "RESOLVED"
+          part_73_select_agents: "RELEVANT (Medium) — Applies to compounding pharmacies and regenerative medicine labs; FDA-approved botulinum toxin products (Botox/Dysport) explicitly exempt"
+          part_70_quarantine: "RELEVANT (Low) — Reporting obligations for quarantinable diseases"
+          part_75_radiologic_credentialing: "RELEVANT (Low) — X-ray and fluoroscopy personnel credentialing"
+          part_71_foreign_quarantine: "IRRELEVANT"
+          part_72_reserved: "IRRELEVANT"
+      
+      - ambiguity_2_subchapter_j_vaccines:
+          status: "RESOLVED"
+          part_100_vicp: "RELEVANT (Medium) — Vaccine-administering practices must: distribute VIS, maintain records, report adverse events to VAERS; Vaccine Injury Table defines presumed vaccine-caused injuries"
+          part_110_cicp: "RELEVANT (Low) — Escalates to significant during declared public health emergencies"
+      
+      - ambiguity_3_chip_part_457:
+          status: "RESOLVED as RELEVANT (Medium)"
+          detail: "Subpart I (§§457.900–457.990) creates DIRECT provider screening, enrollment, and fraud/abuse compliance obligations paralleling Medicaid Part 455; Florida KidCare operationally relevant for pediatric practices"
+      
+      - ambiguity_4_qios_parts_475_481:
+          status: "RESOLVED as RELEVANT (Low to Medium)"
+          detail: "QIOs create direct obligations: mandatory record disclosure (§476.78), payment denial authority (§476.86), mandatory quality investigations (§§476.100–476.130), sanctions referral authority (§476.160)"
+      
+      - ambiguity_5_subchapter_h_part_512:
+          status: "RESOLVED as RELEVANT (Medium-High to Pain Management)"
+          detail: "Subpart G — Ambulatory Specialty Model (ASM): Mandatory January 1, 2027 launch; Pain Management practices mandatorily included in Low Back Pain cohort; 40% of CBSAs nationwide affected; ±9%+ payment adjustments applied to ALL Part B services; CMS signaled future expansion to other specialties"
+      
+      - ambiguity_6_pace_part_460:
+          status: "CONFIRMED IRRELEVANT"
+          detail: "Institutional elderly managed care program (55+); independent practices are not PACE organizations; no direct obligations"
+
+  - decision: "Newly Codified Parts (December 2024 via 89 FR 98228)"
+    value:
+      - part_427_medicare_part_b_drug_inflation_rebate:
+          status: "NEWLY ACTIVE (December 2024)"
+          relevance_level: "Medium"
+          affected_practice_types:
+            - IV Therapy/Infusion
+            - Peptide Therapy
+            - HRT
+            - Regenerative Medicine
+            - Compounding Pharmacy
+          detail: "Implements IRA §11101; Subpart C adjusts beneficiary coinsurance for Part B rebatable drugs exceeding inflation thresholds; directly affects buy-and-bill revenue cycle and patient collection amounts"
+      
+      - part_428_medicare_part_d_drug_inflation_rebate:
+          status: "NEWLY ACTIVE (December 2024)"
+          relevance_level: "Low"
+          affected_practice_types:
+            - Compounding Pharmacy
+            - Primary Care
+            - Weight Management
+          detail: "Regulates manufacturers; indirect impact on formulary decisions and drug availability; lower direct relevance than Part 427"
+
+  - decision: "Temporary Provisions Requiring Monitoring"
+    value:
+      - part_12_telemedicine_flexibilities:
+          current_status: "ACTIVE (Fourth Extension)"
+          expiration_date: "December 31, 2026"
+          federal_register_citation: "90 FR 61306"
+          detail: "Authorizes DEA-registered practitioners to prescribe Schedule II–V controlled substances via telemedicine without prior in-person evaluation; critical for telehealth, pain management, weight management (phentermine), HRT; permanent DEA rules under development"
+          action_required: "HIGH PRIORITY MONITORING — Automatic expiration creates compliance cliff 12/31/2026"
+
+  - decision: "Chapter II–III Confirmation"
+    value:
+      chapter_ii_status: "RESERVED — Confirmed empty on eCFR through 3/12/2026"
+      chapter_iii_status: "RESERVED — Confirmed empty on eCFR through 3/12/2026"
+      verification_sources:
+        - eCFR current through 3/12/2026
+        - Cornell Law Institute
+      conclusion: "No active parts exist in Chapters II–III; no chapters beyond V exist in Title 42"
+
+data_structures:
+  
+  chapter_i_part_level_allowlist:
+    title: "Public Health Service (Parts 1–199)"
+    total_active_parts: "~68"
+    relevant_parts: 19
+    structure:
+      - subchapter: A
+        parts:
+          - part: 1
+            title: "[Reserved]"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "No content"
+          
+          - part: 2
+            title: "Confidentiality of Substance Use Disorder Patient Records"
+            relevant: true
+            relevance_level: "CRITICAL"
+            cedar_practice_types:
+              - Pain Management
+              - Primary Care
+              - Functional Medicine
+              - All 14 types
+            notes: "Protections stricter than HIPAA for SUD records; covers disclosures, consent, re-disclosure prohibitions; recent updates retain additional protections; any practice encountering patients with SUD history must comply"
+          
+          - part: 2a
+            title: "Protection of Identity—Research Subjects"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Applies only to federally-funded research subjects"
+          
+          - part: 3
+            title: "Patient Safety Organizations and Patient Safety Work Product"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["All 14 types"]
+            notes: "Voluntary PSO participation framework; provides privilege/confidentiality protections for quality improvement data"
+          
+          - part: 4
+            title: "National Library of Medicine"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "NLM administrative rules"
+          
+          - part: 5
+            title: "Designation of Health Professional Shortage Areas (HPSAs)"
+            relevant: true
+            relevance_level: "MEDIUM"
+            cedar_practice_types:
+              - Primary Care
+              - Pain Management
+              - Functional Medicine
+              - Integrative Medicine
+            notes: "HPSA designation affects Medicare bonus payments (10–15%), NHSC loan repayment eligibility, 340B eligibility, J-1 visa waiver placements; independent practices in shortage areas benefit directly"
+          
+          - part: 6
+            title: "Federal Tort Claims Act Coverage of Certain Grantees"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["Primary Care"]
+            notes: "FTCA malpractice coverage for FQHCs/FQHC look-alikes only"
+          
+          - part: 7
+            title: "Distribution of Reference Biological Standards"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Internal NIH/FDA procedure"
+          
+          - part: 8
+            title: "Medications for Treatment of Opioid Use Disorder"
+            relevant: true
+            relevance_level: "HIGH"
+            cedar_practice_types:
+              - Pain Management
+              - Primary Care
+              - Functional Medicine
+              - Integrative Medicine
+            notes: "Governs OTPs and MAT including buprenorphine; post-X-waiver elimination (2023), prescribing rules still governed here; critical for any practice treating opioid use disorder"
+          
+          - part: 9
+            title: "Standards of Care for Chimpanzees in Sanctuaries"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Animal welfare; no medical practice relevance"
+          
+          - part: 10
+            title: "340B Drug Pricing Program"
+            relevant: true
+            relevance_level: "MEDIUM"
+            cedar_practice_types:
+              - Primary Care
+              - Compounding Pharmacy
+              - IV Therapy/Infusion
+              - Pain Management
+            notes: "Covered entities (FQHCs, certain grantees) purchase outpatient drugs at reduced prices; contract pharmacies directly affected; independent practices may qualify if meeting covered entity criteria"
+          
+          - part: 11
+            title: "Clinical Trials Registration and Results Submission"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types:
+              - Regenerative Medicine
+              - Peptide Therapy
+              - Functional Medicine
+            notes: "Only relevant if practice sponsors/conducts clinical trials"
+          
+          - part: 12
+            title: "Telemedicine Flexibilities for Controlled Substance Prescribing"
+            relevant: true
+            relevance_level: "CRITICAL"
+            cedar_practice_types:
+              - "Telehealth (primary)"
+              - All 14 types using telemedicine for controlled substances
+            notes: "TEMPORARY — expires 12/31/2026 (Fourth Extension, 90 FR 61306); authorizes DEA-registered practitioners to prescribe Schedule II–V via telemedicine without prior in-person evaluation; critical for telehealth, pain management, weight management (phentermine), HRT; permanent rules under development"
+      
+      - subchapter: B
+        note: "Personnel — Subchapter B CONFIRMED IRRELEVANT except Part 23"
+        parts:
+          - part: 21
+            title: "Commissioned Officers"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "PHS Commissioned Corps administration"
+          
+          - part: 22
+            title: "Personnel Other Than Commissioned Officers"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "PHS civilian personnel"
+          
+          - part: 23
+            title: "National Health Service Corps"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["Primary Care"]
+            notes: "Relevant for practices employing NHSC scholarship/loan repayment participants in underserved areas"
+          
+          - part: 24
+            title: "Senior Biomedical Research Service"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Internal HHS personnel program"
+      
+      - subchapter: C
+        note: "Medical Care — CONFIRMED IRRELEVANT (applies to federal/military personnel only)"
+        parts:
+          - part: 31
+            title: "Medical Care for Certain Personnel (Coast Guard, NOAA, PHS)"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Federal/military personnel medical care"
+          
+          - part: 34
+            title: "Medical Examination of Aliens"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Immigration medical exams; niche function outside Cedar's 14 types"
+          
+          - part: 35
+            title: "Hospital and Station Management"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "PHS facility management"
+          
+          - part: 37
+            title: "Medical Examinations of Coal Miners"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Black Lung screening program"
+          
+          - part: 38
+            title: "Disaster Assistance for Crisis Counseling"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "FEMA-HHS crisis counseling grants"
+      
+      - subchapter: D
+        note: "Grants — CONFIRMED MOSTLY IRRELEVANT; Parts 50, 51c, 59 have Low relevance only"
+        parts:
+          - part: 50
+            title: "Policies of General Applicability (Grants)"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["Any practice receiving PHS/HHS grants"]
+            notes: "Sterilization procedures, grant appeals, conflicts of interest for PHS-funded research"
+          
+          - part: 51
+            title: "Protection and Advocacy for Mental Illness"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "State P&A systems"
+          
+          - part: 51a
+            title: "Project Grants for Maternal and Child Health"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Title V MCH grant administration"
+          
+          - part: 51b
+            title: "Project Grants for Preventive Health Services"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Grant administration"
+          
+          - part: 51c
+            title: "Grants for Community Health Centers"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["Primary Care"]
+            notes: "FQHC grant conditions (sliding fee schedule, governance); relevant only if practice operates as/within an FQHC"
+          
+          - part: "51d–52i"
+            title: "Various NIH/NCI/NHLBI/NIMHD grant parts"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Research and education grant administration"
+          
+          - part: 53
+            title: "Grants/Loans for Hospital Construction (Hill-Burton)"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Largely historical"
+          
+          - part: "54–54a"
+            title: "Charitable Choice Regulations"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "State-level substance abuse grant administration"
+          
+          - part: 55a
+            title: "Black Lung Clinics Grants"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Black lung specific"
+          
+          - part: 56
+            title: "Migrant Health Services Grants"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Migrant health center grants"
+          
+          - part: 57
+            title: "Teaching Facilities, Scholarships, Student Loans"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Educational grants"
+          
+          - part: 59
+            title: "Grants for Family Planning Services"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types:
+              - Primary Care
+              - "Hormone Optimization/HRT"
+            notes: "Title X program rules; relevant only if practice receives Title X funding; contains restrictions on use of funds, counseling requirements"
+          
+          - part: 59a
+            title: "National Library of Medicine Grants"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "NLM grants"
+      
+      - subchapter: E
+        note: "Fellowships — CONFIRMED IRRELEVANT except Part 62"
+        parts:
+          - part: 61
+            title: "Fellowships"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "PHS fellowship administration"
+          
+          - part: 62
+            title: "NHSC Scholarship and Loan Repayment Programs"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["Primary Care"]
+            notes: "Practice site requirements for NHSC participants"
+          
+          - part: "63–68b"
+            title: "Various training/fellowship/loan parts"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "NIH/AHRQ training grants, traineeships, NRSAs"
+      
+      - subchapter: F
+        note: "Quarantine/Inspection — RESOLVED: Parts 70, 75 Low; Part 73 Medium; Parts 71–72 Irrelevant"
+        parts:
+          - part: 70
+            title: "Interstate Quarantine"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["All 14 types"]
+            notes: "Reporting obligations for quarantinable diseases; cooperation with federal quarantine orders; low relevance in normal times, escalates during emergencies"
+          
+          - part: 71
+            title: "Foreign Quarantine"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Ports of entry, airlines, ships"
+          
+          - part: 72
+            title: "[Reserved]"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "No content"
+          
+          - part: 73
+            title: "Select Agents and Toxins"
+            relevant: true
+            relevance_level: "MEDIUM"
+            cedar_practice_types:
+              - Compounding Pharmacy
+              - Regenerative Medicine
+              - Peptide Therapy
+              - IV Therapy/Infusion
+            notes: "Regulates possession/use/transfer of select agents; FDA-approved botulinum toxin products (Botox/Dysport) are EXEMPT; applies to non-pharmaceutical biologics and research cultures; compounding pharmacies need particular awareness"
+          
+          - part: 75
+            title: "Standards for Credentialing of Radiologic Personnel"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types:
+              - Med Spa/Aesthetic Medicine
+              - Pain Management
+              - Chiropractic
+              - Primary Care
+            notes: "Practices using diagnostic X-rays or fluoroscopy must ensure personnel meet credentialing requirements"
+      
+      - subchapter: G
+        note: "Occupational Safety — CONFIRMED IRRELEVANT"
+        parts:
+          - part: "80–88"
+            title: "NIOSH/EEOICPA/WTC parts"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Energy worker compensation, respirator certification, NIOSH activities, WTC health; no applicability to independent practices"
+      
+      - subchapter: H
+        note: "Health Assessments — CONFIRMED IRRELEVANT except Part 93"
+        parts:
+          - part: 90
+            title: "ATSDR Administrative Functions"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Superfund site health assessments"
+          
+          - part: 93
+            title: "PHS Research Misconduct Policies"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types:
+              - Regenerative Medicine
+              - Peptide Therapy
+              - Functional Medicine
+            notes: "Only if conducting PHS-funded research"
+      
+      - subchapter: I
+        note: "RESERVED — Entire subchapter"
+        parts: []
+      
+      - subchapter: J
+        note: "Vaccines — RESOLVED: Part 100 Medium; Part 110 Low; Parts 101–109 Reserved"
+        parts:
+          - part: 100
+            title: "Vaccine Injury Compensation (VICP)"
+            relevant: true
+            relevance_level: "MEDIUM"
+            cedar_practice_types:
+              - Primary Care
+              - Functional Medicine
+              - Integrative Medicine
+              - Chiropractic
+            notes: "Vaccine-administering practices have obligations: provide VIS, maintain records, report adverse events to VAERS; Vaccine Injury Table (§100.3) defines presumed vaccine-caused injuries"
+          
+          - part: "101–109"
+            title: "[Reserved]"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "No content"
+          
+          - part: 110
+            title: "Countermeasures Injury Compensation Program (CICP)"
+            relevant: true
+            relevance_level: "LOW"
+            cedar_practice_types: ["All 14 types (during emergencies)"]
+            notes: "Compensation for injuries from covered countermeasures under PREP Act declarations; low in normal times, significant during declared emergencies"
+      
+      - subchapter: K
+        note: "CONFIRMED IRRELEVANT"
+        parts:
+          - part: 121
+            title: "Organ Procurement and Transplantation Network"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Hospital-based transplant programs"
+          
+          - part: 124
+            title: "Medical Facility Construction and Modernization"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "Hill-Burton Act implementation"
+      
+      - subchapter: L
+        note: "RESERVED — Entire subchapter (Parts 131–135)"
+        parts: []
+      
+      - subchapter: M
+        note: "Indian Health Service — CONFIRMED IRRELEVANT"
+        parts:
+          - part: "136–137"
+            title: "Indian Health Service parts"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "IHS health care delivery, tribal self-governance"
+          
+          - part: "138–199"
+            title: "[Reserved]"
+            relevant: false
+            relevance_level: null
+            cedar_practice_types: []
+            notes: "All reserved"
+
+  chapter_iv_part_level_allowlist:
+    title: "Centers for Medicare & Medicaid Services (Parts 400–699)"
+    total_active_parts: "~60+"
+    relevant_parts: 43
+    critical_parts: 9
+    subchapter_a:
+      title: "General Provisions (Parts 400–403)"
+      parts:
+        - part: 400
+          title: "Introduction; Definitions"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Foundational definitions used throughout Chapter IV; all providers must understand defined terms"
+        
+        - part: 401
+          title: "General Administrative Requirements"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Subpart D (overpayment reporting) is critical — 60-day return rule creates False Claims Act liability; also covers confidentiality, claims collection, Medicare data availability"
+        
+        - part: 402
+          title: "Civil Money Penalties, Assessments, and Exclusions"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "CMS penalty authority for billing violations, false claims, program abuse; exclusion rules are existential threats; especially relevant for practices billing potentially experimental services (peptide therapy, regenerative medicine, some HRT)"
+        
+        - part: 403
+          title: "Special Programs and Projects"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - "All physician-led types"
+            - Compounding Pharmacy
+          notes: "Subpart I: Open Payments/Sunshine Act — all physicians with pharma/device relationships must report; Subpart L: DTC drug advertising price requirements"
+    
+    subchapter_b:
+      title: "Medicare Program (Parts 405–429)"
+      critical_parts:
+        - 405
+        - 410
+        - 411
+        - 414
+        - 424
+      parts:
+        - part: 405
+          title: "Federal Health Insurance for the Aged and Disabled"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Subpart D (Private Contracts) is ESSENTIAL for DPC/Concierge — Medicare opt-out rules; Subparts H–I govern entire Medicare appeals process; Subpart B covers health care technology coverage decisions (relevant for innovative therapies)"
+        
+        - part: 406
+          title: "Hospital Insurance Eligibility and Entitlement"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All (background)"]
+          notes: "Beneficiary-focused; defines Part A eligibility; background knowledge for patient coverage verification"
+        
+        - part: 407
+          title: "Supplementary Medical Insurance Enrollment"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All (background)"]
+          notes: "Beneficiary-focused Part B enrollment rules; Subpart D (immunosuppressive drug benefit) may affect integrative/regenerative practices"
+        
+        - part: 408
+          title: "Premiums for Supplementary Medical Insurance"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Beneficiary premium administration only"
+        
+        - part: 409
+          title: "Hospital Insurance Benefits"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types:
+            - Pain Management
+            - Primary Care
+          notes: "Primarily institutional (hospitals, SNFs, HHAs); understanding inpatient/observation status distinctions can matter for care coordination"
+        
+        - part: 410
+          title: "Supplementary Medical Insurance (SMI) Benefits — Part B Covered Services"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "THE SINGLE MOST IMPORTANT PART for Cedar; defines which physician/NP/PA services Part B covers; key sections: §410.20 (physicians' services), §410.26 (incident-to — essential for NP/PA supervision models), §410.32 (diagnostic tests), §410.33 (IDTFs), §410.78 (telehealth — critical for Telehealth practices); Subpart G: Medical Nutrition Therapy (Weight Management, Functional Medicine); Subpart H: Diabetes self-management training"
+        
+        - part: 411
+          title: "Exclusions from Medicare and Limitations on Medicare Payment"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Subpart A: general exclusions — defines what Medicare does NOT cover (cosmetic surgery, experimental procedures); critical boundary for Med Spa, Anti-Aging, Peptide Therapy, Regenerative Medicine; Subpart J: STARK LAW REGULATIONS (§§411.350–411.389) — physician self-referral prohibition; critical for any practice with referral relationships, lab ownership, imaging center interests"
+        
+        - part: 412
+          title: "Prospective Payment for Inpatient Hospital Services (DRGs)"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types:
+            - Pain Management
+            - Primary Care
+          notes: "Primarily institutional; understanding observation vs. inpatient status and DRG system relevant for care coordination only"
+        
+        - part: 413
+          title: "Principles of Reasonable Cost Reimbursement"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["Limited"]
+          notes: "Primarily institutional (hospitals, SNFs, ESRD facilities); independent practices generally not cost-reporting entities"
+        
+        - part: 414
+          title: "Payment for Part B Medical and Other Health Services"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Second most critical part for Cedar after Part 410; contains: Subpart B — Physician Fee Schedule (RVUs, geographic adjustments, conversion factors); Subpart G — Lab test fee schedule; Subpart I/K — Drug/biological payment (ASP+6% methodology, critical for buy-and-bill practices: IV Therapy, Peptide Therapy, HRT, Regenerative Medicine); Subpart O — MIPS (quality reporting, payment adjustments for virtually all eligible clinicians); Subpart P — Home infusion therapy payments; Subpart L — Supplying/dispensing fees (Compounding Pharmacy)"
+        
+        - part: 415
+          title: "Services of Physicians in Providers/Teaching Settings"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types:
+            - Primary Care
+            - Pain Management
+          notes: "Primarily institutional/academic; limited relevance for independent practices unless operating in provider-based or teaching settings"
+        
+        - part: 416
+          title: "Ambulatory Surgical Services"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - Med Spa/Aesthetic Medicine
+            - Pain Management
+            - Regenerative Medicine
+          notes: "Applies if practice operates as or uses an ASC; ASC payment system differs from office PFS; quality reporting (ASCQR) applies to ASC operators"
+        
+        - part: 417
+          title: "HMOs, Competitive Medical Plans, Health Care Prepayment Plans"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All (indirect)"]
+          notes: "Legacy structures largely superseded by Part 422 (Medicare Advantage); primarily regulates organizations, not providers"
+        
+        - part: 418
+          title: "Hospice Care"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Institutional — governs hospice organizations"
+        
+        - part: 419
+          title: "Prospective Payment for Hospital Outpatient Services (OPPS)"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All (indirect)"]
+          notes: "Institutional; independent practices paid under PFS, not OPPS; understanding OPPS useful for site-of-service differential awareness only"
+        
+        - part: 420
+          title: "Program Integrity: Medicare"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types: ["All 14 types"]
+          notes: "Ownership disclosure requirements (Subpart C) apply to all Medicare enrollees; fraud/abuse reporting incentives create compliance obligations"
+        
+        - part: 421
+          title: "Medicare Contracting"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "CMS contracts with MACs — administrative, no provider obligations"
+        
+        - part: 422
+          title: "Medicare Advantage Program"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types: ["All 14 types"]
+          notes: "~50%+ of Medicare beneficiaries now in MA plans; Subpart E governs provider-plan relationships, contract terms, prompt payment, network adequacy; MA prior authorization and utilization management directly affect all Cedar practices seeing Medicare patients"
+        
+        - part: 423
+          title: "Voluntary Medicare Prescription Drug Benefit (Part D)"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - Compounding Pharmacy
+            - Primary Care
+            - Functional Medicine
+            - Weight Management
+            - HRT
+          notes: "Primarily regulates Part D sponsors; relevant for: compounded medication coverage, formulary management, prior authorization, coverage determination appeals; affects prescribing decisions"
+        
+        - part: 424
+          title: "Conditions for Medicare Payment"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["All 14 types"]
+          notes: "ESSENTIAL; Subpart C: claims filing requirements; Subpart D: assignment rules; Subpart P: PROVIDER ENROLLMENT (CMS-855) — defines entire enrollment process, revalidation, revocation triggers, effective dates; without proper enrollment, a practice cannot bill Medicare at all"
+        
+        - part: 425
+          title: "Medicare Shared Savings Program (ACOs)"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - Primary Care
+            - Integrative Medicine
+            - Functional Medicine
+          notes: "Relevant if practices participate in ACOs; understanding shared savings benchmarks and quality requirements matters for value-based care exploration"
+        
+        - part: 426
+          title: "Review of National/Local Coverage Determinations"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types: ["All 14 types (especially innovative services)"]
+          notes: "Process for challenging NCDs and LCDs; highly relevant for practices at coverage boundaries — Peptide Therapy, Regenerative Medicine, Anti-Aging Medicine, some Functional Medicine; avenue for contesting MAC coverage limits"
+        
+        - part: 427
+          title: "Medicare Part B Drug Inflation Rebate Program"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - IV Therapy/Infusion
+            - Peptide Therapy
+            - HRT
+            - Regenerative Medicine
+            - Compounding Pharmacy
+          notes: "NEWLY CODIFIED (Dec 2024, 89 FR 98228); implements IRA §11101; Subpart C adjusts beneficiary coinsurance for Part B rebatable drugs exceeding inflation — changes amount practices collect from patients; affects buy-and-bill revenue cycle"
+        
+        - part: 428
+          title: "Medicare Part D Drug Inflation Rebate Program"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types:
+            - Compounding Pharmacy
+            - Primary Care
+            - Weight Management
+          notes: "NEWLY CODIFIED (Dec 2024); regulates manufacturers; indirect impact on formulary decisions and drug availability; lower direct relevance than Part 427"
+        
+        - part: 429
+          title: "[Reserved]"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "No content"
+    
+    subchapter_c:
+      title: "Medical Assistance Programs / Medicaid (Parts 430–456)"
+      critical_parts:
+        - 438
+        - 440
+        - 441
+        - 447
+        - 455
+      parts:
+        - part: 430
+          title: "Grants to States for Medical Assistance Programs"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicaid-participating"]
+          notes: "State plan/waiver framework; waivers (§430.25) shape which services are covered; indirect"
+        
+        - part: 431
+          title: "State Organization and General Administration"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All Medicaid-participating"]
+          notes: "Subpart C: Provider Relations (§§431.105–431.120) directly governs provider agreements and enrollment; Section 1115 demonstrations (Subpart G) reshape coverage rules"
+        
+        - part: 432
+          title: "State Personnel Administration"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Internal state agency staffing"
+        
+        - part: 433
+          title: "State Fiscal Administration"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - "All Medicaid-participating (esp. Compounding Pharmacy, Primary Care, Pain Management)"
+          notes: "Subpart D: Third Party Liability — coordination of benefits; Subpart F: Overpayment recovery — states can request CMS to withhold Medicare payments to recover Medicaid overpayments (§433.316)"
+        
+        - part: 434
+          title: "Contracts"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicaid-participating"]
+          notes: "Contractual framework for fiscal agents and health insuring organizations; indirect"
+        
+        - part: 435
+          title: "Eligibility (States/DC/Territories)"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicaid-participating"]
+          notes: "Defines patient eligibility; practices must understand coverage verification; MAGI methodology, coordination with CHIP and Exchanges"
+        
+        - part: 436
+          title: "Eligibility (Guam/PR/USVI)"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Territorial-specific; not applicable to Florida/50 states"
+        
+        - part: 437
+          title: "Medicaid Quality"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicaid-participating"]
+          notes: "Quality measures (Child, Adult, Health Home); indirect — practices may need to report quality data states implement"
+        
+        - part: 438
+          title: "Managed Care"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types:
+            - "All Medicaid-participating (esp. Primary Care, Pain Management, Weight Management, Functional Medicine, Integrative Medicine, Chiropractic)"
+          notes: "Florida Medicaid is predominantly managed care (SMMC); network adequacy (§438.206), provider selection/credentialing (§438.214), grievance/appeal system (Subpart F), program integrity (Subpart H), mental health parity (Subpart K); any practice in a Medicaid MCO network must comply"
+        
+        - part: 440
+          title: "Services: General Provisions"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types:
+            - "All Medicaid-participating (esp. Primary Care, Pain Management, Chiropractic, Telehealth, Compounding Pharmacy, IV Therapy)"
+          notes: "Defines what Medicaid covers: physician services (§440.50), clinic services (§440.90), prescribed drugs (§440.120), rehabilitation (§440.130); amount/duration/scope requirements (§440.230)"
+        
+        - part: 441
+          title: "Services: Requirements and Limits for Specific Services"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types:
+            - Primary Care
+            - Pain Management
+            - Compounding Pharmacy
+            - Functional Medicine
+            - Telehealth
+            - Chiropractic
+            - Integrative Medicine
+          notes: "EPSDT for under-21 (§§441.50–441.62) critical for pediatric patients; sterilization consent requirements (Subpart F); Vaccines for Children (§§441.600–441.615); HCBS waivers (Subpart G)"
+        
+        - part: 442
+          title: "Standards for Payment to Nursing Facilities/ICFs-IID"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Institutional facilities only"
+        
+        - part: "443–446"
+          title: "[Reserved/Not present]"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "No content"
+        
+        - part: 447
+          title: "Payments for Services"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types:
+            - "All Medicaid-participating (esp. Primary Care, Pain Management, Compounding Pharmacy, IV Therapy, Chiropractic, Telehealth)"
+          notes: "Directly governs how Medicaid pays providers; §447.45: timely claims payment (30/90-day clean claim rules); Subpart G: Primary care payment requirements; Subpart I: Drug payments — critical for compounding pharmacy and dispensing practices"
+        
+        - part: "448–454"
+          title: "[Reserved/Not present]"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "No content"
+        
+        - part: 455
+          title: "Program Integrity: Medicaid"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types: ["ALL Medicaid-participating"]
+          notes: "Most directly relevant compliance part for Medicaid; §455.104: ownership/control disclosure (direct obligation); Subpart E: Provider screening/enrollment — fingerprinting, background checks, site visits, risk levels (mirrors Medicare under ACA §6401); Subpart F: Medicaid RAC program can audit claims"
+        
+        - part: 456
+          title: "Utilization Control"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types:
+            - "All Medicaid-participating (esp. prescribers, Pain Management, IV Therapy, Compounding Pharmacy)"
+          notes: "Utilization review requirements; Subpart K: Drug Use Review (DUR) — critical for prescribers and pharmacies; requires prospective/retrospective DUR and educational outreach"
+    
+    subchapter_d:
+      title: "Children's Health Insurance Program (Part 457)"
+      parts:
+        - part: 457
+          title: "Allotments and Grants to States (CHIP)"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - "All practices treating pediatric patients (esp. Primary Care, Functional Medicine, Chiropractic, Pain Management, Weight Management, Telehealth, Integrative Medicine)"
+          notes: "RESOLVED from AMBIGUOUS; CHIP creates direct compliance obligations: Subpart I (§§457.900–457.990) imposes provider screening, enrollment, and fraud/abuse requirements paralleling Medicaid Part 455; Subpart L flows managed care obligations to network providers; Florida operates CHIP as both Medicaid expansion and separate program (KidCare)"
+    
+    subchapter_e:
+      title: "Programs of All-Inclusive Care for the Elderly (Part 460)"
+      parts:
+        - part: 460
+          title: "Programs of All-Inclusive Care for the Elderly (PACE)"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "CONFIRMED IRRELEVANT; institutional comprehensive managed care for frail elderly (55+); PACE organizations are certified institutional entities; independent practices are not PACE organizations; narrow exception only if contracting as outside specialist with a PACE organization (uncommon)"
+    
+    subchapter_f:
+      title: "Quality Improvement Organizations (Parts 475–481)"
+      parts:
+        - part: 475
+          title: "Quality Improvement Organizations"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicare-participating"]
+          notes: "QIO organizational framework; establishes how QIOs are selected and operate"
+        
+        - part: 476
+          title: "Quality Improvement Organization Review"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - "All Medicare-participating (esp. Primary Care, Pain Management, IV Therapy, Integrative Medicine, Regenerative Medicine)"
+          notes: "RESOLVED from AMBIGUOUS; QIOs create DIRECT obligations: practitioners must provide records on request (§476.78); QIOs can deny Medicare payment (§476.86); beneficiary complaints trigger mandatory quality reviews (§§476.100–476.130); QIOs can refer for sanctions including exclusion (§476.160); not theoretical — QIO reviews occur regularly"
+        
+        - part: 478
+          title: "Reconsiderations and Appeals"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All Medicare-participating"]
+          notes: "Appeals process for QIO adverse determinations; providers must understand rights and timelines"
+        
+        - part: 480
+          title: "Acquisition, Protection, and Disclosure of QIO Information"
+          relevant: true
+          relevance_level: "LOW"
+          cedar_practice_types: ["All Medicare-participating"]
+          notes: "Mandatory cooperation with QIO information requests; criminal penalties for unauthorized disclosure"
+        
+        - part: 481
+          title: "[Reserved]"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "No content"
+    
+    subchapter_g:
+      title: "Standards and Certification (Parts 482–498)"
+      critical_parts:
+        - 493
+      parts:
+        - part: 482
+          title: "Conditions of Participation for Hospitals"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Institutional-only; hospital CoPs do not apply to independent physician offices or clinics"
+        
+        - part: 483
+          title: "Requirements for Long-Term Care Facilities"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Institutional-only; SNFs, NFs, ICFs/IID, psychiatric residential treatment"
+        
+        - part: 484
+          title: "Home Health Services"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Institutional-only; home health agency CoPs and payment"
+        
+        - part: 485
+          title: "Conditions of Participation: Specialized Providers"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - Chiropractic
+            - Integrative Medicine
+            - Regenerative Medicine
+            - Primary Care
+          notes: "Mostly institutional, but Subpart H covers outpatient PT/SLP clinics — potentially relevant for practices offering physical therapy under Medicare; Subpart H applies at clinic level, not hospital level"
+        
+        - part: 486
+          title: "Conditions for Coverage: Specialized Services by Suppliers"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types:
+            - IV Therapy/Infusion
+            - Compounding Pharmacy
+          notes: "Subpart I: Home Infusion Therapy Suppliers (§§486.500–486.525) — directly relevant; requires accreditation, plan of care by physician, 24/7 service, professional nursing; Subpart C: Portable X-ray services"
+        
+        - part: 488
+          title: "Survey, Certification, and Enforcement Procedures"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All Medicare/Medicaid-participating"]
+          notes: "Framework for CMS surveys of all certified providers; CLIA-related reconsideration (Subpart D); home infusion accreditation (Subpart L)"
+        
+        - part: 489
+          title: "Provider Agreements and Supplier Approval"
+          relevant: true
+          relevance_level: "HIGH"
+          cedar_practice_types: ["All Cedar types participating in Medicare"]
+          notes: "Applicable to ALL Medicare providers/suppliers, not just institutions; Subpart B: essentials of provider agreements (accepting assignment, records, compliance); Subpart C: allowable charges; Subpart E: termination/reinstatement; every Medicare-billing practice must have a provider agreement"
+        
+        - part: 491
+          title: "Certification of Certain Health Facilities (RHCs/FQHCs)"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["Primary Care (if structured as RHC/FQHC)"]
+          notes: "Limited to RHCs and FQHCs only; most Cedar practice types would not qualify, but some rural Florida Primary Care or Integrative Medicine practices could pursue RHC designation"
+        
+        - part: 493
+          title: "Laboratory Requirements (CLIA)"
+          relevant: true
+          relevance_level: "CRITICAL"
+          cedar_practice_types:
+            - Functional Medicine
+            - HRT
+            - Compounding Pharmacy
+            - Med Spa
+            - Weight Management
+            - Peptide Therapy
+            - IV Therapy/Infusion
+            - Regenerative Medicine
+            - Integrative Medicine
+            - Anti-Aging Medicine
+            - Pain Management
+            - Primary Care
+            - Chiropractic (if performing any lab testing)
+          notes: "THE SINGLE MOST IMPORTANT PART in this subchapter for Cedar; CLIA applies to ANY entity performing even one test on human specimens; most physician offices obtain Certificate of Waiver (Subpart B) for waived tests (rapid strep, glucose, A1C, urine dipstick); practices performing moderate/high-complexity testing (hormone panels, metabolic panels) need higher certification; covers proficiency testing, quality systems, personnel, inspection, enforcement; nearly all Cedar practice types perform some in-house testing"
+        
+        - part: 494
+          title: "Conditions for Coverage: ESRD Facilities"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Dialysis centers only"
+        
+        - part: 495
+          title: "Standards for EHR Technology Incentive Program"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All practices using EHRs under Medicare/Medicaid"]
+          notes: "Foundational EHR incentive standards; underlies Promoting Interoperability requirements under MIPS (Part 414); most practices maintaining EHRs should understand these standards"
+        
+        - part: 498
+          title: "Appeals of Participation Determinations"
+          relevant: true
+          relevance_level: "MEDIUM"
+          cedar_practice_types: ["All Medicare/Medicaid-participating"]
+          notes: "Appeal rights for adverse CMS determinations including CLIA certificate revocation, provider agreement termination, and participation denials; critical safeguard in conjunction with Parts 493 and 489"
+    
+    subchapter_h:
+      title: "Health Care Infrastructure and Model Programs (Parts 505–512)"
+      parts:
+        - part: 505
+          title: "Health Care Infrastructure Improvement Program"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Hospital/institutional loan program"
+        
+        - part: 510
+          title: "Comprehensive Care for Joint Replacement Model (CJR)"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "Hospital-centric bundled payment model"
+        
+        - part: 512
+          title: "Standard Provisions for Mandatory Innovation Center Models"
+          relevant: true
+          relevance_level: "MEDIUM-HIGH"
+          cedar_practice_types:
+            - "Pain Management (directly via Subpart G — ASM)"
+            - "All practices potentially in future expansions"
+          notes: "RESOLVED from AMBIGUOUS; Key finding: Subpart G — Ambulatory Specialty Model (ASM) launches January 1, 2027; mandatory APM holding individual clinicians accountable for chronic condition management; Low Back Pain cohort directly includes Pain Management specialty; mandatory in 40% of CBSAs nationwide; payment adjustments ±9%+ applied to ALL Part B payments; Florida practices in selected CBSAs will be mandatorily included; CMS has signaled future expansion to other specialties"
+    
+    subchapter_i:
+      title: "Basic Health Program (Parts 600–699)"
+      parts:
+        - part: 600
+          title: "BHP Administration, Eligibility, Benefits, Performance"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "CONFIRMED IRRELEVANT; only NY and MN operate BHPs; Florida does not; state-level insurance program — regulates state agencies, not providers"
+        
+        - part: "601–699"
+          title: "[Reserved]"
+          relevant: false
+          relevance_level: null
+          cedar_practice_types: []
+          notes: "No content"
+
+  chapter_v_part_level_allowlist:
+    title: "Office of Inspector General-Health Care (Parts 1000–1008)"
+    total_active_parts: 9
+    relevant_parts: 9
+    note: "Every active part in Chapter V is relevant"
+    critical_parts:
+      - 1001
+      - 1003
+    high_parts:
+      - 1002
+      - 1004
+      - 1005
+      - 1007
+      - 1008
+    medium_parts:
+      - 1000
+      - 1006
+    parts:
+      - part: 1000
+        title: "Introduction; General Definitions"
+        relevant: true
+        relevance_level: "MEDIUM"
+        cedar_practice_types: ["All 14 types"]
+        notes: "Foundational definitions for Chapter V; key: 'patient' definition is broader than practitioners assume — includes any individual receiving health care regardless of reimbursement source; 'professionally recognized standards' — when HHS declares a treatment modality not safe/effective, practitioners using it deemed non-compliant; directly relevant to practices offering novel therapies"
+      
+      - part: 1001
+        title: "Program Integrity—Medicare and State Health Care Programs"
+        relevant: true
+        relevance_level: "CRITICAL"
+        cedar_practice_types: ["All 14 types"]
+        notes: "Core OIG exclusion authority; Mandatory exclusions (Subpart B): program-related crime, patient abuse, felony healthcare fraud, felony controlled substance conviction; Permissive exclusions (Subpart C): misdemeanor fraud, license revocation, kickback violations, student loan default; §1001.952: Anti-Kickback Safe Harbors — defines safe harbors for investment interests, space/equipment rental, personal services, management contracts, referral services, discounts, employees, group purchasing, coinsurance waivers, etc.; ALL practices must screen employees/contractors against OIG exclusion list (LEIE); practices with referral arrangements must understand safe harbors"
+      
+      - part: 1002
+        title: "Program Integrity—State-Initiated Exclusions from Medicaid"
+        relevant: true
+        relevance_level: "HIGH"
+        cedar_practice_types:
+          - "All Medicaid-participating (esp. Primary Care, Pain Management, Compounding Pharmacy, Chiropractic)"
+        notes: "State Medicaid agency exclusion authority; states must exclude OIG-excluded individuals; Florida's MFCU is particularly active; even practices not directly billing Medicaid can be affected if employing excluded individuals"
+      
+      - part: 1003
+        title: "Civil Money Penalties, Assessments and Exclusions"
+        relevant: true
+        relevance_level: "CRITICAL"
+        cedar_practice_types: ["All 14 types"]
+        notes: "Financial enforcement teeth; CMPs for: false claims ($10K–$100K+ per violation), anti-kickback violations, Stark violations, beneficiary inducement, employing excluded individuals, failure to grant OIG audit access; assessments up to 3x amount claimed; key risk areas: Compounding Pharmacy (false claims for compounds), Med Spa (kickback arrangements, billing cosmetic as medical), Pain Management (unnecessary services), Telehealth (services not rendered), DPC/Concierge (beneficiary inducement issues)"
+      
+      - part: 1004
+        title: "Imposition of Sanctions by QIO Recommendation"
+        relevant: true
+        relevance_level: "HIGH"
+        cedar_practice_types:
+          - "All Medicare-billing types (esp. Pain Management, Functional Medicine, Chiropractic, IV Therapy, Regenerative Medicine)"
+        notes: "OIG sanctions based on QIO quality-of-care findings; QIOs can recommend exclusion for: services substantially in excess of needs, quality failing professionally recognized standards, or services not medically necessary; particularly relevant for practices whose approaches may differ from conventional standards"
+      
+      - part: 1005
+        title: "Appeals of Exclusions, CMPs and Assessments"
+        relevant: true
+        relevance_level: "HIGH"
+        cedar_practice_types: ["All 14 types"]
+        notes: "Due process framework; ALJ hearings, DAB review, evidence procedures; 60-day deadline to request hearing after notice; every practice must understand appeal rights as a safeguard"
+      
+      - part: 1006
+        title: "Investigational Inquiries"
+        relevant: true
+        relevance_level: "MEDIUM"
+        cedar_practice_types:
+          - "All 14 types (esp. Compounding Pharmacy, Pain Management, Med Spa, Telehealth)"
+        notes: "OIG subpoena authority for documents and testimony; practices in high-fraud-risk areas should have response protocols"
+      
+      - part: 1007
+        title: "State Medicaid Fraud Control Units"
+        relevant: true
+        relevance_level: "HIGH"
+        cedar_practice_types:
+          - "All Medicaid-participating (esp. Compounding Pharmacy, Pain Management, Primary Care)"
+        notes: "MFCU certification, funding, authority; Florida's MFCU (within Attorney General's Office) is particularly aggressive; compounding pharmacy fraud and pain management 'pill mills' have been primary MFCU targets; MFCUs also investigate patient abuse/neglect"
+      
+      - part: 1008
+        title: "Advisory Opinions by the OIG"
+        relevant: true
+        relevance_level: "HIGH"
+        cedar_practice_types:
+          - "All 14 types (esp. Med Spa, Compounding Pharmacy, Telehealth, Pain Management, DPC/Concierge)"
+        notes: "Process for requesting binding advisory opinions on Anti-Kickback Statute application, safe harbors, and sanctions; published opinions provide essential compliance guidance for: marketing/referral fee arrangements (Med Spa), prescriber relationships (Compounding Pharmacy), novel care delivery (Telehealth), joint ventures (Pain Management), fee structure arrangements (DPC/Concierge)"
+
+  cedar_practice_type_mapping:
+    description: "14 Cedar service types with primary relevance mappings"
+    practice_types:
+      - name: "Primary Care"
+        critical_parts:
+          - 2
+          - 405
+          - 410
+          - 411
+          - 414
+          - 424
+          - 438
+          - 447
+          - 455
+          - 1001
+          - 1003
+        high_parts:
+          - 8
+          - 401
+          - 420
+          - 422
+          - 426
+          - 440
+          - 441
+          - 456
+          - 489
+          - 1002
+          - 1004
+          - 1005
+          - 1007
+          - 1008
+        medium_parts:
+          - 5
+          - 100
+          - 400
+          - 403
+          - 423
+          - 425
+          - 427
+          - 431
+          - 433
+          - 457
+          - 476
+          - 478
+          - 488
+          - 491
+          - 495
+          - 498
+          - 512
+          - 1000
+          - 1006
+        low_parts:
+          - 3
+          - 6
+          - 23
+          - 50
+          - 59
+          - 62
+          - 70
+          - 75
+          - 93
+          - 110
+          - 406
+          - 409
+          -

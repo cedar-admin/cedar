@@ -1,0 +1,529 @@
+session_id: "P1_S2"
+title: "Part-Level Allowlists for CFR Titles 45, 29, 26, and 16"
+summary: |
+  Comprehensive part-level mapping for four major CFR titles with all AMBIGUOUS 
+  classifications resolved and false negatives minimized. Title 45 yields 20 relevant 
+  parts anchored by HIPAA and No Surprises Act. Title 29 produces ~45 relevant parts 
+  spanning wage/hour, OSHA, EEOC, and ERISA. Title 26 identifies 4 relevant parts with 
+  healthcare-specific section ranges. Title 16 contributes ~33 relevant parts led by FTC 
+  advertising, data security, and consumer protection rules.
+
+key_decisions:
+  - decision: "Title 45 — 20 relevant parts identified out of ~57 active parts in Subtitle A"
+    value:
+      critical:
+        - "Part 60 (National Practitioner Data Bank)"
+        - "Part 92 (Section 1557 Nondiscrimination)"
+        - "Part 149 (Surprise Billing / No Surprises Act)"
+        - "Part 160 (HIPAA General Administrative Requirements)"
+        - "Part 162 (HIPAA Transactions/NPI)"
+        - "Part 164 (HIPAA Security and Privacy)"
+      high:
+        - "Part 170 (Health IT Standards and Certification)"
+      moderate:
+        - "Part 46 (Protection of Human Subjects / Common Rule)"
+        - "Part 80 (Nondiscrimination — Title VI)"
+        - "Part 84 (Nondiscrimination — Section 504)"
+        - "Part 144 (Health Insurance Coverage Requirements)"
+        - "Part 146 (Group Health Insurance Market Requirements)"
+        - "Part 147 (ACA Market Reforms)"
+        - "Part 180 (Hospital Price Transparency)"
+        - "Part 184 (PBM Transparency Standards)"
+      low:
+        - "Part 88 (Conscience Protections)"
+        - "Part 102 (Civil Monetary Penalty Inflation Adjustments)"
+        - "Part 148 (Individual Health Insurance Market)"
+        - "Part 150 (CMS Enforcement — Group and Individual Markets)"
+        - "Part 171 (Information Blocking)"
+      irrelevant_subtitle_b: "Chapters II–XXV (15+ chapters covering TANF, child support, refugee resettlement, NSF, civil rights commission, OPM, community services, arts/humanities, AmeriCorps, ACF/ACL, legal services)"
+
+  - decision: "Title 29 — ~45 relevant parts across 5 chapters with all ambiguities resolved"
+    value:
+      chapter_i_nlrb:
+        critical: []
+        high: []
+        moderate:
+          - "Part 103 (Joint Employer Standards)"
+        low:
+          - "Part 101 (NLRB Statements of Procedures)"
+          - "Part 102 (NLRB Rules and Regulations)"
+        irrelevant:
+          - "Part 100 (Administrative Regulations)"
+          - "Parts 104–199 (Reserved)"
+      chapter_v_wage_hour:
+        critical:
+          - "Part 516 (FLSA Recordkeeping)"
+          - "Part 541 (Exempt Employee Definitions)"
+          - "Part 785 (Hours Worked)"
+          - "Part 795 (Employee vs. Independent Contractor Classification)"
+          - "Part 825 (FMLA)"
+        high:
+          - "Part 531 (Wage Payments Under FLSA)"
+          - "Part 778 (Overtime Compensation)"
+        moderate:
+          - "Part 504 (Nonimmigrant Nurses / H-1C)"
+          - "Part 507 (H-1B Visa Employer Requirements)"
+          - "Part 578 (Wage/Overtime Civil Money Penalties)"
+          - "Part 776 (FLSA General Coverage)"
+          - "Part 790 (Portal-to-Portal Act)"
+          - "Part 870 (Garnishment Restrictions)"
+        low:
+          - "Part 547–549 (Thrift/Savings Plans, Overtime Computation, Profit-Sharing)"
+          - "Part 570 (Child Labor Regulations)"
+          - "Part 826 (FFCRA Paid Leave — expired 12/31/2020)"
+        irrelevant:
+          - "Parts 500–503, 505–515, 519–530, 536, 550–553, 575, 579–697, 779–794 (agriculture, maritime, territories, forestry, broadcasting, petroleum, government contractors)"
+      chapter_xiv_eeoc:
+        critical:
+          - "Part 1630 (ADA Regulations)"
+          - "Part 1635 (GINA — Genetic Information)"
+          - "Part 1636 (PWFA — Pregnant Workers Fairness Act, effective June 2024)"
+        high:
+          - "Part 1602 (EEO-1 Recordkeeping and Reporting)"
+          - "Part 1604 (Sex Discrimination Guidelines)"
+          - "Part 1620 (Equal Pay Act)"
+          - "Part 1625 (Age Discrimination / ADEA)"
+          - "Parts 1626–1627 (ADEA Procedures and Recordkeeping)"
+        moderate:
+          - "Part 1601 (EEOC Procedural Regulations)"
+          - "Part 1605 (Religious Accommodation)"
+          - "Part 1606 (National Origin Discrimination)"
+          - "Part 1607 (Employee Selection Procedures)"
+        low:
+          - "Part 1608 (Affirmative Action)"
+          - "Part 1691 (Complaints Against Federal Financial Assistance Recipients)"
+        irrelevant:
+          - "Part 1600 (Employee Responsibilities and Conduct)"
+          - "Parts 1603, 1610–1615 (State/Local Government, EEOC FOIA/Privacy Act, Federal Sector)"
+          - "Part 1650, 1690, 1695 (EEOC Debt Collection, Interagency Coordination)"
+      chapter_xvii_osha:
+        critical:
+          - "Part 1904 (Recording/Reporting Injuries and Illnesses)"
+          - "Part 1910 Subpart I (PPE)"
+          - "§1910.1030 (Bloodborne Pathogens Standard)"
+          - "§1910.1200 (Hazard Communication Standard / GHS)"
+        high:
+          - "Part 1903 (Inspections, Citations, Penalties)"
+          - "Part 1910 Subpart J (Environmental Controls)"
+          - "Part 1910 Subpart K (Medical Services and First Aid)"
+          - "§1910.1020 (Access to Employee Exposure/Medical Records)"
+          - "§1910.1096 (Ionizing Radiation)"
+        moderate:
+          - "Part 1910 Subpart E (Exit Routes and Emergency Planning)"
+          - "Part 1910 Subpart H (Hazardous Materials)"
+          - "Part 1910 Subpart L (Fire Protection)"
+          - "Part 1910 Subpart S (Electrical Safety)"
+          - "§1910.1450 (Lab Chemical Hygiene)"
+          - "Part 1977 (Discrimination Against Employees Exercising OSH Rights)"
+        low:
+          - "Part 1910 Subpart D (Walking-Working Surfaces)"
+          - "Part 1975 (Employer Coverage Under OSH Act)"
+        irrelevant:
+          - "Parts 1902, 1915–1928, 1960 (State Plans, Shipyard, Marine, Construction, Agriculture, Federal Agencies)"
+      chapter_xxv_erisa:
+        critical:
+          - "Part 2590 (Group Health Plan Rules — COBRA, HIPAA, ACA, No Surprises Act)"
+        high:
+          - "Part 2510 (Definition of Terms — ERISA Applicability)"
+          - "Part 2520 (Reporting and Disclosure)"
+          - "Part 2550 (Fiduciary Responsibility)"
+        moderate:
+          - "Part 2530 (Minimum Standards for Pension Plans)"
+          - "Part 2560 (Administration and Enforcement / Claims Procedures)"
+          - "Part 2570 (Prohibited Transaction Penalties)"
+        low:
+          - "Part 2509 (Interpretive Bulletins)"
+          - "Part 2580 (Fidelity Bonding)"
+        irrelevant:
+          - "Parts 2582–2589 (Federal Employee Retirement — FERS)"
+      irrelevant_chapters: "Chapters II (OLMS), III (NRAB), IV (OLMS additional), IX (Construction), X (NMB), XII (FMCS), XX (OSHRC), XXVII (FMSHRC), XL (PBGC — DB pensions virtually never sponsored by independent practices)"
+
+  - decision: "Title 26 — 4 relevant parts with healthcare-specific section ranges identified"
+    value:
+      part_1_subchapter_a_income_tax:
+        critical:
+          - "§§1.199A-1 to 1.199A-6 (QBI Deduction / SSTB Rules — medical practices are SSTBs)"
+          - "§§1.4980H-0 to 1.4980H-6 (ACA Employer Mandate)"
+        high:
+          - "§§1.105-1 to 1.105-11 (Employer Accident and Health Plans)"
+          - "§§1.106-1 (Employer Contributions to Health Plans)"
+          - "§§1.125-0 to 1.125-7 (Cafeteria Plans / FSAs)"
+          - "§§1.223-1 to 1.223-4 (Health Savings Accounts)"
+          - "§§1.401-0 to 1.420-1 (Qualified Retirement Plans)"
+          - "§§1.1401-1 to 1.1402(a)-1 (Self-Employment Tax)"
+        moderate:
+          - "§§1.162-1 to 1.162-31 (Trade or Business Expenses)"
+          - "§§1.501(a)-1 to 1.501(c)(3)-1 (Tax-Exempt Organizations)"
+          - "§§1.1361-1 to 1.1379-1 (S Corporation Rules)"
+        low:
+          - "§§1.213-1 (Medical Expense Definition)"
+        irrelevant:
+          - "Parts 2–10, 11, 13a, 15, 16A, 18 (Maritime, Temp Regs, Mining, Agriculture)"
+          - "All other Part 1 section ranges (Foreign income, capital gains, partnerships general, trusts, etc.)"
+      part_31_subchapter_c_employment_taxes:
+        critical:
+          - "Part 31 Subpart B — §§31.3101–31.3128 (FICA — Employee vs. IC Classification at §31.3121(d)-1)"
+        high:
+          - "Part 31 Subpart D — §§31.3301–31.3306 (FUTA)"
+          - "Part 31 Subpart E — §§31.3401–31.3406 (Income Tax Withholding)"
+        moderate:
+          - "Part 31 Subparts F–G (General Provisions, Administrative)"
+        irrelevant:
+          - "Part 31 Subpart C (Railroad Retirement Tax)"
+          - "Parts 32–39 (Temporary/Historical Employment Tax Regs)"
+      part_46_excise_taxes:
+        moderate:
+          - "PCORI Fees (§§4375–4376)"
+      part_54_pension_excise_taxes:
+        critical:
+          - "§§54.4980B-1 to -10 (COBRA)"
+          - "§§54.4980H-1 to -6 (ACA Employer Mandate Penalties)"
+          - "§§54.9801–9833 (Chapter 100 Group Health Plan Requirements — HIPAA Portability, ACA Market Reforms, No Surprises Act)"
+        high:
+          - "§§54.4980G-1 to -7 (HSA Comparability)"
+        irrelevant:
+          - "Parts 40–45, 47–53, 55–58 (Non-Healthcare Excise Taxes)"
+      regulatory_status_update: "Medical device excise tax (IRC §4191, formerly Part 48) REPEALED December 20, 2019 (Pub.L. 116-94). No longer applicable."
+
+  - decision: "Title 16 — ~33 relevant parts identified; Subchapters E, F resolved as RELEVANT; Subchapter J confirmed IRRELEVANT"
+    value:
+      subchapter_a_irrelevant: "Parts 0–16 (FTC Organization/Procedures) — no provider compliance obligations"
+      subchapter_b_guides_and_trade_practice:
+        critical:
+          - "Part 255 (Endorsements and Testimonials — Patient Testimonials, Before/After Photos, Influencer Endorsements)"
+        high:
+          - "Part 233 (Guides Against Deceptive Pricing)"
+          - "Part 238 (Guides Against Bait Advertising)"
+          - "Part 251 (Use of the Word 'Free')"
+        moderate:
+          - "Part 239 (Advertising of Warranties and Guarantees)"
+        low:
+          - "Part 17 (Application of Guides)"
+          - "Part 240 (Advertising Allowances)"
+        irrelevant:
+          - "Parts 20, 23, 24, 254, 259, 260 (Industry-Specific Guides)"
+      subchapter_c_consumer_protection:
+        critical:
+          - "Part 310 (Telemarketing Sales Rule — Outbound Calls, Do-Not-Call, 5-Year Record Retention)"
+          - "Part 314 (Safeguards Rule — 2021/2023 Amendments Require Encryption, MFA, Access Controls)"
+          - "Part 318 (Health Breach Notification Rule — 2024 Amendments Expanded to Health Apps/Wearables)"
+        high:
+          - "Part 313 (GLB Privacy Rule — for Financial Institutions / Patient Financing)"
+          - "Part 316 (CAN-SPAM Rule — Commercial Email Compliance)"
+        moderate:
+          - "Part 312 (COPPA — Children Under 13)"
+        low:
+          - "Part 308 (Telephone Disclosure / Dispute Resolution — Pay-Per-Call)"
+          - "Part 315 (Contact Lens Rule)"
+          - "Part 323 (Made in USA Labeling)"
+        irrelevant:
+          - "Parts 300–307, 309, 311, 320–322 (Non-Healthcare Product Rules)"
+      subchapter_d_trade_regulation:
+        critical:
+          - "Part 465 (Consumer Reviews Rule — Effective Oct 21, 2024; FTC Enforcement Active as of Dec 2025)"
+        high:
+          - "Part 425 (Negative Option Plans — NOTE: 2024 'Click-to-Cancel' Amendments Vacated by 8th Circuit July 2025; Reverted to 1973 Text as of Feb 12, 2026; New ANPRM Published March 13, 2026)"
+          - "Part 435 (Mail/Internet/Telephone Order Merchandise — Shipping Timing Requirements)"
+        moderate:
+          - "Part 429 (Cooling-Off Period Rule — 3-Day Cancellation)"
+          - "Part 433 (Preservation of Consumer Claims and Defenses)"
+          - "Part 444 (Credit Practices)"
+        low:
+          - "Part 436 (Franchising Disclosure)"
+          - "Part 456 (Ophthalmic Practice Rules)"
+          - "Part 461 (Impersonation of Government)"
+        irrelevant:
+          - "Parts 408, 423, 424, 432, 437, 453, 455, 460, 464 (Industry-Specific Rules)"
+      subchapter_e_fair_packaging_labeling:
+        ambiguity_resolved: "RELEVANT"
+        moderate:
+          - "Part 500 (FPLA Regulations — Net Quantity, Manufacturer ID)"
+        low:
+          - "Parts 501–503 (FPLA Exemptions, Quantity Standards, Policy Statements)"
+        applies_to:
+          - "Compounding Pharmacy"
+          - "Med Spa"
+          - "Weight Management"
+          - "Functional Medicine"
+          - "IV Therapy"
+          - "Anti-Aging"
+          - "Integrative Medicine"
+          - "Peptide Therapy"
+      subchapter_f_fair_credit_reporting:
+        ambiguity_resolved: "RELEVANT"
+        high:
+          - "Part 660 (Furnisher Duties — Accuracy, Dispute Investigation, Correction)"
+          - "Part 681 (Identity Theft / Red Flags Rule — Creditor Requirements)"
+          - "Part 682 (Disposal of Consumer Report Information)"
+        moderate:
+          - "Parts 602–604 (FCRA Scope, Definitions, Core Rules)"
+          - "Part 640 (Risk-Based Pricing Notices)"
+        low:
+          - "Part 641 (Address Discrepancy Procedures)"
+          - "Part 680 (Affiliate Marketing)"
+          - "Part 698 (Model Forms)"
+        irrelevant:
+          - "Parts 609–614 (CRA-Specific Rules)"
+        applies_to: "All 14 practice types — specifically those running credit checks, reporting patient debts, or offering patient financing"
+      subchapter_i_fair_debt_collection:
+        moderate:
+          - "Part 901 (State FDCPA Exemption Procedures)"
+        irrelevant:
+          - "Parts 902–909 (Reserved)"
+      subchapters_g_h_j:
+        irrelevant_g: "Parts 700–703 (Magnuson-Moss Warranty Act — applies to tangible consumer products, not medical services)"
+        irrelevant_h: "Parts 801–803 (Hart-Scott-Rodino Pre-Merger Notification — only for mergers >$119.5M)"
+        irrelevant_j: "Parts 910–999 [All Reserved] — FTC Non-Compete Rule (Part 910) REMOVED from CFR effective February 12, 2026 after courts vacated and FTC acceded September 5, 2025"
+
+cross_references:
+  - references_session: "P1_S1"
+    context: "Title-level MIXED/IRRELEVANT classifications provided foundation for part-level expansion here. All ambiguities from Session 1 resolved in this session."
+  - references_session: "P1_S3"
+    context: "Section-level detail for selected high-priority parts (e.g., 29 CFR 1910 OSHA standards, 45 CFR 164 HIPAA Privacy/Security, 16 CFR 255 Endorsements) will be mapped in P1_S3."
+  - references_session: "P2_S1"
+    context: "14 Cedar Practice Types classification against this part-level allowlist will occur in Phase 2 to generate practice-specific compliance portfolios."
+
+data_structures:
+  title_45_part_level_table: |
+    | Chapter | Subchapter | Part | Part Description | Relevant? | Relevance Level | Cedar Practice Types Affected | Notes |
+    |---------|------------|------|-----------------|-----------|-----------------|-------------------------------|-------|
+    | I (HHS) | A | 1–45 | General HHS Administration | NO | IRRELEVANT | — | ~25 parts covering HHS internal operations. No provider compliance obligations. |
+    | I (HHS) | A | 46 | Protection of Human Subjects (Common Rule) | YES | MODERATE | Regenerative Medicine, Peptide Therapy, Functional Medicine, Anti-Aging, Integrative Medicine | IRB requirements for human subjects research. Relevant for practices conducting clinical research or using investigational protocols. |
+    | I (HHS) | A | 50–51 | Exchange Visitor Program / Alien Physician Reduction | NO | IRRELEVANT | — | Immigration/visa waivers, not provider regulation. |
+    | I (HHS) | A | 60 | National Practitioner Data Bank (NPDB) | YES | HIGH | All 14 practice types | Malpractice payment reporting, adverse action queries, credentialing. All medical practices interact with NPDB. |
+    | I (HHS) | A | 63–79 | HHS grant programs, conduct standards, remedial actions, fraud | NO | IRRELEVANT | — | HHS internal administration and grant management. |
+    | I (HHS) | A | 80 | Nondiscrimination — Title VI (Civil Rights Act 1964) | YES | MODERATE | All 14 (if receiving federal funds) | Race/color/national origin nondiscrimination. Applies to practices receiving Medicare/Medicaid. |
+    | I (HHS) | A | 81 | Hearing Procedures for Part 80 | NO | IRRELEVANT | — | Procedural rules only triggered by enforcement action. |
+    | I (HHS) | A | 83 | PHS Act Nondiscrimination (Educational Institutions) | NO | IRRELEVANT | — | Applies to educational institutions, not practices. |
+    | I (HHS) | A | 84 | Nondiscrimination — Section 504 (Disability) | YES | MODERATE | All 14 (if receiving federal funds) | Disability accessibility for entities receiving federal financial assistance. |
+    | I (HHS) | A | 85–87 | HHS-conducted programs nondiscrimination, Title IX, faith-based organizations | NO | IRRELEVANT | — | HHS-internal, educational, or faith-based org rules. |
+    | I (HHS) | A | 88 | Conscience Protections for Healthcare Providers | YES | LOW | All 14 (if receiving federal funds) | Protects providers with religious/moral objections to certain procedures. |
+    | I (HHS) | A | 89–91 | Leadership Act integrity, age nondiscrimination | NO | IRRELEVANT | — | International programs and general age discrimination (rarely implicated). |
+    | I (HHS) | A | 92 | Nondiscrimination — Section 1557 of the ACA | YES | CRITICAL | All 14 practice types | PRIMARY federal civil rights law in healthcare. Prohibits discrimination on race, color, national origin, sex (including sexual orientation/gender identity), age, and disability. Applies to ANY practice receiving Medicare, Medicaid, or ACA marketplace payments. Requires nondiscrimination notices and language access services. |
+    | I (HHS) | A | 93–101 | Lobbying restrictions, contractor conflicts, state/block grants, etc. | NO | IRRELEVANT | — | Government grant administration and emergency resource allocation. |
+    | I (HHS) | A | 102 | Civil Monetary Penalty Inflation Adjustments | YES | LOW | All 14 practice types | Sets inflation-adjusted penalty amounts for HIPAA and other HHS violations. Useful for understanding penalty exposure. |
+    | I (HHS) | B | 140–143 | [Reserved] | NO | IRRELEVANT | — | — |
+    | I (HHS) | B | 144 | Requirements Relating to Health Insurance Coverage | YES | MODERATE | All 14 practice types | Definitions and scope for HIPAA portability (Parts 146–150). Relevant for practices offering or interacting with group health plans. |
+    | I (HHS) | B | 146 | Group Health Insurance Market Requirements | YES | MODERATE | All 14 practice types | HIPAA portability for group health insurance. Relevant for practices as employers and for understanding patient insurance. |
+    | I (HHS) | B | 147 | Health Insurance Reform — Group and Individual Markets | YES | MODERATE | All 14 practice types | ACA market reforms: preventive services, dependent coverage to age 26, no lifetime/annual limits, essential health benefits. |
+    | I (HHS) | B | 148 | Individual Health Insurance Market Requirements | YES | LOW | All 14 practice types | Individual market rules. Less direct but affects patient coverage landscape. |
+    | I (HHS) | B | 149 | Surprise Billing and Transparency (No Surprises Act) | YES | CRITICAL | All 14 practice types | PROHIBITS surprise billing for emergency services and out-of-network services at in-network facilities. Requires good faith cost estimates. Establishes IDR for payment disputes. Critical for all practices with out-of-network patients. |
+    | I (HHS) | B | 150 | CMS Enforcement — Group and Individual Markets | YES | LOW | All 14 practice types | Enforcement mechanisms for Parts 146–149. Relevant for understanding compliance consequences. |
+    | I (HHS) | B | 152–159 | Pre-existing condition plan, reinsurance, rate review, Exchange/QHP/SHOP/MLR/web portal | NO | IRRELEVANT | — | Insurance issuer and marketplace operations — not provider regulations. |
+    | I (HHS) | C | 160 | HIPAA General Administrative Requirements | YES | CRITICAL | All 14 practice types | Defines covered entities, business associates, enforcement procedures, civil monetary penalties. Foundation for all HIPAA compliance. |
+    | I (HHS) | C | 162 | HIPAA Administrative Requirements (Transactions/NPI) | YES | CRITICAL | All 14 practice types | Standard transaction code sets (EDI), NPI, employer ID, operating rules for electronic claims, eligibility, referrals, remittance. |
+    | I (HHS) | C | 164 | HIPAA Security and Privacy | YES | CRITICAL | All 14 practice types | Privacy Rule (Subpart E), Security Rule (Subpart C), Breach Notification Rule (Subpart D). THE SINGLE MOST IMPORTANT REGULATION for all healthcare practices. Governs PHI use/disclosure, patient rights, safeguards for ePHI, breach notification. |
+    | I (HHS) | D | 170 | Health IT Standards and Certification | YES | HIGH | All 14 practice types | ONC certified EHR requirements, interoperability standards (FHIR APIs, C-CDA), clinical quality measures. Impacts EHR selection and patient data access. |
+    | I (HHS) | D | 171 | Information Blocking | YES | CRITICAL | All 14 practice types | Defines information blocking and exceptions. Providers face disincentives for blocking access to electronic health information. All practices using EHRs must understand prohibitions and exceptions. |
+    | I (HHS) | E | 180 | Hospital Price Transparency | YES | MODERATE | Primary Care (DPC/Concierge), IV Therapy, Pain Management | Requires hospitals to publish standard charges. Most independent practices are not hospitals, but hospital-based outpatient departments may be affected. |
+    | I (HHS) | E | 182 | COVID-19 Test Price Transparency | YES | LOW | Primary Care (DPC/Concierge) | Requires providers of COVID-19 tests to publish cash prices. Limited ongoing relevance. |
+    | I (HHS) | E | 184 | PBM Transparency Standards | YES | MODERATE | Compounding Pharmacy, Weight Management, Peptide Therapy, Hormone Optimization/HRT | Targets pharmacy benefit manager transparency. Relevant for practices dealing with PBMs for specialty medications. Still in implementation — monitor. |
+    | I (HHS) | — | Subtitle B (Chapters II–XXV) | TANF, child support, refugee resettlement, NSF, civil rights commission, OPM, community services, arts/humanities, AmeriCorps, legal services, various commissions | NO | IRRELEVANT | — | Confirmed irrelevant. 15+ chapters covering welfare programs and non-healthcare government agencies. |
+
+  title_29_chapter_v_wage_hour_table: |
+    | Chapter | Subchapter | Part | Description | Relevant? | Relevance Level | Cedar Practice Types Affected | Notes |
+    |---------|------------|------|-------------|-----------|-----------------|-------------------------------|-------|
+    | V | A | 500–502 | Migrant/Agricultural Worker Protection | NO | IRRELEVANT | — | Agriculture-specific. |
+    | V | A | 504 | Nonimmigrant Nurses (H-1C) | YES | MODERATE | Primary Care, Pain Management, IV Therapy, Integrative Medicine | Healthcare-specific: attestations for facilities using foreign-trained RNs. |
+    | V | A | 507 | H-1B Visa Employer Requirements | YES | MODERATE | All 14 practice types | Labor condition applications for H-1B specialty occupations. Relevant for sponsoring foreign-trained physicians, NPs, specialists. |
+    | V | A | 516 | FLSA Recordkeeping | YES | CRITICAL | All 14 practice types | Every practice must maintain payroll records (hours, wages, deductions, overtime). 3-year retention for payroll, 2 years for time cards. |
+    | V | A | 531 | Wage Payments Under FLSA | YES | HIGH | All 14 practice types | How wages are computed — tip credits, board/lodging deductions. Affects deductions from employee wages. |
+    | V | A | 541 | Exempt Employee Definitions (Executive/Administrative/Professional) | YES | CRITICAL | All 14 practice types | THE #1 WAGE/HOUR COMPLIANCE ISSUE. Determines whether NPs, PAs, office managers, billing specialists are exempt from overtime. "Learned professional" exemption governs licensed healthcare providers. Salary threshold requirements affect all practices. |
+    | V | A | 547–549 | Thrift/Savings Plans, Overtime Computation, Profit-Sharing Plans | YES | LOW | All 14 practice types | Alternative overtime computation methods and excludable plan definitions. |
+    | V | A | 570 | Child Labor Regulations | YES | LOW | All 14 practice types | Minimum age/hour restrictions for minor employees. Relevant if employing 16–17 year olds. |
+    | V | A | 578 | Wage/Overtime Civil Money Penalties | YES | MODERATE | All 14 practice types | Penalty amounts for FLSA violations. Important for understanding enforcement exposure. |
+    | V | B | 776 | FLSA General Coverage | YES | MODERATE | All 14 practice types | Defines enterprise vs. individual coverage. Most practices meet the $500K enterprise threshold. |
+    | V | B | 778 | Overtime Compensation | YES | HIGH | All 14 practice types | Comprehensive overtime computation — regular rate, bonuses, commissions, on-call pay, shift differentials. Critical for productivity-based compensation. |
+    | V | B | 785 | Hours Worked | YES | CRITICAL | All 14 practice types | DEFINES COMPENSABLE "HOURS WORKED" — on-call time, rest/meal periods, training, travel, pre/post-shift activities. Critical for practices where staff are on-call or chart after hours. |
+    | V | B | 790 | Portal-to-Portal Act | YES | MODERATE | All 14 practice types | Compensable vs. non-compensable pre/post-shift activities. Relevant for staff donning PPE or booting systems. |
+    | V | B | 795 | Employee vs. Independent Contractor Classification | YES | CRITICAL | All 14, esp. Telehealth, Med Spa, Functional Medicine, Hormone Optimization, Pain Management | DEFINES THE FLSA TEST FOR EMPLOYEE VS. IC. EXTREMELY CRITICAL — Medical practices heavily use 1099 providers. Misclassification is a TOP COMPLIANCE RISK. |
+    | V | C | 801 | Employee Polygraph Protection Act | YES | LOW | All 14, esp. Compounding Pharmacy | Prohibits most polygraph use. Exception for pharmaceutical theft investigations. |
+    | V | C | 825 | FMLA | YES | CRITICAL | All 14 practice types (50+ employees) | 12 WEEKS UNPAID LEAVE for serious health conditions, childbirth, military family needs. Applies to employers with 50+ employees within 75 miles. Intersects with ADA for medical leave. |
+    | V | C | 826 | FFCRA Paid Leave | YES | LOW | All 14 practice types | COVID-era emergency paid leave. Mandatory provisions expired 12/31/2020. Regulations remain for historical claims only. |
+    | V | D | 870 | Garnishment Restrictions | YES | MODERATE | All 14 practice types | Limits employee earnings garnishment to 25% of disposable earnings. All practices processing payroll must comply when receiving garnishment orders. |
+
+  title_29_chapter_xiv_eeoc_table: |
+    | Chapter | Subchapter | Part | Description | Relevant? | Relevance Level | Cedar Practice Types Affected | Notes |
+    |---------|------------|------|-------------|-----------|-----------------|-------------------------------|-------|
+    | XIV | — | 1600 | Employee Responsibilities and Conduct | NO | IRRELEVANT | — | EEOC internal employee standards. |
+    | XIV | — | 1601 | Procedural Regulations | YES | MODERATE | All 14 practice types | How EEOC processes discrimination charges. Every practice may face a charge. |
+    | XIV | — | 1602 | Recordkeeping and Reporting (EEO-1) | YES | HIGH | All 14 practice types | EEO-1 reporting for 100+ employees. Record preservation required for all employers with 15+ employees (1-year retention). |
+    | XIV | — | 1603 | State/Local Government Employee Complaints | NO | IRRELEVANT | — | Government employees only. |
+    | XIV | — | 1604 | Sex Discrimination Guidelines | YES | HIGH | All 14 practice types | DEFINES SEX DISCRIMINATION including sexual harassment (quid pro quo, hostile work environment). Every practice needs a harassment policy. |
+    | XIV | — | 1605 | Religious Accommodation | YES | MODERATE | All 14 practice types | Reasonable accommodation of religious beliefs. Relevant for scheduling and objections to procedures. |
+    | XIV | — | 1606 | National Origin Discrimination | YES | MODERATE | All 14 practice types | Includes English-only rules and accent discrimination. Relevant for diverse workforces. |
+    | XIV | — | 1607 | Employee Selection Procedures | YES | MODERATE | All 14 practice types | Governs adverse impact of hiring tests, interviews, selection criteria. |
+    | XIV | — | 1608 | Affirmative Action | YES | LOW | All 14 practice types | Defines permissible voluntary affirmative action. Most small practices don't maintain formal plans. |
+    | XIV | — | 1610–1615 | EEOC FOIA, Privacy Act, Sunshine Act, Federal Sector EEO, EEOC Section 504 | NO | IRRELEVANT | — | EEOC internal or federal-agency-only rules. |
+    | XIV | — | 1620 | Equal Pay Act | YES | HIGH | All 14 practice types | EQUAL PAY FOR EQUAL WORK regardless of sex. Critical where pay disparities exist between male/female providers doing same clinical work. |
+    | XIV | — | 1621 | Equal Pay Act Procedures | YES | MODERATE | All 14 practice types | Procedural rules for EPA enforcement. Companion to Part 1620. |
+    | XIV | — | 1625 | Age Discrimination (ADEA) | YES | HIGH | All 14 practice types | Prohibits age discrimination against employees 40+. Governs mandatory retirement, benefit provisions, waivers. |
+    | XIV | — | 1626–1627 | ADEA Procedures and Recordkeeping | YES | HIGH | All 14 practice types | ADEA enforcement procedures and recordkeeping (payroll 3 years, personnel records 1 year for employers with 20+ employees). |
+    | XIV | — | 1630 | ADA Regulations | YES | CRITICAL | All 14 practice types | THE MOST CRITICAL EEOC REGULATION FOR MEDICAL PRACTICES. Defines disability, reasonable accommodation, undue hardship, essential functions. Governs medical inquiry restrictions and fitness-for-duty evaluations. Applies to 15+ employees. |
+    | XIV | — | 1635 | GINA | YES | CRITICAL (for noted types) | Functional Medicine, Hormone Optimization/HRT, Regenerative Medicine, Anti-Aging, Integrative Medicine, Primary Care, Peptide Therapy (CRITICAL); all others (MODERATE) | PROHIBITS USE OF GENETIC INFORMATION IN EMPLOYMENT. Especially critical for practices offering genetic testing — must ensure employee genetic information is not acquired or used in employment decisions. |
+    | XIV | — | 1636 | Pregnant Workers Fairness Act (PWFA) | YES | CRITICAL | All 14 practice types | NEWEST MAJOR EEOC REGULATION (effective June 2024). Requires accommodation for pregnancy/childbirth-related limitations. Critical for practices with predominantly female clinical staff. |
+    | XIV | — | 1640–1641 | ADA/Section 504 Coordination; Government Contractor ADA | YES | LOW | All 14 practice types | Interagency coordination. Background reference only. |
+    | XIV | — | 1650, 1690, 1695 | EEOC debt collection, interagency coordination, guidance procedures | NO | IRRELEVANT | — | EEOC internal operations. |
+    | XIV | — | 1691 | Complaints Against Federal Financial Assistance Recipients | YES | LOW | All 14 (if receiving federal funds) | Employment discrimination against entities receiving Medicare/Medicaid/grants. Low frequency but real risk. |
+
+  title_29_chapter_xvii_osha_section_mapping: |
+    Bloodborne Pathogens (§1910.1030): CRITICAL
+    Hazard Communication / GHS (§1910.1200): CRITICAL
+    OSHA 300/300A/301 Logs (§1904): CRITICAL
+    PPE (§1910.132–140): HIGH
+    Environmental Controls / Sanitation (§1910.141–147): HIGH
+    Medical Services and First Aid (§1910.151): HIGH
+    Access to Exposure Records (§1910.1020): HIGH
+    Ionizing Radiation (§1910.1096): HIGH
+    Inspections, Citations, Penalties (Part 1903): MODERATE
+    Exit Routes / Emergency Planning (§1910.38–39): MODERATE
+    Hazardous Materials (§1910.101–126): MODERATE (esp. compressed gases, flammables)
+    Fire Protection (§1910.155–165): MODERATE
+    Electrical Safety (§1910.301–399): MODERATE
+    Occupational Health (§1910.94–98): LOW–MODERATE (ventilation, nonionizing radiation)
+    Lab Chemical Hygiene (§1910.1450): MODERATE (Compounding Pharmacy)
+    Discrimination Against OSH Advocates (Part 1977): MODERATE
+    Employer Coverage (Part 1975): LOW
+    Walking-Working Surfaces (Subpart D): LOW
+
+  title_26_part_1_healthcare_section_clusters: |
+    §§1.105-1 to 1.105-11: Employer Accident and Health Plans (HIGH)
+    §§1.106-1: Employer Contributions to Health Plans (HIGH)
+    §§1.125-0 to 1.125-7: Cafeteria Plans / FSAs (HIGH)
+    §§1.162-1 to 1.162-31: Trade or Business Expenses (MODERATE)
+    §§1.199A-1 to 1.199A-6: QBI Deduction / SSTB Rules (CRITICAL)
+    §§1.213-1: Medical Expense Definition (MODERATE)
+    §§1.223-1 to 1.223-4: Health Savings Accounts (HIGH)
+    §§1.401-0 to 1.420-1: Qualified Retirement Plans (HIGH)
+    §§1.501(a)-1 to 1.501(c)(3)-1: Tax-Exempt Organizations (MODERATE)
+    §§1.1361-1 to 1.1379-1: S Corporation Rules (MODERATE)
+    §§1.1401-1 to 1.1402(a)-1: Self-Employment Tax (HIGH)
+    §§1.4980H-0 to 1.4980H-6: ACA Employer Mandate (CRITICAL)
+
+  title_26_part_31_employment_tax_mapping: |
+    Subpart B (§§31.3101–31.3128) FICA: CRITICAL
+      — §31.3121(d)-1 Employee vs. IC Classification: CRITICAL
+    Subpart D (§§31.3301–31.3306) FUTA: HIGH
+    Subpart E (§§31.3401–31.3406) Income Tax Withholding: HIGH
+    Subparts F–G (General Provisions, Administrative): MODERATE
+
+  title_26_part_54_group_health_plan_mapping: |
+    §§54.4980B-1 to -10 (COBRA): CRITICAL
+    §§54.4980H-1 to -6 (ACA Employer Mandate Penalties): CRITICAL
+    §§54.9801–9833 (Chapter 100 Group Health Plan Requirements): CRITICAL
+      — HIPAA Portability
+      — ACA Market Reforms
+      — No Surprises Act (§§54.9816-series)
+    §§54.4980G-1 to -7 (HSA Comparability): HIGH
+
+  title_16_subchapter_b_guides_table: |
+    | Part | Description | Relevant? | Relevance Level | Cedar Practice Types |
+    |------|-------------|-----------|-----------------|---------------------|
+    | 17 | Application of Guides | YES | LOW | All 14 |
+    | 233 | Guides Against Deceptive Pricing | YES | HIGH | All 14 |
+    | 238 | Guides Against Bait Advertising | YES | HIGH | All 14, esp. Med Spa, Weight Management, Telehealth |
+    | 239 | Advertising of Warranties and Guarantees | YES | MODERATE | All 14, esp. Med Spa, Weight Management, Anti-Aging, Regenerative Medicine |
+    | 251 | Use of the Word "Free" | YES | HIGH | All 14, esp. Med Spa, Weight Management, Telehealth, DPC |
+    | 255 | Endorsements and Testimonials | YES | CRITICAL | All 14 practice types |
+
+  title_16_subchapter_c_consumer_protection_table: |
+    | Part | Description | Relevant? | Relevance Level | Cedar Practice Types | Notes |
+    |------|-------------|-----------|-----------------|---------------------|----|
+    | 310 | Telemarketing Sales Rule | YES | CRITICAL | All 14, esp. Telehealth, Med Spa, Weight Management | Governs outbound calls, robocalls, do-not-call, required disclosures. 5-year record retention. |
+    | 312 | COPPA | YES | MODERATE | Telehealth, Primary Care (DPC), pediatric practices | Online collection of personal info from children <13. Relevant for patient portals/apps. |
+    | 313 | GLB Privacy Rule | YES | HIGH | All 14 practice types | For financial institutions / patient financing. Requires privacy notices. |
+    | 314 | Safeguards Rule | YES | CRITICAL | All 14 practice types | 2021/2023 amendments require encryption, MFA, access controls, incident response. Critical for all practices processing payments. |
+    | 316 | CAN-SPAM Rule | YES | HIGH | All 14 practice types | Commercial email compliance — opt-out, accurate headers, physical address. |
+    | 318 | Health Breach Notification Rule | YES | CRITICAL | All 14, esp. Telehealth, Med Spa, any using health apps/wearables | 2024 amendments expanded scope to health apps, wearables. Unauthorized data sharing = breach. |
+
+  title_16_subchapter_d_trade_regulation_table: |
+    | Part | Description | Relevant? | Relevance Level | Cedar Practice Types | Notes |
+    |------|-------------|-----------|-----------------|---------------------|----|
+    | 425 | Negative Option Plans | YES | HIGH | All 14, esp. DPC/Concierge, Weight Management, Telehealth, Med Spa | 2024 amendments VACATED (8th Cir, July 2025). Reverted to 1973 text as of Feb 12, 2026. New ANPRM March 13, 2026. |
+    | 429 | Cooling-Off Period Rule | YES | MODERATE | All 14, esp. Med Spa, Weight Management, Anti-Aging | 3-day right to cancel for sales at health fairs, pop-ups, hotels, home visits. |
+    | 433 | Preservation of Consumer Claims and Defenses | YES | MODERATE | All 14 offering patient financing | Consumer credit contracts must preserve claims/defenses. |
+    | 435 | Mail/Internet/Telephone Order Merchandise | YES | HIGH | All 14, esp. Compounding Pharmacy, Functional Medicine, Weight Management, Med Spa | Shipping timing requirements. Ship within stated timeframe or 30 days. |
+    | 444 | Credit Practices | YES | MODERATE | All 14 practice types | Prohibits unfair credit practices in patient payment agreements. |
+    | 465 | Consumer Reviews and Testimonials Rule | YES | CRITICAL | All 14 practice types | Effective Oct 21, 2024. Prohibits fake reviews, purchased reviews, undisclosed insider reviews, suppression. FTC sending warning letters as of Dec 2025. |
+
+  regulatory_status_updates_march_2026: |
+    Part 910 (FTC Non-Compete Rule):
+      Status: REMOVED from CFR effective February 12, 2026
+      Background: Courts vacated; FTC acceded to vacatur September 5, 2025
+      Ongoing Enforcement: FTC may pursue case-by-case under Section 5 UMC
+      
+    Part 425 (Negative Option / Click-to-Cancel):
+      Status: 2024 expanded amendments VACATED by 8th Circuit (July 2025)
+      Current Text: Reverted to original 1973 text as of February 12, 2026
+      Rulemaking: New ANPRM published March 13, 2026
+      Relevance: Still HIGH for subscription-model practices until revised rule finalized
+      
+    Part 465 (Consumer Reviews and Testimonials Rule):
+      Effective Date: October 21, 2024
+      FTC Enforcement: Active as of December 2025 — warning letters being sent
+      Relevance: CRITICAL for all practices managing online reputation
+      
+    26 CFR §48.4191 (Medical Device Excise Tax):
+      Status: REPEALED December 20, 2019 (Pub.L. 116-94)
+      Applicability: NO LONGER A COMPLIANCE CONCERN
+      
+    29 CFR 1636 (Pregnant Workers Fairness Act):
+      Effective Date: June 27, 2024
+      Relevance: CRITICAL for all 14 practice types with female clinical staff
+      Requirement: Accommodate pregnancy/childbirth-related limitations unless undue hardship
+      
+    16 CFR 318 (Health Breach Notification Rule):
+      Amendment Date: 2024
+      Scope Expansion: Now covers health apps, wearables, and non-HIPAA health data
+      Trigger: Unauthorized data sharing = breach
+      Impact: Critical for practices using consumer-grade health tech
+
+summary_metrics:
+  title_45:
+    total_parts_reviewed: "~57 (Subtitle A only)"
+    relevant_parts: 20
+    critical_count: 6
+    high_count: 2
+    moderate_count: 7
+    low_count: 5
+    irrelevant_count: "~37 (including all of Subtitle B)"
+  title_29:
+    total_parts_reviewed: "~120+ across 5 chapters"
+    relevant_parts: "~45"
+    critical_count: 10
+    high_count: 12
+    moderate_count: 15
+    low_count: 8
+    irrelevant_chapters: "9 confirmed (II, III, IV, IX, X, XII, XX, XXVII, XL)"
+  title_26:
+    total_parts_reviewed: "~30 parts (4 highly relevant)"
+    relevant_parts: 4
+    relevant_section_clusters: "~15 distinct regulatory clusters within those 4 parts"
+    critical_count: 3
+    high_count: 6
+    moderate_count: 4
+    low_count: 2
+  title_16:
+    total_parts_reviewed: "~85"
+    relevant_parts: "~33"
+    critical_count: 5
+    high_count: 9
+    moderate_count: 11
+    low_count: 8
+    irrelevant_subchapters: "A, G, H, J"
+  consolidated:
+    total_cfe_parts: "~102 relevant parts"
+    total_critical: 24
+    total_high: 29
+    total_moderate: 37
+    total_low: 23
+    total_irrelevant_parts: "~200+ across all four titles"
+
+notes_for_downstream_sessions:
+  - "All ambiguities from Session 1 (Title 45 A, 26 D, 16 E/F/J) have been resolved with verbatim part-level tables."
+  - "False negatives minimized: when doubt existed, parts were included with LOW tags rather than excluded."
+  - "Title 26 organized by section ranges within parts (not traditional part structure). Healthcare sections mapped precisely."
+  - "Title 16 subchapters E and F resolved as RELEVANT after Session 1 uncertainty — both apply to supplement/product-selling and patient financing practices."
+  - "Regulatory status: Part 910 (Non-Compete) removed Feb 12, 2026. Part 425 reverted to 1973 text Feb 12, 2026 pending new rulemaking. Part 465 (Reviews) actively enforced."
+  - "Practice-type affinity mapping in P2_S1 will use this allowlist to generate customized compliance portfolios for each of the 14 Cedar practice types."
+  - "Section-level detail (P1_S3) will expand highest-priority parts: 45 CFR 164 (HIPAA), 29 CFR 1910 (OSHA), 16 CFR 255/314/318 (FTC advertising/data security)."

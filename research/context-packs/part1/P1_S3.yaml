@@ -1,0 +1,1698 @@
+session_id: "P1_S3"
+title: "Non-CFR Relevance Signals for Federal Register and openFDA Classification"
+summary: "Delivered five interlocking components for classifying ~99K unclassified Federal Register and openFDA entities lacking clean CFR references: agency relevance map, keyword signal library (210 phrases), document type classifier, openFDA dataset map, and combined scoring model. Core finding: agency identity resolves ~60% of decisions, keywords handle ~25%, document type and openFDA filters close remaining gap. Composite model achieves 90%+ recall at threshold 0.50 (calibration) tightening to 0.60 (production) with 85-90% precision."
+
+key_decisions:
+  - decision: "6 High-relevance agencies identified"
+    value:
+      - food-and-drug-administration
+      - centers-for-medicare-medicaid-services
+      - drug-enforcement-administration
+      - health-and-human-services-department
+      - inspector-general-office-health-and-human-services-department
+      - federal-trade-commission
+  - decision: "10 Medium-relevance agencies identified"
+    value:
+      - occupational-safety-and-health-administration
+      - centers-for-disease-control-and-prevention
+      - health-resources-and-services-administration
+      - substance-abuse-and-mental-health-services-administration
+      - civil-rights-office-health-and-human-services-department
+      - veterans-affairs-department
+      - internal-revenue-service
+      - national-institutes-of-health
+      - federal-communications-commission
+      - employee-benefits-security-administration
+  - decision: "10 Low-relevance agencies identified"
+    value:
+      - environmental-protection-agency
+      - justice-department
+      - small-business-administration
+      - management-and-budget-office
+      - consumer-financial-protection-bureau
+      - national-coordinator-for-health-information-technology-office
+      - agency-for-healthcare-research-and-quality
+      - labor-department
+      - office-of-national-drug-control-policy
+      - education-department
+  - decision: "~345 agencies excluded from evaluation"
+    rationale: "Defense, Energy, Interior, Transportation, Agriculture, State, Financial, Space, Government Operations, Intelligence, Housing, Courts, Arts, Defunct commissions, DOJ sub-agencies (except DEA), and borderline agencies"
+  - decision: "210 keyword phrases classified into 12 domain areas plus 27 cross-domain specialty phrases"
+    signal_distribution:
+      - strong_signals: 154
+      - moderate_signals: 56
+      - homonym_risk_phrases: 42
+  - decision: "42 keyword phrases flagged for homonym risk requiring disambiguation"
+    rationale: "Risk of non-healthcare matches; require co-occurrence with healthcare context terms (patient, clinical, medical, healthcare, physician, pharmacy, drug, device, hospital, practitioner, health plan) or agency identifiers (FDA, DEA, CMS, OSHA, FTC, HHS, ONC, OCR, SAMHSA, AHRQ)"
+  - decision: "Federal Register document type signal uses 4 API type enum values"
+    api_types: [RULE, PRORULE, NOTICE, PRESDOCU]
+    rationale: "Action field is free text; pipeline must use contains-matching not exact comparison"
+  - decision: "RULE type documents always evaluated"
+    value: "All subtypes (Final rule, Interim final, Direct final, Temporary final, etc.)"
+  - decision: "NOTICE type documents classified into 3 tiers"
+    tier_1_always_evaluated:
+      - "Notice of proposed national coverage determination"
+      - "Drug scheduling action"
+      - "Notice of civil money penalty"
+      - "Notice of exclusion"
+      - "Notice of availability; final guidance"
+    tier_2_if_relevant_agency:
+      - "Notice of availability; draft guidance"
+      - "Notice of determination"
+      - "Request for comments"
+      - "Notice of intent"
+      - "Agency information collection activities"
+      - "Notice of petition"
+    tier_3_always_excluded:
+      - "Notice of meeting / Meeting notice"
+      - "Request for nominations"
+      - "Grant/cooperative agreement funding"
+      - "Delegation of authority"
+      - "Privacy Act; System of Records Notice"
+  - decision: "openFDA scoring uses separate classification path"
+    rationale: "Apply dataset-specific field filters rather than composite scoring model; all openFDA data from High-relevance agency (FDA)"
+  - decision: "Drug endpoints included in openFDA monitoring"
+    value:
+      - api.fda.gov/drug/label.json (High relevance)
+      - api.fda.gov/drug/drugsfda.json (High relevance)
+      - api.fda.gov/drug/enforcement.json (High relevance)
+      - api.fda.gov/drug/event.json (Medium relevance)
+      - api.fda.gov/drug/ndc.json (Medium relevance)
+      - api.fda.gov/drug/shortages.json (High relevance)
+  - decision: "Device endpoints included in openFDA monitoring"
+    value:
+      - api.fda.gov/device/510k.json (High relevance)
+      - api.fda.gov/device/classification.json (Medium relevance)
+      - api.fda.gov/device/event.json (Medium relevance)
+      - api.fda.gov/device/enforcement.json (High relevance)
+      - api.fda.gov/device/recall.json (Medium relevance)
+      - api.fda.gov/device/pma.json (Low relevance)
+  - decision: "Food/Other endpoints included in openFDA monitoring"
+    value:
+      - api.fda.gov/food/event.json (Medium relevance - dietary supplements, cosmetics only)
+      - api.fda.gov/food/enforcement.json (Low relevance - dietary supplement recalls only)
+      - api.fda.gov/other/substance.json (Low relevance - reference data)
+      - api.fda.gov/other/unii.json (Low relevance - reference data)
+  - decision: "Excluded openFDA endpoints"
+    value:
+      - api.fda.gov/device/registrationlisting.json
+      - api.fda.gov/device/udi.json
+      - api.fda.gov/device/covid19serology.json
+      - api.fda.gov/other/historicaldocument.json
+      - api.fda.gov/other/nsde.json
+      - api.fda.gov/animalandveterinary/event.json
+      - api.fda.gov/tobacco/problem.json
+  - decision: "Composite relevance scoring model weights defined"
+    agency_signal_weight: "0.0-0.45"
+    keyword_signal_weight: "0.0-0.40"
+    document_type_signal_weight: "0.0-0.15"
+    bonus_modifiers_weight: "0.0-0.10"
+    total_range: "0.0-1.0 (capped)"
+  - decision: "Recommended scoring thresholds"
+    threshold_0_60_production:
+      classification: "Relevant"
+      precision: "85-90%"
+      recall: "75-80%"
+      recommendation: "Production deployment"
+    threshold_0_50_calibration:
+      classification: "Default calibration"
+      precision: "70-75%"
+      recall: "90-95%"
+      recommendation: "Initial data collection and model calibration"
+    threshold_0_40_discovery:
+      classification: "Permissive for discovery"
+      precision: "55-60%"
+      recall: "95%+"
+      recommendation: "Training data collection only"
+  - decision: "Special handling rules defined"
+    cfr_override: "Documents with CFR references matching Session 1-2 filters bypass scoring model; route to CFR pipeline; add bonus B=0.10"
+    excluded_agency_override: "If excluded agency scores ≥0.55 on K+D alone, flag for review rather than auto-exclude"
+    openfda_override: "Use dataset endpoint + field filters, not keyword model"
+    meeting_grant_exclusion_floor: "D=0.00 documents excluded unless K≥0.40"
+    practice_type_assignment: "Based on keyword domain triggers and cross-domain specialty phrase matches"
+
+data_structures:
+  high_relevance_agencies:
+    - agency_name: "Food and Drug Administration"
+      api_slug: "food-and-drug-administration"
+      parent: "HHS"
+      relevance: "High"
+      content_produced:
+        - "Drug approvals"
+        - "Compounding rules (503A/503B)"
+        - "Biologics regulation"
+        - "Device clearances"
+        - "Enforcement actions"
+        - "Guidance documents"
+        - "Shortage determinations"
+      practice_types_affected:
+        - "Compounding Pharmacy"
+        - "Peptide Therapy"
+        - "Weight Management"
+        - "HRT"
+        - "Regenerative Medicine"
+        - "Med Spa"
+        - "IV Therapy"
+        - "Anti-Aging"
+        - "Functional Medicine"
+    
+    - agency_name: "Centers for Medicare & Medicaid Services"
+      api_slug: "centers-for-medicare-medicaid-services"
+      parent: "HHS"
+      relevance: "High"
+      content_produced:
+        - "Physician Fee Schedule"
+        - "Billing codes"
+        - "Telehealth coverage"
+        - "Quality programs (MIPS)"
+        - "Coverage determinations"
+        - "Payment models"
+      practice_types_affected:
+        - "Primary Care (DPC/Concierge)"
+        - "Pain Management"
+        - "Chiropractic"
+        - "Telehealth"
+        - "Integrative Medicine"
+        - "All billing practices"
+    
+    - agency_name: "Drug Enforcement Administration"
+      api_slug: "drug-enforcement-administration"
+      parent: "DOJ"
+      relevance: "High"
+      content_produced:
+        - "Controlled substance scheduling"
+        - "DEA registration"
+        - "Telemedicine prescribing rules"
+        - "PDMP requirements"
+        - "Ryan Haight Act enforcement"
+      practice_types_affected:
+        - "Telehealth"
+        - "Pain Management"
+        - "Weight Management"
+        - "HRT (testosterone Schedule III)"
+        - "Peptide Therapy"
+        - "Functional Medicine"
+    
+    - agency_name: "Health and Human Services Department"
+      api_slug: "health-and-human-services-department"
+      parent: null
+      relevance: "High"
+      content_produced:
+        - "Cross-cutting healthcare policy"
+        - "HIPAA rules"
+        - "No Surprises Act implementation"
+        - "Broad rulemaking affecting all HHS sub-agencies"
+      practice_types_affected:
+        - "ALL 14 practice types"
+    
+    - agency_name: "Inspector General Office, HHS"
+      api_slug: "inspector-general-office-health-and-human-services-department"
+      parent: "HHS"
+      relevance: "High"
+      content_produced:
+        - "Fraud enforcement"
+        - "Anti-Kickback Statute advisory opinions"
+        - "Exclusion actions (LEIE)"
+        - "Compliance guidance"
+        - "OIG Work Plan"
+      practice_types_affected:
+        - "ALL practice types billing federal programs"
+        - "Telehealth"
+        - "Weight Management"
+        - "IV Therapy"
+        - "Pain Management"
+    
+    - agency_name: "Federal Trade Commission"
+      api_slug: "federal-trade-commission"
+      parent: null
+      relevance: "High"
+      content_produced:
+        - "Health advertising enforcement"
+        - "Endorsement Guides"
+        - "Health Breach Notification Rule"
+        - "Click-to-cancel rules"
+        - "Deceptive practice actions"
+      practice_types_affected:
+        - "Weight Management"
+        - "Med Spa"
+        - "Regenerative Medicine"
+        - "Peptide Therapy"
+        - "Anti-Aging"
+        - "Functional Medicine"
+        - "Telehealth"
+
+  medium_relevance_agencies:
+    - agency_name: "Occupational Safety and Health Administration"
+      api_slug: "occupational-safety-and-health-administration"
+      parent: "DOL"
+      relevance: "Medium"
+      content_produced:
+        - "Bloodborne Pathogens Standard"
+        - "PPE"
+        - "Exposure control plans"
+        - "Sharps safety"
+        - "Workplace safety inspections"
+      practice_types_affected:
+        - "IV Therapy"
+        - "Regenerative Medicine"
+        - "Med Spa"
+        - "Pain Management"
+        - "Primary Care"
+        - "Chiropractic"
+    
+    - agency_name: "Centers for Disease Control and Prevention"
+      api_slug: "centers-for-disease-control-and-prevention"
+      parent: "HHS"
+      relevance: "Medium"
+      content_produced:
+        - "Clinical practice guidelines (opioid prescribing)"
+        - "Immunization schedules"
+        - "Infection control guidance"
+      practice_types_affected:
+        - "Primary Care"
+        - "Pain Management"
+        - "IV Therapy"
+        - "Integrative Medicine"
+        - "Functional Medicine"
+    
+    - agency_name: "Health Resources and Services Administration"
+      api_slug: "health-resources-and-services-administration"
+      parent: "HHS"
+      relevance: "Medium"
+      content_produced:
+        - "340B Drug Pricing Program"
+        - "Health workforce programs"
+        - "NHSC loan repayment"
+      practice_types_affected:
+        - "Primary Care"
+        - "Compounding Pharmacy"
+        - "Integrative Medicine"
+    
+    - agency_name: "Substance Abuse and Mental Health Services Administration"
+      api_slug: "substance-abuse-and-mental-health-services-administration"
+      parent: "HHS"
+      relevance: "Medium"
+      content_produced:
+        - "42 CFR Part 2 (SUD record confidentiality)"
+        - "Buprenorphine prescribing"
+        - "Mental health parity"
+      practice_types_affected:
+        - "Pain Management"
+        - "Functional Medicine"
+        - "Integrative Medicine"
+        - "Telehealth"
+    
+    - agency_name: "Office for Civil Rights, HHS"
+      api_slug: "civil-rights-office-health-and-human-services-department"
+      parent: "HHS"
+      relevance: "Medium"
+      content_produced:
+        - "HIPAA Privacy/Security Rule enforcement"
+        - "Breach notification"
+        - "Right of Access"
+        - "Risk analysis requirements"
+      practice_types_affected:
+        - "ALL 14 practice types (any handling PHI)"
+    
+    - agency_name: "Veterans Affairs Department"
+      api_slug: "veterans-affairs-department"
+      parent: null
+      relevance: "Medium"
+      content_produced:
+        - "Community Care Network participation"
+        - "MISSION Act community care"
+        - "VA scope-of-practice preemption"
+      practice_types_affected:
+        - "Primary Care"
+        - "Pain Management"
+        - "Chiropractic"
+        - "Integrative Medicine"
+        - "Telehealth"
+        - "Weight Management"
+    
+    - agency_name: "Internal Revenue Service"
+      api_slug: "internal-revenue-service"
+      parent: "Treasury"
+      relevance: "Medium"
+      content_produced:
+        - "HSA/HRA/FSA rules"
+        - "ACA provisions"
+        - "Medical expense deductions"
+        - "Practice entity tax structure"
+      practice_types_affected:
+        - "Primary Care (DPC/Concierge)"
+        - "Weight Management"
+        - "ALL practice types (as businesses)"
+    
+    - agency_name: "National Institutes of Health"
+      api_slug: "national-institutes-of-health"
+      parent: "HHS"
+      relevance: "Medium"
+      content_produced:
+        - "Research guidelines shaping evidence base"
+        - "Institutes: NCCIH (integrative), NIA (anti-aging), NIDDK (weight), NIAMS (regenerative/pain)"
+      practice_types_affected:
+        - "Functional Medicine"
+        - "Integrative Medicine"
+        - "Anti-Aging"
+        - "Weight Management"
+        - "Regenerative Medicine"
+        - "Pain Management"
+    
+    - agency_name: "Federal Communications Commission"
+      api_slug: "federal-communications-commission"
+      parent: null
+      relevance: "Medium"
+      content_produced:
+        - "TCPA consent/revocation rules for patient communications"
+        - "Telehealth broadband"
+        - "AI-generated voice call rules"
+      practice_types_affected:
+        - "Telehealth"
+        - "ALL practice types (patient communications/marketing)"
+    
+    - agency_name: "Employee Benefits Security Administration"
+      api_slug: "employee-benefits-security-administration"
+      parent: "DOL"
+      relevance: "Medium"
+      content_produced:
+        - "ERISA health plan requirements"
+        - "No Surprises Act implementation (joint with HHS/Treasury)"
+      practice_types_affected:
+        - "ALL practice types (as employers and providers billing health plans)"
+
+  low_relevance_agencies:
+    - agency_name: "Environmental Protection Agency"
+      api_slug: "environmental-protection-agency"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "RCRA hazardous pharmaceutical waste rules"
+        - "Medical waste disposal"
+      practice_types_affected:
+        - "Compounding Pharmacy"
+        - "IV Therapy"
+        - "Med Spa"
+    
+    - agency_name: "Justice Department"
+      api_slug: "justice-department"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "ADA Title III enforcement (facility accessibility)"
+        - "Healthcare fraud prosecution"
+        - "False Claims Act"
+      practice_types_affected:
+        - "ALL practice types (fraud enforcement)"
+        - "Med Spa"
+        - "Primary Care (ADA)"
+    
+    - agency_name: "Small Business Administration"
+      api_slug: "small-business-administration"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "SBA loan programs"
+        - "Small business size standards"
+        - "Regulatory Flexibility Act reviews"
+      practice_types_affected:
+        - "ALL practice types (as small businesses)"
+    
+    - agency_name: "Office of Management and Budget"
+      api_slug: "management-and-budget-office"
+      parent: "EOP"
+      relevance: "Low"
+      content_produced:
+        - "PRA information collection approvals"
+        - "OIRA regulatory review of significant rules"
+      practice_types_affected:
+        - "ALL practice types (indirectly)"
+    
+    - agency_name: "Consumer Financial Protection Bureau"
+      api_slug: "consumer-financial-protection-bureau"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "Medical debt collection rules"
+        - "Patient financing regulation"
+        - "Medical credit card oversight"
+      practice_types_affected:
+        - "Med Spa"
+        - "Weight Management"
+        - "ALL cash-pay practices"
+    
+    - agency_name: "Office of the National Coordinator for Health IT"
+      api_slug: "national-coordinator-for-health-information-technology-office"
+      parent: "HHS"
+      relevance: "Low"
+      content_produced:
+        - "EHR certification"
+        - "Interoperability rules (HTI-1 through HTI-4)"
+        - "Information blocking"
+        - "TEFCA"
+      practice_types_affected:
+        - "ALL practice types using EHR"
+        - "Telehealth"
+        - "Primary Care"
+    
+    - agency_name: "Agency for Healthcare Research and Quality"
+      api_slug: "agency-for-healthcare-research-and-quality"
+      parent: "HHS"
+      relevance: "Low"
+      content_produced:
+        - "Quality measures"
+        - "Patient safety indicators"
+        - "Evidence reviews"
+        - "Comparative effectiveness"
+      practice_types_affected:
+        - "Primary Care"
+        - "Pain Management"
+        - "Integrative Medicine"
+    
+    - agency_name: "Labor Department"
+      api_slug: "labor-department"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "FMLA"
+        - "Wage/hour for practice employees"
+        - "Independent contractor classification"
+      practice_types_affected:
+        - "ALL practice types (as employers)"
+    
+    - agency_name: "Office of National Drug Control Policy"
+      api_slug: "office-of-national-drug-control-policy"
+      parent: "EOP"
+      relevance: "Low"
+      content_produced:
+        - "National drug control strategy"
+        - "Opioid policy"
+      practice_types_affected:
+        - "Pain Management"
+        - "Functional Medicine"
+    
+    - agency_name: "Education Department"
+      api_slug: "education-department"
+      parent: null
+      relevance: "Low"
+      content_produced:
+        - "Student loan forgiveness for healthcare providers"
+        - "FERPA intersections"
+      practice_types_affected:
+        - "ALL practice types (provider loan programs)"
+
+  excluded_agency_categories:
+    defense_military:
+      category: "Defense/Military (~20 agencies)"
+      representative_slugs:
+        - "defense-department"
+        - "air-force-department"
+        - "army-department"
+        - "navy-department"
+        - "defense-acquisition-regulations-system"
+        - "defense-logistics-agency"
+        - "engineers-corps"
+        - "national-geospatial-intelligence-agency"
+        - "national-security-agency-central-security-service"
+    
+    energy_nuclear:
+      category: "Energy/Nuclear (~16 agencies)"
+      representative_slugs:
+        - "energy-department"
+        - "federal-energy-regulatory-commission"
+        - "nuclear-regulatory-commission"
+        - "bonneville-power-administration"
+        - "national-nuclear-security-administration"
+    
+    interior_land_natural_resources:
+      category: "Interior/Land/Natural Resources (~21 agencies)"
+      representative_slugs:
+        - "interior-department"
+        - "fish-and-wildlife-service"
+        - "geological-survey"
+        - "land-management-bureau"
+        - "national-park-service"
+        - "reclamation-bureau"
+    
+    transportation:
+      category: "Transportation (~20 agencies)"
+      representative_slugs:
+        - "transportation-department"
+        - "federal-aviation-administration"
+        - "federal-highway-administration"
+        - "federal-railroad-administration"
+        - "national-highway-traffic-safety-administration"
+        - "surface-transportation-board"
+        - "national-transportation-safety-board"
+    
+    agriculture:
+      category: "Agriculture (~30 agencies, excluding food safety borderline)"
+      representative_slugs:
+        - "agriculture-department"
+        - "agricultural-marketing-service"
+        - "farm-service-agency"
+        - "forest-service"
+        - "natural-resources-conservation-service"
+    
+    state_foreign_affairs_international:
+      category: "State/Foreign Affairs/International (~17 agencies)"
+      representative_slugs:
+        - "state-department"
+        - "agency-for-international-development"
+        - "export-import-bank"
+        - "international-trade-commission"
+        - "trade-representative-office-of-united-states"
+    
+    financial_banking_securities:
+      category: "Financial/Banking/Securities (~18 agencies)"
+      representative_slugs:
+        - "securities-and-exchange-commission"
+        - "federal-deposit-insurance-corporation"
+        - "federal-reserve-system"
+        - "commodity-futures-trading-commission"
+        - "national-credit-union-administration"
+    
+    space_science:
+      category: "Space/Science (~5 agencies)"
+      representative_slugs:
+        - "national-aeronautics-and-space-administration"
+        - "national-science-foundation"
+    
+    government_operations_administrative:
+      category: "Government Operations/Administrative (~30 agencies)"
+      representative_slugs:
+        - "general-services-administration"
+        - "government-accountability-office"
+        - "national-archives-and-records-administration"
+        - "government-publishing-office"
+    
+    intelligence:
+      category: "Intelligence (~5 agencies)"
+      representative_slugs:
+        - "central-intelligence-agency"
+        - "national-intelligence-office-of-the-national-director"
+    
+    housing:
+      category: "Housing (~5 agencies)"
+      representative_slugs:
+        - "housing-and-urban-development-department"
+        - "government-national-mortgage-association"
+    
+    courts_legal_elections:
+      category: "Courts/Legal/Elections (~7 agencies)"
+      representative_slugs:
+        - "federal-election-commission"
+        - "legal-services-corporation"
+        - "judicial-conference-of-the-united-states"
+    
+    arts_humanities_library:
+      category: "Arts/Humanities/Library (~10 agencies)"
+      representative_slugs:
+        - "library-of-congress"
+        - "national-endowment-for-the-arts"
+        - "smithsonian-institution"
+    
+    defunct_historical_commissions:
+      category: "Defunct/Historical Commissions (~80+ agencies)"
+      description: "Numerous historical commissions that remain indexed but no longer publish"
+    
+    justice_sub_agencies:
+      category: "Justice sub-agencies (excludable)"
+      representative_slugs:
+        - "alcohol-tobacco-firearms-and-explosives-bureau"
+        - "federal-bureau-of-investigation"
+        - "immigration-and-naturalization-service"
+        - "united-states-marshals-service"
+      note: "Keep DOJ parent and DEA"
+    
+    borderline_agencies_to_monitor_with_keyword_filters:
+      category: "Borderline agencies (not excluded, but Low relevance)"
+      representative_slugs:
+        - "federal-emergency-management-agency"
+        - "u-s-citizenship-and-immigration-services"
+        - "patent-and-trademark-office"
+        - "national-institute-of-standards-and-technology"
+        - "consumer-product-safety-commission"
+        - "food-and-nutrition-service"
+        - "national-labor-relations-board"
+        - "architectural-and-transportation-barriers-compliance-board"
+
+  keyword_phrases_domain_1_prescribing_controlled_substances:
+    total_phrases: 18
+    signal_breakdown:
+      strong: 16
+      moderate: 2
+    phrases:
+      - phrase: "controlled substance"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "prescription drug monitoring"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telemedicine prescribing"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug scheduling"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require co-occurrence with DEA, schedule II-V, controlled, or CSA"
+      - phrase: "opioid prescribing"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "Ryan Haight Act"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "DEA registration"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "schedule II controlled"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telemedicine flexibilities"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "in-person medical evaluation"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "special registration for telemedicine"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "prescribing practitioner"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "controlled medication"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "prescription drug user fee"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug diversion"
+        signal: "Strong"
+        homonym_risk: true
+        disambiguation: "Require DEA, controlled, pharmacy, or substance"
+      - phrase: "buprenorphine treatment"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "substance use disorder"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "practitioner-patient relationship"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_2_compounding_pharmacy:
+    total_phrases: 20
+    signal_breakdown:
+      strong: 17
+      moderate: 3
+    phrases:
+      - phrase: "compounding pharmacy"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "outsourcing facility"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "bulk drug substance"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "503A pharmacy"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "503B outsourcing"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug compounding"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "compounding quality"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "essentially a copy"
+        signal: "Strong"
+        homonym_risk: false
+        note: "FDA legal term for compounded drug copying approved product"
+      - phrase: "current good manufacturing practice"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug shortage list"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "sterile compounding"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "active pharmaceutical ingredient"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "clinical need determination"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "insanitary conditions"
+        signal: "Strong"
+        homonym_risk: false
+        note: "FDA enforcement term"
+      - phrase: "compounded drug product"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug quality and security"
+        signal: "Strong"
+        homonym_risk: false
+        note: "DQSA reference"
+      - phrase: "adverse event report"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "certificate of analysis"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require drug, pharmaceutical, compounding, or FDA"
+      - phrase: "enforcement discretion"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare/FDA/DEA context"
+      - phrase: "GLP-1 compounding"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_3_medical_devices:
+    total_phrases: 13
+    signal_breakdown:
+      strong: 13
+      moderate: 0
+    phrases:
+      - phrase: "510(k) clearance"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "premarket approval"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "medical device classification"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "device adverse event"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "substantial equivalence"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "premarket notification"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "de novo classification"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "device recall"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "class II medical device"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "quality system regulation"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "medical device reporting"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "predicate device"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "postmarket surveillance"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_4_billing_reimbursement:
+    total_phrases: 18
+    signal_breakdown:
+      strong: 12
+      moderate: 6
+    phrases:
+      - phrase: "physician fee schedule"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "conversion factor"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require Medicare, CMS, physician, or payment"
+      - phrase: "relative value unit"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "evaluation and management"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telehealth reimbursement"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "Medicare payment"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "quality payment program"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "merit-based incentive payment"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "practice expense"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require Medicare, RVU, or fee schedule"
+      - phrase: "Medicare telehealth services"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "direct supervision"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require CMS, Medicare, physician, billing, or medical"
+      - phrase: "originating site facility fee"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "incident-to services"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "CPT code"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "HCPCS code"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "Medicare Part B"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "split/shared visit"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "promoting interoperability"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_5_privacy_security:
+    total_phrases: 14
+    signal_breakdown:
+      strong: 10
+      moderate: 4
+    phrases:
+      - phrase: "protected health information"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "HIPAA privacy rule"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "security risk analysis"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require HIPAA, health, covered entity, or ePHI"
+      - phrase: "breach notification rule"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "health information exchange"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "information blocking"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "electronic health information"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "business associate agreement"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "electronic protected health information"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "covered entity"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require HIPAA, health, privacy, or PHI"
+      - phrase: "health breach notification"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "cybersecurity safeguard"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require HIPAA, health, OCR, or covered entity"
+      - phrase: "minimum necessary standard"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "personal health record"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_6_telehealth:
+    total_phrases: 14
+    signal_breakdown:
+      strong: 11
+      moderate: 3
+    phrases:
+      - phrase: "telehealth service"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "audio-only telehealth"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "remote patient monitoring"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "virtual supervision"
+        signal: "Moderate"
+        homonym_risk: false
+      - phrase: "interstate medical licensure"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telemedicine encounter"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telecommunications system"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require Medicare, telehealth, interactive, or health"
+      - phrase: "telehealth originating site"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "distant site practitioner"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "geographic restriction"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require telehealth, Medicare, or originating site"
+      - phrase: "telemedicine cliff"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "audio-video communication technology"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "telehealth services list"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "place of service"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require telehealth, Medicare, or CMS"
+
+  keyword_phrases_domain_7_practice_licensing_scope:
+    total_phrases: 14
+    signal_breakdown:
+      strong: 9
+      moderate: 5
+    phrases:
+      - phrase: "scope of practice"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "physician supervision"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "nurse practitioner"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "collaborative practice agreement"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "independent practice authority"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "full practice authority"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "physician assistant"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "advanced practice registered nurse"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "prescriptive authority"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "state licensure requirement"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare/medical context"
+      - phrase: "transition to practice"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require NP, APRN, nurse practitioner, or supervision"
+      - phrase: "standard of care"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require medical/healthcare context"
+      - phrase: "medical practice act"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "credentialing requirement"
+        signal: "Moderate"
+        homonym_risk: false
+
+  keyword_phrases_domain_8_patient_safety:
+    total_phrases: 13
+    signal_breakdown:
+      strong: 8
+      moderate: 5
+    phrases:
+      - phrase: "adverse event reporting"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "patient safety organization"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "sentinel event"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "quality improvement program"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require patient, healthcare, clinical, or safety"
+      - phrase: "serious reportable event"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "root cause analysis"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare/patient safety context"
+      - phrase: "patient safety event"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "medication error"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "quality measure reporting"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "clinical quality measure"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "informed consent"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require clinical/medical/procedure context"
+      - phrase: "never event"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "patient safety work product"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_9_fda_regulatory_action:
+    total_phrases: 18
+    signal_breakdown:
+      strong: 14
+      moderate: 4
+    phrases:
+      - phrase: "new drug application"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "abbreviated new drug application"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "biologics license application"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "emergency use authorization"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "FDA warning letter"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "accelerated approval"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug safety communication"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "risk evaluation and mitigation"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "import alert"
+        signal: "Moderate"
+        homonym_risk: false
+      - phrase: "consent decree"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require FDA, compounding, pharmacy, or drug"
+      - phrase: "clinical investigation"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require FDA, IND, drug, device, or IRB"
+      - phrase: "investigational new drug"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "safety labeling change"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "drug shortage"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "unapproved drug"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "postmarket drug safety"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "refuse to file"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "dietary supplement"
+        signal: "Moderate"
+        homonym_risk: false
+
+  keyword_phrases_domain_10_employment_workplace_safety:
+    total_phrases: 12
+    signal_breakdown:
+      strong: 6
+      moderate: 6
+    phrases:
+      - phrase: "bloodborne pathogen"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "exposure control plan"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "workplace safety standard"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare, medical, bloodborne, or OSHA"
+      - phrase: "sharps injury prevention"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "occupational exposure"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require blood, pathogen, needlestick, or healthcare"
+      - phrase: "personal protective equipment"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare, OSHA, medical, bloodborne"
+      - phrase: "hazard communication standard"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare or medical context"
+      - phrase: "infection control"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Could be agricultural; require healthcare, patient, clinical, hospital"
+      - phrase: "needlestick safety"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "respiratory protection standard"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require healthcare, medical, or clinical"
+      - phrase: "employer vaccination requirement"
+        signal: "Moderate"
+        homonym_risk: false
+      - phrase: "radiation safety officer"
+        signal: "Strong"
+        homonym_risk: false
+
+  keyword_phrases_domain_11_advertising_marketing:
+    total_phrases: 14
+    signal_breakdown:
+      strong: 5
+      moderate: 9
+    phrases:
+      - phrase: "health claim substantiation"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "deceptive advertising"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, medical, drug, supplement, or device"
+      - phrase: "testimonial endorsement"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, medical, FTC"
+      - phrase: "substantiation requirement"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, medical, FTC"
+      - phrase: "direct-to-consumer advertising"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require drug, medical, health, or FDA"
+      - phrase: "health-related product claim"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "off-label promotion"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "unfair or deceptive practice"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, medical, drug, or device"
+      - phrase: "FDA-approved claim"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "advertising substantiation"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health or medical"
+      - phrase: "truth-in-advertising"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, drug, supplement, medical"
+      - phrase: "structure/function claim"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "dietary supplement advertising"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "corrective advertising"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, drug, or supplement"
+
+  keyword_phrases_domain_12_insurance_coverage:
+    total_phrases: 15
+    signal_breakdown:
+      strong: 8
+      moderate: 7
+    phrases:
+      - phrase: "prior authorization"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "network adequacy"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "surprise billing"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "balance billing"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "No Surprises Act"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "independent dispute resolution"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require medical, health, billing, No Surprises"
+      - phrase: "qualifying payment amount"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "out-of-network rate"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "essential health benefit"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "good faith estimate"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require medical, health, uninsured, No Surprises"
+      - phrase: "price transparency"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require hospital, health, medical, CMS"
+      - phrase: "mental health parity"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "insurance coverage mandate"
+        signal: "Strong"
+        homonym_risk: false
+      - phrase: "continuity of care"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require insurance, network, coverage, plan"
+      - phrase: "cost-sharing requirement"
+        signal: "Moderate"
+        homonym_risk: true
+        disambiguation: "Require health, medical, plan, ACA"
+
+  cross_domain_specialty_phrases:
+    total_phrases: 27
+    phrases:
+      - phrase: "semaglutide compounding"
+        signal: "Strong"
+        primary_domains: ["Compounding", "FDA"]
+        homonym_risk: false
+        note: "GLP-1 compounding controversy"
+        practice_types: ["Weight Management", "Compounding Pharmacy"]
+      
+      - phrase: "tirzepatide shortage"
+        signal: "Strong"
+        primary_domains: ["FDA", "Compounding"]
+        homonym_risk: false
+        practice_types: ["Weight Management", "Compounding Pharmacy"]
+      
+      - phrase: "weight management drug"
+        signal: "Strong"
+        primary_domains: ["FDA", "Billing"]
+        homonym_risk: false
+        practice_types: ["Weight Management"]
+      
+      - phrase: "hormone replacement therapy"
+        signal: "Strong"
+        primary_domains: ["Compounding", "Prescribing"]
+        homonym_risk: false
+        practice_types: ["HRT", "Anti-Aging"]
+      
+      - phrase: "bioidentical hormone"
+        signal: "Strong"
+        primary_domains: ["Compounding", "FDA"]
+        homonym_risk: false
+        note: "Compounded BHRT"
+        practice_types: ["HRT", "Anti-Aging"]
+      
+      - phrase: "aesthetic medical device"
+        signal: "Strong"
+        primary_domains: ["Devices", "Licensing"]
+        homonym_risk: false
+        practice_types: ["Med Spa", "Anti-Aging"]
+      
+      - phrase: "regenerative medicine product"
+        signal: "Strong"
+        primary_domains: ["FDA", "Devices"]
+        homonym_risk: false
+        practice_types: ["Regenerative Medicine"]
+      
+      - phrase: "human cells tissues"
+        signal: "Strong"
+        primary_domains: ["FDA"]
+        homonym_risk: false
+        note: "HCT/P framework (21 CFR 1271)"
+        practice_types: ["Regenerative Medicine"]
+      
+      - phrase: "platelet-rich plasma"
+        signal: "Strong"
+        primary_domains: ["FDA", "Devices"]
+        homonym_risk: false
+        practice_types: ["Regenerative Medicine", "Pain Management"]
+      
+      - phrase: "IV nutrient therapy"
+        signal: "Moderate"
+        primary_domains: ["Compounding", "Patient Safety"]
+        homonym_risk: false
+        practice_types: ["IV Therapy", "Functional Medicine"]
+      
+      - phrase: "compounded injectable"
+        signal: "Strong"
+        primary_domains: ["Compounding"]
+        homonym_risk: false
+        practice_types: ["IV Therapy", "Peptide Therapy", "HRT"]
+      
+      - phrase: "testosterone prescribing"
+        signal: "Strong"
+        primary_domains: ["Prescribing", "Compounding"]
+        homonym_risk: false
+        note: "Schedule III"
+        practice_types: ["HRT", "Anti-Aging", "Functional Medicine"]
+      
+      - phrase: "peptide compounding"
+        signal: "Strong"
+        primary_domains: ["Compounding", "FDA"]
+        homonym_risk: false
+        practice_types: ["Peptide Therapy"]
+      
+      - phrase: "drug shortage database"
+        signal: "Strong"
+        primary_domains: ["FDA", "Compounding"]
+        homonym_risk: false
+        practice_types: ["Compounding Pharmacy"]
+      
+      - phrase: "telehealth platform"
+        signal: "Moderate"
+        primary_domains: ["Telehealth"]
+        homonym_risk: true
+        disambiguation: "Require prescribing, DEA, medical, health"
+        practice_types: ["Telehealth"]
+      
+      - phrase: "direct primary care"
+        signal: "Moderate"
+        primary_domains: ["Billing", "Licensing"]
+        homonym_risk: false
+        note: "DPC model"
+        practice_types: ["Primary Care"]
+      
+      - phrase: "concierge medicine"
+        signal: "Moderate"
+        primary_domains: ["Billing", "Licensing"]
+        homonym_risk: false
+        practice_types: ["Primary Care"]
+      
+      - phrase: "anti-aging claim"
+        signal: "Moderate"
+        primary_domains: ["Advertising", "FDA"]
+        homonym_risk: false
+        practice_types: ["Anti-Aging"]
+      
+      - phrase: "medical spa regulation"
+        signal: "Strong"
+        primary_domains: ["Licensing", "Devices"]
+        homonym_risk: false
+        practice_types: ["Med Spa"]
+      
+      - phrase: "laser safety standard"
+        signal: "Moderate"
+        primary_domains: ["Devices", "Patient Safety"]
+        homonym_risk: true
+        disambiguation: "Require medical, aesthetic, dermatology"
+        note: "Also industrial laser"
+        practice_types: ["Med Spa"]
+      
+      - phrase: "chiropractic scope"
+        signal: "Strong"
+        primary_domains: ["Licensing"]
+        homonym_risk: false
+        practice_types: ["Chiropractic"]
+      
+      - phrase: "integrative medicine practice"
+        signal: "Moderate"
+        primary_domains: ["Licensing"]
+        homonym_risk: false
+        practice_types: ["Integrative Medicine"]
+      
+      - phrase: "functional medicine claim"
+        signal: "Moderate"
+        primary_domains: ["Advertising", "FDA"]
+        homonym_risk: false
+        practice_types: ["Functional Medicine"]
+      
+      - phrase: "pain management prescribing"
+        signal: "Strong"
+        primary_domains: ["Prescribing"]
+        homonym_risk: false
+        practice_types: ["Pain Management"]
+      
+      - phrase: "drug product labeling"
+        signal: "Strong"
+        primary_domains: ["FDA", "Compounding"]
+        homonym_risk: false
+        practice_types: ["Compounding Pharmacy", "Weight Management"]
+      
+      - phrase: "public health emergency"
+        signal: "Moderate"
+        primary_domains: ["Cross-cutting"]
+        homonym_risk: true
+        disambiguation: "Require DEA, FDA, telemedicine, controlled substance, or EUA"
+        practice_types: ["ALL"]
+      
+      - phrase: "consumer protection enforcement"
+        signal: "Moderate"
+        primary_domains: ["Advertising"]
+        homonym_risk: true
+        disambiguation: "Require health, medical, FTC"
+        practice_types: ["ALL"]
+
+  homonym_risk_phrases_requiring_disambiguation:
+    total_count: 42
+    context_terms_required:
+      agency_identifiers:
+        - "FDA"
+        - "DEA"
+        - "CMS"
+        - "OSHA"
+        - "FTC"
+        - "HHS"
+        - "ONC"
+        - "OCR"
+        - "SAMHSA"
+        - "AHRQ"
+      healthcare_context_words:
+        - "patient"
+        - "clinical"
+        - "medical"
+        - "healthcare"
+        - "physician"
+        - "pharmacy"
+        - "drug"
+        - "device"
+        - "hospital"
+        - "practitioner"
+        - "health plan"
+      regulatory_document_markers:
+        - "CFR"
+        - "USC"
+        - "Public Law"
+        - "final rule"
+        - "proposed rule"
+
+  fr_document_type_rule:
+    type_value: "RULE"
+    action_values:
+      - action: "Final rule"
+        relevance_likelihood: "Very High"
+        creates_obligations: true
+        urgency: "High (compliance deadline stated)"
+        handling: "Always evaluated"
+      
+      - action: "Interim final rule"
+        relevance_likelihood: "Very High"
+        creates_obligations: true
+        urgency: "Critical (effective immediately)"
+        handling: "Always evaluated"
+      
+      - action: "Interim final rule with request for comments"
+        relevance_likelihood: "Very High"
+        creates_obligations: true
+        urgency: "Critical"
+        handling: "Always evaluated"
+      
+      - action: "Direct final rule"
+        relevance_likelihood: "High"
+        creates_obligations: "Conditional (binding unless adverse comments)"
+        urgency: "Moderate"
+        handling: "Always evaluated"
+      
+      - action: "Temporary final rule"
+        relevance_likelihood: "High"
+        creates_obligations: "Yes — time-bounded"
+        urgency: "High"
+        handling: "Always evaluated"
+      
+      - action: "Final rule; delay of effective date"
+        relevance_likelihood: "High"
+        creates_obligations: "Modifies timeline"
+        urgency: "High (changes compliance dates)"
+        handling: "Always evaluated"
+      
+      - action: "Final rule; request for comments"
+        relevance_likelihood: "High"
+        creates_obligations: true
+        urgency: "High"
+        handling: "Always evaluated"
+      
+      - action: "Affirmation of final rule"
+        relevance_likelihood: "Moderate"
+        creates_obligations: "Confirms existing"
+        urgency: "Moderate"
+        handling: "Evaluated if from relevant agency"
+      
+      - action: "Withdrawal of final rule"
+        relevance_likelihood: "Moderate"
+        creates_obligations: "Removes obligations"
+        urgency: "High (changes regulatory landscape)"
+        handling: "Always evaluated"
+      
+      - action: "Final rule; correction"
+        relevance_likelihood: "Moderate"
+        creates_obligations: "May change compliance details"
+        urgency: "Moderate"
+        handling: "Evaluated if from relevant agency"
+
+  fr_document_type_prorule:
+    type_value: "PRORULE"
+    action_values:
+      - action: "Proposed rule"
+        relevance_likelihood: "High"
+        creates_obligations: false
+        signals: "Future obligations"
+        urgency: "Moderate (planning + commenting)"
+        handling: "Always evaluated"
+      
+      - action: "Advance notice of proposed rulemaking"
+        relevance_likelihood: "Moderate"
+        creates_obligations: false
+        signals: "Earliest signal"
+        urgency: "Low (long-term planning)"
+        handling: "Evaluated if from relevant agency"
+      
+      - action: "Supplemental notice of proposed rulemaking"
+        relevance_likelihood: "Moderate"
+        creates_obligations: false
+        signals: "Revised proposal"
+        urgency: "Moderate"
+        handling: "Evaluated if from relevant agency"
+      
+      - action: "Request for information"
+        relevance_likelihood: "Low-Moderate"
+        creates_obligations: false
+        signals: "Information gathering"
+        urgency: "Low"
+        handling: "Evaluated only if from relevant agency"
+      
+      - action: "Proposed rule; extension of comment period"
+        relevance_likelihood: "Low"
+        creates_obligations: false
+        urgency: "Low"
+        handling: "Evaluated only if from relevant agency"
+      
+      - action: "Proposed rule; withdrawal"
+        relevance_likelihood: "Moderate"
+        creates_obligations: "Removes proposed obligations"
+        urgency: "Moderate"
+        handling: "Evaluated if from relevant agency"
+      
+      - action: "Proposed rule; correction"
+        relevance_likelihood: "Low"
+        creates_obligations: false
+        urgency: "Low"
+        handling: "Evaluated only if from relevant agency"
+      
+      - action: "Proposed rule; reopening of comment period"
+        relevance_likelihood: "Low"
+        creates_obligations: false
+        urgency: "Low"
+        handling: "Evaluated only if from relevant agency"
+
+  fr_document_type_notice_tier_1:
+    tier: "Tier 1 — Always evaluated"
+    actions:
+      - "Notice of proposed national coverage determination (CMS coverage decisions — major practice impact)"
+      - "Drug scheduling action (DEA controlled substance scheduling)"
+      - "Notice of civil money penalty (enforcement actions)"
+      - "Notice of exclusion (OIG program exclusions)"
+      - "Notice of availability; final guidance (FDA/CMS guidance — shapes enforcement policy)"
+
+  fr_document_type_notice_tier_2:
+    tier: "Tier 2 — Evaluated if from relevant agency"
+    actions:
+      - "Notice of availability; draft guidance (FDA guidance under development)"
+      - "Notice of determination (agency determinations on specific matters)"
+      - "Request for comments (non-rulemaking public input)"
+      - "Notice of intent (signals upcoming agency action)"
+      - "Agency information collection activities; proposed collection (PRA notices — signals data collection)"
+      - "Agency information collection activities; submission for OMB review (PRA 30-day notice)"
+      - "Notice of petition / receipt of petition (citizen/industry petitions)"
+
+  fr_document_type_notice_tier_3:
+    tier: "Tier 3 — Always excluded (unless keyword match)"
+    actions:
+      - "Notice of meeting / Meeting notice / Sunshine Act meeting (advisory committee meetings)"
+      - "Request for nominations / Solicitation of nominations (committee membership)"
+      - "Grant/cooperative agreement funding opportunity (NIH, HRSA grants)"
+      - "Delegation of authority (internal agency delegations)"
+      - "Privacy Act; System of Records Notice (data system notices)"
+      - "Notice of establishment / Notice of renewal (advisory committees)"
+
+  fr_document_type_presdocu:
+    type_value: "PRESDOCU"
+    subtypes:
+      - subtype: "Executive Order"
+        subtype_code: "executive_order"
+        relevance_likelihood: "High — can reshape healthcare policy (drug pricing, ACA, telehealth)"
+        handling: "Always evaluated"
+      
+      - subtype: "Presidential Memorandum"
+        subtype_code: "memorandum"
+        relevance_likelihood: "Moderate-High — often directs HHS/FDA action"
+        handling: "Evaluated if healthcare keywords present"
+      
+      - subtype: "Presidential Determination"
+        subtype_code: "determination"
+        relevance_likelihood: "Low-Moderate — unless health emergency"
+        handling: "Evaluated only if healthcare keywords present"
+      
+      - subtype: "Presidential Notice"
+        subtype_code: "notice"
+        relevance_likelihood: "Low — emergency continuations"
+        handling: "Evaluated only if healthcare keywords present"
+      
+      - subtype: "Proclamation"
+        subtype_code: "proclamation"
+        relevance_likelihood: "Low — usually ceremonial"
+        handling: "Always excluded
