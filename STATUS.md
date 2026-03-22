@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 21, 2026 by Session 26
+Last updated: March 22, 2026 by Session 27
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,32 +24,31 @@ Last updated: March 21, 2026 by Session 26
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 26 (Session 2 of 2) completed the Cedar Research Orchestrator by running Phases 4–5: context pack generation and full verification.
+Session 27 audited and fixed the research orchestrator for internal consistency, operator safety, and provenance.
 
-**Phase 4 — Context pack generation:**
-- Ran `compress` on all 5 completed sessions: P1_S1, P1_S2-A, P1_S2-B, P1_S2-C, P1_S3
-- Generated 5 YAML context packs in `research/context-packs/part1/` (41–64KB each)
-- Compression ratios: 80–139% — high ratios are expected because the research outputs are data-dense (tables, classifications, mappings) with minimal prose to strip
-- Stripped markdown code fences that Haiku was wrapping around the YAML output
-- Ran `validate` — Haiku flagged "gaps" on all 5, but examination shows the gaps are intentionally stripped prose (narrative explanations), not missing data structures. All tables, allowlists, mappings, domain codes, and classifications are preserved.
+**Findings (ordered by severity):**
 
-**Phase 5 — Verification checklist (V1–V8):**
-- V1 File structure: ✅ All 15+ directories and key files present
-- V2 TypeScript compilation: ✅ 0 errors
-- V3 Manifest integrity: ✅ 14 sessions, all required fields, all completed sessions have output + context pack files, all dependency references valid
-- V4 DAG validation: ✅ No cycles, topological sort succeeds, P1_S4 correctly identified as only ready session
-- V5 Context pack files: ✅ All 5 exist and non-empty. 3/5 parse as valid YAML objects; 2/5 (P1_S1, P1_S3) have YAML syntax issues from AI-generated content — functionally irrelevant since packs are consumed as text, not parsed as YAML
-- V6 Output files: ✅ All 5 exist (38–56KB each)
-- V7 Prompt files: ✅ 12 part1 prompts, 2 mega-prompts, 3 templates
-- V8 CLI commands: ✅ All 9 commands route correctly, guards work (reject complete sessions for run/complete)
+1. **HIGH — P1_S4 prompt claimed Session 2 dependency** — The S4 prompt said "attach Sessions 1, 2, and 3" but the manifest correctly lists only P1_S1 and P1_S3. Session 2 (part-level allowlists) provides granular CFR part data consumed by Session 8, not by the L1/L2 taxonomy design. Fixed: updated prompt to match manifest, added explanatory note.
 
-**Bugs found and fixed:**
-- ANTHROPIC_API_KEY in `.env.local` was expired/invalid — replaced with new key
-- AI compression output wrapped in markdown code fences (```yaml) — stripped post-generation
+2. **HIGH — Context pack metadata hallucinations** — P1_S2-B.yaml had `session_id: "P2_S1"` (should be "P1_S2-B"), P1_S2-A.yaml had `session_id: "P1_S2"` (should be "P1_S2-A"), P1_S2-C.yaml had `session_id: "P1_S2"` (should be "P1_S2-C"). Fixed: corrected all three.
 
-**Notes:**
-- Context pack session_ids don't always match filenames (P1_S2-A.yaml has session_id "P1_S2", P1_S2-B.yaml has "P2_S1") — cosmetic AI hallucination, no functional impact since files are referenced by path
-- The spec v2 file (`cedar-research-orchestrator-spec-v2.md`) referenced in the task instructions does not exist in the repo — verification checklist was constructed from the orchestrator's actual capabilities
+3. **MEDIUM — Completed prompt files were one-line placeholders** — S1, S2, S2-A, S2-B, S2-C, S3 prompt files contained only "session complete, see output". Fixed: replaced with provenance-preserving placeholders including session ID, title, output/context-pack paths, completion date, and an explicit note that the original prompt text was replaced.
+
+4. **MEDIUM — runner.ts clipboard path fragile** — Used `path.resolve(process.cwd(), '..', '..')` instead of `resolveFromRoot()`. Functionally correct when CWD is `research/orchestrator/`, but fragile. Fixed: switched to `resolveFromRoot()`.
+
+5. **MEDIUM — Web session operator instructions misleading** — CLI said "Paste into claude.ai → select Extended Research (Opus)" with no mention that context packs are pre-injected. Fixed: replaced with numbered operator steps noting context is already included.
+
+6. **LOW — S5-S8 prompts say "attach files as file uploads"** — The orchestrator pre-injects context packs, so this instruction is redundant for automated runs. Not fixed (scope limit) — flagged as residual risk.
+
+7. **LOW — P3 manifest dependencies don't include P2** — The P3 mega-prompt says it depends on "Session 2 output" (meaning Part 2). The manifest note says "splintered sub-sessions will have refined dependencies." Accepted as intentional — the mega-prompt will be splintered before running.
+
+8. **LOW — saveManifest strips YAML comments** — js-yaml doesn't preserve comments. The `run` command calls saveManifest, which strips all section dividers and inline comments from manifest.yaml. Not fixed (inherent js-yaml limitation) — flagged as residual risk.
+
+**Validation results (all pass):**
+- `npm run research -- status`: DAG valid, 5 complete, 1 splintered, 1 blocked, 7 planned, 1 ready (P1_S4)
+- `npm run research -- next`: P1_S4 correctly identified as only ready session
+- Dry P1_S4 package generation: context includes P1_S1 + P1_S3 packs (correct), no Session 2 content, prompt references "Sessions 1 and 3" (correct)
+- Context pack metadata: all 5 packs have correct session_ids after fixes
 
 ## Research Pipeline State
 ```

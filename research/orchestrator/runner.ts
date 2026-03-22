@@ -3,7 +3,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
-import { readFile, writeFile, log, warn, success, error as logError } from './utils.js';
+import { readFile, writeFile, resolveFromRoot, log, warn, success, error as logError } from './utils.js';
 import { getSession, saveManifest, updateSessionStatus } from './manifest.js';
 import { checkDependencies } from './dag.js';
 import { estimateSessionSize } from './token-counter.js';
@@ -157,16 +157,18 @@ export async function prepareWebSession(
 
   // 5. Copy to clipboard (macOS)
   try {
-    execSync(`cat "${path.resolve(process.cwd(), '..', '..', packagePath)}" | pbcopy`);
+    execSync(`cat "${resolveFromRoot(packagePath)}" | pbcopy`);
     log(`\n📋 Copied to clipboard.`);
   } catch {
     log(`\n📄 Session package written to: ${packagePath}`);
     log(`   (Clipboard copy failed — copy the file contents manually)`);
   }
 
-  log(`\n   Paste into claude.ai → select Extended Research (Opus).`);
-  log(`   When complete, save the output to: ${session.output_file}`);
-  log(`   Then run: npm run research -- complete ${session.id}\n`);
+  log(`\nOperator steps:`);
+  log(`  1. Paste into claude.ai → select Opus model`);
+  log(`     (Context from prior sessions is already included in the pasted text)`);
+  log(`  2. When complete, save the output to: ${session.output_file}`);
+  log(`  3. Run: npm run research -- complete ${session.id}\n`);
 
   // 6. Update status
   updateSessionStatus(manifest, session.id, SessionStatus.Running);

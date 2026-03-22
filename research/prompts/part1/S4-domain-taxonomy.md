@@ -8,19 +8,20 @@ Cedar is an AI-powered regulatory monitoring platform for independent medical pr
 
 Cedar has a PostgreSQL knowledge graph with `kg_domains` (hierarchical taxonomy via `parent_domain_id`, supports arbitrary depth), `kg_entity_domains` (many-to-many classification with `relevance_score` and `classified_by`), and `kg_practice_types` (14 NUCC-based practice types).
 
-This is **Session 4 of 8**. Sessions 1-3 produced relevance filters (CFR allowlists and non-CFR signals). This session designs the **top two levels** of the domain taxonomy — the L1 domains visible on Cedar's Library home screen and the L2 subdomains that appear when you drill into any L1. Later sessions (5-7) develop L3+ branches.
+This is **Session 4 of 8**. Sessions 1 and 3 produced relevance filters (CFR title classification and non-CFR signals). This session designs the **top two levels** of the domain taxonomy — the L1 domains visible on Cedar's Library home screen and the L2 subdomains that appear when you drill into any L1. Later sessions (5-7) develop L3+ branches.
+
+Session 2 (part-level allowlists) provides granular CFR-part-level filtering data that is consumed by Session 8 (CFR-to-domain mapping), not by this session. The L1/L2 taxonomy design needs to know *which regulatory areas exist* (Session 1's title classifications) and *what non-CFR signals matter* (Session 3), not the part-level detail.
 
 The combined output of all 8 sessions will be read by Claude Opus to produce an engineering implementation plan. The taxonomy must be designed so that the domain codes are stable — L3+ development in Sessions 5-7 extends the tree without changing L1/L2 codes.
 
-### Sessions 1-3 Outputs
+### Required Context (Sessions 1 and 3)
 
-This session requires the outputs from Sessions 1, 2, and 3. **Attach all three output files as file uploads alongside this prompt:**
+The context from Sessions 1 and 3 is provided above (injected by the orchestrator). If running manually, attach these files:
 
-- `01-title-classification.md` (Session 1 — which CFR titles are relevant/mixed)
-- `02-part-level-filtering.md` (Session 2 — part-level allowlist for mixed titles)
-- `03-non-cfr-signals.md` (Session 3 — agency signals, keyword clusters, openFDA map)
+- Session 1 output (CFR title classification — which titles are relevant/mixed/irrelevant)
+- Session 3 output (non-CFR signals — agency relevance map, keyword clusters, openFDA mapping)
 
-The research agent should read all three attached files to ground the taxonomy design in the actual content that exists in Cedar's corpus.
+The research agent should use both to ground the taxonomy design in the actual regulatory content that exists in Cedar's corpus.
 
 ---
 
