@@ -277,7 +277,7 @@ sessions:
     description: >-
       40-60 nodes covering DEA registration, prescribing, EPCS, PDMP, schedule classifications, dispensing, opioids,
       recordkeeping, security, disposal, telehealth CS prescribing
-    status: running
+    status: complete
     dependencies:
       - P1_S4
       - P1_S5-A
@@ -292,6 +292,12 @@ sessions:
     splinter_parent: P1_S5
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 43192
+        output: 19121
+      stop_reason: end_turn
+    completed_at: "2026-03-23T18:15:20.854Z"
   - id: P1_S6
     part: 1
     session: 6
