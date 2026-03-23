@@ -740,7 +740,7 @@ sessions:
     description: >-
       Map all FDA regulations from Title 21 Chapter I (Parts 1-1299) to domain codes. Covers drug CGMPs, compounding,
       labeling, biologics, devices, HCT/Ps, and administrative provisions.
-    status: running
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -761,6 +761,12 @@ sessions:
     splinter_parent: P1_S8-A
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51060
+        output: 5683
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:23:28.022Z"
   - id: P1_S8-A-B
     part: 1
     session: 8
