@@ -246,10 +246,8 @@ async function cmdComplete(sessionId: string | undefined, manifest: Manifest): P
 
   log(`Completing session ${sessionId}...`);
 
-  // Generate context pack
-  if (session.context_pack_file) {
-    await generateContextPack(session, manifest);
-  }
+  // Context pack generation is no longer automatic.
+  // Run `npm run research -- compress <id>` manually if needed.
 
   // Update status
   updateSessionStatus(manifest, sessionId, SessionStatus.Complete);
@@ -267,8 +265,8 @@ async function cmdComplete(sessionId: string | undefined, manifest: Manifest): P
     });
 
     if (allChildrenComplete) {
-      log(`\nAll children of ${parent.id} are complete. Generating combined context pack...`);
-      await generateCombinedContextPack(parent, manifest);
+      log(`\nAll children of ${parent.id} are complete.`);
+      log(`  To generate a combined context pack: npm run research -- compress ${parent.id}`);
     } else {
       const remaining = parent.splinter_children.filter(childId => {
         const child = getSession(manifest, childId);

@@ -60,13 +60,17 @@ export function topologicalSort(manifest: Manifest): Session[] {
 /**
  * Check if a dependency is satisfied:
  * - complete → always satisfied
- * - splintered → satisfied only if the combined context pack exists
+ * - splintered → satisfied if all children are complete and have output files
  */
-function isDependencySatisfied(dep: Session): boolean {
+function isDependencySatisfied(dep: Session, manifest: Manifest): boolean {
   if (dep.status === SessionStatus.Complete) return true;
   if (dep.status === SessionStatus.Splintered) {
-    // Check if combined pack exists
-    return dep.context_pack_file != null && fileExists(dep.context_pack_file);
+    const sessionMap = buildSessionMap(manifest);
+    return dep.splinter_children.every(childId => {
+      const child = sessionMap.get(childId);
+      return child?.status === SessionStatus.Complete &&
+             child.output_file != null && fileExists(child.output_file);
+    });
   }
   return false;
 }
@@ -84,7 +88,7 @@ export function getReadySessions(manifest: Manifest): Session[] {
     return session.dependencies.every(depId => {
       const dep = sessionMap.get(depId);
       if (!dep) return false;
-      return isDependencySatisfied(dep);
+      return isDependencySatisfied(dep, manifest);
     });
   });
 }
@@ -108,7 +112,7 @@ export function checkDependencies(
       unmet.push(`${depId} (not found)`);
       continue;
     }
-    if (!isDependencySatisfied(dep)) {
+    if (!isDependencySatisfied(dep, manifest)) {
       unmet.push(`${depId} (status: ${dep.status})`);
     }
   }
@@ -132,7 +136,7 @@ export function getCriticalPath(manifest: Manifest): string[] {
     // If already done, it contributes nothing to the critical path
     if (session.status === SessionStatus.Complete ||
         (session.status === SessionStatus.Splintered &&
-         session.context_pack_file != null && fileExists(session.context_pack_file))) {
+         isDependencySatisfied(session, manifest))) {
       memo.set(id, []);
       return [];
     }

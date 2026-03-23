@@ -7,7 +7,6 @@ import { readFile, writeFile, resolveFromRoot, log, warn, success, error as logE
 import { getSession, saveManifest, updateSessionStatus } from './manifest.js';
 import { checkDependencies } from './dag.js';
 import { estimateSessionSize } from './token-counter.js';
-import { generateContextPack } from './compressor.js';
 import { SessionStatus } from './types.js';
 import type { Manifest, Session } from './types.js';
 
@@ -103,10 +102,7 @@ export async function runApiSession(
   };
   session.metadata.stop_reason = response.stop_reason ?? undefined;
 
-  // 11. Generate context pack
-  await generateContextPack(session, manifest);
-
-  // 12. Update status
+  // 11. Update status (context pack generation is manual via `compress` command)
   updateSessionStatus(manifest, session.id, SessionStatus.Complete);
   session.completed_at = new Date().toISOString();
   await saveManifest(manifest);
@@ -236,7 +232,6 @@ export async function runBatch(
         .map((b: any) => b.text)
         .join('\n');
       await writeFile(session.output_file!, output);
-      await generateContextPack(session, manifest);
       updateSessionStatus(manifest, session.id, SessionStatus.Complete);
       session.completed_at = new Date().toISOString();
       success(`${session.id} complete`);

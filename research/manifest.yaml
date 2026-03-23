@@ -1,41 +1,29 @@
-# Cedar Regulatory Classification Research — Orchestration Manifest
-# This file is the single source of truth for research pipeline state.
-# Updated automatically by the orchestrator after every state transition.
-
 meta:
-  project: "Cedar Healthcare Regulatory Classification Engine"
+  project: Cedar Healthcare Regulatory Classification Engine
   version: 1
   created: "2026-03-21"
-  # Model selection:
-  # - synthesis_model: used for API-route research sessions (needs Opus-level reasoning)
-  # - compression_model: used for context pack generation (Haiku is sufficient and cheap)
-  synthesis_model: "claude-opus-4-20250514"
-  compression_model: "claude-haiku-4-5-20251001"
-  # Token budgets:
-  max_context_budget: 120000        # tokens — 60% of 200K window, quality degrades beyond this
-  splintering_threshold: 100000     # tokens — trigger auto-splinter review above this
-  default_max_output_tokens: 32768  # tokens — default max_tokens for API calls
-  # Paths (relative to repo root):
-  output_dir: "research/outputs"
-  context_pack_dir: "research/context-packs"
-  prompt_dir: "research/prompts"
-
+  synthesis_model: claude-opus-4-20250514
+  compression_model: claude-haiku-4-5-20251001
+  max_context_budget: 120000
+  splintering_threshold: 100000
+  default_max_output_tokens: 32768
+  output_dir: research/outputs
+  context_pack_dir: research/context-packs
+  prompt_dir: research/prompts
 sessions:
-  # ──────────── PART 1: Relevance Filtering + Domain Taxonomy ────────────
-
-  - id: "P1_S1"
+  - id: P1_S1
     part: 1
     session: 1
     sub: null
-    title: "CFR Title Classification"
-    description: "Classify all 50 CFR titles by healthcare relevance tier"
+    title: CFR Title Classification
+    description: Classify all 50 CFR titles by healthcare relevance tier
     status: complete
     dependencies: []
     context_inputs: []
     execution_route: web
-    prompt_file: "research/prompts/part1/S1-cfr-title-classification.md"
-    output_file: "research/outputs/part1/P1_S1.md"
-    context_pack_file: "research/context-packs/part1/P1_S1.yaml"
+    prompt_file: research/prompts/part1/S1-cfr-title-classification.md
+    output_file: research/outputs/part1/P1_S1.md
+    context_pack_file: research/context-packs/part1/P1_S1.yaml
     model: null
     max_output_tokens: null
     prefetch: []
@@ -43,246 +31,279 @@ sessions:
     splinter_children: []
     completed_at: "2026-03-10T09:00:00Z"
     metadata:
-      actual_tokens: { input: 2100, output: 7800 }
+      actual_tokens:
+        input: 2100
+        output: 7800
       cost_usd: 0.14
-
-  # Splintered parent — not directly executable, resolves to children
-  - id: "P1_S2"
+  - id: P1_S2
     part: 1
     session: 2
     sub: null
-    title: "Part-Level Allowlists"
-    description: "Build part-level allowlists for all 15 healthcare-relevant CFR titles"
+    title: Part-Level Allowlists
+    description: Build part-level allowlists for all 15 healthcare-relevant CFR titles
     status: splintered
-    dependencies: ["P1_S1"]
-    context_inputs: ["research/context-packs/part1/P1_S1.yaml"]
+    dependencies:
+      - P1_S1
+    context_inputs:
+      - research/outputs/part1/P1_S1.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S2-part-level-allowlists.md"
+    prompt_file: research/prompts/part1/S2-part-level-allowlists.md
     output_file: null
-    context_pack_file: "research/context-packs/part1/P1_S2-combined.yaml"
+    context_pack_file: research/context-packs/part1/P1_S2-combined.yaml
     splinter_parent: null
-    splinter_children: ["P1_S2-A", "P1_S2-B", "P1_S2-C", "P1_S2-D"]
+    splinter_children:
+      - P1_S2-A
+      - P1_S2-B
+      - P1_S2-C
+      - P1_S2-D
     metadata:
-      splinter_reason: "Estimated 180K tokens — exceeds quality threshold"
-      splinter_strategy: "Split by CFR title groups"
-
-  - id: "P1_S2-A"
+      splinter_reason: Estimated 180K tokens — exceeds quality threshold
+      splinter_strategy: Split by CFR title groups
+    prefetch: []
+  - id: P1_S2-A
     part: 1
     session: 2
-    sub: "A"
-    title: "Part-Level Allowlists — Title 21 (Food and Drugs)"
+    sub: A
+    title: Part-Level Allowlists — Title 21 (Food and Drugs)
     status: complete
-    dependencies: ["P1_S1"]
-    context_inputs: ["research/context-packs/part1/P1_S1.yaml"]
+    dependencies:
+      - P1_S1
+    context_inputs:
+      - research/outputs/part1/P1_S1.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S2-A-title-21-allowlists.md"
-    output_file: "research/outputs/part1/P1_S2-A.md"
-    context_pack_file: "research/context-packs/part1/P1_S2-A.yaml"
-    splinter_parent: "P1_S2"
+    prompt_file: research/prompts/part1/S2-A-title-21-allowlists.md
+    output_file: research/outputs/part1/P1_S2-A.md
+    context_pack_file: research/context-packs/part1/P1_S2-A.yaml
+    splinter_parent: P1_S2
     splinter_children: []
     completed_at: "2026-03-12T11:00:00Z"
-
-  - id: "P1_S2-B"
+    prefetch: []
+  - id: P1_S2-B
     part: 1
     session: 2
-    sub: "B"
-    title: "Part-Level Allowlists — Title 42 (Public Health)"
+    sub: B
+    title: Part-Level Allowlists — Title 42 (Public Health)
     status: complete
-    dependencies: ["P1_S1"]
-    context_inputs: ["research/context-packs/part1/P1_S1.yaml"]
+    dependencies:
+      - P1_S1
+    context_inputs:
+      - research/outputs/part1/P1_S1.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S2-B-title-42-allowlists.md"
-    output_file: "research/outputs/part1/P1_S2-B.md"
-    context_pack_file: "research/context-packs/part1/P1_S2-B.yaml"
-    splinter_parent: "P1_S2"
+    prompt_file: research/prompts/part1/S2-B-title-42-allowlists.md
+    output_file: research/outputs/part1/P1_S2-B.md
+    context_pack_file: research/context-packs/part1/P1_S2-B.yaml
+    splinter_parent: P1_S2
     splinter_children: []
     completed_at: "2026-03-14T10:00:00Z"
-
-  - id: "P1_S2-C"
+    prefetch: []
+  - id: P1_S2-C
     part: 1
     session: 2
-    sub: "C"
-    title: "Part-Level Allowlists — Titles 45, 29, 26, 16"
+    sub: C
+    title: Part-Level Allowlists — Titles 45, 29, 26, 16
     status: complete
-    dependencies: ["P1_S1"]
-    context_inputs: ["research/context-packs/part1/P1_S1.yaml"]
+    dependencies:
+      - P1_S1
+    context_inputs:
+      - research/outputs/part1/P1_S1.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S2-C-titles-45-29-26-16-allowlists.md"
-    output_file: "research/outputs/part1/P1_S2-C.md"
-    context_pack_file: "research/context-packs/part1/P1_S2-C.yaml"
-    splinter_parent: "P1_S2"
+    prompt_file: research/prompts/part1/S2-C-titles-45-29-26-16-allowlists.md
+    output_file: research/outputs/part1/P1_S2-C.md
+    context_pack_file: research/context-packs/part1/P1_S2-C.yaml
+    splinter_parent: P1_S2
     splinter_children: []
     completed_at: "2026-03-16T09:00:00Z"
-
-  - id: "P1_S2-D"
+    prefetch: []
+  - id: P1_S2-D
     part: 1
     session: 2
-    sub: "D"
-    title: "Part-Level Allowlists — Remaining Tier 3 Titles + Consolidated Summary"
+    sub: D
+    title: Part-Level Allowlists — Remaining Tier 3 Titles + Consolidated Summary
     status: blocked
-    dependencies: ["P1_S1"]
-    context_inputs: ["research/context-packs/part1/P1_S1.yaml"]
+    dependencies:
+      - P1_S1
+    context_inputs:
+      - research/outputs/part1/P1_S1.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S2-D-remaining-titles-allowlists.md"
-    output_file: null
-    context_pack_file: null
-    splinter_parent: "P1_S2"
+    prompt_file: research/prompts/part1/S2-D-remaining-titles-allowlists.md
+    output_file: research/outputs/part1/P1_S2-D.md
+    context_pack_file: research/context-packs/part1/P1_S2-D.yaml
+    splinter_parent: P1_S2
     splinter_children: []
     metadata:
-      block_reason: "Too large — covers 9 Tier 3 titles + consolidated deliverables requiring all S2 outputs"
+      block_reason: Too large — covers 9 Tier 3 titles + consolidated deliverables requiring all S2 outputs
       estimated_tokens: 160000
-
-  - id: "P1_S3"
+    prefetch: []
+  - id: P1_S3
     part: 1
     session: 3
     sub: null
-    title: "Non-CFR Classification Signals"
-    description: "Agency signals, keyword clusters, openFDA mapping for entities without clean CFR references"
+    title: Non-CFR Classification Signals
+    description: Agency signals, keyword clusters, openFDA mapping for entities without clean CFR references
     status: complete
     dependencies: []
     context_inputs: []
     execution_route: web
-    prompt_file: "research/prompts/part1/S3-non-cfr-signals.md"
-    output_file: "research/outputs/part1/P1_S3.md"
-    context_pack_file: "research/context-packs/part1/P1_S3.yaml"
+    prompt_file: research/prompts/part1/S3-non-cfr-signals.md
+    output_file: research/outputs/part1/P1_S3.md
+    context_pack_file: research/context-packs/part1/P1_S3.yaml
     splinter_parent: null
     splinter_children: []
     completed_at: "2026-03-18T10:00:00Z"
-
-  - id: "P1_S4"
+    prefetch: []
+  - id: P1_S4
     part: 1
     session: 4
     sub: null
-    title: "Domain Taxonomy L1/L2 Structure"
-    description: "Design the top two levels of Cedar's regulatory domain taxonomy"
+    title: Domain Taxonomy L1/L2 Structure
+    description: Design the top two levels of Cedar's regulatory domain taxonomy
     status: planned
-    dependencies: ["P1_S1", "P1_S3"]
+    dependencies:
+      - P1_S1
+      - P1_S3
     context_inputs:
-      - "research/context-packs/part1/P1_S1.yaml"
-      - "research/context-packs/part1/P1_S3.yaml"
+      - research/outputs/part1/P1_S1.md
+      - research/outputs/part1/P1_S3.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S4-domain-taxonomy.md"
-    output_file: "research/outputs/part1/P1_S4.md"
-    context_pack_file: "research/context-packs/part1/P1_S4.yaml"
+    prompt_file: research/prompts/part1/S4-domain-taxonomy.md
+    output_file: research/outputs/part1/P1_S4.md
+    context_pack_file: research/context-packs/part1/P1_S4.yaml
     splinter_parent: null
     splinter_children: []
-
-  - id: "P1_S5"
+    prefetch: []
+  - id: P1_S5
     part: 1
     session: 5
     sub: null
-    title: "Deep Taxonomy — Compounding + Controlled Substances"
-    description: "L3-L6 nodes for Cedar's two highest-priority regulatory domains"
+    title: Deep Taxonomy — Compounding + Controlled Substances
+    description: L3-L6 nodes for Cedar's two highest-priority regulatory domains
     status: planned
-    dependencies: ["P1_S4"]
+    dependencies:
+      - P1_S4
     context_inputs:
-      - "research/context-packs/part1/P1_S4.yaml"
+      - research/outputs/part1/P1_S4.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S5-deep-compounding-controlled.md"
-    output_file: "research/outputs/part1/P1_S5.md"
-    context_pack_file: "research/context-packs/part1/P1_S5.yaml"
+    prompt_file: research/prompts/part1/S5-deep-compounding-controlled.md
+    output_file: research/outputs/part1/P1_S5.md
+    context_pack_file: research/context-packs/part1/P1_S5.yaml
     splinter_parent: null
     splinter_children: []
-
-  - id: "P1_S6"
+    prefetch: []
+  - id: P1_S6
     part: 1
     session: 6
     sub: null
-    title: "Deep Taxonomy — FDA Regulation + Telehealth"
-    description: "L3-L6 nodes for FDA and Telehealth branches"
+    title: Deep Taxonomy — FDA Regulation + Telehealth
+    description: L3-L6 nodes for FDA and Telehealth branches
     status: planned
-    dependencies: ["P1_S4", "P1_S5"]
+    dependencies:
+      - P1_S4
+      - P1_S5
     context_inputs:
-      - "research/context-packs/part1/P1_S4.yaml"
-      - "research/context-packs/part1/P1_S5.yaml"
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S6-deep-fda-telehealth.md"
-    output_file: "research/outputs/part1/P1_S6.md"
-    context_pack_file: "research/context-packs/part1/P1_S6.yaml"
+    prompt_file: research/prompts/part1/S6-deep-fda-telehealth.md
+    output_file: research/outputs/part1/P1_S6.md
+    context_pack_file: research/context-packs/part1/P1_S6.yaml
     splinter_parent: null
     splinter_children: []
-
-  - id: "P1_S7"
+    prefetch: []
+  - id: P1_S7
     part: 1
     session: 7
     sub: null
-    title: "Remaining Taxonomy Branches"
-    description: "L3-L4 nodes for HIPAA, Medicare, Fraud, Operations, Workplace Safety, Employment, Tax"
+    title: Remaining Taxonomy Branches
+    description: L3-L4 nodes for HIPAA, Medicare, Fraud, Operations, Workplace Safety, Employment, Tax
     status: planned
-    dependencies: ["P1_S4", "P1_S5", "P1_S6"]
+    dependencies:
+      - P1_S4
+      - P1_S5
+      - P1_S6
     context_inputs:
-      - "research/context-packs/part1/P1_S4.yaml"
-      - "research/context-packs/part1/P1_S5.yaml"
-      - "research/context-packs/part1/P1_S6.yaml"
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5.md
+      - research/outputs/part1/P1_S6.md
     execution_route: web
-    prompt_file: "research/prompts/part1/S7-remaining-branches.md"
-    output_file: "research/outputs/part1/P1_S7.md"
-    context_pack_file: "research/context-packs/part1/P1_S7.yaml"
+    prompt_file: research/prompts/part1/S7-remaining-branches.md
+    output_file: research/outputs/part1/P1_S7.md
+    context_pack_file: research/context-packs/part1/P1_S7.yaml
     splinter_parent: null
     splinter_children: []
-
-  - id: "P1_S8"
+    prefetch: []
+  - id: P1_S8
     part: 1
     session: 8
     sub: null
-    title: "CFR-to-Domain Mapping Table"
-    description: "Exhaustive mapping of every relevant CFR part to domain taxonomy codes"
+    title: CFR-to-Domain Mapping Table
+    description: Exhaustive mapping of every relevant CFR part to domain taxonomy codes
     status: planned
-    dependencies: ["P1_S2", "P1_S4", "P1_S5", "P1_S6", "P1_S7"]
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5
+      - P1_S6
+      - P1_S7
     context_inputs:
-      - "research/context-packs/part1/P1_S2-combined.yaml"
-      - "research/context-packs/part1/P1_S4.yaml"
-      - "research/context-packs/part1/P1_S5.yaml"
-      - "research/context-packs/part1/P1_S6.yaml"
-      - "research/context-packs/part1/P1_S7.yaml"
+      - research/outputs/part1/P1_S2-A.md
+      - research/outputs/part1/P1_S2-B.md
+      - research/outputs/part1/P1_S2-C.md
+      - research/outputs/part1/P1_S2-D.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5.md
+      - research/outputs/part1/P1_S6.md
+      - research/outputs/part1/P1_S7.md
     execution_route: api
-    prompt_file: "research/prompts/part1/S8-cfr-domain-mapping.md"
-    output_file: "research/outputs/part1/P1_S8.md"
-    context_pack_file: "research/context-packs/part1/P1_S8.yaml"
+    prompt_file: research/prompts/part1/S8-cfr-domain-mapping.md
+    output_file: research/outputs/part1/P1_S8.md
+    context_pack_file: research/context-packs/part1/P1_S8.yaml
     max_output_tokens: 65536
     splinter_parent: null
     splinter_children: []
-
-  # ──────────── PART 2: Classification Pipeline (needs splintering) ────────────
-
-  - id: "P2"
+    prefetch: []
+  - id: P2
     part: 2
     session: 0
     sub: null
-    title: "Classification Pipeline, Embeddings, Cost Model"
-    description: "5-stage pipeline design, semantic embedding strategy, AI classifier spec, cost model, accuracy budget"
+    title: Classification Pipeline, Embeddings, Cost Model
+    description: 5-stage pipeline design, semantic embedding strategy, AI classifier spec, cost model, accuracy budget
     status: planned
-    dependencies: ["P1_S8", "P1_S3"]
+    dependencies:
+      - P1_S8
+      - P1_S3
     context_inputs:
-      - "research/context-packs/part1/P1_S8.yaml"
-      - "research/context-packs/part1/P1_S3.yaml"
+      - research/outputs/part1/P1_S8.md
+      - research/outputs/part1/P1_S3.md
     execution_route: api
-    prompt_file: "research/prompts/part2/mega-prompt-pipeline.md"
+    prompt_file: research/prompts/part2/mega-prompt-pipeline.md
     output_file: null
     context_pack_file: null
     splinter_parent: null
     splinter_children: []
     metadata:
-      notes: "This mega-prompt will be auto-splintered into 4-8 sub-sessions"
-
-  # ──────────── PART 3: Non-Federal Sources (needs splintering) ────────────
-
-  - id: "P3"
+      notes: This mega-prompt will be auto-splintered into 4-8 sub-sessions
+    prefetch: []
+  - id: P3
     part: 3
     session: 0
     sub: null
-    title: "Non-Federal Sources, Authority Levels, Ingestion Protocol"
-    description: "Per-source classification, authority assignment, entity protocol, state expansion"
+    title: Non-Federal Sources, Authority Levels, Ingestion Protocol
+    description: Per-source classification, authority assignment, entity protocol, state expansion
     status: planned
-    dependencies: ["P1_S8", "P1_S4"]
+    dependencies:
+      - P1_S8
+      - P1_S4
     context_inputs:
-      - "research/context-packs/part1/P1_S8.yaml"
-      - "research/context-packs/part1/P1_S4.yaml"
+      - research/outputs/part1/P1_S8.md
+      - research/outputs/part1/P1_S4.md
     execution_route: api
-    prompt_file: "research/prompts/part3/mega-prompt-sources.md"
+    prompt_file: research/prompts/part3/mega-prompt-sources.md
     output_file: null
     context_pack_file: null
     splinter_parent: null
     splinter_children: []
     metadata:
-      notes: "This mega-prompt will be auto-splintered into 4-8 sub-sessions. Part 3 also depends on Part 2 outputs — the splintered sub-sessions will have refined dependencies."
+      notes: >-
+        This mega-prompt will be auto-splintered into 4-8 sub-sessions. Part 3 also depends on Part 2 outputs — the
+        splintered sub-sessions will have refined dependencies.
+    prefetch: []
