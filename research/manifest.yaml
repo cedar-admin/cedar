@@ -122,7 +122,7 @@ sessions:
     sub: D
     title: Part-Level Allowlists — Tier 3 Titles Group 1 (40, 47, 28, 32, 38)
     description: Part-level allowlists for EPA, FCC, DOJ, DoD/TRICARE, and VA titles
-    status: planned
+    status: running
     dependencies:
       - P1_S1
     context_inputs:
@@ -140,7 +140,7 @@ sessions:
     sub: E
     title: Part-Level Allowlists — Tier 3 Titles Group 2 (20, 49, 10, 2)
     description: Part-level allowlists for SSA, DOT, NRC, and federal grants titles
-    status: planned
+    status: running
     dependencies:
       - P1_S1
     context_inputs:
@@ -256,7 +256,7 @@ sessions:
     description: >-
       40-60 nodes covering 503A, 503B, USP standards, sterile compounding, ingredient sourcing, enforcement, state
       board, practice-specific compounding
-    status: planned
+    status: complete
     dependencies:
       - P1_S4
     context_inputs:
@@ -277,7 +277,7 @@ sessions:
     description: >-
       40-60 nodes covering DEA registration, prescribing, EPCS, PDMP, schedule classifications, dispensing, opioids,
       recordkeeping, security, disposal, telehealth CS prescribing
-    status: planned
+    status: running
     dependencies:
       - P1_S4
       - P1_S5-A
@@ -440,7 +440,7 @@ sessions:
     description: >-
       45-70 nodes covering Anti-Kickback, Stark, FCA, OIG Exclusions, Compliance Programs, Professional/Facility
       Licensing, Corporate Structure, Accreditation, OSHA, Environmental, Employment, Healthcare Tax
-    status: running
+    status: complete
     dependencies:
       - P1_S4
     context_inputs:

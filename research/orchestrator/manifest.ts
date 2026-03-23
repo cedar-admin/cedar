@@ -1,10 +1,49 @@
 // Cedar Research Orchestrator — Manifest read/write/validate
 
 import yaml from 'js-yaml';
+import { openSync, closeSync, unlinkSync } from 'node:fs';
 import { readFile, writeFile, resolveFromRoot } from './utils.js';
 import type { Manifest, Session, SessionStatus } from './types.js';
 
 const MANIFEST_PATH = 'research/manifest.yaml';
+const LOCK_PATH = 'research/manifest.lock';
+
+async function acquireLock(timeoutMs = 15000): Promise<void> {
+  const lockPath = resolveFromRoot(LOCK_PATH);
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      // O_EXCL + O_CREAT is atomic — fails if file already exists
+      const fd = openSync(lockPath, 'wx');
+      closeSync(fd);
+      return;
+    } catch {
+      await new Promise(r => setTimeout(r, 50 + Math.random() * 100));
+    }
+  }
+  throw new Error('Could not acquire manifest lock after 15s — stale lock file?');
+}
+
+function releaseLock(): void {
+  try { unlinkSync(resolveFromRoot(LOCK_PATH)); } catch {}
+}
+
+/**
+ * Read-modify-write the manifest under an exclusive file lock.
+ * The updater receives a freshly loaded manifest and mutates it in place.
+ * Always use this instead of bare saveManifest() when running parallel sessions.
+ */
+export async function updateManifest(updater: (manifest: Manifest) => void): Promise<Manifest> {
+  await acquireLock();
+  try {
+    const manifest = await loadManifest();
+    updater(manifest);
+    await saveManifest(manifest);
+    return manifest;
+  } finally {
+    releaseLock();
+  }
+}
 
 /** Load and parse the manifest */
 export async function loadManifest(): Promise<Manifest> {

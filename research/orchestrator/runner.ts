@@ -4,7 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { readFile, writeFile, resolveFromRoot, log, warn, success, error as logError } from './utils.js';
-import { getSession, saveManifest, updateSessionStatus } from './manifest.js';
+import { getSession, saveManifest, updateManifest, updateSessionStatus } from './manifest.js';
 import { checkDependencies } from './dag.js';
 import { estimateSessionSize } from './token-counter.js';
 import { SessionStatus } from './types.js';
@@ -63,12 +63,16 @@ export async function runApiSession(
     }
   }
 
-  // 6. Update status
-  updateSessionStatus(manifest, session.id, SessionStatus.Running);
-  await saveManifest(manifest);
+  // 6. Update status (locked write — safe for parallel sessions)
+  await updateManifest(m => updateSessionStatus(m, session.id, SessionStatus.Running));
 
   // 7. Execute API call (streaming to support long responses)
-  const maxTokens = session.max_output_tokens ?? manifest.meta.default_max_output_tokens;
+  // Cap at 32000 — Opus 4 hard limit (manifest values may exceed this if set before model was known)
+  const MODEL_MAX_OUTPUT = 32000;
+  const maxTokens = Math.min(
+    session.max_output_tokens ?? manifest.meta.default_max_output_tokens,
+    MODEL_MAX_OUTPUT
+  );
   const stream = await client.messages.stream({
     model: session.model ?? manifest.meta.synthesis_model,
     max_tokens: maxTokens,
@@ -96,18 +100,20 @@ export async function runApiSession(
     .join('\n');
   await writeFile(session.output_file!, output);
 
-  // 10. Record actual token usage
-  if (!session.metadata) session.metadata = {};
-  session.metadata.actual_tokens = {
-    input: response.usage.input_tokens,
-    output: response.usage.output_tokens,
-  };
-  session.metadata.stop_reason = response.stop_reason ?? undefined;
-
-  // 11. Update status (context pack generation is manual via `compress` command)
-  updateSessionStatus(manifest, session.id, SessionStatus.Complete);
-  session.completed_at = new Date().toISOString();
-  await saveManifest(manifest);
+  // 10 & 11. Record token usage + mark complete (locked write — safe for parallel sessions)
+  const completedAt = new Date().toISOString();
+  await updateManifest(m => {
+    const s = getSession(m, session.id);
+    s.metadata = {
+      actual_tokens: {
+        input: response.usage.input_tokens,
+        output: response.usage.output_tokens,
+      },
+      stop_reason: response.stop_reason ?? undefined,
+    };
+    s.completed_at = completedAt;
+    updateSessionStatus(m, session.id, SessionStatus.Complete);
+  });
 
   success(`Session ${session.id} complete (${response.usage.input_tokens} in, ${response.usage.output_tokens} out)`);
 
@@ -190,9 +196,8 @@ export async function prepareWebSession(
   log(`  2. When complete, save the output to: ${session.output_file}`);
   log(`  3. Run: npm run research -- complete ${session.id}\n`);
 
-  // 6. Update status
-  updateSessionStatus(manifest, session.id, SessionStatus.Running);
-  await saveManifest(manifest);
+  // 6. Update status (locked write)
+  await updateManifest(m => updateSessionStatus(m, session.id, SessionStatus.Running));
   return packagePath;
 }
 

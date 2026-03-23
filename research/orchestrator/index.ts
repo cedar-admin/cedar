@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Cedar Research Orchestrator — CLI entry point
 
-import { loadManifest, getSession, saveManifest, updateSessionStatus } from './manifest.js';
+import { loadManifest, getSession, saveManifest, updateManifest, updateSessionStatus } from './manifest.js';
 import { topologicalSort, getReadySessions, getStatusCounts, getCriticalPath, checkDependencies } from './dag.js';
 import { estimateSessionSize } from './token-counter.js';
 import { generateContextPack, validateAllContextPacks } from './compressor.js';
@@ -249,18 +249,21 @@ async function cmdComplete(sessionId: string | undefined, manifest: Manifest): P
   // Context pack generation is no longer automatic.
   // Run `npm run research -- compress <id>` manually if needed.
 
-  // Update status
-  updateSessionStatus(manifest, sessionId, SessionStatus.Complete);
-  session.completed_at = new Date().toISOString();
-  await saveManifest(manifest);
+  // Update status (locked write)
+  const completedManifest = await updateManifest(m => {
+    const s = getSession(m, sessionId);
+    s.completed_at = new Date().toISOString();
+    updateSessionStatus(m, sessionId, SessionStatus.Complete);
+  });
 
   success(`Session ${sessionId} marked complete`);
 
   // Check if this completes a splintered parent
-  if (session.splinter_parent) {
-    const parent = getSession(manifest, session.splinter_parent);
+  const completedSession = getSession(completedManifest, sessionId);
+  if (completedSession.splinter_parent) {
+    const parent = getSession(completedManifest, completedSession.splinter_parent);
     const allChildrenComplete = parent.splinter_children.every(childId => {
-      const child = getSession(manifest, childId);
+      const child = getSession(completedManifest, childId);
       return child.status === SessionStatus.Complete;
     });
 
@@ -269,7 +272,7 @@ async function cmdComplete(sessionId: string | undefined, manifest: Manifest): P
       log(`  To generate a combined context pack: npm run research -- compress ${parent.id}`);
     } else {
       const remaining = parent.splinter_children.filter(childId => {
-        const child = getSession(manifest, childId);
+        const child = getSession(completedManifest, childId);
         return child.status !== SessionStatus.Complete;
       });
       log(`\nRemaining children for ${parent.id}: ${remaining.join(', ')}`);
