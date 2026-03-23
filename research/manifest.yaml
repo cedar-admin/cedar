@@ -917,7 +917,7 @@ sessions:
     description: >-
       Map parts from Titles 47 (FCC), 28 (DOJ), 32 (Defense), 38 (Veterans Affairs), and 40 (EPA) that appear in the
       Session 2-D allowlist.
-    status: running
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -938,6 +938,12 @@ sessions:
     splinter_parent: P1_S8-B
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51039
+        output: 2474
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:18:57.900Z"
   - id: P1_S8-B-E
     part: 1
     session: 8
