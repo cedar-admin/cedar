@@ -811,7 +811,7 @@ sessions:
       Merge outputs from sub-sessions A and B into a single comprehensive mapping table. Verify completeness against
       Session 2-A/B allowlists, identify any omissions, and produce the final deliverable format expected by downstream
       consumers.
-    status: planned
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -834,6 +834,12 @@ sessions:
     splinter_parent: P1_S8-A
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51087
+        output: 3695
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:25:01.697Z"
   - id: P1_S8-B-A
     part: 1
     session: 8
