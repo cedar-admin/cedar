@@ -989,7 +989,7 @@ sessions:
       Map parts from Titles 20 (Social Security), 49 (Transportation), 10 (Energy), and 2 (Grants) from Session 2-E
       allowlist. Consolidate all sub-session outputs into final comprehensive mapping table and identify parts requiring
       AI classification.
-    status: planned
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -1014,3 +1014,9 @@ sessions:
     splinter_parent: P1_S8-B
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51071
+        output: 3322
+      stop_reason: end_turn
+    completed_at: "2026-03-23T21:12:31.992Z"
