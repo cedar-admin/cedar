@@ -67,9 +67,9 @@ export async function runApiSession(
   updateSessionStatus(manifest, session.id, SessionStatus.Running);
   await saveManifest(manifest);
 
-  // 7. Execute API call
+  // 7. Execute API call (streaming to support long responses)
   const maxTokens = session.max_output_tokens ?? manifest.meta.default_max_output_tokens;
-  const response = await client.messages.create({
+  const stream = await client.messages.stream({
     model: session.model ?? manifest.meta.synthesis_model,
     max_tokens: maxTokens,
     system: systemPrompt,
@@ -78,6 +78,8 @@ export async function runApiSession(
       content: `## Context from prior research sessions:\n\n${contextContent}\n\n---\n\n## Research task:\n\n${taskPrompt}`,
     }],
   });
+
+  const response = await stream.finalMessage();
 
   // 8. Check for truncation
   if (response.stop_reason === 'max_tokens') {
@@ -108,6 +110,28 @@ export async function runApiSession(
   await saveManifest(manifest);
 
   success(`Session ${session.id} complete (${response.usage.input_tokens} in, ${response.usage.output_tokens} out)`);
+
+  // 12. Auto-commit and push output + manifest
+  try {
+    const manifestPath = resolveFromRoot('research/manifest.yaml');
+    const outputPath = resolveFromRoot(session.output_file!);
+    execSync(`git add "${manifestPath}" "${outputPath}"`, { stdio: 'pipe' });
+    execSync(
+      `git commit -m "research: ${session.id} complete (${response.usage.input_tokens}in/${response.usage.output_tokens}out)"`,
+      { stdio: 'pipe' }
+    );
+    const pat = process.env.GITHUB_PAT;
+    if (pat) {
+      execSync(`git remote set-url origin "https://${pat}@github.com/cedar-admin/cedar.git"`, { stdio: 'pipe' });
+      execSync('git push origin main', { stdio: 'pipe' });
+      execSync('git remote set-url origin "https://github.com/cedar-admin/cedar.git"', { stdio: 'pipe' });
+      log(`📤 Pushed ${session.id} output to GitHub`);
+    } else {
+      warn(`GITHUB_PAT not set — skipping push (committed locally)`);
+    }
+  } catch (e: any) {
+    warn(`Auto-commit failed: ${e.message}`);
+  }
 }
 
 /**
