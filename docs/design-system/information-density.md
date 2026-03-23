@@ -1,6 +1,8 @@
 # Cedar Information Density
 
-> **Purpose.** This document defines how Cedar presents dense regulatory information clearly. It establishes Cedar's density parameters, chunking rules, metadata grouping patterns, and progressive disclosure approach. Every layout and component decision about "how much to show" is governed here. This document governs information load and grouping. For decisions about click targets, hover behavior, selection behavior, keyboard interaction, navigation consistency, and state changes, defer to `ux-standards.md`.
+> **Purpose.** This document defines how Cedar presents dense regulatory information clearly. It establishes Cedar's density parameters, chunking rules, metadata grouping patterns, and progressive disclosure approach. Every layout and component decision about "how much to show" is governed here.
+>
+> This document governs information load and grouping. For decisions about click targets, hover behavior, selection behavior, keyboard interaction, navigation consistency, and state changes, defer to `ux-standards.md`.
 > 
 > **Audience.** An AI coding agent (Claude Code) building Cedar's interface. Every rule is specific enough to implement without subjective judgment.
 >
