@@ -334,7 +334,7 @@ sessions:
     description: >-
       50-70 nodes covering drug regulation, device regulation, biologics, dietary supplements, MoCRA/cosmetics,
       advertising, clinical trials, FDA enforcement
-    status: planned
+    status: complete
     dependencies:
       - P1_S4
       - P1_S5-A
@@ -351,6 +351,12 @@ sessions:
     splinter_parent: P1_S6
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 62731
+        output: 14033
+      stop_reason: end_turn
+    completed_at: "2026-03-23T18:20:07.870Z"
   - id: P1_S6-B
     part: 1
     session: 6
