@@ -172,7 +172,7 @@ sessions:
       - research/outputs/part1/P1_S2-D.md
       - research/outputs/part1/P1_S2-E.md
     execution_route: api
-    max_output_tokens: 32000
+    max_output_tokens: 32768
     prompt_file: research/prompts/part1/S2-F-consolidated-allowlist-summary.md
     output_file: research/outputs/part1/P1_S2-F.md
     context_pack_file: research/context-packs/part1/P1_S2-F.yaml
@@ -256,7 +256,7 @@ sessions:
     description: >-
       40-60 nodes covering 503A, 503B, USP standards, sterile compounding, ingredient sourcing, enforcement, state
       board, practice-specific compounding
-    status: planned
+    status: complete
     dependencies:
       - P1_S4
     context_inputs:
@@ -269,6 +269,12 @@ sessions:
     splinter_parent: P1_S5
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 26081
+        output: 16498
+      stop_reason: end_turn
+    completed_at: "2026-03-23T17:58:10.495Z"
   - id: P1_S5-B
     part: 1
     session: 5
@@ -413,13 +419,13 @@ sessions:
     description: >-
       55-75 nodes covering HIPAA Privacy Rule, Security Rule, Breach Notification, Business Associates, Enforcement, 42
       CFR Part 2, Information Blocking, State Privacy Laws, and full Medicare & Billing branch
-    status: running
+    status: planned
     dependencies:
       - P1_S4
     context_inputs:
       - research/outputs/part1/P1_S4.md
     execution_route: api
-    max_output_tokens: 32000
+    max_output_tokens: 32768
     prompt_file: research/prompts/part1/S7-A-hipaa-medicare-taxonomy.md
     output_file: research/outputs/part1/P1_S7-A.md
     context_pack_file: research/context-packs/part1/P1_S7-A.yaml
@@ -434,25 +440,19 @@ sessions:
     description: >-
       45-70 nodes covering Anti-Kickback, Stark, FCA, OIG Exclusions, Compliance Programs, Professional/Facility
       Licensing, Corporate Structure, Accreditation, OSHA, Environmental, Employment, Healthcare Tax
-    status: complete
+    status: planned
     dependencies:
       - P1_S4
     context_inputs:
       - research/outputs/part1/P1_S4.md
     execution_route: api
-    max_output_tokens: 32000
+    max_output_tokens: 32768
     prompt_file: research/prompts/part1/S7-B-fraud-operations-safety-employment-taxonomy.md
     output_file: research/outputs/part1/P1_S7-B.md
     context_pack_file: research/context-packs/part1/P1_S7-B.yaml
     splinter_parent: P1_S7
     splinter_children: []
     prefetch: []
-    metadata:
-      actual_tokens:
-        input: 27369
-        output: 8539
-      stop_reason: end_turn
-    completed_at: "2026-03-23T17:56:50.591Z"
   - id: P1_S7-C
     part: 1
     session: 7
@@ -477,7 +477,7 @@ sessions:
       - research/outputs/part1/P1_S7-A.md
       - research/outputs/part1/P1_S7-B.md
     execution_route: api
-    max_output_tokens: 32000
+    max_output_tokens: 32768
     prompt_file: research/prompts/part1/S7-C-cross-classification-master-table.md
     output_file: research/outputs/part1/P1_S7-C.md
     context_pack_file: research/context-packs/part1/P1_S7-C.yaml
@@ -624,7 +624,7 @@ sessions:
       - research/outputs/part1/P1_S8-B.md
       - research/outputs/part1/P1_S4.md
     execution_route: api
-    max_output_tokens: 32000
+    max_output_tokens: 32768
     prompt_file: research/prompts/part1/S8-C-agency-openfda-implementation.md
     output_file: research/outputs/part1/P1_S8-C.md
     context_pack_file: research/context-packs/part1/P1_S8-C.yaml
