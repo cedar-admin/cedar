@@ -727,7 +727,7 @@ sessions:
       Translate S3's decision tree into Inngest pipeline. Implement S2-F's RELEVANT_PARTS as Stage 1 seed data.
       Implement S8-C's 26 agency rows and S3's document type classifier as Stage 2. Design jurisdiction-scoped
       classification_rules schema for 50-state expansion. Handle S8-A's 12 AI-fallback parts.
-    status: running
+    status: complete
     dependencies:
       - P1_S2-F
       - P1_S3
@@ -749,6 +749,12 @@ sessions:
     splinter_parent: P2
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 35145
+        output: 14330
+      stop_reason: end_turn
+    completed_at: "2026-03-23T23:01:45.010Z"
   - id: P2_S2
     part: 2
     session: 2
