@@ -769,7 +769,7 @@ sessions:
     description: >-
       Map all DEA regulations from Title 21 Chapter II (Parts 1300-1321) and all relevant Title 42 parts including PHS
       (Chapter I), CMS (Chapter IV), and OIG (Chapter V) to domain codes.
-    status: running
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -790,6 +790,12 @@ sessions:
     splinter_parent: P1_S8-A
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51100
+        output: 5792
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:20:07.621Z"
   - id: P1_S8-A-C
     part: 1
     session: 8
