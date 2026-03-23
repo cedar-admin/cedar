@@ -883,7 +883,7 @@ sessions:
     description: >-
       Map all Title 29 parts from the allowlist, with section-level detail for Part 1910 (OSHA General Industry
       Standards). Includes OSHA, ERISA, and FMLA regulations.
-    status: running
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -904,6 +904,12 @@ sessions:
     splinter_parent: P1_S8-B
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51036
+        output: 9073
+      stop_reason: end_turn
+    completed_at: "2026-03-23T21:10:50.245Z"
   - id: P1_S8-B-C
     part: 1
     session: 8
