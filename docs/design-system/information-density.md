@@ -12,12 +12,14 @@
 
 | Concern | Document |
 |---|---|
-| Density parameters, chunking, grouping, progressive disclosure, truncation decisions, collection consumption | **This document** |
 | Visual specs, tokens, component props, color system | `design-standards.md` |
 | Semantic HTML structure, heading hierarchy, landmarks, accessibility markup | `frontend-standards.md` |
-| Interaction behavior, click/hover/scroll patterns | `ux-standards.md` |
+| Interaction behavior, click/hover/scroll patterns, navigation consistency | `ux-standards.md` |
 | Copy, voice, terminology, string constants | `content-standards.md` |
-| Visual personality, feel, reference directions | `art-direction.md` |
+| Visual personality, feel, reference directions, what to avoid | `art-direction.md` |
+| **Density parameters, chunking, grouping, progressive disclosure, truncation decisions, collection consumption** | **`information-density.md`** |
+
+When in doubt: if the question is how much to show, how to group it, when to hide or reveal it, or which collection format best supports comprehension, this document governs.
 
 ---
 
