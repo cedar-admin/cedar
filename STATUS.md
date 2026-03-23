@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 22, 2026 by Session 27
+Last updated: March 23, 2026 by Session 29
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,95 +24,50 @@ Last updated: March 22, 2026 by Session 27
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 28 pre-splintered Part 1 research sessions P1_S5, P1_S6, P1_S7, and P1_S8 before they run.
+Session 30 completed the entire Part 1 research pipeline (25 sessions, ~800KB of output).
 
-**What was done:**
-1. **Manifest updated** — P1_S5, P1_S6, P1_S7, P1_S8 marked as `splintered` (status, output_file: null, combined context_pack_file, splinter_children populated)
-2. **10 new sub-session prompt files written** — all complete, self-contained research prompts:
-   - P1_S5-A: Compounding Branch L3-L6 (40-60 nodes)
-   - P1_S5-B: Controlled Substances Branch L3-L6 (40-60 nodes)
-   - P1_S6-A: FDA Regulation Branch L3-L6 (50-70 nodes)
-   - P1_S6-B: Telehealth Branch L3-L6 (30-45 nodes)
-   - P1_S7-A: HIPAA & Privacy + Medicare & Billing L3-L4 (55-75 nodes)
-   - P1_S7-B: Fraud/Compliance + Operations + Safety + Employment L3-L4 (45-70 nodes)
-   - P1_S7-C: Cross-Classification Master Table (synthesis of all S5-S7 branches)
-   - P1_S8-A: CFR Mapping Titles 21 & 42 (~150-200 rows)
-   - P1_S8-B: CFR Mapping All Remaining Titles (~100-150 rows)
-   - P1_S8-C: Agency + openFDA Mapping + Implementation Reference
-3. **P2 and P3 context_inputs updated** — now reference P1_S8-A/B/C raw outputs (P1_S8.md won't exist)
-4. **DAG validated** — no cycles, all 10 new sub-sessions show as planned, P1_S4 still the only ready session
+**What was built:**
+- Ran P1_S4 through P1_S8-C — all remaining Part 1 sessions
+- Fixed manifest race condition: `acquireLock`/`releaseLock` refactored to accept path param; `acquireGitLock`/`releaseGitLock` added to serialize git add→pull→commit→push across parallel sessions
+- Fixed `git pull --rebase` blocking on unstaged manifest writes: switched to `--autostash`
+- Fixed splinter context bloat: `applySplinter` now uses per-child `context_inputs` when AI provides them; splintering prompt now injects context file sizes so the AI can pick a minimal subset; all S8 sub-sessions patched to slim context [S2-F + S4 + S7-C] (~50K tokens vs 178K)
+- Fixed orphaned process issue: sessions that were launched with `&` inside a single background task got SIGHUP'd mid-API-call; now always launching each session as a separate background task
 
-**DAG after splintering:**
-- Splintered parents: 5 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8)
-- Total sessions: 24 (was 14 before this session)
-- Complete: 5 | Splintered: 5 | Blocked: 1 | Planned: 13 | Ready: 1 (P1_S4)
+**Part 1 outputs produced:**
+- S1, S2-A–F: CFR scope + allowlists (which 458 CFR parts across all 50 titles are relevant)
+- S3: Non-CFR classification signals (Federal Register, state boards, web sources)
+- S4, S5-A/B, S6-A/B, S7-A/B/C: 9-domain taxonomy (L1–L6) organized around practice compliance needs
+- S8-A–C: CFR part → domain code mappings, agency → domain, openFDA → domain, SQL seed template
 
-**Notes on orchestrator behavior with splintered parents:**
-The orchestrator's `isDependencySatisfied` correctly treats a splintered parent as satisfied when all
-its children are complete. Downstream sessions (P2, P3) depend on P1_S8 and will be unblocked when
-P1_S8-A, P1_S8-B, and P1_S8-C are all complete. P2/P3 context_inputs have been updated to directly
-reference the P1_S8 children's raw output files.
-
-**Findings (ordered by severity):**
-
-1. **HIGH — P1_S4 prompt claimed Session 2 dependency** — The S4 prompt said "attach Sessions 1, 2, and 3" but the manifest correctly lists only P1_S1 and P1_S3. Session 2 (part-level allowlists) provides granular CFR part data consumed by Session 8, not by the L1/L2 taxonomy design. Fixed: updated prompt to match manifest, added explanatory note.
-
-2. **HIGH — Context pack metadata hallucinations** — P1_S2-B.yaml had `session_id: "P2_S1"` (should be "P1_S2-B"), P1_S2-A.yaml had `session_id: "P1_S2"` (should be "P1_S2-A"), P1_S2-C.yaml had `session_id: "P1_S2"` (should be "P1_S2-C"). Fixed: corrected all three.
-
-3. **MEDIUM — Completed prompt files were one-line placeholders** — S1, S2, S2-A, S2-B, S2-C, S3 prompt files contained only "session complete, see output". Fixed: replaced with provenance-preserving placeholders including session ID, title, output/context-pack paths, completion date, and an explicit note that the original prompt text was replaced.
-
-4. **MEDIUM — runner.ts clipboard path fragile** — Used `path.resolve(process.cwd(), '..', '..')` instead of `resolveFromRoot()`. Functionally correct when CWD is `research/orchestrator/`, but fragile. Fixed: switched to `resolveFromRoot()`.
-
-5. **MEDIUM — Web session operator instructions misleading** — CLI said "Paste into claude.ai → select Extended Research (Opus)" with no mention that context packs are pre-injected. Fixed: replaced with numbered operator steps noting context is already included.
-
-6. **LOW — S5-S8 prompts say "attach files as file uploads"** — The orchestrator pre-injects context packs, so this instruction is redundant for automated runs. Not fixed (scope limit) — flagged as residual risk.
-
-7. **LOW — P3 manifest dependencies don't include P2** — The P3 mega-prompt says it depends on "Session 2 output" (meaning Part 2). The manifest note says "splintered sub-sessions will have refined dependencies." Accepted as intentional — the mega-prompt will be splintered before running.
-
-8. **LOW — saveManifest strips YAML comments** — js-yaml doesn't preserve comments. The `run` command calls saveManifest, which strips all section dividers and inline comments from manifest.yaml. Not fixed (inherent js-yaml limitation) — flagged as residual risk.
-
-**Validation results (all pass):**
-- `npm run research -- status`: DAG valid, 5 complete, 1 splintered, 1 blocked, 7 planned, 1 ready (P1_S4)
-- `npm run research -- next`: P1_S4 correctly identified as only ready session
-- Dry P1_S4 package generation: context includes P1_S1 + P1_S3 packs (correct), no Session 2 content, prompt references "Sessions 1 and 3" (correct)
-- Context pack metadata: all 5 packs have correct session_ids after fixes
+**Key P1 finding:** 458 rule-based classification rules; estimated 85% of eCFR entities coverable by rules, 25% of web-scraped content requires AI fallback. This is the input P2 needs to design the classification pipeline.
 
 ## Research Pipeline State
 ```
 DAG Status:
-  ✅ complete: 5 (P1_S1, P1_S2-A, P1_S2-B, P1_S2-C, P1_S3)
-  🔀 splintered: 5 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8)
-  🔴 blocked: 1 (P1_S2-D)
-  📋 planned: 13 (P1_S4, P1_S5-A/B, P1_S6-A/B, P1_S7-A/B/C, P1_S8-A/B/C, P2, P3)
-  🟢 ready: 1 (P1_S4)
+  ✅ complete: 25
+  🔀 splintered: 7 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8, P1_S8-A, P1_S8-B)
+  📋 planned: 2 (P2, P3)
+  🟢 ready: 0 (P2 and P3 held pending Opus regroup)
 
-Critical path: P1_S4 → P1_S5-A → P1_S5-B → P1_S6-A → P1_S6-B → P1_S8-A → P1_S8-C
-Progress: 10/24 sessions complete/splintered
-
-Next session ready: P1_S4 [WEB] — Domain Taxonomy L1/L2 Structure
-  Dependencies: P1_S1 ✅, P1_S3 ✅
-  Run: npm run research -- run P1_S4
-
-After P1_S4 completes, 3 sessions become ready simultaneously:
-  P1_S5-A [WEB] — Compounding Branch (critical path)
-  P1_S7-A [WEB] — HIPAA & Privacy + Medicare & Billing (parallel)
-  P1_S7-B [WEB] — Fraud/Compliance + Operations + Safety + Employment (parallel)
+Progress: 32/34 sessions complete/splintered
 ```
 
 ## Next Session Priority
-**Research pipeline execution — begin P1_S4:**
-1. Run `npm run research -- run P1_S4` to prepare web session package (package already exists locally at `research/outputs/part1/P1_S4-package.md`)
-2. Execute in claude.ai (Extended Research / Opus), save output to `research/outputs/part1/P1_S4.md`
-3. Run `npm run research -- complete P1_S4` to generate context pack and unlock P1_S5-A, P1_S7-A, P1_S7-B
+**Research pipeline — P2 and P3 are ready but HELD.**
+Owner needs to regroup with Opus in claude.ai before running P2 (Classification Pipeline, Embeddings, Cost Model) and P3 (Non-Federal Sources, Authority Levels, Ingestion Protocol). Do not auto-run these.
 
-**Previous priorities (still pending after orchestrator work):**
-3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
+When ready:
+1. Review Part 1 outputs in `research/outputs/part1/` — especially S8-C (implementation reference + SQL seed template) and S4 (taxonomy)
+2. Run `npm run research -- run P2` then `npm run research -- run P3`
+
+**Previous priorities (still pending):**
+- **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
    - `cedar/corpus.classify` — populates `kg_entity_domains`
    - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
    - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes views
    - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-4. **Verify library UI** after pipeline runs
-5. **Visual spot-check** admin pages in dark mode
+- **Verify library UI** after pipeline runs
+- **Visual spot-check** admin pages in dark mode
 
 ### Dev Server Startup
 ```bash
