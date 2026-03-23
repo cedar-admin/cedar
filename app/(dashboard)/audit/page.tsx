@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
 import { Badge, Card, Box, Flex, Heading, Text, Button, Table } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
+import { HashWithCopy } from '@/components/HashWithCopy'
 import { timeAgo, formatDate } from '@/lib/format'
 
 export const metadata = { title: 'Audit Trail — Cedar' }
@@ -187,10 +188,8 @@ export default async function AuditPage() {
                           {timeAgo(c.detected_at)}
                         </time>
                       </Table.Cell>
-                      <Table.Cell className="font-mono">
-                        <Text as="span" size="1" color="gray">
-                          {c.hash ? c.hash.slice(0, 12) + '…' : '—'}
-                        </Text>
+                      <Table.Cell>
+                        {c.hash ? <HashWithCopy hash={c.hash} /> : <Text as="span" size="1" color="gray">—</Text>}
                       </Table.Cell>
                     </Table.Row>
                   ))}

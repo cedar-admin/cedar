@@ -3,10 +3,9 @@ import Link from 'next/link'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { createServerClient } from '../../../lib/db/client'
 import { Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
-import { SeverityBadge } from '@/components/SeverityBadge'
-import { StatusBadge } from '@/components/StatusBadge'
 import { SEVERITIES } from '@/lib/ui-constants'
-import { timeAgo } from '@/lib/format'
+import { FilterPills } from '@/components/FilterPills'
+import { ChangeTableRow } from './ChangeTableRow'
 
 export const metadata = { title: 'Changes — Cedar' }
 
@@ -90,6 +89,15 @@ export default async function ChangesPage({ searchParams }: Props) {
     sources: { name: string } | null
   }>
 
+  // Build filter pills
+  const allPill = { label: 'All', href: '/changes', isActive: !severity }
+  const severityPills = SEVERITIES.map((s) => ({
+    label: s.charAt(0).toUpperCase() + s.slice(1),
+    href: `/changes?severity=${s}`,
+    isActive: severity === s,
+    activeClass: SEVERITY_ACTIVE_CLASS[s],
+  }))
+
   return (
     <Flex direction="column" gap="6">
       {/* Header */}
@@ -121,34 +129,7 @@ export default async function ChangesPage({ searchParams }: Props) {
       {practice && (
         <>
           {/* Severity filter */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Link
-              href="/changes"
-              className={`px-3 py-1.5 text-sm font-medium border rounded-md transition-colors ${
-                !severity
-                  ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
-                  : 'bg-[var(--cedar-page-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-strong)] hover:text-[var(--cedar-text-primary)]'
-              }`}
-            >
-              All
-            </Link>
-            {SEVERITIES.map((s) => {
-              const active = severity === s
-              return (
-                <Link
-                  key={s}
-                  href={`/changes?severity=${s}${page > 1 ? `&page=${page}` : ''}`}
-                  className={`px-3 py-1.5 text-sm font-medium border rounded-md transition-colors ${
-                    active
-                      ? SEVERITY_ACTIVE_CLASS[s]
-                      : 'bg-[var(--cedar-page-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-strong)] hover:text-[var(--cedar-text-primary)]'
-                  }`}
-                >
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                </Link>
-              )
-            })}
-          </div>
+          <FilterPills pills={[allPill, ...severityPills]} />
 
           {/* Error state */}
           {error && (
@@ -187,38 +168,12 @@ export default async function ChangesPage({ searchParams }: Props) {
                     <Table.ColumnHeaderCell>Summary</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell className="w-24">Detected</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell className="w-28">Status</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className="w-8" />
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
                   {changes.map((change) => (
-                    <Table.Row key={change.id}>
-                      <Table.Cell>
-                        <SeverityBadge severity={change.severity} />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text as="span" size="2" weight="medium">{change.sources?.name ?? 'Unknown Source'}</Text>
-                        <Text as="span" size="1" color="gray" className="block mt-0.5">
-                          {change.jurisdiction ?? 'FL'}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Link href={`/changes/${change.id}`} className="group">
-                          <Text as="p" size="2" className="line-clamp-2 group-hover:underline transition-colors">
-                            {change.summary ?? (
-                              <Text as="span" color="gray" className="italic">No summary available</Text>
-                            )}
-                          </Text>
-                        </Link>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <time dateTime={new Date(change.detected_at).toISOString()} className="text-sm text-[var(--cedar-text-secondary)] whitespace-nowrap">
-                          {timeAgo(change.detected_at)}
-                        </time>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <StatusBadge status={change.review_status} />
-                      </Table.Cell>
-                    </Table.Row>
+                    <ChangeTableRow key={change.id} change={change} />
                   ))}
                 </Table.Body>
               </Table.Root>

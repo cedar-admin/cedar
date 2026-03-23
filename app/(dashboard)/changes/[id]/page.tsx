@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { createServerClient } from '../../../../lib/db/client'
 import type { DiffBlock } from '../../../../lib/changes/diff'
 import { Card, Box, Flex, Heading, Text, Link as RadixLink } from '@radix-ui/themes'
-import { LegalDisclaimer } from '@/components/LegalDisclaimer'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
+import { SectionHeading } from '@/components/SectionHeading'
+import { AiBadge, AiDisclaimer } from '@/components/AiBadge'
+import { HashWithCopy } from '@/components/HashWithCopy'
 import { timeAgo } from '@/lib/format'
 
 // ── Diff Viewer ───────────────────────────────────────────────────────────────
@@ -108,11 +110,11 @@ export default async function ChangeDetailPage({ params }: Props) {
               {timeAgo(c.detected_at)}
             </time>
           </div>
-          <Heading as="h1" size="6" weight="bold">
-            {c.sources?.name ?? 'Unknown Source'}
+          <Heading as="h1" size="6" weight="bold" className="leading-tight">
+            {c.summary ?? 'Regulatory change detected'}
           </Heading>
           <Text size="2" color="gray" as="p" mt="1">
-            Change detected{' '}
+            {c.sources?.name ?? 'Unknown source'} &middot; Change detected{' '}
             <time dateTime={new Date(c.detected_at).toISOString()}>
               {new Date(c.detected_at).toLocaleString('en-US', {
                 dateStyle: 'long',
@@ -130,11 +132,17 @@ export default async function ChangeDetailPage({ params }: Props) {
             {/* AI Summary */}
             <Card variant="surface">
               <Box px="4" pt="4" pb="3">
-                <Heading as="h2" size="2" weight="bold">AI Summary</Heading>
+                <Flex align="center" gap="2">
+                  <SectionHeading as="h2">AI summary</SectionHeading>
+                  <AiBadge />
+                </Flex>
               </Box>
               <Box p="4">
                 {c.summary ? (
-                  <Text as="p" size="2" className="leading-relaxed">{c.summary}</Text>
+                  <>
+                    <Text as="p" size="2" className="leading-relaxed">{c.summary}</Text>
+                    <AiDisclaimer />
+                  </>
                 ) : (
                   <Text as="p" size="2" color="gray" className="italic">
                     No AI summary available for this change.
@@ -146,7 +154,7 @@ export default async function ChangeDetailPage({ params }: Props) {
             {/* Diff Viewer */}
             <Card variant="surface">
               <Box px="4" pt="4" pb="3">
-                <Heading as="h2" size="2" weight="bold">Detected Changes</Heading>
+                <SectionHeading as="h2">Detected changes</SectionHeading>
               </Box>
               <Box p="4">
                 {blocks && blocks.length > 0 ? (
@@ -160,8 +168,6 @@ export default async function ChangeDetailPage({ params }: Props) {
                 )}
               </Box>
             </Card>
-
-            <LegalDisclaimer />
           </Flex>
         </div>
 
@@ -170,7 +176,7 @@ export default async function ChangeDetailPage({ params }: Props) {
           <Flex direction="column" gap="4">
             <Card variant="surface">
               <Box px="4" pt="4" pb="3">
-                <Heading as="h2" size="2" weight="bold">Details</Heading>
+                <SectionHeading as="h2">Details</SectionHeading>
               </Box>
               <Box p="4">
                 <dl className="space-y-3">
@@ -197,8 +203,8 @@ export default async function ChangeDetailPage({ params }: Props) {
                   {c.hash && (
                     <div>
                       <dt className="text-xs text-[var(--cedar-text-secondary)]">Content Hash</dt>
-                      <dd className="text-xs font-mono text-[var(--cedar-text-secondary)] mt-0.5 break-all">
-                        {c.hash.slice(0, 16)}&hellip;
+                      <dd className="mt-0.5">
+                        <HashWithCopy hash={c.hash} />
                       </dd>
                     </div>
                   )}

@@ -81,7 +81,7 @@ export default async function SourcesPage() {
     <Flex direction="column" gap="6">
       {/* Header */}
       <div>
-        <Heading as="h1" size="6" weight="bold">Source Library</Heading>
+        <Heading as="h1" size="6" weight="bold">Sources</Heading>
         <Text size="2" color="gray" as="p" mt="1">
           {sources.length} active source{sources.length !== 1 ? 's' : ''} &mdash; Florida regulatory coverage
         </Text>

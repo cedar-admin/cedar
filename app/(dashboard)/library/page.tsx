@@ -3,7 +3,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { DomainCard } from '@/components/DomainCard'
 import { EmptyState } from '@/components/EmptyState'
-import Link from 'next/link'
+import { FilterPills } from '@/components/FilterPills'
 import { Flex, Heading, Text, Box, Grid } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
@@ -103,31 +103,16 @@ export default async function LibraryPage({ searchParams }: Props) {
 
       {/* Practice type filter pills */}
       {(practiceTypes ?? []).length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/library"
-            className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
-              !practiceTypeSlug
-                ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
-                : 'bg-[var(--cedar-panel-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-interactive)] hover:text-[var(--cedar-text-primary)]'
-            }`}
-          >
-            All
-          </Link>
-          {(practiceTypes ?? []).map((pt) => (
-            <Link
-              key={pt.id}
-              href={`/library?practice_type=${pt.slug}`}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
-                practiceTypeSlug === pt.slug
-                  ? 'bg-[var(--cedar-filter-active-bg)] text-[var(--cedar-filter-active-text)] border-[var(--cedar-filter-active-border)]'
-                  : 'bg-[var(--cedar-panel-bg)] text-[var(--cedar-text-secondary)] border-[var(--cedar-border)] hover:border-[var(--cedar-border-interactive)] hover:text-[var(--cedar-text-primary)]'
-              }`}
-            >
-              {pt.display_name}
-            </Link>
-          ))}
-        </div>
+        <FilterPills
+          pills={[
+            { label: 'All', href: '/library', isActive: !practiceTypeSlug },
+            ...(practiceTypes ?? []).map((pt) => ({
+              label: pt.display_name,
+              href: `/library?practice_type=${pt.slug}`,
+              isActive: practiceTypeSlug === pt.slug,
+            })),
+          ]}
+        />
       )}
 
       {/* Domain card grid */}

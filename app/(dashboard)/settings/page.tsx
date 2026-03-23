@@ -5,6 +5,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { Badge, Card, Box, Flex, Heading, Text, Button, Separator, Callout, TextField, Select } from '@radix-ui/themes'
 import { capitalize } from '@/lib/format'
 import { NotificationsForm } from '@/components/NotificationsForm'
+import { SectionHeading } from '@/components/SectionHeading'
 import type { NotificationPreferences } from '@/app/actions/settings'
 
 export const metadata = { title: 'Settings — Cedar' }
@@ -97,7 +98,7 @@ export default async function SettingsPage() {
         <div className="grid grid-cols-1 gap-5 max-w-2xl">
           <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Account</Heading>
+              <SectionHeading as="h2">Account</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -137,7 +138,7 @@ export default async function SettingsPage() {
           {/* Practice Info */}
           <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Practice</Heading>
+              <SectionHeading as="h2">Practice</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -171,7 +172,7 @@ export default async function SettingsPage() {
           {/* Subscription */}
           <Card variant="surface" id="billing">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Subscription</Heading>
+              <SectionHeading as="h2">Subscription</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="3">
@@ -226,7 +227,7 @@ export default async function SettingsPage() {
           {/* Notifications */}
           <Card variant="surface" id="notifications">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Notifications</Heading>
+              <SectionHeading as="h2">Notifications</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               {(() => {
@@ -246,7 +247,7 @@ export default async function SettingsPage() {
           {/* Team Members */}
           <Card variant="surface" id="team">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Team Members</Heading>
+              <SectionHeading as="h2">Team members</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               <Flex direction="column" gap="4">
@@ -308,7 +309,7 @@ export default async function SettingsPage() {
           {/* Jurisdictions */}
           <Card variant="surface">
             <Box px="4" pt="4" pb="3">
-              <Heading as="h2" size="2" weight="bold">Jurisdictions</Heading>
+              <SectionHeading as="h2">Jurisdictions</SectionHeading>
             </Box>
             <Box p="4" pt="0">
               <Flex align="center" gap="2">

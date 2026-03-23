@@ -1,8 +1,10 @@
 import { createServerClient } from '../../../lib/db/client'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import Link from 'next/link'
-import { Card, Box, Flex, Heading, Text, Button, Separator } from '@radix-ui/themes'
+import { Card, Box, Flex, Heading, Text, Button, Separator, Grid } from '@radix-ui/themes'
 import { SeverityBadge } from '@/components/SeverityBadge'
+import { SectionHeading } from '@/components/SectionHeading'
+import { AiBadge } from '@/components/AiBadge'
 import { timeAgo } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -78,21 +80,25 @@ export default async function HomePage() {
       {/* Stats bar */}
       <section aria-labelledby="overview-heading">
         <Heading id="overview-heading" as="h2" size="3" weight="bold" mb="4">Overview</Heading>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Grid columns={{ initial: '2', md: '4' }} gap="4">
           {STATS.map((s) => (
             <Card key={s.label} variant="surface">
               <Box p="4">
                 <div className="flex items-center gap-2 mb-2">
                   <i className={`${s.icon} text-sm ${s.urgent ? 'text-[var(--cedar-status-dot-error)]' : 'text-[var(--cedar-text-secondary)]'}`} aria-hidden="true" />
-                  <span className="text-xs text-[var(--cedar-text-secondary)]">{s.label}</span>
+                  <Text size="1" color="gray">{s.label}</Text>
                 </div>
-                <p className={`text-2xl font-bold ${s.urgent ? 'text-[var(--cedar-status-dot-error)]' : 'text-[var(--cedar-text-primary)]'}`}>
+                <Text
+                  size="5"
+                  weight="bold"
+                  className={s.urgent ? 'text-[var(--cedar-status-dot-error)]' : undefined}
+                >
                   {s.value}
-                </p>
+                </Text>
               </Box>
             </Card>
           ))}
-        </div>
+        </Grid>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -100,7 +106,7 @@ export default async function HomePage() {
         <Card className="md:col-span-2" variant="surface">
           <Box px="4" pt="4" pb="3">
             <Flex align="center" justify="between">
-              <Heading as="h2" size="2" weight="bold">Critical &amp; High Alerts</Heading>
+              <SectionHeading as="h2">Critical &amp; high alerts</SectionHeading>
               <Button variant="ghost" color="gray" size="1" asChild>
                 <Link href="/changes?severity=critical">
                   View all <i className="ri-arrow-right-line" aria-hidden="true" />
@@ -122,10 +128,10 @@ export default async function HomePage() {
                     <Link key={c.id} href={`/changes/${c.id}`} className="flex items-start gap-3 px-1 py-3 hover:bg-[var(--cedar-interactive-hover)] transition-colors">
                       <SeverityBadge severity={c.severity} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-[var(--cedar-text-secondary)]">{src?.name ?? '—'}</p>
-                        <p className="text-sm text-[var(--cedar-text-primary)] line-clamp-1 mt-0.5">
+                        <Text as="p" size="1" color="gray" className="truncate">{src?.name ?? '—'}</Text>
+                        <Text as="p" size="2" className="line-clamp-1 mt-0.5">
                           {c.summary ?? 'No summary available'}
-                        </p>
+                        </Text>
                       </div>
                       <time dateTime={new Date(c.detected_at).toISOString()} className="text-xs text-[var(--cedar-text-secondary)] shrink-0">{timeAgo(c.detected_at)}</time>
                     </Link>
@@ -139,7 +145,7 @@ export default async function HomePage() {
         {/* Compliance health */}
         <Card variant="surface">
           <Box px="4" pt="4" pb="3">
-            <Heading as="h2" size="2" weight="bold">Compliance Health</Heading>
+            <SectionHeading as="h2">Compliance health</SectionHeading>
           </Box>
           <Box p="4">
             <Flex direction="column" gap="4">
@@ -169,7 +175,7 @@ export default async function HomePage() {
               <Button variant="soft" color="gray" highContrast size="1" className="w-full" asChild>
                 <Link href="/audit">
                   <i className="ri-shield-check-line" aria-hidden="true" />
-                  View Audit Trail
+                  View audit trail
                 </Link>
               </Button>
             </Flex>
@@ -182,7 +188,7 @@ export default async function HomePage() {
         <Card variant="surface">
           <Box px="4" pt="4" pb="3">
             <Flex align="center" justify="between">
-              <Heading id="activity-heading" as="h2" size="2" weight="bold">Recent Activity — Last 7 Days</Heading>
+              <SectionHeading id="activity-heading" as="h2">Recent activity — last 7 days</SectionHeading>
               <Button variant="ghost" color="gray" size="1" asChild>
                 <Link href="/changes">
                   All changes <i className="ri-arrow-right-line" aria-hidden="true" />
@@ -205,9 +211,17 @@ export default async function HomePage() {
                   return (
                     <Link key={c.id} href={`/changes/${c.id}`} className="flex items-center gap-3 py-3 hover:bg-[var(--cedar-interactive-hover)] transition-colors px-1">
                       <SeverityBadge severity={c.severity} />
-                      <Text as="span" size="2" className="flex-1 truncate">
-                        {src?.name ?? '—'}
-                      </Text>
+                      <div className="flex-1 min-w-0">
+                        <Text as="p" size="1" color="gray" className="truncate">{src?.name ?? '—'}</Text>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <Text as="p" size="2" className="line-clamp-1 flex-1">
+                            {c.summary ?? (
+                              <Text as="span" color="gray" className="italic">No summary available</Text>
+                            )}
+                          </Text>
+                          {c.summary && <AiBadge />}
+                        </div>
+                      </div>
                       <time dateTime={new Date(c.detected_at).toISOString()} className="text-xs text-[var(--cedar-text-secondary)] shrink-0">{timeAgo(c.detected_at)}</time>
                     </Link>
                   )

@@ -16,7 +16,7 @@ const MAIN_NAV = [
   { href: '/faq',      label: 'FAQ',                 icon: 'ri-question-answer-line' },
   { href: '/sources',  label: 'Sources',             icon: 'ri-database-2-line' },
   { href: '/audit',    label: 'Audit Trail',         icon: 'ri-shield-check-line' },
-  { href: '/settings', label: 'My Practice',         icon: 'ri-stethoscope-line' },
+  { href: '/settings', label: 'Settings',             icon: 'ri-stethoscope-line' },
 ]
 
 const ADMIN_NAV = [
