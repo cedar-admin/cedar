@@ -124,7 +124,7 @@ export async function runApiSession(
     const pat = process.env.GITHUB_PAT;
     if (pat) {
       execSync(`git remote set-url origin "https://${pat}@github.com/cedar-admin/cedar.git"`, { stdio: 'pipe' });
-      execSync('git pull --rebase origin main', { stdio: 'pipe' });
+      execSync('git pull --rebase --autostash origin main', { stdio: 'pipe' });
     }
     const manifestPath = resolveFromRoot('research/manifest.yaml');
     const outputPath = resolveFromRoot(session.output_file!);

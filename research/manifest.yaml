@@ -141,7 +141,7 @@ sessions:
     sub: E
     title: Part-Level Allowlists — Tier 3 Titles Group 2 (20, 49, 10, 2)
     description: Part-level allowlists for SSA, DOT, NRC, and federal grants titles
-    status: running
+    status: complete
     dependencies:
       - P1_S1
     context_inputs:
@@ -153,13 +153,14 @@ sessions:
     splinter_parent: P1_S2
     splinter_children: []
     prefetch: []
+    completed_at: "2026-03-23T20:09:18.167Z"
   - id: P1_S2-F
     part: 1
     session: 2
     sub: F
     title: Consolidated Allowlist Summary
     description: Synthesis of all S2 outputs — summary table, engineering-ready allowlist, filtering estimates
-    status: planned
+    status: complete
     dependencies:
       - P1_S2-A
       - P1_S2-B
@@ -180,6 +181,12 @@ sessions:
     splinter_parent: P1_S2
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 69839
+        output: 4390
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:12:21.129Z"
   - id: P1_S3
     part: 1
     session: 3
