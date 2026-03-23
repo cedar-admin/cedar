@@ -24,41 +24,55 @@ Last updated: March 23, 2026 by Session 29
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 30 completed the entire Part 1 research pipeline (25 sessions, ~800KB of output).
+Session 31 completed the entire Part 2 research pipeline (5 sessions).
 
 **What was built:**
-- Ran P1_S4 through P1_S8-C — all remaining Part 1 sessions
-- Fixed manifest race condition: `acquireLock`/`releaseLock` refactored to accept path param; `acquireGitLock`/`releaseGitLock` added to serialize git add→pull→commit→push across parallel sessions
-- Fixed `git pull --rebase` blocking on unstaged manifest writes: switched to `--autostash`
-- Fixed splinter context bloat: `applySplinter` now uses per-child `context_inputs` when AI provides them; splintering prompt now injects context file sizes so the AI can pick a minimal subset; all S8 sub-sessions patched to slim context [S2-F + S4 + S7-C] (~50K tokens vs 178K)
-- Fixed orphaned process issue: sessions that were launched with `&` inside a single background task got SIGHUP'd mid-API-call; now always launching each session as a separate background task
+- Added P2_S1–P2_S5 to the orchestrator manifest (replaced the P2 placeholder, marked it splintered)
+- Diagnosed and fixed auth failure: Claude Code injects `ANTHROPIC_API_KEY=` (empty string) into the shell, overriding `.env.local` — fix is `env -u ANTHROPIC_API_KEY npm run orchestrator`
+- Ran Wave 1 (P2_S1 + P2_S2 + P2_S3 in parallel), Wave 2 (P2_S4), Wave 3 (P2_S5)
 
-**Part 1 outputs produced:**
-- S1, S2-A–F: CFR scope + allowlists (which 458 CFR parts across all 50 titles are relevant)
-- S3: Non-CFR classification signals (Federal Register, state boards, web sources)
-- S4, S5-A/B, S6-A/B, S7-A/B/C: 9-domain taxonomy (L1–L6) organized around practice compliance needs
-- S8-A–C: CFR part → domain code mappings, agency → domain, openFDA → domain, SQL seed template
+**Part 2 outputs produced:**
+- P2_S1: Inngest pipeline architecture + Stages 1-2 spec — TypeScript interfaces, `classification_rules` schema, Stage 1 CFR part lookup, Stage 2 agency/doc-type scoring, AI-fallback flagging for 12 device/drug parts
+- P2_S2: Stage 3a keyword engine — full 237-keyword → domain code mapping, K score matching functions, S7-C cross-classification trigger operationalization, disambiguation engine for 42 homonym-risk phrases. ⚠️ Research Objective 5 (full SQL seed data + Inngest function) truncated at 32K output limit — core logic complete, implementation artifacts partial
+- P2_S3: Stage 3b semantic embedding strategy — shelf-ready spec, model evaluation, pgvector config, activation criteria tied to Stage 4 cost
+- P2_S4: Stages 4-5 AI classifier + irrelevance confirmation — Claude prompt templates, batching strategy, confidence tiers, HITL integration, feedback loop
+- P2_S5: Cost model + accuracy budget + integration reference — per-stage cost anchored to S8-C's 85%/75%/95%/25% coverage numbers, error taxonomy, PRP sequencing
 
-**Key P1 finding:** 458 rule-based classification rules; estimated 85% of eCFR entities coverable by rules, 25% of web-scraped content requires AI fallback. This is the input P2 needs to design the classification pipeline.
+**Token usage:**
+| Session | In | Out | Status |
+|---|---|---|---|
+| P2_S1 | 35,145 | 14,330 | ✅ Clean |
+| P2_S2 | 65,813 | 32,000 | ⚠️ Truncated (Obj 5) |
+| P2_S3 | 26,060 | 7,533 | ✅ Clean |
+| P2_S4 | 66,869 | 16,732 | ✅ Clean |
+| P2_S5 | 80,258 | 7,352 | ✅ Clean |
 
 ## Research Pipeline State
 ```
 DAG Status:
-  ✅ complete: 25
-  🔀 splintered: 7 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8, P1_S8-A, P1_S8-B)
-  📋 planned: 2 (P2, P3)
-  🟢 ready: 0 (P2 and P3 held pending Opus regroup)
+  ✅ complete: 30 (all P1 + P2_S1–P2_S5)
+  🔀 splintered: 8 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8, P1_S8-A, P1_S8-B, P2)
+  📋 planned: 1 (P3)
+  🟢 ready: 1 (P3 — depends on P1_S8-C and P1_S4, both complete)
 
-Progress: 32/34 sessions complete/splintered
+Progress: 38/39 sessions complete/splintered
 ```
 
 ## Next Session Priority
-**Research pipeline — P2 and P3 are ready but HELD.**
-Owner needs to regroup with Opus in claude.ai before running P2 (Classification Pipeline, Embeddings, Cost Model) and P3 (Non-Federal Sources, Authority Levels, Ingestion Protocol). Do not auto-run these.
+**Research pipeline — P3 is ready.**
+P3: Non-Federal Sources, Authority Levels, Ingestion Protocol. This session will need splintering (mega-prompt placeholder). Run the orchestrator splinter command first, then execute sub-sessions.
 
-When ready:
-1. Review Part 1 outputs in `research/outputs/part1/` — especially S8-C (implementation reference + SQL seed template) and S4 (taxonomy)
-2. Run `npm run research -- run P2` then `npm run research -- run P3`
+**Open items from P2:**
+- P2_S2 Research Objective 5 incomplete (SQL seed data only covers 5 representative domains; Inngest function truncated). Consider running a P2_S2-B continuation if full implementation artifacts are needed before building.
+
+**To start next session:**
+```bash
+cd research/orchestrator
+env -u ANTHROPIC_API_KEY npm run orchestrator -- status
+env -u ANTHROPIC_API_KEY npm run orchestrator -- splinter P3
+```
+
+**Note:** Always prefix orchestrator commands with `env -u ANTHROPIC_API_KEY` — Claude Code injects an empty API key that overrides .env.local.
 
 **Previous priorities (still pending):**
 - **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
