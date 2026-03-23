@@ -8,7 +8,8 @@ The injected context contains:
 - **Session 2-A output** — Part-level allowlist for Title 21 (all relevant FDA + DEA parts)
 - **Session 2-B output** — Part-level allowlist for Title 42 (all relevant CMS, OIG, PHS parts)
 - **Session 2-C output** — Part-level allowlists for Titles 45, 29, 26, 16 (for reference — do NOT map these here, they are for Session 8-B)
-- **Session 2-D output** — Part-level allowlists for remaining Tier 3 titles (for reference only — do NOT map here)
+- **Session 2-D output** — Part-level allowlists for Tier 3 Titles Group 1: Titles 40, 47, 28, 32, 38 (for reference only — do NOT map here)
+- **Session 2-E output** — Part-level allowlists for Tier 3 Titles Group 2: Titles 20, 49, 10, 2 (for reference only — do NOT map here)
 - **Session 4 output** — L1/L2 domain taxonomy codes
 - **Session 5-A output** — Compounding branch domain codes (L3-L6)
 - **Session 5-B output** — Controlled Substances branch domain codes (L3-L6)

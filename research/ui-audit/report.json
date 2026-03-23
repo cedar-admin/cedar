@@ -1,0 +1,244 @@
+{
+  "generated_at": "2026-03-23T23:03:12.838Z",
+  "auth_succeeded": true,
+  "auth_note": "Landed at https://cedar-beta.vercel.app/changes",
+  "screens": [
+    {
+      "route": "/home",
+      "title": "Dashboard — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/home",
+      "screenshots": [
+        "home-loaded.png",
+        "sidebar-collapsed.png",
+        "sidebar-expanded.png",
+        "home-dark-mode.png",
+        "home-final.png"
+      ],
+      "interactions_attempted": [
+        "sidebar_collapse",
+        "sidebar_expand",
+        "nav_link_changes",
+        "nav_link_regulation_library",
+        "nav_link_faq",
+        "nav_link_sources",
+        "nav_link_audit_trail",
+        "theme_toggle_dark",
+        "theme_toggle_light"
+      ],
+      "interactions_succeeded": [
+        "sidebar_collapse",
+        "sidebar_expand",
+        "nav_link_changes",
+        "nav_link_regulation_library",
+        "nav_link_faq",
+        "nav_link_sources",
+        "nav_link_audit_trail",
+        "theme_toggle_dark",
+        "theme_toggle_light"
+      ],
+      "interactions_failed": [],
+      "console_errors": [],
+      "empty_states": []
+    },
+    {
+      "route": "/changes",
+      "title": "Changes — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/changes",
+      "screenshots": [
+        "changes-loaded.png",
+        "changes-filter-all.png",
+        "changes-filter-critical.png",
+        "changes-filter-high.png",
+        "changes-filter-medium.png",
+        "changes-filter-low.png",
+        "changes-filter-informational.png",
+        "changes-final.png"
+      ],
+      "interactions_attempted": [
+        "filter_pill_all",
+        "filter_pill_critical",
+        "filter_pill_high",
+        "filter_pill_medium",
+        "filter_pill_low",
+        "filter_pill_informational",
+        "table_row_click",
+        "pagination_next"
+      ],
+      "interactions_succeeded": [
+        "filter_pill_all",
+        "filter_pill_critical",
+        "filter_pill_high",
+        "filter_pill_medium",
+        "filter_pill_low",
+        "filter_pill_informational"
+      ],
+      "interactions_failed": [
+        "table_row_click: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed",
+        "pagination_next: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed"
+      ],
+      "console_errors": [],
+      "empty_states": [
+        "No changes detected — data not yet populated"
+      ]
+    },
+    {
+      "route": "/library",
+      "title": "Regulation Library — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/library",
+      "screenshots": [
+        "library-loaded.png",
+        "library-domain.png",
+        "library-regulation-detail.png",
+        "library-regulation-tabs.png",
+        "library-final.png"
+      ],
+      "interactions_attempted": [
+        "library_first_card_click",
+        "library_regulation_row_click",
+        "library_regulation_tabs"
+      ],
+      "interactions_succeeded": [
+        "library_regulation_tabs",
+        "library_regulation_row_click",
+        "library_first_card_click"
+      ],
+      "interactions_failed": [],
+      "console_errors": [],
+      "empty_states": []
+    },
+    {
+      "route": "/faq",
+      "title": "FAQ — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/faq",
+      "screenshots": [
+        "faq-loaded.png",
+        "faq-search-typed.png",
+        "faq-detail.png",
+        "faq-final.png"
+      ],
+      "interactions_attempted": [
+        "faq_search_field",
+        "faq_first_card_click"
+      ],
+      "interactions_succeeded": [
+        "faq_search_field",
+        "faq_first_card_click"
+      ],
+      "interactions_failed": [],
+      "console_errors": [],
+      "empty_states": []
+    },
+    {
+      "route": "/sources",
+      "title": "Sources — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/sources",
+      "screenshots": [
+        "sources-loaded.png",
+        "sources-final.png"
+      ],
+      "interactions_attempted": [
+        "sources_first_row_click",
+        "sources_filter_controls"
+      ],
+      "interactions_succeeded": [],
+      "interactions_failed": [
+        "sources_first_row_click: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed",
+        "sources_filter_controls: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed"
+      ],
+      "console_errors": [],
+      "empty_states": []
+    },
+    {
+      "route": "/audit",
+      "title": "Audit Trail — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/audit",
+      "screenshots": [
+        "audit-loaded.png",
+        "audit-final.png"
+      ],
+      "interactions_attempted": [
+        "audit_export_pdf_button"
+      ],
+      "interactions_succeeded": [
+        "audit_export_pdf_button"
+      ],
+      "interactions_failed": [],
+      "console_errors": [],
+      "empty_states": []
+    },
+    {
+      "route": "/settings",
+      "title": "Settings — Cedar",
+      "loaded": true,
+      "auth_required": true,
+      "url_after_load": "https://cedar-beta.vercel.app/settings",
+      "screenshots": [
+        "settings-loaded.png",
+        "settings-email-alerts-toggled.png",
+        "settings-weekly-digest-toggled.png",
+        "settings-invite-field.png",
+        "settings-final.png"
+      ],
+      "interactions_attempted": [
+        "settings_email_alerts_toggle",
+        "settings_email_threshold_select",
+        "settings_weekly_digest_toggle",
+        "settings_invite_email_field",
+        "settings_invite_button_state",
+        "settings_billing_button"
+      ],
+      "interactions_succeeded": [
+        "settings_email_alerts_toggle",
+        "settings_weekly_digest_toggle",
+        "settings_invite_email_field",
+        "settings_invite_button_state",
+        "settings_billing_button"
+      ],
+      "interactions_failed": [
+        "settings_email_threshold_select: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed"
+      ],
+      "console_errors": [],
+      "empty_states": [
+        "Invite button disabled (not on Intelligence plan)"
+      ]
+    },
+    {
+      "route": "/pricing",
+      "title": "Plans — Cedar",
+      "loaded": true,
+      "auth_required": false,
+      "url_after_load": "https://cedar-beta.vercel.app/pricing",
+      "screenshots": [
+        "pricing-loaded.png",
+        "pricing-final.png"
+      ],
+      "interactions_attempted": [
+        "pricing_plan_cards_visible",
+        "pricing_cta_buttons",
+        "pricing_current_plan_badge"
+      ],
+      "interactions_succeeded": [
+        "pricing_plan_cards_visible",
+        "pricing_cta_buttons",
+        "pricing_current_plan_badge"
+      ],
+      "interactions_failed": [],
+      "console_errors": [],
+      "empty_states": [
+        "1 CTA button(s) visible"
+      ]
+    }
+  ]
+}

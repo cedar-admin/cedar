@@ -1,0 +1,522 @@
+## Context from prior research sessions:
+
+# CFR title classification for Cedar regulatory intelligence platform
+
+**All 50 CFR titles have been classified for relevance to Florida independent medical practices: 35 titles are IRRELEVANT and can be excluded at the title level, 15 titles are MIXED and require chapter-level analysis, and zero titles are fully RELEVANT.** Title-level filtering alone should eliminate roughly **55–65% of Cedar's ~99K unclassified entities**, with subsequent part-level analysis of the 15 mixed titles pushing total elimination to an estimated 70–75%. The three highest-value mixed titles — Title 21 (Food and Drugs), Title 42 (Public Health and Welfare), and Title 45 (Public Welfare) — contain the regulatory core governing FDA compliance, CMS participation, HIPAA, and OIG enforcement. The remaining 12 mixed titles contribute employment law, tax provisions, environmental waste rules, consumer protection, telecommunications, and payer-specific regulations (TRICARE, VA).
+
+---
+
+## Deliverable 1: Complete classification of all 50 CFR titles
+
+### Classification summary table
+
+| # | Title | Class | Relevance | Rationale |
+|---|-------|-------|-----------|-----------|
+| 1 | General Provisions | IRRELEVANT | — | Governs Federal Register publication procedures and CFR administration. No healthcare content. |
+| 2 | Grants and Agreements | MIXED | Low | Chapter III contains HHS grant administration rules; 2 CFR Part 200 (Uniform Guidance) applies if a practice receives federal grants (e.g., HRSA). Most independent practices do not. |
+| 3 | The President | IRRELEVANT | — | Executive orders and presidential documents. No operational healthcare regulation. |
+| 4 | Accounts | IRRELEVANT | — | GAO operations and government accounting standards. No healthcare content. |
+| 5 | Administrative Personnel | IRRELEVANT | — | Entirely governs federal civil service employees. Even the EEOC chapter (LXII) only covers EEOC staff ethics; private-sector EEOC rules are in 29 CFR. |
+| 6 | Domestic Security | IRRELEVANT | — | DHS regulations (FOIA, chemical facilities, classified info). No healthcare or emergency health provisions found. |
+| 7 | Agriculture | IRRELEVANT | — | USDA programs including food stamps, school nutrition, organic labeling. Tangentially related to nutrition but does not regulate medical practices. |
+| 8 | Aliens and Nationality | IRRELEVANT | — | USCIS/ICE immigration regulations. I-9 employment verification is a universal employer requirement, not healthcare-specific. |
+| 9 | Animals and Animal Products | IRRELEVANT | — | APHIS animal welfare, FSIS meat inspection, veterinary biologics. All animal/veterinary regulation; human biological products are under 21 CFR. |
+| 10 | Energy | MIXED | Low | **Parts 20 and 35** regulate medical use of radioactive materials and radiation safety. Florida is an NRC Agreement State. Relevant only to practices using radioactive isotopes (rare among target practice types). |
+| 11 | Federal Elections | IRRELEVANT | — | FEC campaign finance regulations. Zero healthcare relevance. |
+| 12 | Banks and Banking | IRRELEVANT | — | Banking and financial institution regulations. 12 CFR 1022 Subpart D (medical information in credit decisions) regulates banks, not medical practices. |
+| 13 | Business Credit and Assistance | IRRELEVANT | — | SBA loan programs and size standards. Applicable to all small businesses equally; no healthcare-specific compliance obligations. |
+| 14 | Aeronautics and Space | IRRELEVANT | — | FAA aviation regulations and NASA. No medical practice content. |
+| 15 | Commerce and Foreign Trade | IRRELEVANT | — | Census, NIST, export controls, foreign trade. NIST cybersecurity framework is referenced in HIPAA guidance but is not itself a regulatory requirement in Title 15. |
+| 16 | Commercial Practices | MIXED | Moderate | **FTC Chapter I** contains advertising/endorsement guides, telemarketing rules, health breach notification, subscription/negative-option rules, and debt collection practices directly applicable to medical practice marketing and billing. CPSC Chapter II is irrelevant. |
+| 17 | Commodity and Securities Exchanges | IRRELEVANT | — | SEC and CFTC securities/commodities regulation. No healthcare applicability. |
+| 18 | Conservation of Power and Water Resources | IRRELEVANT | — | FERC utility regulations. No healthcare content. |
+| 19 | Customs Duties | IRRELEVANT | — | Import/export tariff and customs regulations. |
+| 20 | Employees' Benefits | MIXED | Low | **Chapter III (SSA)** contains disability determination rules (relevant to practices performing disability evaluations) and Medicare subsidy provisions. Chapters I, II, IV–IX cover federal workers' comp, railroad retirement, and other programs irrelevant to private practices. |
+| 21 | Food and Drugs | MIXED | High | **Core regulatory title.** FDA drug regulation, DEA controlled substances, medical devices, biologics, compounding pharmacy rules, HCT/Ps (regenerative medicine). Also contains irrelevant chapters on food standards, animal drugs, tobacco products, and mammography. |
+| 22 | Foreign Relations | IRRELEVANT | — | State Department diplomatic and foreign service regulations. |
+| 23 | Highways | IRRELEVANT | — | Federal highway administration and road construction standards. |
+| 24 | Housing and Urban Development | IRRELEVANT | — | HUD programs. Parts 232/242 cover mortgage insurance for hospitals/nursing homes, but these regulate institutional facilities, not independent practices. |
+| 25 | Indians | IRRELEVANT | — | Bureau of Indian Affairs. Tribal health programs are governed under Title 42 IHS provisions, not here. |
+| 26 | Internal Revenue | MIXED | Moderate | **Subchapter A** contains healthcare-critical provisions: §199A QBI deduction for pass-through medical practices, §223 HSA rules, §105/106 employer health plans, §4980H ACA employer mandate, retirement plan rules. **Subchapter C** contains employment tax and worker classification rules (critical for 1099 providers). Estate/gift taxes, international treaties, and IRS internal operations are irrelevant. |
+| 27 | Alcohol, Tobacco Products and Firearms | IRRELEVANT | — | ATF/TTB regulations for alcohol, tobacco commerce, and firearms. All DEA/controlled substance regulations are in Title 21, not here. Confirmed zero healthcare overlap. |
+| 28 | Judicial Administration | MIXED | Low | **Chapter I, Parts 35–36** implement ADA Title II (government services) and **ADA Title III (public accommodations)** — directly mandates accessibility for medical offices, patient communications, and telehealth platforms. All other chapters (prisons, courts, independent counsel) are irrelevant. |
+| 29 | Labor | MIXED | High | **Four critically relevant chapters:** Ch. V (FLSA wage/hour, FMLA), Ch. XIV (EEOC — ADA, GINA, anti-discrimination), Ch. XVII (OSHA — **bloodborne pathogens §1910.1030**, hazard communication, PPE), Ch. XXV (ERISA, COBRA, group health plans). Railroad, maritime, mining chapters are irrelevant. |
+| 30 | Mineral Resources | IRRELEVANT | — | MSHA mining regulations. No healthcare content. |
+| 31 | Money and Finance | IRRELEVANT | — | Treasury/FinCEN regulations. BSA/AML reporting is a general business obligation, not healthcare-specific. |
+| 32 | National Defense | MIXED | Low–Moderate | **Part 199 (TRICARE/CHAMPUS)** governs military healthcare program participation, provider eligibility, and reimbursement. **Florida's substantial military population** (MacDill AFB, NAS Jacksonville, Eglin AFB, Pensacola NAS) makes this relevant for practices accepting TRICARE. Most of the title (military operations, security) is irrelevant. |
+| 33 | Navigation and Navigable Waters | IRRELEVANT | — | Army Corps of Engineers and Coast Guard waterway regulations. |
+| 34 | Education | IRRELEVANT | — | K-12, higher education, FERPA, student loans, special education. All chapters govern educational institutions. No medical practice regulation. |
+| 35 | Panama Canal [Reserved] | IRRELEVANT | — | Entirely reserved; no content. |
+| 36 | Parks, Forests, and Public Property | IRRELEVANT | — | National Park Service, Forest Service, public property management. |
+| 37 | Patents, Trademarks, and Copyrights | IRRELEVANT | — | USPTO procedural regulations for IP filings. |
+| 38 | Pensions, Bonuses, and Veterans' Relief | MIXED | Low | **Chapter I, Part 17** governs VA healthcare delivery and the **Veterans Community Care Program** (MISSION Act), which allows veterans to receive care from private providers. Part 2 adds supplemental privacy rules for veteran patient records. Chapter II (Armed Forces Retirement Home) is irrelevant. |
+| 39 | Postal Service | IRRELEVANT | — | USPS regulations for mail service operations. |
+| 40 | Protection of Environment | MIXED | Low–Moderate | **Subchapter I (RCRA, Parts 239–299)** governs hazardous waste management including pharmaceutical waste disposal, chemical waste from compounding, and universal waste rules. **Subchapter J (Parts 300–399)** covers emergency planning and chemical inventory reporting. All other subchapters (air, water, pesticides, noise, ocean dumping) are irrelevant. |
+| 41 | Public Contracts and Property Management | IRRELEVANT | — | Federal procurement and property management. Independent practices are not typically government contractors. |
+| 42 | Public Health and Welfare | MIXED | High | **Core regulatory title.** CMS Medicare/Medicaid (Ch. IV), CLIA laboratory requirements (Part 493), OIG anti-kickback/exclusions (Ch. V), substance use disorder confidentiality (Part 2), telemedicine flexibilities. Also contains irrelevant chapters: PHS Corps personnel, Indian Health Service, grants programs, public health research, facility construction. |
+| 43 | Public Lands: Interior | IRRELEVANT | — | Bureau of Land Management, Bureau of Reclamation. |
+| 44 | Emergency Management and Assistance | IRRELEVANT | — | FEMA disaster relief, flood insurance, fire prevention. No routine medical practice regulatory content. Temporary emergency waivers exist but are not standing compliance obligations. |
+| 45 | Public Welfare | MIXED | High | **Subtitle A is critically relevant:** HIPAA Privacy/Security/Breach Notification (Parts 160–164), No Surprises Act (Part 149), ONC Health IT/information blocking (Parts 170–171), Section 1557 nondiscrimination (Part 92), price transparency. **Subtitle B is entirely irrelevant:** welfare programs (TANF), refugee assistance, child support, arts/humanities, scholarships. |
+| 46 | Shipping | IRRELEVANT | — | Maritime vessel and shipping regulations. |
+| 47 | Telecommunication | MIXED | Low–Moderate | **Chapter I, Subchapter B** contains **TCPA implementation rules (Part 64, §64.1200)** governing robocalls, autodialers, and text messaging — directly regulates patient outreach. **Part 54** funds Rural Health Care telehealth infrastructure. Accessibility requirements (Parts 6–7) affect telehealth platforms. All other chapters (broadcast, safety radio, spectrum management) are irrelevant. |
+| 48 | Federal Acquisition Regulations System | IRRELEVANT | — | FAR for government procurement. Only relevant for federal contractors, which independent practices are not. |
+| 49 | Transportation | MIXED | Low | **Part 173.197** specifically regulates packaging and transport of regulated medical waste. **Parts 171–180** (Hazardous Materials Regulations) apply to transport of medical gases and sharps. Most practices contract with licensed waste haulers, but practices bear shipper responsibility. |
+| 50 | Wildlife and Fisheries | IRRELEVANT | — | Fish & Wildlife Service and NOAA Fisheries regulations. |
+
+### Classification totals
+
+- **IRRELEVANT: 35 titles** (1, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 17, 18, 19, 22, 23, 24, 25, 27, 30, 31, 33, 34, 35, 36, 37, 39, 41, 43, 44, 46, 48, 50)
+- **MIXED: 15 titles** (2, 10, 16, 20, 21, 26, 28, 29, 32, 38, 40, 42, 45, 47, 49)
+- **RELEVANT: 0 titles** — No title is 100% healthcare content; even the most relevant titles (21, 42, 45) contain irrelevant chapters
+
+---
+
+## Deliverable 2: Mixed title chapter-level breakdowns
+
+### Title 21 — Food and Drugs (High relevance)
+
+**Chapter I — FDA, HHS (Parts 1–1299)**
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | General (1–99) | **RELEVANT** | Part 11 (electronic records/signatures) critical for EHR compliance. Administrative procedures apply to all regulated entities. |
+| B | Food for Human Consumption (100–199) | IRRELEVANT | Food labeling, nutritional quality, infant formula, food additives. Does not regulate dietary supplements marketed as such. |
+| C | Drugs: General (200–299) | **RELEVANT** | Drug labeling, establishment registration, cGMP, prescription drug advertising. Affects all prescribing/dispensing practices. |
+| D | Drugs for Human Use (300–499) | **RELEVANT** | NDAs, INDs, drug compounding rules (503A/503B). **Critical for compounding pharmacy, HRT, peptide therapy, weight management.** |
+| E | Animal Drugs, Feeds (500–599) | IRRELEVANT | Veterinary drugs and animal feed. |
+| F | Biologics (600–680) | **RELEVANT** | Blood products, vaccines, allergenic products, cellular/gene therapy. **Critical for regenerative medicine** (PRP, stem cells, exosomes). |
+| G | Cosmetics (700–799) | **AMBIGUOUS** | MoCRA expanded cosmetic regulation. Relevant to med spas selling/using cosmetic products. Drug/cosmetic boundary is key for aesthetic practices. |
+| H | Medical Devices (800–898) | **RELEVANT** | Device classification, 510(k), QSR, labeling. Covers lasers, RF devices, infusion pumps, microneedling, body contouring equipment. **Critical for med spas, IV therapy, pain management.** |
+| I | Mammography (900) | IRRELEVANT | MQSA — not relevant to target practice types. |
+| J | Radiological Health (1000–1040) | **AMBIGUOUS** | Performance standards for radiation-emitting products (lasers, X-ray). Relevant to med spas using laser devices and chiropractic X-ray. |
+| K | Tobacco Products (1100–1150) | IRRELEVANT | Tobacco regulation. |
+| L | Other Acts (1210–1299) | **RELEVANT** | **Part 1271 (HCT/Ps) is critical for regenerative medicine** — governs human tissue establishments, donor eligibility, cGTP. Part 1210 covers communicable disease regulations. |
+
+**Chapter II — DEA, DOJ (Parts 1300–1399):** **RELEVANT.** Controlled substance scheduling, prescriber registration, prescription requirements, record-keeping. **Critical for HRT (testosterone = Schedule III), pain management, weight management, ketamine infusions.**
+
+**Chapter III — Office of National Drug Control Policy (Parts 1400–1499):** IRRELEVANT. HIDTA program administration; no direct provider-facing regulation.
+
+### Title 42 — Public Health and Welfare (High relevance)
+
+**Chapter I — Public Health Service, HHS (Parts 2–399)**
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | General Provisions (2–12) | **RELEVANT** | **Part 2:** SUD patient record confidentiality. **Part 3:** Patient Safety Organizations. **Part 8:** Opioid treatment programs. **Part 10:** 340B Drug Pricing. **Part 11:** Clinical trials registration. **Part 12:** Telemedicine flexibilities. |
+| B | Personnel (21–24) | IRRELEVANT | PHS Commissioned Corps internal staffing. |
+| C | Medical Care and Examinations (31–37) | IRRELEVANT | Medical care for PHS beneficiaries and federal employees. |
+| D | Grants (50–67) | IRRELEVANT | Federal grant programs (maternal/child health, community health, NIH grants). |
+| E | Fellowships, Internships (68) | IRRELEVANT | Federal training programs. |
+| F | Quarantine, Inspection, Licensing (70–80) | **AMBIGUOUS** | Part 73 (Select Agents and Toxins) potentially relevant to regenerative medicine labs. Parts 70–71 (quarantine) are background. |
+| G | Occupational Safety Research (82–88) | IRRELEVANT | NIOSH research activities, coal mine health. |
+| H | Health Assessments (90–93) | IRRELEVANT | ATSDR Superfund site assessments. |
+| I | [Reserved] | IRRELEVANT | Empty. |
+| J | Vaccines (100) | **AMBIGUOUS** | National Vaccine Injury Compensation Program. Relevant to practices administering vaccines. |
+| K | Health Resources Development (121–124) | IRRELEVANT | Hill-Burton facility construction. Historical/administrative. |
+| L | Compassionate Payments (130) | IRRELEVANT | Ricky Ray Hemophilia Relief Fund. |
+| M | Indian Health Service (136–140) | IRRELEVANT | IHS tribal health programs. |
+
+**Chapter IV — CMS (Parts 400–600+)**
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | General Provisions (400–403) | **RELEVANT** | CMS definitions, ACA provisions, federal/state relationships. |
+| B | Medicare Program (405–429) | **RELEVANT** | **Most critical subchapter for billing practices.** Physician services (Part 410), physician fee schedule (Part 414), enrollment/billing (Part 424), telehealth, Medicare Advantage (Part 422), Part D (Part 423), ACOs (Part 425). |
+| C | Medicaid (430–456) | **RELEVANT** | State plan requirements, eligibility, managed care (Part 438), program integrity. |
+| D | CHIP (457) | **AMBIGUOUS** | Relevant only to pediatric-oriented practices. |
+| E | PACE (460) | IRRELEVANT | Program of All-Inclusive Care for the Elderly. Specialized program. |
+| F | Quality Improvement Organizations (475–480) | **AMBIGUOUS** | Indirect quality oversight. |
+| G | Standards and Certification (482–498) | **RELEVANT** | **Part 493 (CLIA) is critical** for in-house lab work (blood draws, hormone panels, point-of-care testing). Also covers hospital CoPs, ASC conditions, provider agreements, EHR incentive programs. |
+| H | Infrastructure and Models (505–512) | **AMBIGUOUS** | CMS innovation models, APMs. Relevant to DPC practices in CMS models. |
+| I | Basic Health Program (600) | IRRELEVANT | State BHP administration. |
+
+**Chapter V — OIG–Health Care (Parts 1000–1008):** **RELEVANT.** OIG exclusion authorities, Civil Monetary Penalties, **Anti-Kickback Statute safe harbors (Part 1001)** — critical for all medical practice referral relationships, marketing, and business arrangements.
+
+### Title 45 — Public Welfare (High relevance)
+
+**Subtitle A — HHS (Parts 1–199)**
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | General Administration (1–99) | **AMBIGUOUS** | Most is HHS internal administration. **Part 46 (Common Rule — human subjects protections)** matters for research practices. **Part 92 (Section 1557 ACA nondiscrimination)** applies to all providers receiving federal funds. |
+| B | Health Care Access (144–150) | **RELEVANT** | HIPAA portability, insurance reform. **Part 149 (No Surprises Act) is critical** — balance billing prohibitions, good faith estimates for self-pay patients, price transparency. |
+| C | HIPAA Administrative Data Standards (160–164) | **RELEVANT** | **The HIPAA regulations.** Part 160 (general requirements, enforcement, penalties). Part 162 (transaction standards, NPI). **Part 164 (Privacy Rule, Security Rule, Breach Notification Rule).** Universal applicability to every medical practice. |
+| D | Health Information Technology (170–171) | **RELEVANT** | ONC Health IT Certification (Part 170). **Part 171 (information blocking)** applies to all healthcare providers. |
+| E | Price Transparency (180+) | **RELEVANT** | Hospital price transparency; principles extend to all providers. |
+
+**Subtitle B — Public Welfare (Chapters II–XXV):** IRRELEVANT. All chapters cover welfare programs (TANF), refugee assistance, child support enforcement, National Science Foundation, arts/humanities, Corporation for National Service, scholarships, and similar non-healthcare programs. **No chapters in Subtitle B are relevant.**
+
+### Title 29 — Labor (High relevance)
+
+| Chapter | Name | Status | Key Provisions |
+|---|---|---|---|
+| Subtitle A | Office of the Secretary (0–99) | IRRELEVANT | DOL administrative rules, nondiscrimination for DOL grantees. Not applicable to private practices. |
+| I | NLRB (100–199) | **RELEVANT** | NLRA applies to all private-sector employers. Employee Section 7 rights (wage discussions, working conditions). |
+| II | Office of Labor-Management Standards (200–299) | IRRELEVANT | Labor organization reporting. |
+| III | National Railroad Adjustment Board (300–399) | IRRELEVANT | Railroad industry. |
+| IV | Labor-Management Standards (400–499) | IRRELEVANT | Union reporting/disclosure. |
+| V | Wage and Hour Division (500–899) | **RELEVANT** | **FLSA minimum wage, overtime, recordkeeping. Part 541 (exempt employee classification) is critical** for determining NP/PA/office manager exemptions. **Part 825 (FMLA)** for practices with 50+ employees. Equal Pay Act. Employee Polygraph Protection Act. |
+| IX | Construction Industry (900–999) | IRRELEVANT | Construction industry collective bargaining. |
+| X | National Mediation Board (1200–1299) | IRRELEVANT | Railroad/airline labor disputes. |
+| XII | Federal Mediation (1400–1499) | IRRELEVANT | Labor dispute mediation. |
+| XIV | EEOC (1600–1899) | **RELEVANT** | **Part 1630 (ADA) is critical** for employee accommodation and office accessibility. **Part 1635 (GINA)** especially relevant for functional medicine/genetic testing practices. Parts 1604–1606 (sex, religious, national origin discrimination). Part 1636 (Pregnant Workers Fairness Act). |
+| XVII | OSHA (1900–1999) | **RELEVANT** | **§1910.1030 (Bloodborne Pathogens Standard)** is the most critical OSHA standard for medical practices — exposure control plans, PPE, sharps disposal, Hep B vaccination. §1910.1200 (Hazard Communication/GHS) for chemical labeling. Part 1904 (injury/illness recordkeeping). §1910.134 (respiratory protection). |
+| XX | OSHRC (2000–2499) | IRRELEVANT | OSHA citation appeals commission. |
+| XXV | EBSA/ERISA (2500+) | **RELEVANT** | **ERISA compliance** for practices offering employee benefits. COBRA (20+ employees). **Part 2590 (group health plan rules)** including ACA provisions, mental health parity, No Surprises Act provisions. Fiduciary duties for retirement plan administration. |
+| XXVII | Mine Safety Review Commission (2700–2799) | IRRELEVANT | Mining industry. |
+| XL | PBGC (4000–4999) | IRRELEVANT | Defined benefit pension insurance. Rare for small medical practices. |
+
+### Title 26 — Internal Revenue (Moderate relevance)
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | Income Tax (1–18) | **RELEVANT** | **§199A (QBI deduction)** critical for pass-through medical practices (SSTBs have income thresholds). §223 (HSA rules) directly relevant to DPC/concierge practices. §105/106 (employer health plans). §125 (cafeteria plans/FSAs). §401–420 (retirement plans). §501(c)(3) (tax-exempt healthcare entities). **§4980H (ACA employer mandate)** for 50+ FTE practices. |
+| B | Estate and Gift Taxes (20–29) | IRRELEVANT | No healthcare-specific provisions. |
+| C | Employment Taxes (30–39) | **RELEVANT** | FICA, FUTA, income tax withholding. **Worker classification rules (employee vs. independent contractor)** critical for practices using 1099 providers. |
+| D | Miscellaneous Excise Taxes (40–169) | **AMBIGUOUS** | Part 54 (pension plan excise taxes) relevant for practices with retirement plans. Medical device excise tax largely suspended. |
+| E | [Reserved] | N/A | Empty. |
+| F | Procedure and Administration (300–499) | IRRELEVANT | General IRS procedural rules. Not healthcare-specific. |
+| G | Tax Conventions (500–599) | IRRELEVANT | International tax treaties. |
+| H | Internal Revenue Practice (600–899) | IRRELEVANT | IRS internal operations. |
+
+### Title 16 — Commercial Practices (Moderate relevance)
+
+**Chapter I — FTC (Parts 0–999)**
+
+| Subchapter | Name | Status | Notes |
+|---|---|---|---|
+| A | Organization, Procedures (0–16) | IRRELEVANT | FTC procedural framework. Background only. |
+| B | Guides and Trade Practice Rules (17–259) | **RELEVANT** | **Part 255 (Endorsement and Testimonial Guides)** directly governs patient testimonials, influencer marketing, social media endorsements. Critical for med spa, weight management, anti-aging marketing. |
+| C | Consumer Protection Rules (300–399) | **RELEVANT** | **Part 310 (Telemarketing Sales Rule)**. **Part 314 (Safeguards Rule)** for financial data protection. **Part 318 (Health Breach Notification Rule)** for health apps/digital records not covered by HIPAA. |
+| D | Trade Regulation Rules (400–499) | **RELEVANT** | **Part 425 (Negative Option/Recurring Subscription Rule)** directly affects DPC/concierge memberships, med spa memberships, weight management subscriptions. Part 435 (mail/internet order merchandise) for online supplement sales. |
+| E | Fair Packaging and Labeling (500–503) | AMBIGUOUS | Marginally relevant for practices selling labeled products (supplements, skincare). |
+| F | Fair Credit Reporting Act (600–698) | AMBIGUOUS | Relevant if practices report unpaid bills to credit bureaus. |
+| G | Magnuson-Moss Warranty (700–703) | IRRELEVANT | Product warranty disclosures. |
+| H | Hart-Scott-Rodino (801–803) | IRRELEVANT | Pre-merger notification for large acquisitions. |
+| I | Fair Debt Collection (901–909) | **RELEVANT** | Governs third-party debt collection for medical bills. Affects all practices using collection agencies. |
+| J | Unfair Competition Rules (910–999) | AMBIGUOUS | FTC non-compete rule (if in effect) could affect physician employment agreements. |
+
+**Chapter II — CPSC (Parts 1000+):** IRRELEVANT. Consumer product safety standards; medical devices are FDA-regulated under Title 21.
+
+### Title 40 — Protection of Environment (Low–Moderate relevance)
+
+**Chapter I — EPA**: Only two subchapters are relevant out of ~15.
+
+| Subchapter | Status | Notes |
+|---|---|---|
+| A (General, 1–31) | IRRELEVANT | EPA administration. |
+| B (Grants, 33–49) | IRRELEVANT | EPA grant programs. |
+| C (Air Programs, 50–99) | IRRELEVANT | Air quality. Part 82 (refrigerants) marginally relevant for HVAC. |
+| D (Water Programs, 100–149) | IRRELEVANT | Clean Water Act. |
+| E (Pesticide Programs, 150–189) | IRRELEVANT | FIFRA. |
+| F (Radiation Protection, 190–197) | IRRELEVANT | Environmental radiation standards; medical radiation is in Title 10/21. |
+| G (Noise, 201–211) | IRRELEVANT | Noise standards. |
+| H (Ocean Dumping, 220–238) | IRRELEVANT | Marine disposal. |
+| **I (Solid Wastes, 239–299)** | **RELEVANT** | **RCRA hazardous waste management. Parts 260–265 govern pharmaceutical waste disposal, chemical waste from compounding/IV prep, universal waste (Part 273 — batteries, mercury thermometers, pharmaceutical waste).** Critical for compounding pharmacy, IV therapy, all practices generating pharma waste. |
+| **J (Superfund/EPCRA, 300–399)** | **RELEVANT** | Parts 355/370 (emergency planning, chemical inventory reporting). Applies if practices store threshold quantities of hazardous chemicals. Most relevant for compounding pharmacies with significant chemical inventories. |
+| N–U (remaining) | IRRELEVANT | Industrial wastewater, sewage, fuel economy, mobile emissions. |
+
+**Chapters IV, VII, VIII, IX:** IRRELEVANT. EPA enforcement coordination, military vessel discharges, Gulf restoration, federal permitting.
+
+### Title 47 — Telecommunication (Low–Moderate relevance)
+
+**Chapter I — FCC**
+
+| Subchapter | Status | Notes |
+|---|---|---|
+| A (General, 0–19) | AMBIGUOUS | Parts 6–7 (accessibility for persons with disabilities) affect telehealth platforms. |
+| **B (Common Carrier, 20–69)** | **RELEVANT** | **Part 64, §64.1200 (TCPA implementation)** directly regulates robocalls, autodialed calls, prerecorded messages, and text messages — governs how ALL practices contact patients for appointments, marketing, and recalls. **Part 54 (Universal Service, Rural Health Care Program)** subsidizes broadband for rural healthcare providers. Part 52 (number portability) affects practice phone systems. |
+| C (Broadcast, 70–79) | IRRELEVANT | Radio/TV broadcasting. |
+| D (Safety/Special Radio, 80–199) | IRRELEVANT | Maritime, aviation, amateur radio. |
+
+**Chapters II–V:** IRRELEVANT. NTIA spectrum management, FirstNet, 911 grants.
+
+### Title 28 — Judicial Administration (Low relevance)
+
+**Chapter I — DOJ (Parts 0–299):** MIXED. **Parts 35–36 (ADA implementation)** are directly relevant — Part 36 mandates accessibility for medical offices (physical accessibility, communication accessibility for deaf/blind patients, website accessibility). Part 85 (civil monetary penalties/False Claims Act adjustments) provides enforcement context. All other parts (foreign agents, prisons, FOIA, classified info) are irrelevant.
+
+**Chapters III, V–IX, XI:** IRRELEVANT. Federal prisons, courts, independent counsel, DC probation.
+
+### Title 32 — National Defense (Low–Moderate relevance)
+
+**Part 199 (TRICARE/CHAMPUS)** is the sole relevant content. Governs provider eligibility, reimbursement rates, coverage determinations, preauthorization, and network participation for the military healthcare program. **Florida's large military footprint** makes this moderately relevant. All other parts (military operations, classified information, defense procurement) are irrelevant.
+
+### Title 38 — Pensions, Bonuses, and Veterans' Relief (Low relevance)
+
+**Chapter I, Part 17** is the key content — governs VA healthcare delivery and the **Veterans Community Care Program (MISSION Act)**, which authorizes veterans to receive care from private providers with VA payment. Part 2 adds supplemental privacy rules for veteran records. All other parts (disability ratings, legal services, pensions) and Chapter II (Armed Forces Retirement Home) are irrelevant.
+
+### Title 20 — Employees' Benefits (Low relevance)
+
+**Chapter III (SSA, Parts 400–499)** has limited relevance: disability determination rules (Parts 404, 416) affect practices performing disability evaluations; Part 498 covers civil monetary penalties for SSA fraud. Chapter V has minor relevance through unemployment insurance (all employers) and H-1B visa programs. All other chapters (workers' comp, railroad retirement, actuaries, veterans' employment) are irrelevant. Note: Medicare provider enrollment/billing rules are in Title 42, not Title 20.
+
+### Title 2 — Grants and Agreements (Low relevance)
+
+**Chapter III (HHS)** contains grant administration rules, and **Part 200 (Uniform Guidance)** governs federal financial assistance. Only relevant if a practice receives federal grants (HRSA, NIH research), which is uncommon for the target practice types.
+
+### Title 10 — Energy (Low relevance)
+
+**Part 20** (Standards for Protection Against Radiation) and **Part 35** (Medical Use of Byproduct Material) regulate medical uses of radioactive materials, licensing, and radiation safety officers. Florida is an NRC Agreement State that implements these standards. Relevant only to the rare target practice using radioactive materials for diagnostics or treatment.
+
+### Title 49 — Transportation (Low relevance)
+
+**Part 173.197** specifically regulates packaging and transport of regulated medical waste. **Parts 171–180** (Hazardous Materials Regulations) apply to transport of medical gases, chemicals, and sharps. Most practices contract with licensed waste haulers but bear shipper responsibility. Niche but real compliance consideration.
+
+---
+
+## Deliverable 3: Expected filtering impact
+
+### Title-level classification breakdown
+
+| Category | Count | Titles |
+|---|---|---|
+| IRRELEVANT | **35** | 1, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 17, 18, 19, 22, 23, 24, 25, 27, 30, 31, 33, 34, 35, 36, 37, 39, 41, 43, 44, 46, 48, 50 |
+| MIXED | **15** | 2, 10, 16, 20, 21, 26, 28, 29, 32, 38, 40, 42, 45, 47, 49 |
+| RELEVANT | **0** | None (every title has some irrelevant content) |
+
+### Entity elimination estimate
+
+**Title-level filtering (Phase 1): ~55–65% of entities eliminated**
+
+The 35 irrelevant titles include several large-volume titles — Title 7 (Agriculture), Title 12 (Banks and Banking), Title 14 (Aeronautics), Title 17 (Securities), Title 24 (HUD), Title 33 (Navigation), Title 36 (Parks/Forests), Title 46 (Shipping), Title 48 (Federal Acquisition). These titles generate substantial regulatory content and corresponding Federal Register activity. Cedar's three data sources (eCFR, Federal Register, openFDA) each contribute differently:
+
+- **eCFR entities** span all 50 titles roughly proportional to regulatory volume. The 35 irrelevant titles likely represent **60–70%** of eCFR content.
+- **Federal Register entities** span all federal agencies. Documents from non-healthcare agencies (DOT, DOD, DOI, EPA non-waste, USDA, banking regulators, FCC non-TCPA) likely represent **55–65%** of the corpus.
+- **openFDA entities** are entirely relevant (FDA drug, device, adverse event data), contributing **0% elimination** from this source.
+
+Blended estimate across all three sources: **~55–65%** of the ~99K entities, or roughly **55,000–64,000 entities**, can be eliminated by excluding the 35 irrelevant titles.
+
+**Part-level filtering within mixed titles (Phase 2): ~10–15% additional elimination**
+
+Within the 15 mixed titles, substantial portions are irrelevant:
+
+- Title 21: ~3 of 14 subchapter-level units are irrelevant (food, animal drugs, tobacco)
+- Title 42: ~10 of 20+ subchapter-level units are irrelevant (grants, personnel, Indian health, construction)
+- Title 45: All of Subtitle B (~14 chapters) is irrelevant
+- Title 29: ~8 of 15+ chapters are irrelevant (railroad, mining, maritime)
+- Title 26: ~4 of 8 subchapters are irrelevant (estate/gift, international, IRS operations)
+- Title 40: ~13 of 15+ subchapters are irrelevant (air, water, pesticides, noise, etc.)
+- Titles 2, 10, 20, 28, 32, 38, 47, 49: Each is overwhelmingly irrelevant with only narrow relevant sections
+
+Conservatively, **50–60%** of the content within the 15 mixed titles is irrelevant. Applied to the remaining ~35,000–44,000 entities, this eliminates another **~10,000–15,000 entities**.
+
+**Combined estimate:**
+
+| Phase | Entities Eliminated | Running Total Remaining |
+|---|---|---|
+| Starting corpus | — | ~99,000 |
+| Phase 1: Title-level filtering | ~55,000–64,000 (55–65%) | ~35,000–44,000 |
+| Phase 2: Part-level filtering of MIXED titles | ~10,000–15,000 (10–15%) | ~20,000–29,000 |
+| **Total eliminated** | **~70,000–79,000 (70–80%)** | **~20,000–29,000** |
+
+The surviving **~20,000–29,000 entities** would represent the genuinely healthcare-relevant regulatory corpus for independent medical practices in Florida.
+
+### Confidence-weighted relevance tiers for mixed titles
+
+For engineering prioritization, the 15 mixed titles stratify into three implementation tiers:
+
+**Tier 1 — High relevance, large volume, immediate ROI:**
+- Title 21 (Food and Drugs) — FDA, DEA, biologics, devices, compounding
+- Title 42 (Public Health and Welfare) — CMS, CLIA, OIG, telemedicine
+- Title 45 (Public Welfare) — HIPAA, No Surprises Act, Health IT
+
+**Tier 2 — Moderate relevance, significant for practice operations:**
+- Title 29 (Labor) — OSHA bloodborne pathogens, EEOC, FMLA, ERISA
+- Title 26 (Internal Revenue) — QBI deduction, HSA, ACA employer mandate, worker classification
+- Title 16 (Commercial Practices) — FTC advertising, telemarketing, subscription rules, debt collection
+- Title 40 (Protection of Environment) — RCRA medical/pharmaceutical waste
+
+**Tier 3 — Low relevance, narrow applicability:**
+- Title 47 (Telecommunication) — TCPA patient communication rules, telehealth funding
+- Title 28 (Judicial Administration) — ADA accessibility
+- Title 32 (National Defense) — TRICARE participation
+- Title 38 (Pensions/Veterans) — VA community care
+- Title 20 (Employees' Benefits) — SSA disability determinations
+- Title 49 (Transportation) — Medical waste transport
+- Title 10 (Energy) — Medical radiation safety
+- Title 2 (Grants and Agreements) — Federal grant administration
+
+---
+
+## Implementation notes for the engineering agent
+
+### Recommended filtering algorithm
+
+```
+Phase 1: Title-level exclusion
+  IF entity.cfr_title IN [1,3,4,5,6,7,8,9,11,12,13,14,15,17,18,19,22,23,24,25,27,30,31,33,34,35,36,37,39,41,43,44,46,48,50]
+  THEN mark entity.relevance = 'IRRELEVANT'
+
+Phase 2: Chapter/subchapter-level filtering (requires Session 2 part-level mapping)
+  FOR each entity in MIXED titles:
+    IF entity.cfr_chapter AND entity.cfr_subchapter match irrelevant segments
+    THEN mark entity.relevance = 'IRRELEVANT'
+    ELSE mark entity.relevance = 'REVIEW' or 'RELEVANT'
+```
+
+### Key edge cases to handle
+
+**Cross-title references.** Some regulations in irrelevant titles reference healthcare standards (e.g., 12 CFR 1022 Subpart D references medical information). These should remain excluded because they regulate the other industry (banking), not medical practices.
+
+**Federal Register documents.** Federal Register entities from irrelevant agencies (DOT final rules, USDA notices) should be filterable by agency. However, some Federal Register documents from relevant agencies (FDA, CMS, OSHA) may appear under unexpected titles. Match on both title number AND issuing agency where possible.
+
+**openFDA entities.** All openFDA entities should be presumed relevant — they are FDA-specific data (drug labels, adverse events, device recalls) that map primarily to Title 21 content.
+
+**Practice-type specificity.** Some mixed-title content is relevant only to specific practice types (e.g., Title 10 radiation rules → rare; Title 32 TRICARE → only if accepting military patients). Consider implementing a secondary relevance tag by practice type for more granular filtering in future sessions.
+
+### Data validation checks
+
+After implementing title-level filtering, validate by spot-checking:
+1. No entities from Title 21 Ch. II (DEA) are excluded
+2. No entities from 42 CFR Part 493 (CLIA) are excluded
+3. No entities from 45 CFR Parts 160–164 (HIPAA) are excluded
+4. All entities from Title 36 (Parks) are excluded
+5. All entities from Title 50 (Wildlife) are excluded
+6. Federal Register documents from FDA, CMS, OSHA, FTC, DEA, and OIG are retained regardless of title mapping
+
+---
+
+## Research task:
+
+# Part 1, Session 2-D: Part-Level Allowlists for Tier 3 Titles Group 1
+
+## About This Session
+
+**Context from prior research sessions has been pre-injected above this prompt by the orchestrator.**
+The injected context contains the **Session 1 output** (CFR title classification — which titles are
+relevant/mixed/irrelevant, with chapter-level boundaries).
+
+This is a **sub-session** (2-D within Session 2). The original Session 2-D was split because 9 Tier 3
+titles plus consolidated deliverables exceeded output quality thresholds. **This session covers 5 titles:**
+Titles 40 (EPA), 47 (FCC), 28 (DOJ), 32 (DoD), 38 (VA). Titles 20, 49, 10, 2 are in Session 2-E.
+The consolidated summary is in Session 2-F.
+
+---
+
+## Cedar Platform Context
+
+Cedar is an AI-powered regulatory intelligence SaaS platform for independent medical practices in
+Florida (expanding to all 50 states). Target practice types: Functional Medicine, Hormone Optimization/HRT,
+Compounding Pharmacy, Med Spa/Aesthetic Medicine, Weight Management, Peptide Therapy, IV Therapy/Infusion,
+Regenerative Medicine, Telehealth, Chiropractic, Integrative Medicine, Anti-Aging Medicine, Pain Management,
+and Primary Care (DPC/Concierge).
+
+Cedar has ~99K unclassified entities from eCFR, Federal Register, and openFDA APIs. Session 1 classified
+all 50 CFR titles and provided chapter-level boundaries. This session drills down to part-level for
+Tier 3 titles — titles with mixed relevance where only specific parts matter to Cedar's practices.
+
+The combined output of all 8 Part 1 sessions will be read by Claude Opus to produce an engineering
+implementation plan for Cedar's classification pipeline.
+
+---
+
+## Table Format (same for all titles)
+
+| Chapter | Subchapter | Part Range | Part Description | Relevant? | Relevance Level | Cedar Practice Types Affected | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+---
+
+## Deliverable: Part-Level Allowlists for 5 Tier 3 Titles
+
+### Title 40 (Protection of Environment)
+
+Session 1 identified two relevant subchapters out of ~15.
+
+**Chapter I (EPA):**
+
+- **Subchapter I (Solid Wastes, Parts 239-299):** Session 1 marked RELEVANT. Map key parts:
+    - Part 260: Hazardous waste management system — general
+    - Part 261: Identification and listing of hazardous waste — **defines which pharmaceutical/chemical wastes are hazardous**
+    - Part 262: Standards applicable to generators of hazardous waste — **generator status, manifesting, accumulation**
+    - Part 263: Standards for transporters
+    - Part 264: Standards for TSDFs (treatment, storage, disposal facilities)
+    - Part 265: Interim status standards for TSDFs
+    - Part 266: Standards for management of specific hazardous wastes — **Subpart P: Hazardous Waste Pharmaceuticals Rule**
+    - Part 268: Land disposal restrictions
+    - Part 270: EPA-administered permit programs
+    - Part 273: Standards for universal waste — **batteries, mercury thermometers, pharmaceutical waste**
+    - Part 274-299: Any remaining parts
+    - Identify which parts apply to medical practice waste generators vs. only to waste management facilities.
+- **Subchapter J (Superfund/EPCRA, Parts 300-399):** Session 1 marked RELEVANT. Map key parts:
+    - Part 355: Emergency planning and notification (EPCRA Section 302-304)
+    - Part 370: Hazardous chemical reporting: community right-to-know (EPCRA Section 311-312) — **chemical inventory for compounding pharmacies**
+    - Part 372: Toxic chemical release reporting (TRI) — likely irrelevant for medical practices
+    - Other parts in range
+- **All other subchapters (A-H, K-U):** Session 1 marked IRRELEVANT. Confirm with brief listing.
+
+**Chapters IV, VII, VIII, IX:** Session 1 marked IRRELEVANT. Confirm.
+
+### Title 47 (Telecommunication)
+
+**Chapter I (FCC):**
+
+- **Subchapter A (General, Parts 0-19):** Session 1 marked AMBIGUOUS. Resolve:
+    - Parts 6-7: Accessibility for persons with disabilities — relevant for telehealth platform compliance?
+    - Other parts in range
+- **Subchapter B (Common Carrier, Parts 20-69):** Session 1 marked RELEVANT. Map key parts:
+    - Part 52: Numbering (number portability) — marginally relevant for practice phone systems
+    - Part 54: Universal Service — **Subpart G: Rural Health Care Program** subsidizes broadband for rural providers
+    - Part 64: Miscellaneous rules relating to common carriers — **Section 64.1200 (TCPA implementation) directly regulates robocalls, autodialed calls, prerecorded messages, text messages for patient outreach**
+    - Part 68: Connection of terminal equipment to the telephone network
+    - Other parts in range
+- **Subchapters C-D and beyond:** Session 1 marked IRRELEVANT. Confirm.
+
+**Chapters II-V:** Session 1 marked IRRELEVANT. Confirm.
+
+### Title 28 (Judicial Administration)
+
+**Chapter I (DOJ, Parts 0-299):**
+
+- Part 35: ADA Title II (state/local government services) — relevant for government-affiliated practices
+- Part 36: ADA Title III (public accommodations) — **directly mandates accessibility for medical offices, patient communications, telehealth platforms**
+- Part 85: Civil monetary penalties adjustments (False Claims Act, other)
+- All other parts (FOIA, foreign agents, prisons, classified info): IRRELEVANT
+
+**Chapters III, V-IX, XI:** IRRELEVANT. Confirm briefly.
+
+### Title 32 (National Defense)
+
+**Part 199 (TRICARE/CHAMPUS):** Sole relevant content per Session 1. Map subparts:
+
+- Subpart A: General provisions
+- Subpart B: Provider participation/reimbursement
+- Subpart C: Coverage
+- Subpart D: Administration
+- Identify which subparts are directly relevant to independent practice participation.
+
+**All other parts:** IRRELEVANT. Confirm with brief listing of chapter structure.
+
+### Title 38 (Pensions, Bonuses, and Veterans' Relief)
+
+**Chapter I:**
+
+- Part 2: Supplemental privacy rules for veteran patient records
+- Part 17: VA healthcare delivery, **Veterans Community Care Program (MISSION Act)** — authorizes veterans to receive care from private providers
+    - Map subparts if granular enough to distinguish community care provisions from VA-internal rules.
+- All other parts in Chapter I: IRRELEVANT
+
+**Chapter II (Armed Forces Retirement Home):** IRRELEVANT. Confirm.
+
+---
+
+## Output Guidelines
+
+- Resolve all AMBIGUOUS classifications into definitive RELEVANT or IRRELEVANT with reasoning
+- For each relevant part, tag which of Cedar's 14 practice types are affected
+- False negatives (excluding relevant content) are worse than false positives — when in doubt, include
+- Produce the table for each title with full part-level detail
+
+## Verification Requirement
+
+Use the eCFR website to verify part-level structure for each title:
+
+- https://www.ecfr.gov/current/title-40
+- https://www.ecfr.gov/current/title-47
+- https://www.ecfr.gov/current/title-28
+- https://www.ecfr.gov/current/title-32
+- https://www.ecfr.gov/current/title-38
+
+### Reference Material
+
+- eCFR website: https://www.ecfr.gov/
+- Session 1 output (injected above): CFR title classification with chapter-level boundaries

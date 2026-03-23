@@ -8,7 +8,8 @@ The injected context contains:
 - **Session 2-A output** — Title 21 allowlist (for reference only — do NOT re-map Title 21 here, it was done in Session 8-A)
 - **Session 2-B output** — Title 42 allowlist (for reference only — Title 42 was mapped in Session 8-A)
 - **Session 2-C output** — Part-level allowlists for Titles 45, 29, 26, 16
-- **Session 2-D output** — Part-level allowlists for remaining Tier 3 titles
+- **Session 2-D output** — Part-level allowlists for Tier 3 Titles Group 1 (Titles 40, 47, 28, 32, 38)
+- **Session 2-E output** — Part-level allowlists for Tier 3 Titles Group 2 (Titles 20, 49, 10, 2)
 - **Session 4 output** — L1/L2 domain taxonomy codes
 - **Session 5-A output** — Compounding branch domain codes (L3-L6)
 - **Session 5-B output** — Controlled Substances branch domain codes (L3-L6)
@@ -120,7 +121,7 @@ Map to `employment-tax.employment.fmla`
 
 ## Section G: All Remaining Tier 3 Titles (from Session 2-D)
 
-Map every part from the Session 2-D allowlist. These are Tier 3 titles — lower overall healthcare
+Map every part from the Session 2-D and 2-E allowlists. These are Tier 3 titles — lower overall healthcare
 relevance, but specific parts may map cleanly to Cedar domains. Expected titles include some or all of:
 
 - **Title 47 (FCC):** Telehealth technology standards, broadband accessibility → `telehealth.technology-platforms.*`
@@ -133,11 +134,8 @@ relevance, but specific parts may map cleanly to Cedar domains. Expected titles 
 - **Title 40 (EPA):** RCRA pharmaceutical waste disposal → `workplace-safety.environmental.pharmaceutical-waste`
 - **Title 2 (Grants):** Federal grant administration (research grants) → `fda-regulation.clinical-trials.*`
 
-**Important:** Only include parts that appear in Session 2-D's allowlist. Do not add parts Session 2
-did not identify as relevant.
-
-If Session 2-D's allowlist is unavailable or incomplete (due to P1_S2-D's blocked status at time of
-review), note which titles could not be mapped and flag them for future completion once P1_S2-D is done.
+**Important:** Only include parts that appear in Session 2-D's or 2-E's allowlists. Do not add parts
+Session 2 did not identify as relevant.
 
 ---
 
@@ -150,10 +148,6 @@ After the mapping table:
 **Parts not cleanly mappable (require AI classification):**
 List any parts across all remaining titles that don't map cleanly to a domain code. These become
 explicit AI fallback cases with suggested domain codes.
-
-**Missing allowlist data (if Session 2-D was unavailable):**
-Note which Tier 3 titles could not be mapped due to blocked P1_S2-D, and estimate which titles are
-most important to prioritize when the block is resolved.
 
 ---
 
