@@ -177,16 +177,61 @@ sessions:
     sub: null
     title: Deep Taxonomy — Compounding + Controlled Substances
     description: L3-L6 nodes for Cedar's two highest-priority regulatory domains
-    status: planned
+    status: splintered
     dependencies:
       - P1_S4
     context_inputs:
       - research/outputs/part1/P1_S4.md
     execution_route: web
     prompt_file: research/prompts/part1/S5-deep-compounding-controlled.md
-    output_file: research/outputs/part1/P1_S5.md
-    context_pack_file: research/context-packs/part1/P1_S5.yaml
+    output_file: null
+    context_pack_file: research/context-packs/part1/P1_S5-combined.yaml
     splinter_parent: null
+    splinter_children:
+      - P1_S5-A
+      - P1_S5-B
+    metadata:
+      splinter_reason: >-
+        Two branches (Compounding 40-60 nodes + Controlled Substances 40-60 nodes) = 80-120 nodes
+        with full metadata each. Estimated output exceeds single-session quality threshold.
+      splinter_strategy: Split by branch — one session per primary regulatory domain
+    prefetch: []
+  - id: P1_S5-A
+    part: 1
+    session: 5
+    sub: A
+    title: Deep Taxonomy — Compounding Branch (L3-L6)
+    description: 40-60 nodes covering 503A, 503B, USP standards, sterile compounding, ingredient sourcing, enforcement, state board, practice-specific compounding
+    status: planned
+    dependencies:
+      - P1_S4
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S5-A-compounding-taxonomy.md
+    output_file: research/outputs/part1/P1_S5-A.md
+    context_pack_file: research/context-packs/part1/P1_S5-A.yaml
+    splinter_parent: P1_S5
+    splinter_children: []
+    prefetch: []
+  - id: P1_S5-B
+    part: 1
+    session: 5
+    sub: B
+    title: Deep Taxonomy — Controlled Substances Branch (L3-L6)
+    description: 40-60 nodes covering DEA registration, prescribing, EPCS, PDMP, schedule classifications, dispensing, opioids, recordkeeping, security, disposal, telehealth CS prescribing
+    status: planned
+    dependencies:
+      - P1_S4
+      - P1_S5-A
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5-A.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S5-B-controlled-substances-taxonomy.md
+    output_file: research/outputs/part1/P1_S5-B.md
+    context_pack_file: research/context-packs/part1/P1_S5-B.yaml
+    splinter_parent: P1_S5
     splinter_children: []
     prefetch: []
   - id: P1_S6
@@ -195,18 +240,70 @@ sessions:
     sub: null
     title: Deep Taxonomy — FDA Regulation + Telehealth
     description: L3-L6 nodes for FDA and Telehealth branches
-    status: planned
+    status: splintered
     dependencies:
       - P1_S4
       - P1_S5
     context_inputs:
       - research/outputs/part1/P1_S4.md
-      - research/outputs/part1/P1_S5.md
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
     execution_route: web
     prompt_file: research/prompts/part1/S6-deep-fda-telehealth.md
-    output_file: research/outputs/part1/P1_S6.md
-    context_pack_file: research/context-packs/part1/P1_S6.yaml
+    output_file: null
+    context_pack_file: research/context-packs/part1/P1_S6-combined.yaml
     splinter_parent: null
+    splinter_children:
+      - P1_S6-A
+      - P1_S6-B
+    metadata:
+      splinter_reason: >-
+        Two branches (FDA Regulation 50-70 nodes + Telehealth 30-45 nodes) = 80-115 nodes
+        with full metadata each. Estimated output exceeds single-session quality threshold.
+      splinter_strategy: Split by branch — one session per primary regulatory domain
+    prefetch: []
+  - id: P1_S6-A
+    part: 1
+    session: 6
+    sub: A
+    title: Deep Taxonomy — FDA Regulation Branch (L3-L6)
+    description: 50-70 nodes covering drug regulation, device regulation, biologics, dietary supplements, MoCRA/cosmetics, advertising, clinical trials, FDA enforcement
+    status: planned
+    dependencies:
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S6-A-fda-regulation-taxonomy.md
+    output_file: research/outputs/part1/P1_S6-A.md
+    context_pack_file: research/context-packs/part1/P1_S6-A.yaml
+    splinter_parent: P1_S6
+    splinter_children: []
+    prefetch: []
+  - id: P1_S6-B
+    part: 1
+    session: 6
+    sub: B
+    title: Deep Taxonomy — Telehealth Branch (L3-L6)
+    description: 30-45 nodes covering telehealth prescribing, state licensure, billing, technology requirements, RPM, modalities, cross-state issues, informed consent
+    status: planned
+    dependencies:
+      - P1_S4
+      - P1_S5-B
+      - P1_S6-A
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S6-B-telehealth-taxonomy.md
+    output_file: research/outputs/part1/P1_S6-B.md
+    context_pack_file: research/context-packs/part1/P1_S6-B.yaml
+    splinter_parent: P1_S6
     splinter_children: []
     prefetch: []
   - id: P1_S7
@@ -215,20 +312,97 @@ sessions:
     sub: null
     title: Remaining Taxonomy Branches
     description: L3-L4 nodes for HIPAA, Medicare, Fraud, Operations, Workplace Safety, Employment, Tax
-    status: planned
+    status: splintered
     dependencies:
       - P1_S4
       - P1_S5
       - P1_S6
     context_inputs:
       - research/outputs/part1/P1_S4.md
-      - research/outputs/part1/P1_S5.md
-      - research/outputs/part1/P1_S6.md
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+      - research/outputs/part1/P1_S6-B.md
     execution_route: web
     prompt_file: research/prompts/part1/S7-remaining-branches.md
-    output_file: research/outputs/part1/P1_S7.md
-    context_pack_file: research/context-packs/part1/P1_S7.yaml
+    output_file: null
+    context_pack_file: research/context-packs/part1/P1_S7-combined.yaml
     splinter_parent: null
+    splinter_children:
+      - P1_S7-A
+      - P1_S7-B
+      - P1_S7-C
+    metadata:
+      splinter_reason: >-
+        Six branches (HIPAA 25-35 + Medicare 30-40 + Fraud 15-20 + Operations 15-25 + Safety 8-12 +
+        Employment 8-12 nodes) plus cross-classification master table = 100-145 nodes total plus synthesis
+        deliverable. Exceeds single-session quality threshold.
+      splinter_strategy: >-
+        S7-A handles HIPAA+Medicare (independent of S5/S6). S7-B handles Fraud+Operations+Safety+Employment
+        (also independent). S7-C synthesizes the cross-classification master table from all prior taxonomy outputs.
+    prefetch: []
+  - id: P1_S7-A
+    part: 1
+    session: 7
+    sub: A
+    title: Remaining Taxonomy — HIPAA & Privacy + Medicare & Billing Branches (L3-L4)
+    description: 55-75 nodes covering HIPAA Privacy Rule, Security Rule, Breach Notification, Business Associates, Enforcement, 42 CFR Part 2, Information Blocking, State Privacy Laws, and full Medicare & Billing branch
+    status: planned
+    dependencies:
+      - P1_S4
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S7-A-hipaa-medicare-taxonomy.md
+    output_file: research/outputs/part1/P1_S7-A.md
+    context_pack_file: research/context-packs/part1/P1_S7-A.yaml
+    splinter_parent: P1_S7
+    splinter_children: []
+    prefetch: []
+  - id: P1_S7-B
+    part: 1
+    session: 7
+    sub: B
+    title: Remaining Taxonomy — Fraud/Compliance + Operations + Workplace Safety + Employment/Tax Branches (L3-L4)
+    description: 45-70 nodes covering Anti-Kickback, Stark, FCA, OIG Exclusions, Compliance Programs, Professional/Facility Licensing, Corporate Structure, Accreditation, OSHA, Environmental, Employment, Healthcare Tax
+    status: planned
+    dependencies:
+      - P1_S4
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S7-B-fraud-operations-safety-employment-taxonomy.md
+    output_file: research/outputs/part1/P1_S7-B.md
+    context_pack_file: research/context-packs/part1/P1_S7-B.yaml
+    splinter_parent: P1_S7
+    splinter_children: []
+    prefetch: []
+  - id: P1_S7-C
+    part: 1
+    session: 7
+    sub: C
+    title: Cross-Classification Master Table
+    description: Comprehensive table of every cross-classification trigger across the full taxonomy (all S5-S7 branches) — the implementable reference for multi-domain assignment logic
+    status: planned
+    dependencies:
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+      - research/outputs/part1/P1_S6-B.md
+      - research/outputs/part1/P1_S7-A.md
+      - research/outputs/part1/P1_S7-B.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S7-C-cross-classification-master-table.md
+    output_file: research/outputs/part1/P1_S7-C.md
+    context_pack_file: research/context-packs/part1/P1_S7-C.yaml
+    splinter_parent: P1_S7
     splinter_children: []
     prefetch: []
   - id: P1_S8
@@ -237,7 +411,7 @@ sessions:
     sub: null
     title: CFR-to-Domain Mapping Table
     description: Exhaustive mapping of every relevant CFR part to domain taxonomy codes
-    status: planned
+    status: splintered
     dependencies:
       - P1_S2
       - P1_S4
@@ -250,15 +424,120 @@ sessions:
       - research/outputs/part1/P1_S2-C.md
       - research/outputs/part1/P1_S2-D.md
       - research/outputs/part1/P1_S4.md
-      - research/outputs/part1/P1_S5.md
-      - research/outputs/part1/P1_S6.md
-      - research/outputs/part1/P1_S7.md
-    execution_route: api
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+      - research/outputs/part1/P1_S6-B.md
+      - research/outputs/part1/P1_S7-A.md
+      - research/outputs/part1/P1_S7-B.md
+    execution_route: web
     prompt_file: research/prompts/part1/S8-cfr-domain-mapping.md
-    output_file: research/outputs/part1/P1_S8.md
-    context_pack_file: research/context-packs/part1/P1_S8.yaml
-    max_output_tokens: 65536
+    output_file: null
+    context_pack_file: research/context-packs/part1/P1_S8-combined.yaml
     splinter_parent: null
+    splinter_children:
+      - P1_S8-A
+      - P1_S8-B
+      - P1_S8-C
+    metadata:
+      splinter_reason: >-
+        CFR mapping table for ~150+ Title 21+42 parts + ~100-150 remaining title parts + agency/openFDA
+        mapping tables + implementation reference = 350-400 rows of dense tabular data plus prose. Far
+        exceeds single-session output quality threshold.
+      splinter_strategy: >-
+        S8-A maps Titles 21 and 42 (the largest). S8-B maps all remaining titles. S8-C synthesizes
+        agency mapping, openFDA mapping, and implementation reference after S8-A/B are complete.
+    prefetch: []
+  - id: P1_S8-A
+    part: 1
+    session: 8
+    sub: A
+    title: CFR-to-Domain Mapping — Titles 21 and 42
+    description: ~150-200 mapping rows for Title 21 (FDA + DEA) and Title 42 (CMS + OIG + PHS) — the two largest and most healthcare-relevant CFR titles
+    status: planned
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-A.md
+      - research/outputs/part1/P1_S2-B.md
+      - research/outputs/part1/P1_S2-C.md
+      - research/outputs/part1/P1_S2-D.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+      - research/outputs/part1/P1_S6-B.md
+      - research/outputs/part1/P1_S7-A.md
+      - research/outputs/part1/P1_S7-B.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S8-A-cfr-mapping-titles-21-42.md
+    output_file: research/outputs/part1/P1_S8-A.md
+    context_pack_file: research/context-packs/part1/P1_S8-A.yaml
+    splinter_parent: P1_S8
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B
+    part: 1
+    session: 8
+    sub: B
+    title: CFR-to-Domain Mapping — All Remaining Titles
+    description: ~100-150 mapping rows for Titles 45, 29, 26, 16, 47, 28, 32, 38, 20, 49, 10, 40, 2 — all remaining relevant CFR titles from S2-C and S2-D
+    status: planned
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-A.md
+      - research/outputs/part1/P1_S2-B.md
+      - research/outputs/part1/P1_S2-C.md
+      - research/outputs/part1/P1_S2-D.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S5-A.md
+      - research/outputs/part1/P1_S5-B.md
+      - research/outputs/part1/P1_S6-A.md
+      - research/outputs/part1/P1_S6-B.md
+      - research/outputs/part1/P1_S7-A.md
+      - research/outputs/part1/P1_S7-B.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S8-B-cfr-mapping-remaining-titles.md
+    output_file: research/outputs/part1/P1_S8-B.md
+    context_pack_file: research/context-packs/part1/P1_S8-B.yaml
+    splinter_parent: P1_S8
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-C
+    part: 1
+    session: 8
+    sub: C
+    title: Agency Mapping + openFDA Mapping + Implementation Reference
+    description: Agency-to-domain table (~30-50 rows), openFDA-to-domain table (~30-50 rows), rule count summary, SQL seed data template, gaps requiring AI fallback
+    status: planned
+    dependencies:
+      - P1_S8-A
+      - P1_S8-B
+      - P1_S4
+    context_inputs:
+      - research/outputs/part1/P1_S8-A.md
+      - research/outputs/part1/P1_S8-B.md
+      - research/outputs/part1/P1_S4.md
+    execution_route: web
+    prompt_file: research/prompts/part1/S8-C-agency-openfda-implementation.md
+    output_file: research/outputs/part1/P1_S8-C.md
+    context_pack_file: research/context-packs/part1/P1_S8-C.yaml
+    splinter_parent: P1_S8
     splinter_children: []
     prefetch: []
   - id: P2
@@ -272,7 +551,9 @@ sessions:
       - P1_S8
       - P1_S3
     context_inputs:
-      - research/outputs/part1/P1_S8.md
+      - research/outputs/part1/P1_S8-A.md
+      - research/outputs/part1/P1_S8-B.md
+      - research/outputs/part1/P1_S8-C.md
       - research/outputs/part1/P1_S3.md
     execution_route: api
     prompt_file: research/prompts/part2/mega-prompt-pipeline.md
@@ -281,7 +562,10 @@ sessions:
     splinter_parent: null
     splinter_children: []
     metadata:
-      notes: This mega-prompt will be auto-splintered into 4-8 sub-sessions
+      notes: >-
+        This mega-prompt will be auto-splintered into 4-8 sub-sessions. context_inputs updated
+        to reference P1_S8 children's raw outputs (P1_S8-A, P1_S8-B, P1_S8-C) since P1_S8 is
+        now splintered — P1_S8.md will not exist.
     prefetch: []
   - id: P3
     part: 3
@@ -294,7 +578,9 @@ sessions:
       - P1_S8
       - P1_S4
     context_inputs:
-      - research/outputs/part1/P1_S8.md
+      - research/outputs/part1/P1_S8-A.md
+      - research/outputs/part1/P1_S8-B.md
+      - research/outputs/part1/P1_S8-C.md
       - research/outputs/part1/P1_S4.md
     execution_route: api
     prompt_file: research/prompts/part3/mega-prompt-sources.md
@@ -304,6 +590,7 @@ sessions:
     splinter_children: []
     metadata:
       notes: >-
-        This mega-prompt will be auto-splintered into 4-8 sub-sessions. Part 3 also depends on Part 2 outputs — the
-        splintered sub-sessions will have refined dependencies.
+        This mega-prompt will be auto-splintered into 4-8 sub-sessions. Part 3 also depends on Part 2
+        outputs — the splintered sub-sessions will have refined dependencies. context_inputs updated to
+        reference P1_S8 children's raw outputs since P1_S8 is now splintered.
     prefetch: []

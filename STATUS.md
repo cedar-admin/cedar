@@ -24,7 +24,34 @@ Last updated: March 22, 2026 by Session 27
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 27 audited and fixed the research orchestrator for internal consistency, operator safety, and provenance.
+Session 28 pre-splintered Part 1 research sessions P1_S5, P1_S6, P1_S7, and P1_S8 before they run.
+
+**What was done:**
+1. **Manifest updated** — P1_S5, P1_S6, P1_S7, P1_S8 marked as `splintered` (status, output_file: null, combined context_pack_file, splinter_children populated)
+2. **10 new sub-session prompt files written** — all complete, self-contained research prompts:
+   - P1_S5-A: Compounding Branch L3-L6 (40-60 nodes)
+   - P1_S5-B: Controlled Substances Branch L3-L6 (40-60 nodes)
+   - P1_S6-A: FDA Regulation Branch L3-L6 (50-70 nodes)
+   - P1_S6-B: Telehealth Branch L3-L6 (30-45 nodes)
+   - P1_S7-A: HIPAA & Privacy + Medicare & Billing L3-L4 (55-75 nodes)
+   - P1_S7-B: Fraud/Compliance + Operations + Safety + Employment L3-L4 (45-70 nodes)
+   - P1_S7-C: Cross-Classification Master Table (synthesis of all S5-S7 branches)
+   - P1_S8-A: CFR Mapping Titles 21 & 42 (~150-200 rows)
+   - P1_S8-B: CFR Mapping All Remaining Titles (~100-150 rows)
+   - P1_S8-C: Agency + openFDA Mapping + Implementation Reference
+3. **P2 and P3 context_inputs updated** — now reference P1_S8-A/B/C raw outputs (P1_S8.md won't exist)
+4. **DAG validated** — no cycles, all 10 new sub-sessions show as planned, P1_S4 still the only ready session
+
+**DAG after splintering:**
+- Splintered parents: 5 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8)
+- Total sessions: 24 (was 14 before this session)
+- Complete: 5 | Splintered: 5 | Blocked: 1 | Planned: 13 | Ready: 1 (P1_S4)
+
+**Notes on orchestrator behavior with splintered parents:**
+The orchestrator's `isDependencySatisfied` correctly treats a splintered parent as satisfied when all
+its children are complete. Downstream sessions (P2, P3) depend on P1_S8 and will be unblocked when
+P1_S8-A, P1_S8-B, and P1_S8-C are all complete. P2/P3 context_inputs have been updated to directly
+reference the P1_S8 children's raw output files.
 
 **Findings (ordered by severity):**
 
@@ -54,24 +81,29 @@ Session 27 audited and fixed the research orchestrator for internal consistency,
 ```
 DAG Status:
   ✅ complete: 5 (P1_S1, P1_S2-A, P1_S2-B, P1_S2-C, P1_S3)
-  🔀 splintered: 1 (P1_S2)
+  🔀 splintered: 5 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8)
   🔴 blocked: 1 (P1_S2-D)
-  📋 planned: 7 (P1_S4 through P1_S8, P2, P3)
+  📋 planned: 13 (P1_S4, P1_S5-A/B, P1_S6-A/B, P1_S7-A/B/C, P1_S8-A/B/C, P2, P3)
   🟢 ready: 1 (P1_S4)
 
-Critical path: P1_S4 → P1_S5 → P1_S6 → P1_S7 → P1_S8 → P2
-Progress: 6/14 sessions complete/splintered
+Critical path: P1_S4 → P1_S5-A → P1_S5-B → P1_S6-A → P1_S6-B → P1_S8-A → P1_S8-C
+Progress: 10/24 sessions complete/splintered
 
 Next session ready: P1_S4 [WEB] — Domain Taxonomy L1/L2 Structure
   Dependencies: P1_S1 ✅, P1_S3 ✅
   Run: npm run research -- run P1_S4
+
+After P1_S4 completes, 3 sessions become ready simultaneously:
+  P1_S5-A [WEB] — Compounding Branch (critical path)
+  P1_S7-A [WEB] — HIPAA & Privacy + Medicare & Billing (parallel)
+  P1_S7-B [WEB] — Fraud/Compliance + Operations + Safety + Employment (parallel)
 ```
 
 ## Next Session Priority
 **Research pipeline execution — begin P1_S4:**
-1. Run `npm run research -- run P1_S4` to prepare web session package
-2. Execute in claude.ai, save output to `research/outputs/part1/P1_S4.md`
-3. Run `npm run research -- complete P1_S4` to generate context pack and unlock P1_S5
+1. Run `npm run research -- run P1_S4` to prepare web session package (package already exists locally at `research/outputs/part1/P1_S4-package.md`)
+2. Execute in claude.ai (Extended Research / Opus), save output to `research/outputs/part1/P1_S4.md`
+3. Run `npm run research -- complete P1_S4` to generate context pack and unlock P1_S5-A, P1_S7-A, P1_S7-B
 
 **Previous priorities (still pending after orchestrator work):**
 3. **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
