@@ -654,7 +654,7 @@ sessions:
     description: >-
       Agency-to-domain table (~30-50 rows), openFDA-to-domain table (~30-50 rows), rule count summary, SQL seed data
       template, gaps requiring AI fallback
-    status: planned
+    status: complete
     dependencies:
       - P1_S8-A
       - P1_S8-B
@@ -679,6 +679,12 @@ sessions:
     splinter_parent: P1_S8
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 89472
+        output: 3329
+      stop_reason: end_turn
+    completed_at: "2026-03-23T21:14:06.902Z"
   - id: P2
     part: 2
     session: 0
