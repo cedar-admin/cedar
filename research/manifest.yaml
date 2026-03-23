@@ -857,7 +857,7 @@ sessions:
     description: >-
       Anchor cost model to S8-C's coverage numbers. Calculate 22→458 rule expansion ROI. Per-stage accuracy, error
       taxonomy, HITL priority algorithm, PRP sequencing, state source flags, monitoring metrics.
-    status: planned
+    status: complete
     dependencies:
       - P1_S8-C
       - P2_S1
@@ -879,6 +879,12 @@ sessions:
     splinter_parent: P2
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 80258
+        output: 7352
+      stop_reason: end_turn
+    completed_at: "2026-03-23T23:33:06.430Z"
   - id: P3
     part: 3
     session: 0
