@@ -894,7 +894,7 @@ sessions:
     description: >-
       Map Title 26 (Internal Revenue) healthcare tax regulations and Title 16 (FTC) health claims and data security
       regulations from the allowlist.
-    status: running
+    status: complete
     dependencies:
       - P1_S2
       - P1_S4
@@ -915,6 +915,12 @@ sessions:
     splinter_parent: P1_S8-B
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 51023
+        output: 2546
+      stop_reason: end_turn
+    completed_at: "2026-03-23T20:22:14.117Z"
   - id: P1_S8-B-D
     part: 1
     session: 8
