@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 23, 2026 by Session 29
+Last updated: March 23, 2026 by Session 32
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,39 +13,42 @@ Last updated: March 23, 2026 by Session 29
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete — all 54 UI files compliant. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. |
 
 ## Codebase Stats
 - **~15,867 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
 - **16** dashboard routes, **9** API routes
-- **0** shadcn/ui components, **21** Radix Themes composite components
-- **119** git commits on main
+- **0** shadcn/ui components, **25** Radix Themes composite components (4 new: SectionHeading, AiBadge, HashWithCopy, FilterPills)
+- **121** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 31 completed the entire Part 2 research pipeline (5 sessions).
+Session 32 executed PRP: core-dashboard-ux-normalization. All 3 P0 issues and all in-scope P1 issues resolved.
 
 **What was built:**
-- Added P2_S1–P2_S5 to the orchestrator manifest (replaced the P2 placeholder, marked it splintered)
-- Diagnosed and fixed auth failure: Claude Code injects `ANTHROPIC_API_KEY=` (empty string) into the shell, overriding `.env.local` — fix is `env -u ANTHROPIC_API_KEY npm run orchestrator`
-- Ran Wave 1 (P2_S1 + P2_S2 + P2_S3 in parallel), Wave 2 (P2_S4), Wave 3 (P2_S5)
 
-**Part 2 outputs produced:**
-- P2_S1: Inngest pipeline architecture + Stages 1-2 spec — TypeScript interfaces, `classification_rules` schema, Stage 1 CFR part lookup, Stage 2 agency/doc-type scoring, AI-fallback flagging for 12 device/drug parts
-- P2_S2: Stage 3a keyword engine — full 237-keyword → domain code mapping, K score matching functions, S7-C cross-classification trigger operationalization, disambiguation engine for 42 homonym-risk phrases. ⚠️ Research Objective 5 (full SQL seed data + Inngest function) truncated at 32K output limit — core logic complete, implementation artifacts partial
-- P2_S3: Stage 3b semantic embedding strategy — shelf-ready spec, model evaluation, pgvector config, activation criteria tied to Stage 4 cost
-- P2_S4: Stages 4-5 AI classifier + irrelevance confirmation — Claude prompt templates, batching strategy, confidence tiers, HITL integration, feedback loop
-- P2_S5: Cost model + accuracy budget + integration reference — per-stage cost anchored to S8-C's 85%/75%/95%/25% coverage numbers, error taxonomy, PRP sequencing
+*Phase 1 — Shared primitives (4 new components):*
+- `SectionHeading` — enforces `size="3"` in cards, `size="4"` standalone; forward `id` for aria-labelledby
+- `AiBadge` + `AiDisclaimer` — complete AI trust pattern: badge chip on every AI surface; inline disclaimer scoped to card body on detail views
+- `HashWithCopy` — 8-char truncated hash + clipboard copy with transient check icon
+- `FilterPills` — unified `text-sm` filter pill row; accepts per-pill `activeClass` override for severity coloring
 
-**Token usage:**
-| Session | In | Out | Status |
-|---|---|---|---|
-| P2_S1 | 35,145 | 14,330 | ✅ Clean |
-| P2_S2 | 65,813 | 32,000 | ⚠️ Truncated (Obj 5) |
-| P2_S3 | 26,060 | 7,533 | ✅ Clean |
-| P2_S4 | 66,869 | 16,732 | ✅ Clean |
-| P2_S5 | 80,258 | 7,352 | ✅ Clean |
+*Phase 2 — Nav/wayfinding:*
+- Sidebar: "My Practice" → "Settings"
+- `/sources` h1: "Source Library" → "Sources"
+
+*Phase 3 — Primary journey:*
+- `/home`: activity feed shows source name (small gray) + summary (14px) + AiBadge; card headings `size="3"`; stat cards use Radix `<Text>` + `<Grid>`; sentence case throughout
+- `/changes`: `ChangeTableRow` client component — full-row click, `tabIndex`, Enter key nav, trailing chevron; `FilterPills` replaces inline pill markup
+- `/changes/[id]`: h1 is change summary text; subtitle shows source name as secondary metadata; AI Summary card has `SectionHeading` + `AiBadge` + `AiDisclaimer`; page-level `LegalDisclaimer` removed; `HashWithCopy` on hash field
+- `/library`: `FilterPills` replaces inline pill markup; `DomainCard` pseudo-element pattern — full-card click via `::after` overlay; hover is bg highlight only (no green text)
+
+*Phase 4 — Secondary pages:*
+- `/settings`: all card headings → `SectionHeading`; sentence case
+- `/audit`: `HashWithCopy` replaces truncated hash span
+
+*Also fixed:* pre-existing `pnpm-lock.yaml` drift (`@playwright/test` added to package.json without lockfile update) — unblocked Vercel deploys.
 
 ## Research Pipeline State
 ```
@@ -61,6 +64,8 @@ Progress: 38/39 sessions complete/splintered
 ## Next Session Priority
 **Research pipeline — P3 is ready.**
 P3: Non-Federal Sources, Authority Levels, Ingestion Protocol. This session will need splintering (mega-prompt placeholder). Run the orchestrator splinter command first, then execute sub-sessions.
+
+**Or:** Trigger Phase 3 scoring pipeline (see "Previous priorities" below) — library category counts will show 0 until this runs.
 
 **Open items from P2:**
 - P2_S2 Research Objective 5 incomplete (SQL seed data only covers 5 representative domains; Inngest function truncated). Consider running a P2_S2-B continuation if full implementation artifacts are needed before building.
