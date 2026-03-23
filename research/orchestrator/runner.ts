@@ -4,7 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { readFile, writeFile, resolveFromRoot, log, warn, success, error as logError } from './utils.js';
-import { getSession, saveManifest, updateManifest, updateSessionStatus } from './manifest.js';
+import { getSession, saveManifest, updateManifest, updateSessionStatus, acquireGitLock, releaseGitLock } from './manifest.js';
 import { checkDependencies } from './dag.js';
 import { estimateSessionSize } from './token-counter.js';
 import { SessionStatus } from './types.js';
@@ -117,8 +117,15 @@ export async function runApiSession(
 
   success(`Session ${session.id} complete (${response.usage.input_tokens} in, ${response.usage.output_tokens} out)`);
 
-  // 12. Auto-commit and push output + manifest
+  // 12. Auto-commit and push output + manifest (serialized via git lock)
+  await acquireGitLock();
   try {
+    // Pull latest so parallel sessions don't create diverged commits
+    const pat = process.env.GITHUB_PAT;
+    if (pat) {
+      execSync(`git remote set-url origin "https://${pat}@github.com/cedar-admin/cedar.git"`, { stdio: 'pipe' });
+      execSync('git pull --rebase origin main', { stdio: 'pipe' });
+    }
     const manifestPath = resolveFromRoot('research/manifest.yaml');
     const outputPath = resolveFromRoot(session.output_file!);
     execSync(`git add "${manifestPath}" "${outputPath}"`, { stdio: 'pipe' });
@@ -126,9 +133,7 @@ export async function runApiSession(
       `git commit -m "research: ${session.id} complete (${response.usage.input_tokens}in/${response.usage.output_tokens}out)"`,
       { stdio: 'pipe' }
     );
-    const pat = process.env.GITHUB_PAT;
     if (pat) {
-      execSync(`git remote set-url origin "https://${pat}@github.com/cedar-admin/cedar.git"`, { stdio: 'pipe' });
       execSync('git push origin main', { stdio: 'pipe' });
       execSync('git remote set-url origin "https://github.com/cedar-admin/cedar.git"', { stdio: 'pipe' });
       log(`📤 Pushed ${session.id} output to GitHub`);
@@ -136,7 +141,9 @@ export async function runApiSession(
       warn(`GITHUB_PAT not set — skipping push (committed locally)`);
     }
   } catch (e: any) {
-    warn(`Auto-commit failed: ${e.message}`);
+    warn(`Auto-commit/push failed: ${e.message}`);
+  } finally {
+    releaseGitLock();
   }
 }
 

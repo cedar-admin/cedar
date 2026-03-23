@@ -7,25 +7,35 @@ import type { Manifest, Session, SessionStatus } from './types.js';
 
 const MANIFEST_PATH = 'research/manifest.yaml';
 const LOCK_PATH = 'research/manifest.lock';
+const GIT_LOCK_PATH = 'research/git.lock';
 
-async function acquireLock(timeoutMs = 15000): Promise<void> {
-  const lockPath = resolveFromRoot(LOCK_PATH);
+async function acquireLock(lockPath: string, timeoutMs = 15000): Promise<void> {
+  const absPath = resolveFromRoot(lockPath);
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
       // O_EXCL + O_CREAT is atomic — fails if file already exists
-      const fd = openSync(lockPath, 'wx');
+      const fd = openSync(absPath, 'wx');
       closeSync(fd);
       return;
     } catch {
       await new Promise(r => setTimeout(r, 50 + Math.random() * 100));
     }
   }
-  throw new Error('Could not acquire manifest lock after 15s — stale lock file?');
+  throw new Error(`Could not acquire lock on ${lockPath} after 15s — stale lock file?`);
 }
 
-function releaseLock(): void {
-  try { unlinkSync(resolveFromRoot(LOCK_PATH)); } catch {}
+function releaseLock(lockPath: string): void {
+  try { unlinkSync(resolveFromRoot(lockPath)); } catch {}
+}
+
+/** Serialize git add/commit/push across parallel sessions */
+export async function acquireGitLock(): Promise<void> {
+  return acquireLock(GIT_LOCK_PATH, 60000); // longer timeout — push can be slow
+}
+
+export function releaseGitLock(): void {
+  releaseLock(GIT_LOCK_PATH);
 }
 
 /**
@@ -34,14 +44,14 @@ function releaseLock(): void {
  * Always use this instead of bare saveManifest() when running parallel sessions.
  */
 export async function updateManifest(updater: (manifest: Manifest) => void): Promise<Manifest> {
-  await acquireLock();
+  await acquireLock(LOCK_PATH);
   try {
     const manifest = await loadManifest();
     updater(manifest);
     await saveManifest(manifest);
     return manifest;
   } finally {
-    releaseLock();
+    releaseLock(LOCK_PATH);
   }
 }
 
