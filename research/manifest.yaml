@@ -365,7 +365,7 @@ sessions:
     description: >-
       30-45 nodes covering telehealth prescribing, state licensure, billing, technology requirements, RPM, modalities,
       cross-state issues, informed consent
-    status: planned
+    status: complete
     dependencies:
       - P1_S4
       - P1_S5-B
@@ -382,6 +382,12 @@ sessions:
     splinter_parent: P1_S6
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 59865
+        output: 10461
+      stop_reason: end_turn
+    completed_at: "2026-03-23T18:23:47.660Z"
   - id: P1_S7
     part: 1
     session: 7
