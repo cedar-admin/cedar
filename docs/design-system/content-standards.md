@@ -10,12 +10,14 @@
 
 | Concern | Document |
 |---|---|
-| Colors, typography, spacing, elevation, iconography, component visual specs | `design-standards.md` |
-| HTML semantics, component structure, ARIA roles, DOM hierarchy, responsive breakpoints | `frontend-standards.md` |
-| Interaction patterns, animations, focus management, navigation flows, loading states | `ux-standards.md` |
-| **Every human-readable text string**: wording, voice, tone, capitalization, terminology, length, copy formulas, accessibility labels, disclaimers | **`content-standards.md`** (this file) |
+| Density parameters, chunking, grouping, progressive disclosure, truncation decisions, collection consumption | **This document** |
+| Visual specs, tokens, component props, color system | `design-standards.md` |
+| Semantic HTML structure, heading hierarchy, landmarks, accessibility markup | `frontend-standards.md` |
+| Interaction behavior, click/hover/scroll patterns | `ux-standards.md` |
+| Copy, voice, terminology, string constants | `content-standards.md` |
+| Visual personality, feel, reference directions | `art-direction.md` |
 
-When in doubt: if it is about *what text says* or *how text is phrased*, this document governs. If it is about *where text is rendered* or *how text looks*, defer to the other three.
+When in doubt: if it is about *what text says* or *how text is phrased*, this document governs. If it is about *where text is rendered* or *how text looks*, defer to the others.
 
 ---
 
