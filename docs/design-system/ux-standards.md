@@ -1,7 +1,7 @@
 # Cedar UX & Interaction Standards
 
-> **Purpose.** This document governs behavioral and interaction decisions — how the interface feels to use, what happens when a user interacts with something, and what consistency means across similar contexts. Read this before every frontend change alongside `design-standards.md` (visual decisions) and `frontend-standards.md` (structural/semantic decisions).
->
+> **Purpose.** This document governs behavioral and interaction decisions — how the interface feels to use, what happens when a user interacts with something, and what consistency means across similar contexts. Read this before every frontend change alongside `design-standards.md` (visual decisions) and `frontend-standards.md` (structural/semantic decisions). For decisions about how much information to show, how to group it, what belongs in summary vs detail views, and how dense a screen should be, defer to `information-density.md`.
+> 
 > **Audience.** An AI coding agent (Claude Code) that has perfect recall but zero intuition about what "feels right" to a human user. Every rule here is explicit about things a human designer would consider obvious.
 >
 > **When to consult.** Before building any new component, page, or interaction. Before modifying any existing interaction pattern. During code review of any frontend change.
@@ -50,11 +50,12 @@ Before building anything, answer these four questions in order:
 
 ### Purpose drives information density
 
-Match density to the page's purpose, not a universal aesthetic preference. Enterprise users develop spatial memory for dense interfaces — hiding information to achieve visual minimalism harms their efficiency. Progressive disclosure balances density with comprehension: show high-level snapshots first (dashboards and card faces), then drill into detail views.
+Interaction design and information density are related, but they are not the same. This document identifies the user's task so the correct interaction pattern can be chosen. The specific rules for density, chunking, progressive disclosure, truncation, and Tier 1/Tier 2/Tier 3 content live in `information-density.md`.
 
-- **High density**: Monitoring dashboards, audit logs, admin tables — users need many data points visible simultaneously
-- **Medium density**: Collection/browse views, regulation detail — primary content prominent, secondary content accessible via progressive disclosure
-- **Low density**: Settings forms, onboarding flows, confirmation dialogs — focused attention on a single task
+Use this rule of thumb:
+
+- If the question is **what interaction pattern supports the task** (table, card, feed, detail view, selection, navigation), this document governs.
+- If the question is **how much information should be visible and how it should be grouped**, `information-density.md` governs.
 
 ### Anti-patterns
 
