@@ -10,14 +10,14 @@
 
 | Concern | Document |
 |---|---|
-| Density parameters, chunking, grouping, progressive disclosure, truncation decisions, collection consumption | **This document** |
 | Visual specs, tokens, component props, color system | `design-standards.md` |
 | Semantic HTML structure, heading hierarchy, landmarks, accessibility markup | `frontend-standards.md` |
 | Interaction behavior, click/hover/scroll patterns | `ux-standards.md` |
-| Copy, voice, terminology, string constants | `content-standards.md` |
-| Visual personality, feel, reference directions | `art-direction.md` |
+| Density parameters, chunking, grouping, progressive disclosure, truncation decisions, collection consumption | `information-density.md` |
+| What Cedar should feel like, visual personality, design sensibility, reference directions, what to avoid | `art-direction.md` |
+| **Every human-readable text string: wording, voice, tone, capitalization, terminology, length, formulas, labels, disclaimers** | **`content-standards.md`** |
 
-When in doubt: if it is about *what text says* or *how text is phrased*, this document governs. If it is about *where text is rendered* or *how text looks*, defer to the others.
+When in doubt: if it is about what text says or how text is phrased, this document governs. If it is about where text is rendered, how much text is shown, how text behaves, or how text looks, defer to the relevant companion document.
 
 ---
 
