@@ -691,25 +691,175 @@ sessions:
     sub: null
     title: Classification Pipeline, Embeddings, Cost Model
     description: 5-stage pipeline design, semantic embedding strategy, AI classifier spec, cost model, accuracy budget
-    status: planned
+    status: splintered
     dependencies:
-      - P1_S8
       - P1_S3
-    context_inputs:
-      - research/outputs/part1/P1_S8-A.md
-      - research/outputs/part1/P1_S8-B.md
-      - research/outputs/part1/P1_S8-C.md
-      - research/outputs/part1/P1_S3.md
+      - P1_S2-F
+      - P1_S4
+      - P1_S7-C
+      - P1_S8-C
+    context_inputs: []
     execution_route: api
     prompt_file: research/prompts/part2/mega-prompt-pipeline.md
     output_file: null
     context_pack_file: null
     splinter_parent: null
-    splinter_children: []
+    splinter_children:
+      - P2_S1
+      - P2_S2
+      - P2_S3
+      - P2_S4
+      - P2_S5
     metadata:
-      notes: >-
-        This mega-prompt will be auto-splintered into 4-8 sub-sessions. context_inputs updated to reference P1_S8
-        children's raw outputs (P1_S8-A, P1_S8-B, P1_S8-C) since P1_S8 is now splintered — P1_S8.md will not exist.
+      splinter_reason: >-
+        Part 2 decomposed into 5 focused sessions per P2_manifest.md — parallel Wave 1 (S1/S2/S3), sequential Wave 2 (S4
+        after S1), synthesis Wave 3 (S5 after all).
+      splinter_strategy: >-
+        S1 pipeline architecture, S2 keyword engine, S3 embedding strategy run in parallel. S4 AI classifier runs after
+        S1 completes. S5 cost/integration synthesis runs last.
+    prefetch: []
+  - id: P2_S1
+    part: 2
+    session: 1
+    sub: null
+    title: Pipeline Architecture + Stages 1-2
+    description: >-
+      Translate S3's decision tree into Inngest pipeline. Implement S2-F's RELEVANT_PARTS as Stage 1 seed data.
+      Implement S8-C's 26 agency rows and S3's document type classifier as Stage 2. Design jurisdiction-scoped
+      classification_rules schema for 50-state expansion. Handle S8-A's 12 AI-fallback parts.
+    status: running
+    dependencies:
+      - P1_S2-F
+      - P1_S3
+      - P1_S8-A-C
+      - P1_S8-B-E
+      - P1_S8-C
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S3.md
+      - research/outputs/part1/P1_S8-A-C.md
+      - research/outputs/part1/P1_S8-B-E.md
+      - research/outputs/part1/P1_S8-C.md
+    execution_route: api
+    model: null
+    max_output_tokens: 32000
+    prompt_file: research/prompts/part2/P2_S1_pipeline-architecture.md
+    output_file: research/outputs/part2/P2_S1.md
+    context_pack_file: research/context-packs/part2/P2_S1.yaml
+    splinter_parent: P2
+    splinter_children: []
+    prefetch: []
+  - id: P2_S2
+    part: 2
+    session: 2
+    sub: null
+    title: Stage 3a — Keyword Classification Engine
+    description: >-
+      Map S3's 237 keywords to S4 domain codes. Implement K score rules as matching functions. Operationalize S7-C's 187
+      cross-classification triggers. Build disambiguation engine for S3's 42 homonym-risk phrases. Produce SQL seed data
+      and Inngest function.
+    status: running
+    dependencies:
+      - P1_S3
+      - P1_S4
+      - P1_S7-C
+    context_inputs:
+      - research/outputs/part1/P1_S3.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    model: null
+    max_output_tokens: 32000
+    prompt_file: research/prompts/part2/P2_S2_keyword-engine.md
+    output_file: research/outputs/part2/P2_S2.md
+    context_pack_file: research/context-packs/part2/P2_S2.yaml
+    splinter_parent: P2
+    splinter_children: []
+    prefetch: []
+  - id: P2_S3
+    part: 2
+    session: 3
+    sub: null
+    title: Stage 3b — Semantic Embedding Strategy
+    description: >-
+      Shelf-ready embedding spec. Model evaluation, deployment architecture, pgvector configuration, activation decision
+      criteria with specific measurable thresholds tied to Stage 4 cost.
+    status: complete
+    dependencies:
+      - P1_S4
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+    execution_route: api
+    model: null
+    max_output_tokens: 32000
+    prompt_file: research/prompts/part2/P2_S3_embedding-strategy.md
+    output_file: research/outputs/part2/P2_S3.md
+    context_pack_file: research/context-packs/part2/P2_S3.yaml
+    splinter_parent: P2
+    splinter_children: []
+    prefetch: []
+    metadata:
+      actual_tokens:
+        input: 26060
+        output: 7533
+      stop_reason: end_turn
+    completed_at: "2026-03-23T23:00:25.980Z"
+  - id: P2_S4
+    part: 2
+    session: 4
+    sub: null
+    title: Stages 4-5 — AI Classifier + Irrelevance Confirmation
+    description: >-
+      AI classifier for ~15-25% of entities escaping rules. Use S7-C's 187 triggers as few-shot examples. Handle S8-A
+      AI-fallback part refinement. Taxonomy pruning for ~390 nodes. Confidence tiers, HITL integration, feedback loop,
+      tunability.
+    status: planned
+    dependencies:
+      - P1_S4
+      - P1_S7-C
+      - P2_S1
+    context_inputs:
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+      - research/outputs/part2/P2_S1.md
+    execution_route: api
+    model: null
+    max_output_tokens: 32000
+    prompt_file: research/prompts/part2/P2_S4_ai-classifier.md
+    output_file: research/outputs/part2/P2_S4.md
+    context_pack_file: research/context-packs/part2/P2_S4.yaml
+    splinter_parent: P2
+    splinter_children: []
+    prefetch: []
+  - id: P2_S5
+    part: 2
+    session: 5
+    sub: null
+    title: Cost Model + Accuracy Budget + Integration Reference
+    description: >-
+      Anchor cost model to S8-C's coverage numbers. Calculate 22→458 rule expansion ROI. Per-stage accuracy, error
+      taxonomy, HITL priority algorithm, PRP sequencing, state source flags, monitoring metrics.
+    status: planned
+    dependencies:
+      - P1_S8-C
+      - P2_S1
+      - P2_S2
+      - P2_S3
+      - P2_S4
+    context_inputs:
+      - research/outputs/part1/P1_S8-C.md
+      - research/outputs/part2/P2_S1.md
+      - research/outputs/part2/P2_S2.md
+      - research/outputs/part2/P2_S3.md
+      - research/outputs/part2/P2_S4.md
+    execution_route: api
+    model: null
+    max_output_tokens: 32000
+    prompt_file: research/prompts/part2/P2_S5_cost-accuracy-integration.md
+    output_file: research/outputs/part2/P2_S5.md
+    context_pack_file: research/context-packs/part2/P2_S5.yaml
+    splinter_parent: P2
+    splinter_children: []
     prefetch: []
   - id: P3
     part: 3
