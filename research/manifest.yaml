@@ -825,7 +825,7 @@ sessions:
       AI classifier for ~15-25% of entities escaping rules. Use S7-C's 187 triggers as few-shot examples. Handle S8-A
       AI-fallback part refinement. Taxonomy pruning for ~390 nodes. Confidence tiers, HITL integration, feedback loop,
       tunability.
-    status: planned
+    status: complete
     dependencies:
       - P1_S4
       - P1_S7-C
@@ -843,6 +843,12 @@ sessions:
     splinter_parent: P2
     splinter_children: []
     prefetch: []
+    metadata:
+      actual_tokens:
+        input: 66869
+        output: 16732
+      stop_reason: end_turn
+    completed_at: "2026-03-23T23:20:37.569Z"
   - id: P2_S5
     part: 2
     session: 5
