@@ -568,7 +568,7 @@ sessions:
     description: >-
       ~150-200 mapping rows for Title 21 (FDA + DEA) and Title 42 (CMS + OIG + PHS) — the two largest and most
       healthcare-relevant CFR titles
-    status: planned
+    status: splintered
     dependencies:
       - P1_S2
       - P1_S4
@@ -595,9 +595,12 @@ sessions:
     max_output_tokens: 32000
     prompt_file: research/prompts/part1/S8-A-cfr-mapping-titles-21-42.md
     output_file: research/outputs/part1/P1_S8-A.md
-    context_pack_file: research/context-packs/part1/P1_S8-A.yaml
+    context_pack_file: research/context-packs/part1/P1_S8-A-combined.yaml
     splinter_parent: P1_S8
-    splinter_children: []
+    splinter_children:
+      - P1_S8-A-A
+      - P1_S8-A-B
+      - P1_S8-A-C
     prefetch: []
   - id: P1_S8-B
     part: 1
@@ -607,7 +610,7 @@ sessions:
     description: >-
       ~100-150 mapping rows for Titles 45, 29, 26, 16, 47, 28, 32, 38, 20, 49, 10, 40, 2 — all remaining relevant CFR
       titles from S2-C, S2-D, and S2-E
-    status: planned
+    status: splintered
     dependencies:
       - P1_S2
       - P1_S4
@@ -634,9 +637,14 @@ sessions:
     max_output_tokens: 32000
     prompt_file: research/prompts/part1/S8-B-cfr-mapping-remaining-titles.md
     output_file: research/outputs/part1/P1_S8-B.md
-    context_pack_file: research/context-packs/part1/P1_S8-B.yaml
+    context_pack_file: research/context-packs/part1/P1_S8-B-combined.yaml
     splinter_parent: P1_S8
-    splinter_children: []
+    splinter_children:
+      - P1_S8-B-A
+      - P1_S8-B-B
+      - P1_S8-B-C
+      - P1_S8-B-D
+      - P1_S8-B-E
     prefetch: []
   - id: P1_S8-C
     part: 1
@@ -652,9 +660,17 @@ sessions:
       - P1_S8-B
       - P1_S4
     context_inputs:
-      - research/outputs/part1/P1_S8-A.md
-      - research/outputs/part1/P1_S8-B.md
+      - research/outputs/part1/P1_S2-F.md
       - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+      - research/outputs/part1/P1_S8-A-A.md
+      - research/outputs/part1/P1_S8-A-B.md
+      - research/outputs/part1/P1_S8-A-C.md
+      - research/outputs/part1/P1_S8-B-A.md
+      - research/outputs/part1/P1_S8-B-B.md
+      - research/outputs/part1/P1_S8-B-C.md
+      - research/outputs/part1/P1_S8-B-D.md
+      - research/outputs/part1/P1_S8-B-E.md
     execution_route: api
     max_output_tokens: 32000
     prompt_file: research/prompts/part1/S8-C-agency-openfda-implementation.md
@@ -715,4 +731,244 @@ sessions:
         This mega-prompt will be auto-splintered into 4-8 sub-sessions. Part 3 also depends on Part 2 outputs — the
         splintered sub-sessions will have refined dependencies. context_inputs updated to reference P1_S8 children's raw
         outputs since P1_S8 is now splintered.
+    prefetch: []
+  - id: P1_S8-A-A
+    part: 1
+    session: 8
+    sub: A
+    title: Title 21 FDA Regulations Mapping
+    description: >-
+      Map all FDA regulations from Title 21 Chapter I (Parts 1-1299) to domain codes. Covers drug CGMPs, compounding,
+      labeling, biologics, devices, HCT/Ps, and administrative provisions.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-A-A-title-21-fda-regulations-mapping.md
+    output_file: research/outputs/part1/P1_S8-A-A.md
+    context_pack_file: research/context-packs/part1/P1_S8-A-A.yaml
+    splinter_parent: P1_S8-A
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-A-B
+    part: 1
+    session: 8
+    sub: B
+    title: Title 21 DEA Regulations and Title 42 Public Health Mapping
+    description: >-
+      Map all DEA regulations from Title 21 Chapter II (Parts 1300-1321) and all relevant Title 42 parts including PHS
+      (Chapter I), CMS (Chapter IV), and OIG (Chapter V) to domain codes.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-A-B-title-21-dea-regulations-and-title-42-public-health-mapping.md
+    output_file: research/outputs/part1/P1_S8-A-B.md
+    context_pack_file: research/context-packs/part1/P1_S8-A-B.yaml
+    splinter_parent: P1_S8-A
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-A-C
+    part: 1
+    session: 8
+    sub: C
+    title: Consolidated Title 21/42 Mapping and Validation
+    description: >-
+      Merge outputs from sub-sessions A and B into a single comprehensive mapping table. Verify completeness against
+      Session 2-A/B allowlists, identify any omissions, and produce the final deliverable format expected by downstream
+      consumers.
+    status: planned
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+      - P1_S8-A-A
+      - P1_S8-A-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-A-C-consolidated-title-21-42-mapping-and-validation.md
+    output_file: research/outputs/part1/P1_S8-A-C.md
+    context_pack_file: research/context-packs/part1/P1_S8-A-C.yaml
+    splinter_parent: P1_S8-A
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B-A
+    part: 1
+    session: 8
+    sub: A
+    title: Title 45 HIPAA and Privacy Regulations Mapping
+    description: >-
+      Map all Title 45 parts from the allowlist, with special attention to HIPAA parts requiring subpart-level mapping.
+      This includes Parts 46, 160, 162, 164, and 171.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-B-A-title-45-hipaa-and-privacy-regulations-mapping.md
+    output_file: research/outputs/part1/P1_S8-B-A.md
+    context_pack_file: research/context-packs/part1/P1_S8-B-A.yaml
+    splinter_parent: P1_S8-B
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B-B
+    part: 1
+    session: 8
+    sub: B
+    title: Title 29 Labor Regulations Mapping
+    description: >-
+      Map all Title 29 parts from the allowlist, with section-level detail for Part 1910 (OSHA General Industry
+      Standards). Includes OSHA, ERISA, and FMLA regulations.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-B-B-title-29-labor-regulations-mapping.md
+    output_file: research/outputs/part1/P1_S8-B-B.md
+    context_pack_file: research/context-packs/part1/P1_S8-B-B.yaml
+    splinter_parent: P1_S8-B
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B-C
+    part: 1
+    session: 8
+    sub: C
+    title: Titles 26 and 16 Healthcare Tax and FTC Regulations Mapping
+    description: >-
+      Map Title 26 (Internal Revenue) healthcare tax regulations and Title 16 (FTC) health claims and data security
+      regulations from the allowlist.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-B-C-titles-26-and-16-healthcare-tax-and-ftc-regulations-mapping.md
+    output_file: research/outputs/part1/P1_S8-B-C.md
+    context_pack_file: research/context-packs/part1/P1_S8-B-C.yaml
+    splinter_parent: P1_S8-B
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B-D
+    part: 1
+    session: 8
+    sub: D
+    title: Tier 3 Titles Group 1 Mapping
+    description: >-
+      Map parts from Titles 47 (FCC), 28 (DOJ), 32 (Defense), 38 (Veterans Affairs), and 40 (EPA) that appear in the
+      Session 2-D allowlist.
+    status: running
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-B-D-tier-3-titles-group-1-mapping.md
+    output_file: research/outputs/part1/P1_S8-B-D.md
+    context_pack_file: research/context-packs/part1/P1_S8-B-D.yaml
+    splinter_parent: P1_S8-B
+    splinter_children: []
+    prefetch: []
+  - id: P1_S8-B-E
+    part: 1
+    session: 8
+    sub: E
+    title: Tier 3 Titles Group 2 and Consolidation
+    description: >-
+      Map parts from Titles 20 (Social Security), 49 (Transportation), 10 (Energy), and 2 (Grants) from Session 2-E
+      allowlist. Consolidate all sub-session outputs into final comprehensive mapping table and identify parts requiring
+      AI classification.
+    status: planned
+    dependencies:
+      - P1_S2
+      - P1_S4
+      - P1_S5-A
+      - P1_S5-B
+      - P1_S6-A
+      - P1_S6-B
+      - P1_S7-A
+      - P1_S7-B
+      - P1_S8-B-A
+      - P1_S8-B-B
+      - P1_S8-B-C
+      - P1_S8-B-D
+    context_inputs:
+      - research/outputs/part1/P1_S2-F.md
+      - research/outputs/part1/P1_S4.md
+      - research/outputs/part1/P1_S7-C.md
+    execution_route: api
+    prompt_file: research/prompts/part1/S8-B-E-tier-3-titles-group-2-and-consolidation.md
+    output_file: research/outputs/part1/P1_S8-B-E.md
+    context_pack_file: research/context-packs/part1/P1_S8-B-E.yaml
+    splinter_parent: P1_S8-B
+    splinter_children: []
     prefetch: []

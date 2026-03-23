@@ -2,7 +2,8 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import yaml from 'js-yaml';
-import { readFile, writeFile, log, warn, success, error as logError } from './utils.js';
+import { statSync } from 'node:fs';
+import { readFile, writeFile, resolveFromRoot, log, warn, success, error as logError } from './utils.js';
 import { getSession, saveManifest } from './manifest.js';
 import { estimateSessionSize } from './token-counter.js';
 import { SessionStatus } from './types.js';
@@ -20,6 +21,7 @@ interface SplinterProposal {
   description: string;
   deliverables: string[];
   additional_dependencies: string[];
+  context_inputs?: string[];   // per-child subset; falls back to parent's full list if absent
   execution_route: 'api' | 'web';
   estimated_tokens: number;
 }
@@ -51,6 +53,17 @@ export async function proposeSplinter(
   // Load prompt
   const taskPrompt = await readFile(session.prompt_file);
 
+  // Build context file list with byte sizes for the AI
+  const contextFileList = session.context_inputs.map(p => {
+    try {
+      const bytes = statSync(resolveFromRoot(p)).size;
+      const kb = (bytes / 1024).toFixed(0);
+      return `  - ${p}  (~${kb} KB)`;
+    } catch {
+      return `  - ${p}  (not yet generated)`;
+    }
+  }).join('\n') || '  (none)';
+
   // Load splintering template
   const template = await readFile('research/prompts/templates/splintering-prompt.md');
   const prompt = template
@@ -58,7 +71,8 @@ export async function proposeSplinter(
     .replace('{session_title}', session.title)
     .replace('{estimated_tokens}', estimate.input_tokens.toString())
     .replace('{max_tokens_per_session}', manifest.meta.max_context_budget.toString())
-    .replace('{session_prompt}', taskPrompt);
+    .replace('{session_prompt}', taskPrompt)
+    .replace('{context_file_list}', contextFileList);
 
   // Ask AI for splintering plan
   const client = getClient();
@@ -128,8 +142,10 @@ export async function applySplinter(
     // Build dependencies
     const deps = [...session.dependencies, ...proposal.additional_dependencies];
 
-    // Build context inputs from parent
-    const contextInputs = [...session.context_inputs];
+    // Use per-child context subset if the AI provided one; fall back to full parent list
+    const contextInputs = proposal.context_inputs?.length
+      ? proposal.context_inputs
+      : [...session.context_inputs];
 
     // Create sub-session entry
     const subSession: Session = {
