@@ -41,7 +41,7 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
           <PreviewFrame size="full-width" label="Heading scale">
             <Flex direction="column" gap="3">
               <Flex align="baseline" gap="4">
-                <Heading as="h1" size="6" weight="bold">Page title</Heading>
+                <Heading as="h2" size="6" weight="bold">Page title</Heading>
                 <Text as="span" size="1" color="gray">size=&quot;6&quot; weight=&quot;bold&quot; — 24px</Text>
               </Flex>
               <Flex align="baseline" gap="4">

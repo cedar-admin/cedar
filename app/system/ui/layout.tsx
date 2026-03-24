@@ -16,6 +16,7 @@ export default async function UILibraryLayout({ children }: { children: React.Re
     <div className="flex h-screen overflow-hidden bg-[var(--cedar-page-bg)] text-[var(--cedar-text-primary)]">
       {/* Left nav */}
       <aside
+        aria-label="UI library navigation"
         className="shrink-0 flex flex-col h-screen border-r border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg)] overflow-y-auto"
         style={{ width: '240px' }}
       >

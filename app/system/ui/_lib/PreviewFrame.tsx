@@ -12,7 +12,7 @@ export function PreviewFrame({ size = 'contained', label, children }: PreviewFra
   return (
     <Flex direction="column" gap="2">
       {label && (
-        <Text as="span" size="1" color="gray">
+        <Text as="p" size="1" color="gray">
           {label}
         </Text>
       )}

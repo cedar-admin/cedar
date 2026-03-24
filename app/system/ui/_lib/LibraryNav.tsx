@@ -8,10 +8,10 @@ import type { LibraryNavItem, LibraryItemStatus } from './nav-config'
 
 function StatusDot({ status }: { status: LibraryItemStatus }) {
   if (status === 'candidate') {
-    return <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
+    return <span className="w-1.5 h-1.5 rounded-full bg-[var(--amber-9)] shrink-0" aria-hidden="true" />
   }
   if (status === 'experimental') {
-    return <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" aria-hidden="true" />
+    return <span className="w-1.5 h-1.5 rounded-full bg-[var(--blue-9)] shrink-0" aria-hidden="true" />
   }
   return null
 }

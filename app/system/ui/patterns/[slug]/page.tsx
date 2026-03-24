@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { Badge, Box, Card, Flex, Heading, Switch, Table, Text } from '@radix-ui/themes'
+import { Badge, Box, Card, Flex, Heading, Select, Switch, Table, Text } from '@radix-ui/themes'
 import { getAllSlugs, getLibraryItem } from '../../_lib/nav-config'
 import { DetailPage, ContentSection } from '../../_lib/DetailPage'
 import { PreviewFrame } from '../../_lib/PreviewFrame'
@@ -52,7 +52,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
           <PreviewFrame size="full-width" label="Collection layout skeleton">
             <Flex direction="column" gap="4">
               <Flex align="center" gap="3">
-                <Heading as="h1" size="6" weight="bold">Regulatory updates</Heading>
+                <Heading as="h2" size="6" weight="bold">Regulatory updates</Heading>
                 <Badge color="gray" variant="outline">47</Badge>
               </Flex>
               <FilterPills pills={SAMPLE_FILTER_PILLS} />
@@ -83,7 +83,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
 
           <PreviewFrame size="full-width" label="Settings layout skeleton">
             <Flex direction="column" gap="4">
-              <Heading as="h1" size="6" weight="bold">Settings</Heading>
+              <Heading as="h2" size="6" weight="bold">Settings</Heading>
               <Card variant="surface">
                 <Box p="4">
                   <Flex direction="column" gap="3">
@@ -325,7 +325,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
           <PreviewFrame size="full-width" label="Collection header composition">
             <Flex direction="column" gap="4">
               <Flex align="center" gap="3">
-                <Heading as="h1" size="6" weight="bold">Regulatory updates</Heading>
+                <Heading as="h2" size="6" weight="bold">Regulatory updates</Heading>
                 <Badge color="gray" variant="outline">47</Badge>
               </Flex>
               <FilterPills pills={SAMPLE_FILTER_PILLS} />
@@ -368,7 +368,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
           <PreviewFrame size="full-width" label="Full metadata cluster">
             <Flex direction="column" gap="3">
               <Flex align="center" gap="2" wrap="wrap">
-                <Heading as="h1" size="5" weight="bold">Telehealth prescribing requirements updated</Heading>
+                <Heading as="h2" size="5" weight="bold">Telehealth prescribing requirements updated</Heading>
                 <SeverityBadge severity="high" />
                 <AuthorityBadge level="state_board_rule" />
                 <AiBadge />
@@ -441,12 +441,15 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
                 <Flex direction="column" gap="3">
                   <SectionHeading as="h3" variant="card">Alert threshold</SectionHeading>
                   <Text as="p" size="2" color="gray">Minimum severity level required to trigger an alert. Changes below this level are still recorded.</Text>
-                  <Box className="border border-[var(--cedar-border)] rounded-md px-3 py-2 w-fit bg-[var(--cedar-page-bg)]">
-                    <Flex align="center" gap="2">
-                      <Text as="span" size="2">Medium and above</Text>
-                      <i className="ri-arrow-down-s-line text-[var(--cedar-text-muted)]" aria-hidden="true" />
-                    </Flex>
-                  </Box>
+                  <Select.Root defaultValue="medium" size="2">
+                    <Select.Trigger color="gray" />
+                    <Select.Content>
+                      <Select.Item value="critical">Critical and above</Select.Item>
+                      <Select.Item value="high">High and above</Select.Item>
+                      <Select.Item value="medium">Medium and above</Select.Item>
+                      <Select.Item value="low">Low and above</Select.Item>
+                    </Select.Content>
+                  </Select.Root>
                 </Flex>
               </Box>
             </Card>
