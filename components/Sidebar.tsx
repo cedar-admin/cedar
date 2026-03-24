@@ -78,20 +78,20 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
   return (
     <>
       {/* Expand trigger — visible only when collapsed, hugs left edge */}
-      <IconButton
-        ref={expandTriggerRef as React.RefObject<HTMLButtonElement>}
-        variant="ghost"
-        color="gray"
-        size="1"
-        onClick={onExpand}
-        aria-label="Expand sidebar"
-        aria-expanded={!collapsed}
-        className={`fixed left-0 top-4 z-50 flex items-center justify-center w-5 h-8 rounded-none bg-[var(--cedar-panel-bg)] border-r border-t border-b border-[var(--cedar-border-subtle)] text-[var(--cedar-text-muted)] hover:text-[var(--cedar-text-primary)] hover:bg-[var(--cedar-interactive-hover)] transition-interactive ${
-          collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <i className="ri-arrow-right-s-line text-sm" aria-hidden="true" />
-      </IconButton>
+      {collapsed && (
+        <IconButton
+          ref={expandTriggerRef as React.RefObject<HTMLButtonElement>}
+          variant="ghost"
+          color="gray"
+          size="1"
+          onClick={onExpand}
+          aria-label="Expand sidebar"
+          aria-expanded={false}
+          className="fixed left-2 top-3 z-50 flex items-center justify-center w-7 h-7 rounded-md bg-[var(--cedar-panel-bg)] border border-[var(--cedar-border-subtle)] text-[var(--cedar-text-muted)] hover:text-[var(--cedar-text-primary)] hover:bg-[var(--cedar-interactive-hover)] transition-interactive"
+        >
+          <i className="ri-arrow-right-s-line text-sm" aria-hidden="true" />
+        </IconButton>
+      )}
 
       {/* Sidebar — fixed position, slides off-screen with translateX */}
       <aside
