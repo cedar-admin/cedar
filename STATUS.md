@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 36
+Last updated: March 24, 2026 by Session 37
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,18 +13,20 @@ Last updated: March 24, 2026 by Session 36
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui exists as a routed standalone workspace; follow-up curation PRP now active to narrow v1 and strengthen the design-ops content model. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui curated to v1 — 11 pages with full seven-section content model, richer nav-config metadata, redesigned overview as design-ops index. |
 
 ## Codebase Stats
-- **~21,318 lines** TypeScript/TSX
+- **~21,272 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
-- **16** dashboard routes, **9** API routes, **16** UI library pages
+- **16** dashboard routes, **9** API routes, **11** UI library pages (curated from 16)
 - **0** shadcn/ui components, **25** Radix Themes composite components (4 new: SectionHeading, AiBadge, HashWithCopy, FilterPills)
-- **179** git commits on main
+- **180** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 35 built and shipped the admin-only UI Library at `/system/ui` — a 16-page standalone design ops workspace modeled after Supabase's design system interface. The library covers 4 sections (Getting Started, Foundations, Components, UI Patterns) with 4 detail pages each, all following a standard content model (when to use, rules, live examples). The layout is completely standalone — no Cedar platform sidebar — with its own `Back to platform` ghost link. The Cedar sidebar received a distinct portal button (`ri-palette-line` + `ri-arrow-right-up-line`) to distinguish the library entry point from regular nav items. A full design system audit against all 6 design docs (`design-standards.md`, `frontend-standards.md`, `ux-standards.md`, `information-density.md`, `art-direction.md`, `content-standards.md`) caught and fixed 6 violations: nested surface on `/system` page, 5× `<Heading as="h1">` in preview frames, raw Tailwind colors in status dots, fake `<Box>` Select mockup, expand chevron visible when sidebar expanded, and "UI Library" title-case in body copy. Typography demo section-heading spec also corrected to match `art-direction.md §4` (`size="4" weight="medium"` not `size="5" weight="bold"`).
+Session 37 executed the `admin-ui-library-curation-v1` PRP — narrowing the UI library from 16 broad pages to 11 curated pages with a consistent seven-section content model. The overview was redesigned as a true design-ops index. `nav-config` was extended with `governingDocs`, `usedIn`, and `related` metadata that now surfaces in every detail page header. The foundations section dropped `buttons` (deferred) and added `semantic-color` (replaces the thin `badges` page with full color system guidance). The components section dropped `hash-with-copy` and `domain-card`. The patterns section dropped `navigation`, `empty-states`, `collection-header`, `detail-header`, and `settings-section`; added `collection-pages` and `detail-pages` as stronger replacements. `detail-pages` is explicitly marked `candidate` so the status lifecycle is real. The nav's status indicator was redesigned from a colored dot to compact `C`/`E` badge tokens. The deferred inventory is documented in the overview with notes on when each item should be added.
+
+Session 36 (previous): Built and shipped the admin-only UI Library at `/system/ui` — a 16-page standalone design ops workspace modeled after Supabase's design system interface. The library covers 4 sections (Getting Started, Foundations, Components, UI Patterns) with 4 detail pages each, all following a standard content model (when to use, rules, live examples). The layout is completely standalone — no Cedar platform sidebar — with its own `Back to platform` ghost link. The Cedar sidebar received a distinct portal button (`ri-palette-line` + `ri-arrow-right-up-line`) to distinguish the library entry point from regular nav items. A full design system audit against all 6 design docs (`design-standards.md`, `frontend-standards.md`, `ux-standards.md`, `information-density.md`, `art-direction.md`, `content-standards.md`) caught and fixed 6 violations: nested surface on `/system` page, 5× `<Heading as="h1">` in preview frames, raw Tailwind colors in status dots, fake `<Box>` Select mockup, expand chevron visible when sidebar expanded, and "UI Library" title-case in body copy. Typography demo section-heading spec also corrected to match `art-direction.md §4` (`size="4" weight="medium"` not `size="5" weight="bold"`).
 
 **What was produced:**
 - `research/outputs/part3/P3_S1.md` — FL FAC board/agency chapter-to-domain mapping (150+ chapters, 9 boards/agencies), FL-specific keyword additions (47 phrases), FAC citation parser spec. Reconciled: 47 domain code fixes, workforce.* gap resolved, FL-XC-10 updated.
@@ -53,14 +55,7 @@ Notes:
 
 ## Next Session Priority
 
-**1. admin-ui-library-curation-v1 PRP** (active):
-   The routed UI library is in place, but the seeded v1 is still too broad. Execute `PRPs/active/admin-ui-library-curation-v1.md` to:
-   - Keep the `/system/ui` shell and routed architecture
-   - Reduce the seeded inventory to a curated core set under Foundations / Components / Patterns
-   - Strengthen each page into a real design-ops reference with status, usage rules, Cedar implementation references, and governing-doc links
-   - Make statuses operationally meaningful instead of decorative
-
-**2. secondary-path-polish-v1 PRP** (UX sprint — still ready to execute):
+**1. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
    - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
    - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
