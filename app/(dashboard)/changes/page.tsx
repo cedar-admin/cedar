@@ -160,7 +160,7 @@ export default async function ChangesPage({ searchParams }: Props) {
           {/* Table */}
           {changes.length > 0 && (
             <Card variant="surface">
-              <Table.Root variant="surface">
+              <Table.Root variant="ghost">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-36">Severity</Table.ColumnHeaderCell>

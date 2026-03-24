@@ -83,7 +83,7 @@ export default async function AuditPage() {
             </Card>
           ) : (
             <Card variant="surface">
-              <Table.Root variant="surface">
+              <Table.Root variant="ghost">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Run At</Table.ColumnHeaderCell>
@@ -150,7 +150,7 @@ export default async function AuditPage() {
             </Card>
           ) : (
             <Card variant="surface">
-              <Table.Root variant="surface">
+              <Table.Root variant="ghost">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-20">Seq #</Table.ColumnHeaderCell>

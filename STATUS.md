@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 23, 2026 by Session 32
+Last updated: March 23, 2026 by Session 33
 
 ## Module Status
 | Module | Status | Notes |
@@ -16,39 +16,21 @@ Last updated: March 23, 2026 by Session 32
 | 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. |
 
 ## Codebase Stats
-- **~15,867 lines** TypeScript/TSX
+- **~18,507 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
 - **16** dashboard routes, **9** API routes
 - **0** shadcn/ui components, **25** Radix Themes composite components (4 new: SectionHeading, AiBadge, HashWithCopy, FilterPills)
-- **121** git commits on main
+- **172** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 32 executed PRP: core-dashboard-ux-normalization. All 3 P0 issues and all in-scope P1 issues resolved.
+Session 33 executed PRP: post-implementation-verification-v1. Post-PRP Playwright audit re-run confirmed all Session 32 improvements landed correctly on production. Five nested surface violations (design-standards.md §8) were identified and patched — all `Table.Root variant="surface"` inside `Card variant="surface"` changed to `variant="ghost"` across `/audit` (×2), `/changes`, `/sources`, and the library detail `RegulationTabs` Classification Audit Trail. Delta audit written at `research/ui-audit/design-audit-delta.md` with all 6 required sections, 10 fix verdicts, and next PRP recommendation. Post-fix screenshots were blocked by WorkOS auth constraints (callbacks point to production); visual verification deferred to next deploy.
 
 **What was built:**
-
-*Phase 1 — Shared primitives (4 new components):*
-- `SectionHeading` — enforces `size="3"` in cards, `size="4"` standalone; forward `id` for aria-labelledby
-- `AiBadge` + `AiDisclaimer` — complete AI trust pattern: badge chip on every AI surface; inline disclaimer scoped to card body on detail views
-- `HashWithCopy` — 8-char truncated hash + clipboard copy with transient check icon
-- `FilterPills` — unified `text-sm` filter pill row; accepts per-pill `activeClass` override for severity coloring
-
-*Phase 2 — Nav/wayfinding:*
-- Sidebar: "My Practice" → "Settings"
-- `/sources` h1: "Source Library" → "Sources"
-
-*Phase 3 — Primary journey:*
-- `/home`: activity feed shows source name (small gray) + summary (14px) + AiBadge; card headings `size="3"`; stat cards use Radix `<Text>` + `<Grid>`; sentence case throughout
-- `/changes`: `ChangeTableRow` client component — full-row click, `tabIndex`, Enter key nav, trailing chevron; `FilterPills` replaces inline pill markup
-- `/changes/[id]`: h1 is change summary text; subtitle shows source name as secondary metadata; AI Summary card has `SectionHeading` + `AiBadge` + `AiDisclaimer`; page-level `LegalDisclaimer` removed; `HashWithCopy` on hash field
-- `/library`: `FilterPills` replaces inline pill markup; `DomainCard` pseudo-element pattern — full-card click via `::after` overlay; hover is bg highlight only (no green text)
-
-*Phase 4 — Secondary pages:*
-- `/settings`: all card headings → `SectionHeading`; sentence case
-- `/audit`: `HashWithCopy` replaces truncated hash span
-
-*Also fixed:* pre-existing `pnpm-lock.yaml` drift (`@playwright/test` added to package.json without lockfile update) — unblocked Vercel deploys.
+- `research/ui-audit/design-audit-delta.md` — full delta audit vs. Session 32 baseline; all P0s/P1s confirmed fixed; nested surface fixes documented with file:line citations
+- `research/ui-audit/screenshots/v2/` — 12 post-PRP screenshots from fresh production Playwright run
+- `research/ui-audit/report.json` — updated with current interaction results (all 8 routes loaded, auth succeeded)
+- 5 nested surface violation fixes (variant prop only, no layout/typography changes)
 
 ## Research Pipeline State
 ```
@@ -62,31 +44,28 @@ Progress: 38/39 sessions complete/splintered
 ```
 
 ## Next Session Priority
-**Research pipeline — P3 is ready.**
-P3: Non-Federal Sources, Authority Levels, Ingestion Protocol. This session will need splintering (mega-prompt placeholder). Run the orchestrator splinter command first, then execute sub-sessions.
 
-**Or:** Trigger Phase 3 scoring pipeline (see "Previous priorities" below) — library category counts will show 0 until this runs.
+**1. secondary-path-polish-v1 PRP** (generate and execute) — next UX sprint based on `research/ui-audit/design-audit-delta.md §6`:
+   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx` (Overview, Key Details, Categories, etc.)
+   - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
+   - Suppress false click affordance on `/sources` table rows
+   - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
+   - Update Playwright spec selectors: `ChangeTableRow` now uses `onClick tr` (not `a[href]`); Radix Select trigger selector needs fixing
+
+**2. Research pipeline — P3 is ready** (if pivoting to research):
+   P3: Non-Federal Sources, Authority Levels, Ingestion Protocol. Run splinter first.
+   ```bash
+   cd research/orchestrator
+   env -u ANTHROPIC_API_KEY npm run orchestrator -- status
+   env -u ANTHROPIC_API_KEY npm run orchestrator -- splinter P3
+   ```
+
+**3. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
+   - `cedar/corpus.classify` → `cedar/corpus.authority-classify` → `cedar/corpus.practice-score` → `cedar/corpus.service-line-map`
+   - Start dev server: `env -u ANTHROPIC_API_KEY npx next dev --port 3000`, trigger via Inngest dashboard
 
 **Open items from P2:**
-- P2_S2 Research Objective 5 incomplete (SQL seed data only covers 5 representative domains; Inngest function truncated). Consider running a P2_S2-B continuation if full implementation artifacts are needed before building.
-
-**To start next session:**
-```bash
-cd research/orchestrator
-env -u ANTHROPIC_API_KEY npm run orchestrator -- status
-env -u ANTHROPIC_API_KEY npm run orchestrator -- splinter P3
-```
-
-**Note:** Always prefix orchestrator commands with `env -u ANTHROPIC_API_KEY` — Claude Code injects an empty API key that overrides .env.local.
-
-**Previous priorities (still pending):**
-- **Trigger Phase 3 scoring pipeline** (in order via Inngest dev dashboard — start dev server first with `env -u ANTHROPIC_API_KEY npx next dev --port 3000`):
-   - `cedar/corpus.classify` — populates `kg_entity_domains`
-   - `cedar/corpus.authority-classify` — populates `authority_level` + `issuing_agency`
-   - `cedar/corpus.practice-score` — populates `kg_entity_practice_relevance`; refreshes views
-   - `cedar/corpus.service-line-map` — populates `kg_service_line_regulations`
-- **Verify library UI** after pipeline runs
-- **Visual spot-check** admin pages in dark mode
+- P2_S2 Research Objective 5 incomplete (SQL seed data only covers 5 representative domains).
 
 ### Dev Server Startup
 ```bash
@@ -122,6 +101,9 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 - Supabase CLI binary not installed via npm (broken symlink); use cached npx path: `/Users/anthonyrilling/.npm/_npx/b96a6bd565c470ce/node_modules/supabase/bin/supabase` with `SUPABASE_ACCESS_TOKEN` env var set
 - Production Supabase instance needs migration reset — all 27 migrations rewritten for best practices audit
 - `changes/page.tsx` severity filter tabs use a local `SEVERITY_ACTIVE_CLASS` map (Radix color props can't be used on `<Link>` elements directly) — acceptable but note for future design system audit
+- Playwright spec `table_row_click` selector (`table a[href^="/changes/"]`) no longer matches `ChangeTableRow` — now uses `onClick tr`. Update selector in `tests/ui-audit.spec.ts`
+- Playwright spec `settings_email_threshold_select` selector (`[data-radix-select-trigger]`) does not match Radix rendered attribute — needs investigation
+- `RegulationTabs.tsx` tab section headings still use `size="2"` (12px) — `SectionHeading` not applied; deferred to secondary-path-polish PRP
 
 ## Blockers
 - Railway/Docling deployment needed for Module 4 (PDF processing)

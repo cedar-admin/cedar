@@ -209,7 +209,7 @@ function OverviewTab({
               <Heading as="h2" size="2" weight="bold">Classification Audit Trail</Heading>
             </Box>
             <Box p="4" pt="0">
-              <Table.Root variant="surface">
+              <Table.Root variant="ghost">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>

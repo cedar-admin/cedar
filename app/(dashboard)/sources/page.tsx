@@ -107,7 +107,7 @@ export default async function SourcesPage() {
         </Card>
       ) : (
         <Card variant="surface">
-          <Table.Root variant="surface">
+          <Table.Root variant="ghost">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
