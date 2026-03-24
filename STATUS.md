@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 23, 2026 by Session 33
+Last updated: March 24, 2026 by Session 34
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,41 +24,49 @@ Last updated: March 23, 2026 by Session 33
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 33 executed PRP: post-implementation-verification-v1. Post-PRP Playwright audit re-run confirmed all Session 32 improvements landed correctly on production. Five nested surface violations (design-standards.md §8) were identified and patched — all `Table.Root variant="surface"` inside `Card variant="surface"` changed to `variant="ghost"` across `/audit` (×2), `/changes`, `/sources`, and the library detail `RegulationTabs` Classification Audit Trail. Delta audit written at `research/ui-audit/design-audit-delta.md` with all 6 required sections, 10 fix verdicts, and next PRP recommendation. Post-fix screenshots were blocked by WorkOS auth constraints (callbacks point to production); visual verification deferred to next deploy.
+Session 34 completed the full P3 research pipeline (Non-Federal Sources, Authority Levels, Ingestion Protocol). All 7 P3 sessions delivered and reconciled. The entire 3-part research pipeline is now complete.
 
-**What was built:**
-- `research/ui-audit/design-audit-delta.md` — full delta audit vs. Session 32 baseline; all P0s/P1s confirmed fixed; nested surface fixes documented with file:line citations
-- `research/ui-audit/screenshots/v2/` — 12 post-PRP screenshots from fresh production Playwright run
-- `research/ui-audit/report.json` — updated with current interaction results (all 8 routes loaded, auth succeeded)
-- 5 nested surface violation fixes (variant prop only, no layout/typography changes)
+**What was produced:**
+- `research/outputs/part3/P3_S1.md` — FL FAC board/agency chapter-to-domain mapping (150+ chapters, 9 boards/agencies), FL-specific keyword additions (47 phrases), FAC citation parser spec. Reconciled: 47 domain code fixes, workforce.* gap resolved, FL-XC-10 updated.
+- `research/outputs/part3/P3_S2.md` — FL legislative committee→domain mapping, omnibus bill handling (Option C hybrid), amendment tracking, board minutes classification strategy (60–70% L2 accuracy target, 45–55% in HITL band), board-specific extraction rules (Board of Pharmacy has separate Probable Cause Panel meeting type). Reconciled: clean, committee signals renamed to C-score.
+- `research/outputs/part3/P3_S3.md` — CMS transmittals (4 manuals, all chapter→domain mappings), NCD/LCD (FL MAC coverage matrix, lcd jurisdiction via mac_id in JSONB), MLN articles (informational-only flag), 7 professional associations with A-scores and D-scores, 20+ classification_rules INSERTs.
+- `research/outputs/part3/P3_S4.md` — Complete authority_level enum resolution (all "?" cells), within-source disambiguation rules (FR document type codes, DEA scheduling notice detection), hierarchy table (ranks 100–20), conflict resolution approach, proposed entity protocol (status modifier, not enum expansion), SQL seed data.
+- `research/outputs/part3/P3_S5.md` — NormalizedCitation interface, StateCitationParser abstract base class, CitationParserRegistry singleton, state onboarding checklist (39 items, ~50hr/state, 72% config transfers from FL+federal base), supabase/seeds/states/[state-code]/ directory structure.
+- `research/outputs/part3/P3_S6.md` — Real-time single-entity pipeline adaptation (4-tier short-circuit), taxonomy gap detection (4 signals + SQL), taxonomy versioning DDL, ANOM_NEW_PAIR source×domain frequency matrix, CONF_CONFLICT citation adjacency check, z-score spike detection, 5 new metrics (M11–M15). Source-authority override threshold confirmed at 0.65.
+- `research/outputs/part3/P3_S7.md` — Audit trail schema extensions (7 new kg_classification_log columns, authority_level_transitions table), 20-metric suite (M1–M20, no overlap), bulk re-classification Inngest fan-out architecture (coordinator + worker functions, 900 entities/hour ceiling, 4-step transactional rollback). 11-hour estimate for 10K entity job.
 
 ## Research Pipeline State
 ```
 DAG Status:
-  ✅ complete: 30 (all P1 + P2_S1–P2_S5)
+  ✅ complete: 37 (all P1 + P2_S1–P2_S5 + P3_S1–P3_S7)
   🔀 splintered: 8 (P1_S2, P1_S5, P1_S6, P1_S7, P1_S8, P1_S8-A, P1_S8-B, P2)
-  📋 planned: 1 (P3)
-  🟢 ready: 1 (P3 — depends on P1_S8-C and P1_S4, both complete)
 
-Progress: 38/39 sessions complete/splintered
+Progress: ALL SESSIONS COMPLETE — full research pipeline done
+
+Notes:
+- P3-S1 and P3-S2 ran via deep research (web route, no upstream context injected)
+  → Both reconciled post-run against P1-S3, P1-S4, P2-S1, P2-S2 via Opus API pass
+  → P3-S1: 47 domain code corrections (privacy-security.* → hipaa-privacy.*, billing-reimbursement.* → medicare-billing.*); workforce.* taxonomy gap resolved (remapped to state-regulations.licensure + clinical-operations.scope-of-practice); FL-XC-10 updated
+  → P3-S2: clean (no domain drift); committee signal values renamed A-score → C-score to avoid ambiguity
+- Source-authority override threshold set to 0.65 (high-relevance sources at confidence ≥0.65 appear in Library with "pending review"; <0.65 → HITL regardless)
 ```
 
 ## Next Session Priority
 
-**1. secondary-path-polish-v1 PRP** (generate and execute) — next UX sprint based on `research/ui-audit/design-audit-delta.md §6`:
-   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx` (Overview, Key Details, Categories, etc.)
+**1. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
+   All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research. Likely first PRPs:
+   - `classification-pipeline-v1` — Stage 1–4 pipeline, classification_rules seed data, authority_level schema (draws from P2-S1, P2-S2, P2-S3, P2-S4, P3-S4)
+   - `kg-entity-schema-v1` — taxonomy versioning, authority_level_transitions table, kg_classification_log extensions (draws from P3-S6, P3-S7)
+   - `fl-fac-ingestion-v1` — FAC citation parser, board chapter→domain mapping, FL keyword set (draws from P3-S1, P3-S5)
+   - `state-onboarding-framework-v1` — CitationParserRegistry, NormalizedCitation interface, seeds directory structure (draws from P3-S5)
+
+**2. secondary-path-polish-v1 PRP** (UX sprint, can run in parallel):
+   Based on `research/ui-audit/design-audit-delta.md §6`:
+   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
    - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
    - Suppress false click affordance on `/sources` table rows
    - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
-   - Update Playwright spec selectors: `ChangeTableRow` now uses `onClick tr` (not `a[href]`); Radix Select trigger selector needs fixing
-
-**2. Research pipeline — P3 is ready** (if pivoting to research):
-   P3: Non-Federal Sources, Authority Levels, Ingestion Protocol. Run splinter first.
-   ```bash
-   cd research/orchestrator
-   env -u ANTHROPIC_API_KEY npm run orchestrator -- status
-   env -u ANTHROPIC_API_KEY npm run orchestrator -- splinter P3
-   ```
+   - Update Playwright spec selectors
 
 **3. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
    - `cedar/corpus.classify` → `cedar/corpus.authority-classify` → `cedar/corpus.practice-score` → `cedar/corpus.service-line-map`
