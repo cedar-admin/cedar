@@ -142,7 +142,7 @@ export default async function SystemPage() {
           </Heading>
         </Box>
         <Box p="0">
-          <Table.Root variant="surface">
+          <Table.Root variant="ghost">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
