@@ -284,6 +284,63 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       },
       {
         referenceId: 'ATM-007',
+        slug: 'select',
+        label: 'Select',
+        status: 'approved',
+        description: 'Radix Select as Cedar’s standard triggered choice control for forms and filters.',
+        implementationFiles: [
+          'components/NotificationsForm.tsx',
+          'app/onboarding/OnboardingForm.tsx',
+          'components/admin/PracticesTable.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Settings', href: '/settings' },
+          { label: 'Onboarding', href: '/onboarding' },
+          { label: 'Admin practices', href: '/admin/practices' },
+        ],
+        related: [
+          { label: 'Form controls', href: '/system/ui/atoms/form-controls' },
+        ],
+      },
+      {
+        referenceId: 'ATM-008',
+        slug: 'separator',
+        label: 'Separator',
+        status: 'candidate',
+        description: 'Horizontal and vertical dividers used to separate content without introducing extra card surfaces.',
+        implementationFiles: [
+          'app/(admin)/system/page.tsx',
+          'components/Sidebar.tsx',
+        ],
+        governingDocs: [
+          { label: 'information-density.md §2 — Metadata chunking', file: 'docs/design-system/information-density.md' },
+          { label: 'design-standards.md §5 — Surfaces', file: 'docs/design-system/design-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Admin system', href: '/admin/system' },
+          { label: 'Dashboard shell', href: '/home' },
+        ],
+      },
+      {
+        referenceId: 'ATM-009',
+        slug: 'slider',
+        label: 'Slider',
+        status: 'candidate',
+        description: 'Range input for numeric tuning where direct drag is clearer than a dropdown or text field.',
+        implementationFiles: [
+          'app/system/ui/atoms/page.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-010',
         slug: 'tabs-and-tooltips',
         label: 'Tabs and tooltips',
         status: 'candidate',
@@ -486,6 +543,27 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
           { label: 'Admin reviews', href: '/admin/reviews' },
         ],
       },
+      {
+        referenceId: 'FRG-009',
+        slug: 'sheets-and-panels',
+        label: 'Sheets and panels',
+        status: 'candidate',
+        description: 'Slide-over panels and non-modal side sheets used for focused admin inspection without leaving the current page.',
+        implementationFiles: [
+          'components/admin/SlideOverPanel.tsx',
+          'components/Sidebar.tsx',
+          'components/SidebarShell.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §3 — Component architecture', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §5 — Navigation consistency', file: 'docs/design-system/ux-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Admin practices', href: '/admin/practices' },
+          { label: 'Admin reviews', href: '/admin/reviews' },
+          { label: 'Dashboard shell', href: '/home' },
+        ],
+      },
     ],
   },
   {
@@ -632,4 +710,8 @@ export function getAllSlugs(groupKey: LibraryGroupKey): string[] {
 export function getLibraryItem(groupKey: LibraryGroupKey, slug: string): LibraryNavItem | undefined {
   const group = LIBRARY_NAV.find((g) => g.key === groupKey)
   return group?.items.find((i) => i.slug === slug)
+}
+
+export function getLibraryGroup(groupKey: LibraryGroupKey): LibraryNavGroup | undefined {
+  return LIBRARY_NAV.find((g) => g.key === groupKey)
 }

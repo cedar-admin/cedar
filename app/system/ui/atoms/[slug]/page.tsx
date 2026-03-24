@@ -8,6 +8,8 @@ import {
   Flex,
   IconButton,
   Select,
+  Separator,
+  Slider,
   Switch,
   Table,
   Tabs,
@@ -300,6 +302,110 @@ export default async function AtomsPage({ params }: { params: Promise<{ slug: st
                 <Text as="span" size="2">Email alerts</Text>
                 <Switch color="gray" defaultChecked />
               </Flex>
+            </Flex>
+          </ExampleBlock>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'select') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use Select when the user is choosing one option from a compact known set and the current choice needs
+            to be obvious before opening the menu.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Default Cedar select"
+            size="contained"
+            code={`<Select.Root defaultValue="high">
+  <Select.Trigger />
+  <Select.Content>
+    <Select.Item value="critical">Critical only</Select.Item>
+    <Select.Item value="high">High and above</Select.Item>
+  </Select.Content>
+</Select.Root>`}
+          >
+            <Select.Root defaultValue="high">
+              <Select.Trigger />
+              <Select.Content>
+                <Select.Item value="critical">Critical only</Select.Item>
+                <Select.Item value="high">High and above</Select.Item>
+                <Select.Item value="medium">Medium and above</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </ExampleBlock>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'separator') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use separators to divide related content regions without introducing another card or another heading.
+            They should support grouping, not become a decorative pattern.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Horizontal and vertical separators"
+            size="full-width"
+            code={`<Flex direction="column" gap="3">
+  <Text>Section A</Text>
+  <Separator size="4" />
+  <Flex align="center" gap="3">
+    <Text>Left</Text>
+    <Separator orientation="vertical" size="4" />
+    <Text>Right</Text>
+  </Flex>
+</Flex>`}
+          >
+            <Flex direction="column" gap="3">
+              <Text as="span" size="2">Section A</Text>
+              <Separator size="4" />
+              <Flex align="center" gap="3">
+                <Text as="span" size="2">Left</Text>
+                <Separator orientation="vertical" size="4" />
+                <Text as="span" size="2">Right</Text>
+              </Flex>
+            </Flex>
+          </ExampleBlock>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'slider') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use Slider when direct manipulation makes the choice easier to understand than a dropdown or text input.
+            Avoid it for exact legal or regulatory values that users need to enter precisely.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Single-value slider"
+            size="contained"
+            code={`<Flex direction="column" gap="3">
+  <Slider defaultValue={[68]} />
+  <Text size="2" color="gray">Confidence threshold</Text>
+</Flex>`}
+          >
+            <Flex direction="column" gap="3">
+              <Slider defaultValue={[68]} />
+              <Text as="span" size="2" color="gray">Confidence threshold</Text>
             </Flex>
           </ExampleBlock>
         </ContentSection>

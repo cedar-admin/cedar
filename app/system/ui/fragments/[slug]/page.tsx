@@ -319,5 +319,44 @@ components/admin/SlideOverPanel.tsx`}
     )
   }
 
+  if (slug === 'sheets-and-panels') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use sheets and side panels when the user needs focused detail or an action cluster without losing the current page context.
+            In Cedar these are Cedar composites, not raw Radix Themes atoms.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Non-modal side panel composition"
+            size="full-width"
+            code={`<div className="ml-auto w-[400px] border-l ...">
+  <Heading as="h2" size="4">Log details</Heading>
+  ...
+</div>`}
+          >
+            <Flex justify="end">
+              <Box className="w-full max-w-[360px] rounded-l-xl border-l border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg-solid)] px-5 py-5 shadow-[var(--shadow-4)]">
+                <Flex direction="column" gap="4">
+                  <Flex align="center" justify="between">
+                    <Text as="span" size="3" weight="medium">Log details</Text>
+                    <Button variant="ghost" color="gray" size="1">Close</Button>
+                  </Flex>
+                  <Text as="p" size="2" color="gray">
+                    This sheet does not block the underlying content, but it does overlap it. Cedar uses this pattern
+                    for admin drill-in and side inspection workflows.
+                  </Text>
+                </Flex>
+              </Box>
+            </Flex>
+          </ExampleBlock>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
   notFound()
 }

@@ -712,6 +712,14 @@
   border-radius: max(0px, calc(var(--parent-radius) - var(--parent-padding)));
 }
 
+/* =============================================================================
+   CEDAR TABLE
+   ============================================================================= */
+
+.cedar-table--nested tbody tr:last-child > * {
+  border-bottom: none !important;
+}
+
 
 /* =============================================================================
    REDUCED MOTION

@@ -13,19 +13,29 @@ interface ExampleBlockProps {
 
 export function ExampleBlock({ title, size = 'contained', code, children }: ExampleBlockProps) {
   return (
-    <Flex direction="column" gap="2">
+    <Flex direction="column" gap="3">
       <PreviewFrame size={size} label={title}>
         {children}
       </PreviewFrame>
       {code && (
-        <Box className="rounded-lg border border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg)] p-4">
-          <Text as="p" size="1" weight="medium" className="uppercase tracking-wide text-[var(--cedar-text-muted)]">
-            Implementation
-          </Text>
-          <pre className="mt-2 overflow-x-auto text-xs leading-6 text-[var(--cedar-text-secondary)]">
-            <code>{code}</code>
-          </pre>
-        </Box>
+        <details className="rounded-xl border border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg)]">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3">
+            <Flex align="center" gap="2">
+              <i className="ri-code-line text-sm text-[var(--cedar-text-muted)]" aria-hidden="true" />
+              <Text as="span" size="2" weight="medium">
+                Implementation
+              </Text>
+            </Flex>
+            <Text as="span" size="1" color="gray">
+              Expand code
+            </Text>
+          </summary>
+          <Box className="border-t border-[var(--cedar-border-subtle)] px-4 py-4">
+            <pre className="overflow-x-auto text-sm leading-7 text-[var(--cedar-text-secondary)]">
+              <code>{code}</code>
+            </pre>
+          </Box>
+        </details>
       )}
     </Flex>
   )

@@ -20,14 +20,16 @@ function NavItem({ href, item, isActive }: { href: string; item: LibraryNavItem;
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 px-3 min-h-[32px] rounded-md text-sm transition-colors ${
+      className={`flex items-start gap-3 px-3 py-2.5 rounded-lg text-[15px] leading-5 transition-colors ${
         isActive
           ? 'bg-[var(--cedar-interactive-selected)] font-medium text-[var(--cedar-text-primary)]'
           : 'text-[var(--cedar-text-secondary)] hover:bg-[var(--cedar-interactive-hover)] hover:text-[var(--cedar-text-primary)]'
       }`}
     >
-      <span className="flex-1 truncate">{item.label}</span>
-      <StatusIndicator status={item.status} />
+      <span className="flex-1 text-balance">{item.label}</span>
+      <span className="shrink-0 pt-0.5">
+        <StatusIndicator status={item.status} />
+      </span>
     </Link>
   )
 }
@@ -36,14 +38,24 @@ export function LibraryNav() {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="UI library" className="flex flex-col gap-5 py-1">
+    <nav aria-label="UI library" className="flex flex-col gap-7 py-1">
       {LIBRARY_NAV.map((group) => (
-        <div key={group.key} className="flex flex-col gap-0.5">
-          <div className="px-3 pb-1.5">
-            <Text as="span" size="1" weight="bold" className="uppercase tracking-wider text-[var(--cedar-text-muted)]">
+        <div key={group.key} className="flex flex-col gap-1.5">
+          <Link
+            href={group.basePath}
+            className={`flex items-center justify-between px-3 rounded-md transition-colors ${
+              pathname === group.basePath
+                ? 'text-[var(--cedar-text-primary)]'
+                : 'text-[var(--cedar-text-muted)] hover:text-[var(--cedar-text-primary)]'
+            }`}
+          >
+            <Text as="span" size="2" weight="medium" className="uppercase tracking-[0.12em]">
               {group.label}
             </Text>
-          </div>
+            <Badge variant="outline" color="gray" size="1">
+              {group.items.length}
+            </Badge>
+          </Link>
           {group.items.map((item) => {
             const href = `${group.basePath}/${item.slug}`
             const isActive = pathname === href

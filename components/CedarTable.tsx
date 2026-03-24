@@ -18,7 +18,11 @@ export function CedarTable({
     <Table.Root
       variant={surface === 'nested' ? 'ghost' : 'surface'}
       size={size}
-      className={className}
+      className={[
+        'cedar-table',
+        surface === 'nested' ? 'cedar-table--nested' : 'cedar-table--standalone',
+        className,
+      ].filter(Boolean).join(' ')}
     >
       {children}
     </Table.Root>

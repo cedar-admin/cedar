@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Box, Flex, Text } from '@radix-ui/themes'
 
 type PreviewSize = 'inline' | 'contained' | 'full-width'
@@ -5,26 +6,26 @@ type PreviewSize = 'inline' | 'contained' | 'full-width'
 interface PreviewFrameProps {
   size?: PreviewSize
   label?: string
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export function PreviewFrame({ size = 'contained', label, children }: PreviewFrameProps) {
   return (
-    <Flex direction="column" gap="2">
+    <Flex direction="column" gap="3">
       {label && (
-        <Text as="p" size="1" color="gray">
+        <Text as="p" size="2" weight="medium" color="gray">
           {label}
         </Text>
       )}
       <Box
-        className="border border-[var(--cedar-border-subtle)] rounded-lg p-4 bg-[var(--cedar-page-bg)]"
+        className="rounded-xl border border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg)] p-6"
       >
         {size === 'inline' ? (
-          <Flex wrap="wrap" gap="3" align="center">
+          <Flex wrap="wrap" gap="4" align="center">
             {children}
           </Flex>
         ) : size === 'contained' ? (
-          <Box className="max-w-md">
+          <Box className="max-w-lg">
             {children}
           </Box>
         ) : (
