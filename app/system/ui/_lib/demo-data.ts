@@ -16,12 +16,6 @@ export const SAMPLE_FILTER_PILLS = [
   { label: 'Medium', href: '#', isActive: false },
 ]
 
-export function futureDate(daysFromNow: number): string {
-  const d = new Date()
-  d.setDate(d.getDate() + daysFromNow)
-  return d.toISOString()
-}
-
 export const SAMPLE_REGULATIONS = [
   {
     title: 'Telehealth prescribing requirements updated',

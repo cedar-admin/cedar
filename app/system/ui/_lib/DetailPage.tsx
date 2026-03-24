@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Badge, Flex, Heading, Text } from '@radix-ui/themes'
 import type { LibraryNavItem, LibraryItemStatus } from './nav-config'
 
@@ -13,9 +14,13 @@ interface DetailPageProps {
 }
 
 export function DetailPage({ item, children }: DetailPageProps) {
+  const hasMetadata = (item.governingDocs && item.governingDocs.length > 0) ||
+    (item.usedIn && item.usedIn.length > 0) ||
+    (item.related && item.related.length > 0)
+
   return (
     <Flex direction="column" gap="6">
-      {/* Header */}
+      {/* Page header */}
       <Flex direction="column" gap="2">
         <Flex align="center" gap="3" wrap="wrap">
           <Heading as="h1" size="6" weight="bold">{item.label}</Heading>
@@ -26,6 +31,48 @@ export function DetailPage({ item, children }: DetailPageProps) {
           <Text as="p" size="1" className="font-mono text-[var(--cedar-text-muted)]">
             {item.filePath}
           </Text>
+        )}
+
+        {/* Metadata cluster */}
+        {hasMetadata && (
+          <Flex direction="column" gap="2" mt="2" className="border-t border-[var(--cedar-border-subtle)] pt-3">
+            {item.usedIn && item.usedIn.length > 0 && (
+              <Flex align="baseline" gap="3" wrap="wrap">
+                <Text as="span" size="1" weight="medium" className="shrink-0 w-24 text-[var(--cedar-text-muted)] uppercase tracking-wide">Used in</Text>
+                <Flex wrap="wrap" gap="2">
+                  {item.usedIn.map((ref) => (
+                    <Link key={ref.label} href={ref.href} className="text-xs text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] underline underline-offset-2 decoration-[var(--cedar-border-subtle)]">
+                      {ref.label}
+                    </Link>
+                  ))}
+                </Flex>
+              </Flex>
+            )}
+            {item.governingDocs && item.governingDocs.length > 0 && (
+              <Flex align="baseline" gap="3" wrap="wrap">
+                <Text as="span" size="1" weight="medium" className="shrink-0 w-24 text-[var(--cedar-text-muted)] uppercase tracking-wide">Docs</Text>
+                <Flex wrap="wrap" gap="2">
+                  {item.governingDocs.map((doc) => (
+                    <Text key={doc.label} as="span" size="1" className="font-mono text-[var(--cedar-text-secondary)]">
+                      {doc.file}
+                    </Text>
+                  ))}
+                </Flex>
+              </Flex>
+            )}
+            {item.related && item.related.length > 0 && (
+              <Flex align="baseline" gap="3" wrap="wrap">
+                <Text as="span" size="1" weight="medium" className="shrink-0 w-24 text-[var(--cedar-text-muted)] uppercase tracking-wide">Related</Text>
+                <Flex wrap="wrap" gap="2">
+                  {item.related.map((rel) => (
+                    <Link key={rel.label} href={rel.href} className="text-xs text-[var(--cedar-text-secondary)] hover:text-[var(--cedar-text-primary)] underline underline-offset-2 decoration-[var(--cedar-border-subtle)]">
+                      {rel.label}
+                    </Link>
+                  ))}
+                </Flex>
+              </Flex>
+            )}
+          </Flex>
         )}
       </Flex>
 

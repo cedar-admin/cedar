@@ -3,12 +3,10 @@ import { Box, Card, Flex, Text } from '@radix-ui/themes'
 import { getAllSlugs, getLibraryItem } from '../../_lib/nav-config'
 import { DetailPage, ContentSection } from '../../_lib/DetailPage'
 import { PreviewFrame } from '../../_lib/PreviewFrame'
-import { SAMPLE_DOMAIN, SAMPLE_FILTER_PILLS, SAMPLE_HASHES } from '../../_lib/demo-data'
+import { SAMPLE_FILTER_PILLS } from '../../_lib/demo-data'
 import { SectionHeading } from '@/components/SectionHeading'
 import { FilterPills } from '@/components/FilterPills'
 import { AiBadge, AiDisclaimer } from '@/components/AiBadge'
-import { HashWithCopy } from '@/components/HashWithCopy'
-import { DomainCard } from '@/components/DomainCard'
 
 export function generateStaticParams() {
   return getAllSlugs('components').map((slug) => ({ slug }))
@@ -24,76 +22,46 @@ export default async function ComponentsPage({ params }: { params: Promise<{ slu
       <DetailPage item={item}>
         <ContentSection heading="When to use">
           <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Use <code className="font-mono text-xs">SectionHeading</code> for all section labels inside cards and standalone
-            page sections. Never use a raw <code className="font-mono text-xs">{'<Heading>'}</code> with an ad-hoc size for
-            section labeling — SectionHeading encodes the approved size and weight for each context.
+            Use <code className="font-mono text-xs">SectionHeading</code> for all section labels inside cards and for
+            standalone page sections. Never use a raw <code className="font-mono text-xs">{'<Heading>'}</code> with an
+            ad-hoc size for section labeling — SectionHeading encodes the approved size and weight for each context
+            and is the single source of truth for that decision.
           </Text>
         </ContentSection>
 
-        <ContentSection heading="Usage rules">
+        <ContentSection heading="Hard rules">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
-            <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">variant=&quot;card&quot;</code> (default) — inside Card surfaces. Renders at size 3 (14px medium)</Text></li>
-            <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">variant=&quot;standalone&quot;</code> — page-level sections outside cards. Renders at size 4 (16px medium)</Text></li>
-            <li><Text as="span" size="2" color="gray">Always set <code className="font-mono text-xs">as</code> prop matching the semantic heading level in the page hierarchy</Text></li>
-            <li><Text as="span" size="2" color="gray">Use <code className="font-mono text-xs">id</code> prop for anchor-linkable sections</Text></li>
+            <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">variant=&quot;card&quot;</code> (default) — inside Card surfaces. Renders at <code className="font-mono text-xs">size=&quot;3&quot; weight=&quot;medium&quot;</code> (14px)</Text></li>
+            <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">variant=&quot;standalone&quot;</code> — page-level sections outside cards. Renders at <code className="font-mono text-xs">size=&quot;4&quot; weight=&quot;medium&quot;</code> (16px)</Text></li>
+            <li><Text as="span" size="2" color="gray">Always set the <code className="font-mono text-xs">as</code> prop to match the semantic heading level in the page hierarchy</Text></li>
+            <li><Text as="span" size="2" color="gray">Never use <code className="font-mono text-xs">weight=&quot;bold&quot;</code> on a section heading — that is reserved for page titles and stat values only</Text></li>
           </ul>
         </ContentSection>
 
-        <ContentSection heading="Examples">
-          <PreviewFrame size="full-width" label="variant=&quot;card&quot; (inside a card)">
+        <ContentSection heading="Anatomy">
+          <PreviewFrame size="full-width" label="variant=&quot;card&quot; — inside a Card surface">
             <Card variant="surface">
               <Box p="4">
                 <SectionHeading as="h3" variant="card">AI summary</SectionHeading>
-                <Text as="p" size="2" color="gray" mt="2">Section content follows here.</Text>
+                <Text as="p" size="2" color="gray" mt="2">Section content follows here. The heading sits flush at card padding with no extra margin above.</Text>
               </Box>
             </Card>
           </PreviewFrame>
 
-          <PreviewFrame size="full-width" label="variant=&quot;standalone&quot; (page section)">
-            <Flex direction="column" gap="2">
+          <PreviewFrame size="full-width" label="variant=&quot;standalone&quot; — page section outside a card">
+            <Flex direction="column" gap="3">
               <SectionHeading as="h2" variant="standalone">Regulatory updates</SectionHeading>
-              <Text as="p" size="2" color="gray">Section content follows here.</Text>
+              <Text as="p" size="2" color="gray">Section content follows here. Standalone sections use gap=&quot;3&quot; between heading and body.</Text>
             </Flex>
           </PreviewFrame>
         </ContentSection>
-      </DetailPage>
-    )
-  }
 
-  if (slug === 'filter-pills') {
-    return (
-      <DetailPage item={item}>
-        <ContentSection heading="When to use">
-          <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Use FilterPills on any collection page (changes, sources, library) for category or severity
-            filtering. Always URL-driven — never local state. The active filter is encoded in the URL
-            so that the page is shareable and the back button works correctly.
-          </Text>
-        </ContentSection>
-
-        <ContentSection heading="Usage rules">
+        <ContentSection heading="Forbidden patterns">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
-            <li><Text as="span" size="2" color="gray">Each pill is a <code className="font-mono text-xs">{'<Link>'}</code> with an <code className="font-mono text-xs">href</code> — no <code className="font-mono text-xs">onClick</code> state management</Text></li>
-            <li><Text as="span" size="2" color="gray">One pill is always active — the &ldquo;All&rdquo; pill resets to the unfiltered state</Text></li>
-            <li><Text as="span" size="2" color="gray">Pill labels use sentence case — &ldquo;Critical&rdquo; not &ldquo;CRITICAL&rdquo;</Text></li>
-            <li><Text as="span" size="2" color="gray">The &ldquo;All&rdquo; pill is always first</Text></li>
-            <li><Text as="span" size="2" color="gray">Custom active colors use the <code className="font-mono text-xs">activeClass</code> prop (for severity-specific colors)</Text></li>
+            <li><Text as="span" size="2" color="gray">Raw <code className="font-mono text-xs">{'<Heading size="3" weight="medium">'}</code> in place of <code className="font-mono text-xs">SectionHeading</code></Text></li>
+            <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">variant=&quot;standalone&quot;</code> inside a card — use <code className="font-mono text-xs">variant=&quot;card&quot;</code> instead</Text></li>
+            <li><Text as="span" size="2" color="gray">Missing <code className="font-mono text-xs">as</code> prop — always set the semantic heading level</Text></li>
           </ul>
-        </ContentSection>
-
-        <ContentSection heading="Examples">
-          <PreviewFrame size="full-width" label="Standard filter pills">
-            <FilterPills pills={SAMPLE_FILTER_PILLS} />
-          </PreviewFrame>
-        </ContentSection>
-
-        <ContentSection heading="Notes">
-          <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Active state tokens: <code className="font-mono text-xs">--cedar-filter-active-bg</code>,{' '}
-            <code className="font-mono text-xs">--cedar-filter-active-text</code>,{' '}
-            <code className="font-mono text-xs">--cedar-filter-active-border</code>. These are defined in{' '}
-            <code className="font-mono text-xs">app/globals.css</code>.
-          </Text>
         </ContentSection>
       </DetailPage>
     )
@@ -104,31 +72,35 @@ export default async function ComponentsPage({ params }: { params: Promise<{ slu
       <DetailPage item={item}>
         <ContentSection heading="When to use">
           <Text as="p" size="2" color="gray" className="leading-relaxed">
-            <code className="font-mono text-xs">AiBadge</code> appears on every AI-generated content item at every tier —
-            on collection views and detail views. <code className="font-mono text-xs">AiDisclaimer</code> appears on detail
-            views only, inside the AI content card, as the last element.
+            <code className="font-mono text-xs">AiBadge</code> appears on every AI-generated content item — on collection
+            rows and detail views, at every tier. <code className="font-mono text-xs">AiDisclaimer</code> appears on detail
+            views only, as the last element inside the AI content card. Both are required, non-configurable, and not optional.
+          </Text>
+          <Text as="p" size="2" color="gray" className="leading-relaxed" mt="2">
+            Cedar&rsquo;s credibility depends on transparent AI labeling. Omitting either component on an AI surface
+            is a product defect, not a design choice.
           </Text>
         </ContentSection>
 
-        <ContentSection heading="Usage rules">
+        <ContentSection heading="Hard rules">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
             <li><Text as="span" size="2" color="gray">AiBadge renders inline with other metadata badges using <code className="font-mono text-xs">{'<Flex align="center" gap="2">'}</code></Text></li>
-            <li><Text as="span" size="2" color="gray">AiDisclaimer renders as the last element inside AI content containers — never omit it on detail views</Text></li>
-            <li><Text as="span" size="2" color="gray">Neither component accepts props — appearance is fixed</Text></li>
-            <li><Text as="span" size="2" color="gray">Cedar&rsquo;s credibility depends on transparent AI labeling. Never omit either component on AI surfaces</Text></li>
+            <li><Text as="span" size="2" color="gray">AiDisclaimer renders as the last element inside AI content cards on detail views — never omit it</Text></li>
+            <li><Text as="span" size="2" color="gray">Neither component accepts props — appearance is intentionally fixed</Text></li>
+            <li><Text as="span" size="2" color="gray">Do not substitute with a generic Badge — use only these named components</Text></li>
           </ul>
         </ContentSection>
 
-        <ContentSection heading="Examples">
-          <PreviewFrame size="inline" label="AiBadge (inline context)">
+        <ContentSection heading="Anatomy">
+          <PreviewFrame size="inline" label="AiBadge — inline with metadata badges">
             <AiBadge />
           </PreviewFrame>
 
-          <PreviewFrame size="contained" label="AI content card with AiDisclaimer">
+          <PreviewFrame size="contained" label="AI content card with AiDisclaimer — complete composition">
             <Card variant="surface">
               <Box p="4">
                 <Flex align="center" gap="2" mb="3">
-                  <Text as="span" size="2" weight="medium">AI summary</Text>
+                  <SectionHeading as="h3" variant="card">AI summary</SectionHeading>
                   <AiBadge />
                 </Flex>
                 <Text as="p" size="2" color="gray" className="leading-relaxed">
@@ -141,83 +113,55 @@ export default async function ComponentsPage({ params }: { params: Promise<{ slu
             </Card>
           </PreviewFrame>
         </ContentSection>
-      </DetailPage>
-    )
-  }
 
-  if (slug === 'hash-with-copy') {
-    return (
-      <DetailPage item={item}>
-        <ContentSection heading="When to use">
-          <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Use HashWithCopy for any hash value in audit trail views, chain validation displays, and
-            change record metadata. Truncating to 8 characters keeps audit tables readable while the
-            copy action gives access to the full value.
+        <ContentSection heading="Disclaimer text">
+          <Text as="p" size="2" color="gray" className="leading-relaxed italic">
+            &ldquo;This summary was generated by AI and has not been reviewed by a licensed attorney. This is not legal advice. For decisions specific to your practice, consult your legal counsel.&rdquo;
           </Text>
-        </ContentSection>
-
-        <ContentSection heading="Usage rules">
-          <ul className="flex flex-col gap-2 ml-4 list-disc">
-            <li><Text as="span" size="2" color="gray">Default <code className="font-mono text-xs">displayLength</code> is 8 characters — sufficient for visual identification</Text></li>
-            <li><Text as="span" size="2" color="gray">Copy action uses <code className="font-mono text-xs">navigator.clipboard</code> — fails silently if unavailable</Text></li>
-            <li><Text as="span" size="2" color="gray">Truncation uses ellipsis character (…) — not three dots</Text></li>
-            <li><Text as="span" size="2" color="gray">Never show the full 64-character SHA-256 inline — only in dedicated audit views</Text></li>
-          </ul>
-        </ContentSection>
-
-        <ContentSection heading="Examples">
-          <PreviewFrame size="inline" label="Default displayLength (8 chars)">
-            <HashWithCopy hash={SAMPLE_HASHES.sha256} />
-          </PreviewFrame>
-
-          <PreviewFrame size="inline" label="Extended displayLength (12 chars)">
-            <HashWithCopy hash={SAMPLE_HASHES.sha256} displayLength={12} />
-          </PreviewFrame>
+          <Text as="p" size="2" color="gray" mt="2">
+            This exact copy is baked into <code className="font-mono text-xs">AiDisclaimer</code>. Do not paraphrase or shorten it.
+          </Text>
         </ContentSection>
       </DetailPage>
     )
   }
 
-  if (slug === 'domain-card') {
+  if (slug === 'filter-pills') {
     return (
       <DetailPage item={item}>
         <ContentSection heading="When to use">
           <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Use DomainCard for the domain/category browsing grid on the regulation library page.
-            Each card represents a regulatory domain (Board of Medicine, Board of Pharmacy, etc.)
-            and links to its filtered regulation list.
+            Use FilterPills on any collection page (changes, sources, library) for category or severity filtering.
+            Always URL-driven — never local React state. The active filter is encoded in the URL so the page
+            is shareable and the browser back button works correctly.
           </Text>
         </ContentSection>
 
-        <ContentSection heading="Usage rules">
+        <ContentSection heading="Hard rules">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
-            <li><Text as="span" size="2" color="gray">Full-card click via <code className="font-mono text-xs">::after</code> pseudo-element on the heading link — no wrapper <code className="font-mono text-xs">{'<Link>'}</code></Text></li>
-            <li><Text as="span" size="2" color="gray">SeverityBadge renders above the pseudo-element using <code className="font-mono text-xs">relative z-10</code> — so it remains clickable independently</Text></li>
-            <li><Text as="span" size="2" color="gray">Description truncated at 2 lines with <code className="font-mono text-xs">line-clamp-2</code></Text></li>
-            <li><Text as="span" size="2" color="gray">Set <code className="font-mono text-xs">headingLevel</code> based on page hierarchy — default is <code className="font-mono text-xs">h3</code></Text></li>
+            <li><Text as="span" size="2" color="gray">Each pill is a <code className="font-mono text-xs">{'<Link>'}</code> with an <code className="font-mono text-xs">href</code> — no <code className="font-mono text-xs">onClick</code> or local state</Text></li>
+            <li><Text as="span" size="2" color="gray">One pill is always active — &ldquo;All&rdquo; resets to the unfiltered state</Text></li>
+            <li><Text as="span" size="2" color="gray">The &ldquo;All&rdquo; pill is always first</Text></li>
+            <li><Text as="span" size="2" color="gray">Pill labels are sentence case — &ldquo;Critical&rdquo; not &ldquo;CRITICAL&rdquo;</Text></li>
+            <li><Text as="span" size="2" color="gray">Custom active styling uses the <code className="font-mono text-xs">activeClass</code> prop only — never ad-hoc className overrides</Text></li>
           </ul>
         </ContentSection>
 
-        <ContentSection heading="Examples">
-          <PreviewFrame size="contained" label="DomainCard with severity">
-            <DomainCard
-              domain={SAMPLE_DOMAIN}
-              regulationCount={24}
-              recentChangeCount={3}
-              highestSeverity="high"
-              headingLevel="h3"
-            />
+        <ContentSection heading="Anatomy">
+          <PreviewFrame size="full-width" label="Standard filter pills — All + four severity levels">
+            <FilterPills pills={SAMPLE_FILTER_PILLS} />
           </PreviewFrame>
+        </ContentSection>
 
-          <PreviewFrame size="contained" label="DomainCard without severity">
-            <DomainCard
-              domain={{ ...SAMPLE_DOMAIN, name: 'Board of Pharmacy', slug: 'board-of-pharmacy' }}
-              regulationCount={18}
-              recentChangeCount={0}
-              highestSeverity={null}
-              headingLevel="h3"
-            />
-          </PreviewFrame>
+        <ContentSection heading="Token reference">
+          <Text as="p" size="2" color="gray">
+            Active state tokens are defined in <code className="font-mono text-xs">app/globals.css</code>:
+          </Text>
+          <ul className="flex flex-col gap-1 ml-4 list-disc mt-2">
+            <li><Text as="span" size="2" className="font-mono text-xs text-[var(--cedar-text-secondary)]">--cedar-filter-active-bg</Text></li>
+            <li><Text as="span" size="2" className="font-mono text-xs text-[var(--cedar-text-secondary)]">--cedar-filter-active-text</Text></li>
+            <li><Text as="span" size="2" className="font-mono text-xs text-[var(--cedar-text-secondary)]">--cedar-filter-active-border</Text></li>
+          </ul>
         </ContentSection>
       </DetailPage>
     )

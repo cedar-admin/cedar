@@ -6,6 +6,9 @@ export interface LibraryNavItem {
   status: LibraryItemStatus
   description: string
   filePath?: string
+  governingDocs?: Array<{ label: string; file: string }>
+  usedIn?: Array<{ label: string; href: string }>
+  related?: Array<{ label: string; href: string }>
 }
 
 export interface LibraryNavGroup {
@@ -25,7 +28,11 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
         slug: 'overview',
         label: 'Overview',
         status: 'approved',
-        description: 'What the UI Library is, who it serves, and how to use it effectively.',
+        description: 'What the UI library is, how to use it as a design-ops reference, and how new pages enter v1.',
+        governingDocs: [
+          { label: 'design-standards.md', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md', file: 'docs/design-system/frontend-standards.md' },
+        ],
       },
     ],
   },
@@ -39,24 +46,54 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
         label: 'Typography',
         status: 'approved',
         description: 'Type scale, weights, and intended usage for page titles, headings, body, and captions.',
+        governingDocs: [
+          { label: 'design-standards.md §2 — Typography', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §3 — Heading hierarchy', file: 'docs/design-system/frontend-standards.md' },
+          { label: 'art-direction.md §4 — Section headings', file: 'docs/design-system/art-direction.md' },
+        ],
+        usedIn: [
+          { label: 'Every Cedar page', href: '/changes' },
+        ],
+        related: [
+          { label: 'Section heading', href: '/system/ui/components/section-heading' },
+        ],
       },
       {
-        slug: 'buttons',
-        label: 'Buttons',
+        slug: 'semantic-color',
+        label: 'Semantic color and status',
         status: 'approved',
-        description: 'Primary, secondary, tertiary, destructive, and icon-only button variants with selection guidance.',
-      },
-      {
-        slug: 'badges',
-        label: 'Badges and semantic color',
-        status: 'approved',
-        description: 'Severity, status, authority, role/tier, and confidence badge color mappings. The complete Cedar semantic color system.',
+        description: 'Severity, review status, authority level, tier, and confidence badge color mappings. How Cedar separates color-for-information from gray-for-interaction.',
+        governingDocs: [
+          { label: 'design-standards.md §4 — Semantic color', file: 'docs/design-system/design-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Changes feed', href: '/changes' },
+          { label: 'Change detail', href: '/changes' },
+          { label: 'Regulation library', href: '/library' },
+          { label: 'Audit trail', href: '/audit' },
+        ],
+        related: [
+          { label: 'AI trust', href: '/system/ui/components/ai-trust' },
+        ],
       },
       {
         slug: 'surfaces',
-        label: 'Surfaces',
+        label: 'Surfaces and spacing',
         status: 'approved',
-        description: 'Card and table surface variants, including the nested surface rule and when to use ghost vs surface.',
+        description: 'Card and table surface variants, the nested surface rule, and section spacing rhythm.',
+        governingDocs: [
+          { label: 'design-standards.md §5 — Surfaces', file: 'docs/design-system/design-standards.md' },
+          { label: 'information-density.md §2 — Section spacing', file: 'docs/design-system/information-density.md' },
+        ],
+        usedIn: [
+          { label: 'Changes feed', href: '/changes' },
+          { label: 'Sources', href: '/sources' },
+          { label: 'Settings', href: '/settings' },
+        ],
+        related: [
+          { label: 'Tables', href: '/system/ui/patterns/tables' },
+          { label: 'Page layout', href: '/system/ui/patterns/layout' },
+        ],
       },
     ],
   },
@@ -69,36 +106,57 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
         slug: 'section-heading',
         label: 'Section heading',
         status: 'approved',
-        description: 'Card and standalone section heading variants for consistent labeling.',
+        description: 'Canonical heading component for card sections and standalone page sections.',
         filePath: 'components/SectionHeading.tsx',
-      },
-      {
-        slug: 'filter-pills',
-        label: 'Filter pills',
-        status: 'approved',
-        description: 'URL-driven horizontal pill bar for collection filtering.',
-        filePath: 'components/FilterPills.tsx',
+        governingDocs: [
+          { label: 'design-standards.md §2 — Typography', file: 'docs/design-system/design-standards.md' },
+          { label: 'art-direction.md §4 — Section headings', file: 'docs/design-system/art-direction.md' },
+        ],
+        usedIn: [
+          { label: 'Change detail tabs', href: '/changes' },
+          { label: 'Settings cards', href: '/settings' },
+          { label: 'Admin review queue', href: '/admin/review' },
+        ],
+        related: [
+          { label: 'Typography', href: '/system/ui/foundations/typography' },
+          { label: 'Surfaces and spacing', href: '/system/ui/foundations/surfaces' },
+        ],
       },
       {
         slug: 'ai-trust',
         label: 'AI trust',
         status: 'approved',
-        description: 'AI-generated badge and legal disclaimer pattern for all AI-produced content.',
+        description: 'AiBadge and AiDisclaimer — required on every AI-generated content surface.',
         filePath: 'components/AiBadge.tsx',
+        governingDocs: [
+          { label: 'design-standards.md §6 — AI trust signals', file: 'docs/design-system/design-standards.md' },
+          { label: 'content-standards.md §5 — Disclaimer copy', file: 'docs/design-system/content-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Change detail — AI summary card', href: '/changes' },
+          { label: 'Changes feed row badges', href: '/changes' },
+        ],
+        related: [
+          { label: 'Semantic color and status', href: '/system/ui/foundations/semantic-color' },
+          { label: 'Detail pages', href: '/system/ui/patterns/detail-pages' },
+        ],
       },
       {
-        slug: 'hash-with-copy',
-        label: 'Hash with copy',
+        slug: 'filter-pills',
+        label: 'Filter pills',
         status: 'approved',
-        description: 'Truncated hash display with clipboard copy action for audit trail references.',
-        filePath: 'components/HashWithCopy.tsx',
-      },
-      {
-        slug: 'domain-card',
-        label: 'Domain card',
-        status: 'approved',
-        description: 'Clickable domain card with severity indicator, regulation count, and full-surface click target.',
-        filePath: 'components/DomainCard.tsx',
+        description: 'URL-driven horizontal pill bar for collection page filtering.',
+        filePath: 'components/FilterPills.tsx',
+        governingDocs: [
+          { label: 'ux-standards.md §3 — URL state', file: 'docs/design-system/ux-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Changes feed', href: '/changes' },
+          { label: 'Regulation library', href: '/library' },
+        ],
+        related: [
+          { label: 'Collection pages', href: '/system/ui/patterns/collection-pages' },
+        ],
       },
     ],
   },
@@ -109,45 +167,81 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
     items: [
       {
         slug: 'layout',
-        label: 'Layout',
+        label: 'Page layout',
         status: 'approved',
-        description: 'Page anatomy, container sizing, section spacing, and the three Cedar page types.',
+        description: 'The three Cedar page types — collection, detail, and settings — and their structural anatomy.',
+        governingDocs: [
+          { label: 'design-standards.md §3 — Layout', file: 'docs/design-system/design-standards.md' },
+          { label: 'information-density.md', file: 'docs/design-system/information-density.md' },
+        ],
+        usedIn: [
+          { label: 'All Cedar routes', href: '/changes' },
+        ],
+        related: [
+          { label: 'Collection pages', href: '/system/ui/patterns/collection-pages' },
+          { label: 'Detail pages', href: '/system/ui/patterns/detail-pages' },
+          { label: 'Surfaces and spacing', href: '/system/ui/foundations/surfaces' },
+        ],
       },
       {
-        slug: 'navigation',
-        label: 'Navigation',
+        slug: 'collection-pages',
+        label: 'Collection pages',
         status: 'approved',
-        description: 'Sidebar structure, breadcrumbs, page titles, URL state encoding, and wayfinding rules.',
+        description: 'Title, count badge, filter pills, and table composition for list views.',
+        governingDocs: [
+          { label: 'design-standards.md §3 — Layout', file: 'docs/design-system/design-standards.md' },
+          { label: 'information-density.md §3 — Collection density', file: 'docs/design-system/information-density.md' },
+        ],
+        usedIn: [
+          { label: 'Changes feed', href: '/changes' },
+          { label: 'Sources', href: '/sources' },
+          { label: 'Regulation library', href: '/library' },
+          { label: 'Audit trail', href: '/audit' },
+        ],
+        related: [
+          { label: 'Filter pills', href: '/system/ui/components/filter-pills' },
+          { label: 'Tables', href: '/system/ui/patterns/tables' },
+          { label: 'Page layout', href: '/system/ui/patterns/layout' },
+        ],
+      },
+      {
+        slug: 'detail-pages',
+        label: 'Detail pages',
+        status: 'candidate',
+        description: 'Identity cluster, metadata cluster, tabbed content, and AI summary placement for item detail views.',
+        governingDocs: [
+          { label: 'design-standards.md §3 — Layout', file: 'docs/design-system/design-standards.md' },
+          { label: 'information-density.md §4 — Detail density', file: 'docs/design-system/information-density.md' },
+        ],
+        usedIn: [
+          { label: 'Change detail', href: '/changes' },
+          { label: 'Regulation detail', href: '/library' },
+        ],
+        related: [
+          { label: 'AI trust', href: '/system/ui/components/ai-trust' },
+          { label: 'Semantic color and status', href: '/system/ui/foundations/semantic-color' },
+          { label: 'Page layout', href: '/system/ui/patterns/layout' },
+        ],
       },
       {
         slug: 'tables',
         label: 'Tables',
         status: 'approved',
-        description: 'Data table patterns: surface vs ghost, clickable rows, column ordering, and pagination.',
-      },
-      {
-        slug: 'empty-states',
-        label: 'Empty states',
-        status: 'approved',
-        description: 'Three empty state types: first use, no filter results, and error loading.',
-      },
-      {
-        slug: 'collection-header',
-        label: 'Collection header',
-        status: 'approved',
-        description: 'Standard page header composition with title, count badge, and filter pill bar.',
-      },
-      {
-        slug: 'detail-header',
-        label: 'Detail header',
-        status: 'approved',
-        description: 'Detail page metadata cluster: title, badges, source info, and effective dates.',
-      },
-      {
-        slug: 'settings-section',
-        label: 'Settings section',
-        status: 'approved',
-        description: 'Settings card composition with heading, description, and form control.',
+        description: 'Surface vs ghost, clickable rows, column ordering, and the nested surface rule for data tables.',
+        governingDocs: [
+          { label: 'design-standards.md §5 — Surfaces', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §2 — Clickable rows', file: 'docs/design-system/ux-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Changes feed', href: '/changes' },
+          { label: 'Sources', href: '/sources' },
+          { label: 'Audit trail', href: '/audit' },
+          { label: 'Admin review queue', href: '/admin/review' },
+        ],
+        related: [
+          { label: 'Surfaces and spacing', href: '/system/ui/foundations/surfaces' },
+          { label: 'Collection pages', href: '/system/ui/patterns/collection-pages' },
+        ],
       },
     ],
   },

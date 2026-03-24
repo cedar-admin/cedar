@@ -17,52 +17,53 @@ export default async function GettingStartedPage({ params }: { params: Promise<{
       <DetailPage item={item}>
         <ContentSection heading="When to use">
           <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Reference this library before building any new UI, modifying existing pages, or reviewing
-            a PRP that touches the frontend. It documents the approved version of every pattern —
+            Open this library before building any new Cedar UI, modifying an existing page, or reviewing a PRP
+            that touches the frontend. The library documents the approved version of every active pattern —
             checking here first prevents drift.
           </Text>
         </ContentSection>
 
-        <ContentSection heading="Usage rules">
+        <ContentSection heading="Hard rules">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
             <li><Text as="span" size="2" color="gray">Always check the approved pattern before building something custom</Text></li>
-            <li><Text as="span" size="2" color="gray">Follow the standard content model when adding new pages to this library</Text></li>
             <li><Text as="span" size="2" color="gray">New patterns enter as <code className="font-mono text-xs">candidate</code> first — never directly as <code className="font-mono text-xs">approved</code></Text></li>
-            <li><Text as="span" size="2" color="gray">Reference library URLs in PRPs for pattern consistency: &ldquo;Match <code className="font-mono text-xs">/system/ui/patterns/tables</code>&rdquo;</Text></li>
+            <li><Text as="span" size="2" color="gray">Every new library page must follow the full seven-section content model</Text></li>
+            <li><Text as="span" size="2" color="gray">Reference library pages by URL in PRPs: <code className="font-mono text-xs">&ldquo;Match /system/ui/patterns/tables&rdquo;</code></Text></li>
           </ul>
         </ContentSection>
 
-        <ContentSection heading="The content model">
-          <Text as="p" size="2" color="gray" className="leading-relaxed">
-            Every page in this library follows a consistent structure. This is what makes it useful
-            versus a plain component gallery:
+        <ContentSection heading="The seven-section content model">
+          <Text as="p" size="2" color="gray">
+            Every detail page in this library follows this structure. This ordering is what makes it useful
+            as a decision reference rather than a component gallery:
           </Text>
           <Flex direction="column" gap="2" mt="2">
             {[
-              { label: 'Title + status badge', desc: 'What the pattern is, and whether it is approved for production use' },
-              { label: 'Description', desc: '1–2 sentences explaining the pattern\'s purpose' },
-              { label: 'When to use', desc: 'Decision criteria — when is this the right choice?' },
-              { label: 'Usage rules', desc: 'Required configurations, forbidden patterns, accessibility notes' },
-              { label: 'Examples', desc: 'Live rendered examples with realistic sample data and labels' },
-              { label: 'Notes (optional)', desc: 'Cross-references, adoption status, future considerations' },
-            ].map((item) => (
-              <Flex key={item.label} gap="3" align="start">
-                <Text as="span" size="2" weight="medium" className="shrink-0 w-40">{item.label}</Text>
-                <Text as="span" size="2" color="gray">{item.desc}</Text>
+              { label: '1. Title + status', desc: 'What the pattern is. Whether it is approved for production.' },
+              { label: '2. Description', desc: '1–2 sentences on the pattern\'s purpose.' },
+              { label: '3. When to use', desc: 'Decision criteria — when is this the right choice?' },
+              { label: '4. Hard rules', desc: 'Required configurations and forbidden patterns.' },
+              { label: '5. Anatomy / examples', desc: 'Live rendered examples using real Cedar components and tokens.' },
+              { label: '6. Used in Cedar', desc: 'Which product routes use this pattern today.' },
+              { label: '7. Governing docs', desc: 'Which design doc files own this decision.' },
+            ].map((row) => (
+              <Flex key={row.label} gap="3" align="start">
+                <Text as="span" size="2" weight="medium" className="shrink-0 w-36">{row.label}</Text>
+                <Text as="span" size="2" color="gray">{row.desc}</Text>
               </Flex>
             ))}
           </Flex>
         </ContentSection>
 
-        <ContentSection heading="Adding new pages">
+        <ContentSection heading="Adding a page">
           <ol className="flex flex-col gap-2 ml-4 list-decimal">
             <li><Text as="span" size="2" color="gray">Add an entry to <code className="font-mono text-xs">_lib/nav-config.ts</code> with <code className="font-mono text-xs">status: &apos;candidate&apos;</code></Text></li>
             <li><Text as="span" size="2" color="gray">Add a render case in the appropriate <code className="font-mono text-xs">[slug]/page.tsx</code></Text></li>
-            <li><Text as="span" size="2" color="gray">Write guidance content following the content model above</Text></li>
-            <li><Text as="span" size="2" color="gray">After review, update status to <code className="font-mono text-xs">approved</code> in nav-config</Text></li>
+            <li><Text as="span" size="2" color="gray">Write all seven sections following the content model above</Text></li>
+            <li><Text as="span" size="2" color="gray">After review, update status to <code className="font-mono text-xs">approved</code></Text></li>
           </ol>
-          <Text as="p" size="2" color="gray" mt="2" className="leading-relaxed">
-            No structural changes are needed — adding a page is always: 1 config entry + 1 render case.
+          <Text as="p" size="2" color="gray" mt="2">
+            One config entry + one render case. No structural changes needed.
           </Text>
         </ContentSection>
       </DetailPage>
