@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 35
+Last updated: March 24, 2026 by Session 36
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,7 +13,7 @@ Last updated: March 24, 2026 by Session 35
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui — 16-page standalone design ops workspace. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui exists as a routed standalone workspace; follow-up curation PRP now active to narrow v1 and strengthen the design-ops content model. |
 
 ## Codebase Stats
 - **~21,318 lines** TypeScript/TSX
@@ -53,7 +53,14 @@ Notes:
 
 ## Next Session Priority
 
-**1. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
+**1. admin-ui-library-curation-v1 PRP** (active):
+   The routed UI library is in place, but the seeded v1 is still too broad. Execute `PRPs/active/admin-ui-library-curation-v1.md` to:
+   - Keep the `/system/ui` shell and routed architecture
+   - Reduce the seeded inventory to a curated core set under Foundations / Components / Patterns
+   - Strengthen each page into a real design-ops reference with status, usage rules, Cedar implementation references, and governing-doc links
+   - Make statuses operationally meaningful instead of decorative
+
+**2. secondary-path-polish-v1 PRP** (UX sprint — still ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
    - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
    - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
@@ -61,22 +68,14 @@ Notes:
    - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
    - Update Playwright spec selectors
 
-**2. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
+**3. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
    All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research. Likely first PRPs:
    - `classification-pipeline-v1` — Stage 1–4 pipeline, classification_rules seed data, authority_level schema (draws from P2-S1, P2-S2, P2-S3, P2-S4, P3-S4)
    - `kg-entity-schema-v1` — taxonomy versioning, authority_level_transitions table, kg_classification_log extensions (draws from P3-S6, P3-S7)
    - `fl-fac-ingestion-v1` — FAC citation parser, board chapter→domain mapping, FL keyword set (draws from P3-S1, P3-S5)
    - `state-onboarding-framework-v1` — CitationParserRegistry, NormalizedCitation interface, seeds directory structure (draws from P3-S5)
 
-**2. secondary-path-polish-v1 PRP** (UX sprint, can run in parallel):
-   Based on `research/ui-audit/design-audit-delta.md §6`:
-   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
-   - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
-   - Suppress false click affordance on `/sources` table rows
-   - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
-   - Update Playwright spec selectors
-
-**3. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
+**4. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
    - `cedar/corpus.classify` → `cedar/corpus.authority-classify` → `cedar/corpus.practice-score` → `cedar/corpus.service-line-map`
    - Start dev server: `env -u ANTHROPIC_API_KEY npx next dev --port 3000`, trigger via Inngest dashboard
 
