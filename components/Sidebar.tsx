@@ -23,6 +23,7 @@ const ADMIN_NAV = [
   { href: '/practices', label: 'Practices',     icon: 'ri-building-line' },
   { href: '/reviews',   label: 'Review Queue',  icon: 'ri-inbox-line' },
   { href: '/system',    label: 'System Health', icon: 'ri-server-line' },
+  { href: '/system/ui', label: 'UI library',    icon: 'ri-palette-line' },
 ]
 
 interface SidebarProps {
