@@ -2,6 +2,7 @@
 
 import { Tabs, Box, Card, Flex, Text, Badge, Heading, Table } from '@radix-ui/themes'
 import { ContentReader } from '@/components/ContentReader'
+import { CedarTable } from '@/components/CedarTable'
 import { RelationshipCard } from '@/components/RelationshipCard'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
 import { AuthorityBadge } from '@/components/AuthorityBadge'
@@ -209,7 +210,7 @@ function OverviewTab({
               <Heading as="h2" size="2" weight="bold">Classification Audit Trail</Heading>
             </Box>
             <Box p="4" pt="0">
-              <Table.Root variant="ghost">
+              <CedarTable surface="nested">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>
@@ -250,7 +251,7 @@ function OverviewTab({
                     </Table.Row>
                   ))}
                 </Table.Body>
-              </Table.Root>
+              </CedarTable>
             </Box>
           </Card>
         )}

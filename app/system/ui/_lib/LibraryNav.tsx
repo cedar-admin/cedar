@@ -2,30 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Text } from '@radix-ui/themes'
+import { Badge, Text } from '@radix-ui/themes'
 import { LIBRARY_NAV } from './nav-config'
 import type { LibraryNavItem, LibraryItemStatus } from './nav-config'
 
 function StatusIndicator({ status }: { status: LibraryItemStatus }) {
   if (status === 'candidate') {
-    return (
-      <span
-        className="shrink-0 inline-flex items-center gap-1 text-[10px] font-medium text-[var(--amber-11)] bg-[var(--amber-3)] border border-[var(--amber-6)] rounded px-1 leading-[18px]"
-        aria-label="Candidate status"
-      >
-        C
-      </span>
-    )
+    return <Badge color="amber" variant="soft" size="1">C</Badge>
   }
   if (status === 'experimental') {
-    return (
-      <span
-        className="shrink-0 inline-flex items-center gap-1 text-[10px] font-medium text-[var(--blue-11)] bg-[var(--blue-3)] border border-[var(--blue-6)] rounded px-1 leading-[18px]"
-        aria-label="Experimental status"
-      >
-        E
-      </span>
-    )
+    return <Badge color="blue" variant="soft" size="1">E</Badge>
   }
   return null
 }

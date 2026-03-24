@@ -3,6 +3,7 @@ import { createServerClient } from '../../../lib/db/client'
 import TriggerButton from './TriggerButton'
 import SeedCorpusButton from './SeedCorpusButton'
 import { Badge, Callout, Card, Box, Flex, Heading, Text, Table, Separator } from '@radix-ui/themes'
+import { CedarTable } from '@/components/CedarTable'
 import { SEVERITY_COLOR } from '@/lib/ui-constants'
 import { timeAgo } from '@/lib/format'
 
@@ -142,7 +143,7 @@ export default async function SystemPage() {
           </Heading>
         </Box>
         <Box p="0">
-          <Table.Root variant="ghost">
+          <CedarTable surface="nested">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
@@ -195,7 +196,7 @@ export default async function SystemPage() {
                 )
               })}
             </Table.Body>
-          </Table.Root>
+          </CedarTable>
         </Box>
       </Card>
 

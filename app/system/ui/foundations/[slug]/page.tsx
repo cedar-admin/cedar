@@ -2,11 +2,13 @@ import { notFound } from 'next/navigation'
 import { Badge, Box, Card, Flex, Heading, Table, Text } from '@radix-ui/themes'
 import { getAllSlugs, getLibraryItem } from '../../_lib/nav-config'
 import { DetailPage, ContentSection } from '../../_lib/DetailPage'
+import { ExampleBlock } from '../../_lib/ExampleBlock'
 import { PreviewFrame } from '../../_lib/PreviewFrame'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { StatusBadge } from '@/components/StatusBadge'
 import { AuthorityBadge } from '@/components/AuthorityBadge'
 import { ConfidenceBadge } from '@/components/ConfidenceBadge'
+import { CedarTable } from '@/components/CedarTable'
 import { SectionHeading } from '@/components/SectionHeading'
 
 export function generateStaticParams() {
@@ -206,7 +208,7 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
                 <SectionHeading as="h3" variant="card">Recent changes</SectionHeading>
               </Box>
               <Box p="0">
-                <Table.Root variant="ghost">
+                <CedarTable surface="nested">
                   <Table.Header>
                     <Table.Row>
                       <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
@@ -226,7 +228,7 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
                       <Table.Cell><Text as="span" size="2" color="gray">FL Board of Pharmacy</Text></Table.Cell>
                     </Table.Row>
                   </Table.Body>
-                </Table.Root>
+                </CedarTable>
               </Box>
             </Card>
           </PreviewFrame>
@@ -260,6 +262,72 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
             <li><Text as="span" size="2" color="gray">Custom background colors on cards via <code className="font-mono text-xs">className</code></Text></li>
             <li><Text as="span" size="2" color="gray">Ad-hoc margin or padding values — use Radix gap/p/m tokens</Text></li>
           </ul>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'layout-primitives') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use Radix layout primitives first. Cedar prefers <code className="font-mono text-xs">Flex</code>,
+            <code className="font-mono text-xs">Box</code>, <code className="font-mono text-xs">Grid</code>, and
+            <code className="font-mono text-xs">Separator</code> over raw flex/grid div wrappers when the structure is standard.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Hard rules">
+          <ul className="flex flex-col gap-2 ml-4 list-disc">
+            <li><Text as="span" size="2" color="gray">Use Radix layout props like <code className="font-mono text-xs">gap=&quot;4&quot;</code> and <code className="font-mono text-xs">p=&quot;4&quot;</code> before reaching for utility classes</Text></li>
+            <li><Text as="span" size="2" color="gray">Use raw utility classes only when Themes props cannot express the needed layout</Text></li>
+            <li><Text as="span" size="2" color="gray">Keep page-level section rhythm at <code className="font-mono text-xs">gap=&quot;6&quot;</code>; keep internal grouping at <code className="font-mono text-xs">gap=&quot;2&quot;</code> or <code className="font-mono text-xs">gap=&quot;3&quot;</code></Text></li>
+          </ul>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Flex and Box"
+            size="full-width"
+            code={`<Flex direction="column" gap="4">
+  <Flex align="center" justify="between">
+    <Heading as="h2" size="4">Section title</Heading>
+    <Badge variant="outline" color="gray">12</Badge>
+  </Flex>
+  <Box p="4" className="border border-[var(--cedar-border-subtle)] rounded-lg">
+    Content block
+  </Box>
+</Flex>`}
+          >
+            <Flex direction="column" gap="4">
+              <Flex align="center" justify="between">
+                <Heading as="h2" size="4" weight="medium">Section title</Heading>
+                <Badge variant="outline" color="gray">12</Badge>
+              </Flex>
+              <Box p="4" className="rounded-lg border border-[var(--cedar-border-subtle)]">
+                <Text as="span" size="2" color="gray">Content block</Text>
+              </Box>
+            </Flex>
+          </ExampleBlock>
+
+          <ExampleBlock
+            title="Grid and separator"
+            size="full-width"
+            code={`<Grid columns={{ initial: '1', md: '2' }} gap="4">
+  <Card variant="surface" />
+  <Card variant="surface" />
+</Grid>
+<Separator size="4" />`}
+          >
+            <Flex direction="column" gap="4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card variant="surface"><Box p="4"><Text as="span" size="2">Column A</Text></Box></Card>
+                <Card variant="surface"><Box p="4"><Text as="span" size="2">Column B</Text></Box></Card>
+              </div>
+              <div className="border-t border-[var(--cedar-border-subtle)]" />
+            </Flex>
+          </ExampleBlock>
         </ContentSection>
       </DetailPage>
     )

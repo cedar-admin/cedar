@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Badge, Button, Card, Box, Flex, IconButton, Text, Select, Table } from '@radix-ui/themes'
 import { formatDate } from '@/lib/format'
+import { CedarTable } from '@/components/CedarTable'
 import { SlideOverPanel } from '@/components/admin/SlideOverPanel'
 import type { Database } from '@/lib/db/types'
 
@@ -157,7 +158,7 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
               </Text>
             </Box>
             <Box p="0">
-              <Table.Root variant="surface">
+              <CedarTable surface="nested">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Practice</Table.ColumnHeaderCell>
@@ -212,7 +213,7 @@ export function PracticesTable({ practices, ackCounts }: PracticesTableProps) {
                     </Table.Row>
                   ))}
                 </Table.Body>
-              </Table.Root>
+              </CedarTable>
             </Box>
           </Card>
         )}

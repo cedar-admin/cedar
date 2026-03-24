@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { Badge, Box, Card, Flex, Heading, Table, Text } from '@radix-ui/themes'
 import { getAllSlugs, getLibraryItem } from '../../_lib/nav-config'
 import { DetailPage, ContentSection } from '../../_lib/DetailPage'
+import { ExampleBlock } from '../../_lib/ExampleBlock'
 import { PreviewFrame } from '../../_lib/PreviewFrame'
 import { SAMPLE_FILTER_PILLS, SAMPLE_REGULATIONS } from '../../_lib/demo-data'
 import { FilterPills } from '@/components/FilterPills'
@@ -9,6 +10,7 @@ import { SectionHeading } from '@/components/SectionHeading'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { AuthorityBadge } from '@/components/AuthorityBadge'
 import { AiBadge, AiDisclaimer } from '@/components/AiBadge'
+import { CedarTable } from '@/components/CedarTable'
 import { timeAgo } from '@/lib/format'
 
 export function generateStaticParams() {
@@ -53,7 +55,20 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
         </ContentSection>
 
         <ContentSection heading="Anatomy">
-          <PreviewFrame size="full-width" label="Collection layout skeleton">
+          <ExampleBlock
+            title="Collection layout"
+            size="full-width"
+            code={`<Flex direction="column" gap="6">
+  <Flex align="center" gap="3">
+    <Heading as="h1" size="6" weight="bold">Regulatory updates</Heading>
+    <Badge variant="outline" color="gray">47</Badge>
+  </Flex>
+  <FilterPills pills={pills} />
+  <Card variant="surface">
+    <CedarTable surface="nested">...</CedarTable>
+  </Card>
+</Flex>`}
+          >
             <Flex direction="column" gap="4">
               <Flex align="center" gap="3">
                 <Heading as="h2" size="6" weight="bold">Regulatory updates</Heading>
@@ -61,7 +76,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
               </Flex>
               <FilterPills pills={SAMPLE_FILTER_PILLS} />
               <Card variant="surface">
-                <Table.Root variant="ghost">
+                <CedarTable surface="nested">
                   <Table.Header>
                     <Table.Row>
                       <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
@@ -80,12 +95,20 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
                       </Table.Row>
                     ))}
                   </Table.Body>
-                </Table.Root>
+                </CedarTable>
               </Card>
             </Flex>
-          </PreviewFrame>
+          </ExampleBlock>
 
-          <PreviewFrame size="full-width" label="Detail layout skeleton">
+          <ExampleBlock
+            title="Detail layout"
+            size="full-width"
+            code={`<Flex direction="column" gap="6">
+  <Text as="span" size="2" color="gray">← Changes</Text>
+  <Flex align="center" gap="2" wrap="wrap">...</Flex>
+  <Tabs.Root>...</Tabs.Root>
+</Flex>`}
+          >
             <Flex direction="column" gap="3">
               <Text as="span" size="2" color="gray">← Changes</Text>
               <Flex align="center" gap="2" wrap="wrap">
@@ -98,8 +121,49 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
                 <Text as="span" size="2" color="gray">FL Board of Medicine</Text>
                 <Text as="span" size="2" color="gray">Detected Mar 20, 2026</Text>
               </Flex>
+              <Card variant="surface">
+                <Box p="4">
+                  <Flex align="center" gap="2" mb="3">
+                    <SectionHeading as="h3" variant="card">AI summary</SectionHeading>
+                    <AiBadge />
+                  </Flex>
+                  <Text as="p" size="2" color="gray">This is the main content area for the selected item.</Text>
+                  <AiDisclaimer />
+                </Box>
+              </Card>
             </Flex>
-          </PreviewFrame>
+          </ExampleBlock>
+
+          <ExampleBlock
+            title="Settings layout"
+            size="full-width"
+            code={`<Flex direction="column" gap="6">
+  <Heading as="h1" size="6" weight="bold">Settings</Heading>
+  <Card variant="surface">...</Card>
+  <Card variant="surface">...</Card>
+</Flex>`}
+          >
+            <Flex direction="column" gap="4">
+              <Heading as="h2" size="6" weight="bold">Settings</Heading>
+              <Card variant="surface">
+                <Box p="4">
+                  <Flex direction="column" gap="3">
+                    <SectionHeading as="h3" variant="card">Email notifications</SectionHeading>
+                    <Text as="p" size="2" color="gray">Receive alerts when new regulatory changes are detected.</Text>
+                    <Badge variant="outline" color="gray" className="w-fit">Enabled</Badge>
+                  </Flex>
+                </Box>
+              </Card>
+              <Card variant="surface">
+                <Box p="4">
+                  <Flex direction="column" gap="3">
+                    <SectionHeading as="h3" variant="card">Alert threshold</SectionHeading>
+                    <Text as="p" size="2" color="gray">High and above</Text>
+                  </Flex>
+                </Box>
+              </Card>
+            </Flex>
+          </ExampleBlock>
         </ContentSection>
       </DetailPage>
     )
@@ -146,7 +210,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
               </Flex>
               <FilterPills pills={SAMPLE_FILTER_PILLS} />
               <Card variant="surface">
-                <Table.Root variant="ghost">
+                <CedarTable surface="nested">
                   <Table.Header>
                     <Table.Row>
                       <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
@@ -168,7 +232,7 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
                       </Table.Row>
                     ))}
                   </Table.Body>
-                </Table.Root>
+                </CedarTable>
               </Card>
             </Flex>
           </PreviewFrame>
@@ -262,8 +326,9 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
 
         <ContentSection heading="Hard rules">
           <ul className="flex flex-col gap-2 ml-4 list-disc">
-            <li><Text as="span" size="2" color="gray"><strong>Surface table</strong> (<code className="font-mono text-xs">variant=&quot;surface&quot;</code>): standalone table on a page background, not inside a card</Text></li>
-            <li><Text as="span" size="2" color="gray"><strong>Ghost table</strong> (<code className="font-mono text-xs">variant=&quot;ghost&quot;</code>): table inside a Card — nested surface rule</Text></li>
+            <li><Text as="span" size="2" color="gray">Use <code className="font-mono text-xs">CedarTable</code> instead of <code className="font-mono text-xs">Table.Root</code> directly on product screens whenever the surface context matters</Text></li>
+            <li><Text as="span" size="2" color="gray"><strong>Standalone table:</strong> <code className="font-mono text-xs">{'<CedarTable surface="standalone">'}</code></Text></li>
+            <li><Text as="span" size="2" color="gray"><strong>Nested table in a Card:</strong> <code className="font-mono text-xs">{'<CedarTable surface="nested">'}</code> — prevents the double-border problem</Text></li>
             <li><Text as="span" size="2" color="gray"><strong>Clickable rows:</strong> <code className="font-mono text-xs">cursor-pointer</code> class, hover background <code className="font-mono text-xs">var(--cedar-interactive-hover)</code>, trailing chevron <code className="font-mono text-xs">ri-arrow-right-s-line</code>, <code className="font-mono text-xs">onClick</code> on the <code className="font-mono text-xs">{'<tr>'}</code></Text></li>
             <li><Text as="span" size="2" color="gray">Column order: identifier → status/severity → attributes → metadata → actions</Text></li>
             <li><Text as="span" size="2" color="gray">Max 5–7 visible columns — truncate or consolidate beyond that</Text></li>
@@ -272,13 +337,22 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
         </ContentSection>
 
         <ContentSection heading="Anatomy">
-          <PreviewFrame size="full-width" label="Ghost table inside Card — clickable rows with chevron">
+          <ExampleBlock
+            title="Nested table inside a card"
+            size="full-width"
+            code={`<Card variant="surface">
+  <CedarTable surface="nested">
+    <Table.Header>...</Table.Header>
+    <Table.Body>...</Table.Body>
+  </CedarTable>
+</Card>`}
+          >
             <Card variant="surface">
               <Box px="4" pt="4" pb="2">
                 <SectionHeading as="h3" variant="card">Recent changes</SectionHeading>
               </Box>
               <Box p="0">
-                <Table.Root variant="ghost">
+                <CedarTable surface="nested">
                   <Table.Header>
                     <Table.Row>
                       <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
@@ -302,10 +376,10 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
                       </Table.Row>
                     ))}
                   </Table.Body>
-                </Table.Root>
+                </CedarTable>
               </Box>
             </Card>
-          </PreviewFrame>
+          </ExampleBlock>
         </ContentSection>
 
         <ContentSection heading="Forbidden patterns">
@@ -315,6 +389,79 @@ export default async function PatternsPage({ params }: { params: Promise<{ slug:
             <li><Text as="span" size="2" color="gray">Clickable row without a trailing chevron — users must be able to see that the row navigates</Text></li>
             <li><Text as="span" size="2" color="gray">Using a table for visually browsed items (e.g., domain cards) — use a card grid instead</Text></li>
           </ul>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'settings-pages') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Settings pages are for configuration, not browsing. Use a single column of surfaced cards,
+            one concern per card, with minimal competing actions.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Stacked settings cards"
+            size="full-width"
+            code={`<Flex direction="column" gap="6">
+  <Card variant="surface">Practice profile…</Card>
+  <Card variant="surface">Notifications…</Card>
+  <Card variant="surface">Billing…</Card>
+</Flex>`}
+          >
+            <Flex direction="column" gap="4">
+              <Card variant="surface"><Box p="4"><SectionHeading as="h3" variant="card">Practice profile</SectionHeading></Box></Card>
+              <Card variant="surface"><Box p="4"><SectionHeading as="h3" variant="card">Notifications</SectionHeading></Box></Card>
+              <Card variant="surface"><Box p="4"><SectionHeading as="h3" variant="card">Billing</SectionHeading></Box></Card>
+            </Flex>
+          </ExampleBlock>
+        </ContentSection>
+      </DetailPage>
+    )
+  }
+
+  if (slug === 'review-workflow') {
+    return (
+      <DetailPage item={item}>
+        <ContentSection heading="When to use">
+          <Text as="p" size="2" color="gray">
+            Use this pattern for reviewer/admin work where the job is to triage, inspect, and take a decision quickly.
+            It is not a general-purpose list view.
+          </Text>
+        </ContentSection>
+
+        <ContentSection heading="Examples">
+          <ExampleBlock
+            title="Queue + decision detail"
+            size="full-width"
+            code={`<Flex gap="6">
+  <Card variant="surface">Queue list…</Card>
+  <Card variant="surface">Decision panel…</Card>
+</Flex>`}
+          >
+            <Flex gap="4" direction={{ initial: 'column', md: 'row' }}>
+              <Card variant="surface" className="flex-1">
+                <Box p="4">
+                  <SectionHeading as="h3" variant="card">Pending review</SectionHeading>
+                  <Flex direction="column" gap="2" mt="3">
+                    <Text as="span" size="2">Telehealth prescribing requirements</Text>
+                    <Text as="span" size="2">Compounding labeling standards</Text>
+                  </Flex>
+                </Box>
+              </Card>
+              <Card variant="surface" className="flex-1">
+                <Box p="4">
+                  <SectionHeading as="h3" variant="card">Decision</SectionHeading>
+                  <Text as="p" size="2" color="gray" mt="3">Approve, edit, or reject from a focused action cluster.</Text>
+                </Box>
+              </Card>
+            </Flex>
+          </ExampleBlock>
         </ContentSection>
       </DetailPage>
     )

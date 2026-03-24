@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServerClient } from '../../../lib/db/client'
 import { Badge, Card, Box, Flex, Heading, Text, Button, Table } from '@radix-ui/themes'
+import { CedarTable } from '@/components/CedarTable'
 import { SeverityBadge } from '@/components/SeverityBadge'
 import { HashWithCopy } from '@/components/HashWithCopy'
 import { timeAgo, formatDate } from '@/lib/format'
@@ -83,7 +84,7 @@ export default async function AuditPage() {
             </Card>
           ) : (
             <Card variant="surface">
-              <Table.Root variant="ghost">
+              <CedarTable surface="nested">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell>Run At</Table.ColumnHeaderCell>
@@ -126,7 +127,7 @@ export default async function AuditPage() {
                     </Table.Row>
                   ))}
                 </Table.Body>
-              </Table.Root>
+              </CedarTable>
             </Card>
           )}
         </Flex>
@@ -150,7 +151,7 @@ export default async function AuditPage() {
             </Card>
           ) : (
             <Card variant="surface">
-              <Table.Root variant="ghost">
+              <CedarTable surface="nested">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-20">Seq #</Table.ColumnHeaderCell>
@@ -194,7 +195,7 @@ export default async function AuditPage() {
                     </Table.Row>
                   ))}
                 </Table.Body>
-              </Table.Root>
+              </CedarTable>
             </Card>
           )}
         </Flex>

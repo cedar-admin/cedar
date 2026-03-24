@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { withAuth } from '@workos-inc/authkit-nextjs'
 import { createServerClient } from '../../../lib/db/client'
 import { Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
+import { CedarTable } from '@/components/CedarTable'
 import { SEVERITIES } from '@/lib/ui-constants'
 import { FilterPills } from '@/components/FilterPills'
 import { ChangeTableRow } from './ChangeTableRow'
@@ -160,7 +161,7 @@ export default async function ChangesPage({ searchParams }: Props) {
           {/* Table */}
           {changes.length > 0 && (
             <Card variant="surface">
-              <Table.Root variant="ghost">
+              <CedarTable surface="nested">
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeaderCell className="w-36">Severity</Table.ColumnHeaderCell>
@@ -176,7 +177,7 @@ export default async function ChangesPage({ searchParams }: Props) {
                     <ChangeTableRow key={change.id} change={change} />
                   ))}
                 </Table.Body>
-              </Table.Root>
+              </CedarTable>
             </Card>
           )}
 

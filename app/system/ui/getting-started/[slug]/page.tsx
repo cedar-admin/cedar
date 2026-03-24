@@ -18,8 +18,8 @@ export default async function GettingStartedPage({ params }: { params: Promise<{
         <ContentSection heading="When to use">
           <Text as="p" size="2" color="gray" className="leading-relaxed">
             Open this library before building any new Cedar UI, modifying an existing page, or reviewing a PRP
-            that touches the frontend. The library documents the approved version of every active pattern —
-            checking here first prevents drift.
+            that touches the frontend. The library documents Cedar foundations, atom components, fragments,
+            and patterns with live examples and canonical implementation files. Checking here first prevents drift.
           </Text>
         </ContentSection>
 
@@ -28,6 +28,7 @@ export default async function GettingStartedPage({ params }: { params: Promise<{
             <li><Text as="span" size="2" color="gray">Always check the approved pattern before building something custom</Text></li>
             <li><Text as="span" size="2" color="gray">New patterns enter as <code className="font-mono text-xs">candidate</code> first — never directly as <code className="font-mono text-xs">approved</code></Text></li>
             <li><Text as="span" size="2" color="gray">Every new library page must follow the full seven-section content model</Text></li>
+            <li><Text as="span" size="2" color="gray">Every page gets a stable reference ID using the group prefix: <code className="font-mono text-xs">GST</code>, <code className="font-mono text-xs">FDN</code>, <code className="font-mono text-xs">ATM</code>, <code className="font-mono text-xs">FRG</code>, or <code className="font-mono text-xs">PAT</code></Text></li>
             <li><Text as="span" size="2" color="gray">Reference library pages by URL in PRPs: <code className="font-mono text-xs">&ldquo;Match /system/ui/patterns/tables&rdquo;</code></Text></li>
           </ul>
         </ContentSection>
@@ -44,8 +45,8 @@ export default async function GettingStartedPage({ params }: { params: Promise<{
               { label: '3. When to use', desc: 'Decision criteria — when is this the right choice?' },
               { label: '4. Hard rules', desc: 'Required configurations and forbidden patterns.' },
               { label: '5. Anatomy / examples', desc: 'Live rendered examples using real Cedar components and tokens.' },
-              { label: '6. Used in Cedar', desc: 'Which product routes use this pattern today.' },
-              { label: '7. Governing docs', desc: 'Which design doc files own this decision.' },
+              { label: '6. Implementation files', desc: 'Canonical Cedar files to copy, audit, or update.' },
+              { label: '7. Used in Cedar + governing docs', desc: 'Which product routes use this pattern today and which design docs own it.' },
             ].map((row) => (
               <Flex key={row.label} gap="3" align="start">
                 <Text as="span" size="2" weight="medium" className="shrink-0 w-36">{row.label}</Text>

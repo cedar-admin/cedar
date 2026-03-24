@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 37
+Last updated: March 24, 2026 by Session 38
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,20 +13,22 @@ Last updated: March 24, 2026 by Session 37
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui curated to v1 — 11 pages with full seven-section content model, richer nav-config metadata, redesigned overview as design-ops index. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now spans 27 documented pages across foundations, atoms, fragments, and patterns with live examples, implementation-file metadata, and a shared `CedarTable` wrapper now used on real product tables. |
 
 ## Codebase Stats
 - **~21,272 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
-- **16** dashboard routes, **9** API routes, **11** UI library pages (curated from 16)
-- **0** shadcn/ui components, **25** Radix Themes composite components (4 new: SectionHeading, AiBadge, HashWithCopy, FilterPills)
+- **16** dashboard routes, **9** API routes, **27** UI library detail pages (+ `/system/ui` overview)
+- **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
 - **180** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 37 executed the `admin-ui-library-curation-v1` PRP — narrowing the UI library from 16 broad pages to 11 curated pages with a consistent seven-section content model. The overview was redesigned as a true design-ops index. `nav-config` was extended with `governingDocs`, `usedIn`, and `related` metadata that now surfaces in every detail page header. The foundations section dropped `buttons` (deferred) and added `semantic-color` (replaces the thin `badges` page with full color system guidance). The components section dropped `hash-with-copy` and `domain-card`. The patterns section dropped `navigation`, `empty-states`, `collection-header`, `detail-header`, and `settings-section`; added `collection-pages` and `detail-pages` as stronger replacements. `detail-pages` is explicitly marked `candidate` so the status lifecycle is real. The nav's status indicator was redesigned from a colored dot to compact `C`/`E` badge tokens. The deferred inventory is documented in the overview with notes on when each item should be added.
+Session 38 expanded the admin-only UI Library from a small curated index into a much more operational design workspace modeled more closely on the usefulness of Supabase/Radix docs while staying Cedar-native. The IA now splits cleanly into `Foundations`, `Atom components`, `Fragment components`, and `UI patterns`; `nav-config` gained stable reference IDs plus canonical implementation-file metadata surfaced in every page header; and the overview/getting-started pages now explain the naming system and how to use the library as a build/audit reference. New routed documentation was added for 7 atom pages and 8 fragment pages, with live examples for Cedar’s actual buttons, badges, cards, callouts, tables, form controls, tabs/tooltips, trust fragments, metadata fragments, shell fragments, regulation fragments, and settings/admin fragments.
 
-Session 36 (previous): Built and shipped the admin-only UI Library at `/system/ui` — a 16-page standalone design ops workspace modeled after Supabase's design system interface. The library covers 4 sections (Getting Started, Foundations, Components, UI Patterns) with 4 detail pages each, all following a standard content model (when to use, rules, live examples). The layout is completely standalone — no Cedar platform sidebar — with its own `Back to platform` ghost link. The Cedar sidebar received a distinct portal button (`ri-palette-line` + `ri-arrow-right-up-line`) to distinguish the library entry point from regular nav items. A full design system audit against all 6 design docs (`design-standards.md`, `frontend-standards.md`, `ux-standards.md`, `information-density.md`, `art-direction.md`, `content-standards.md`) caught and fixed 6 violations: nested surface on `/system` page, 5× `<Heading as="h1">` in preview frames, raw Tailwind colors in status dots, fake `<Box>` Select mockup, expand chevron visible when sidebar expanded, and "UI Library" title-case in body copy. Typography demo section-heading spec also corrected to match `art-direction.md §4` (`size="4" weight="medium"` not `size="5" weight="bold"`).
+This session also fixed the lingering table double-border issue by introducing `components/CedarTable.tsx` as the canonical wrapper around Radix `Table.Root`. Real product tables on `/changes`, `/sources`, `/audit`, `/admin/practices`, `/admin/system`, and the regulation detail audit table now use the wrapper, and the UI library’s table/foundation/pattern pages document `surface="nested"` as the standard nested-table contract. Legacy `/system/ui/components/*` routes now redirect to `/system/ui/fragments/*` so old links still work while the IA evolves.
+
+Session 37 (previous): executed the `admin-ui-library-curation-v1` PRP — narrowing the UI library from 16 broad pages to 11 curated pages with a consistent seven-section content model. The overview was redesigned as a true design-ops index. `nav-config` was extended with `governingDocs`, `usedIn`, and `related` metadata that now surfaces in every detail page header. The foundations section dropped `buttons` (deferred) and added `semantic-color` (replaces the thin `badges` page with full color system guidance). The patterns section dropped `navigation`, `empty-states`, `collection-header`, `detail-header`, and `settings-section`; added `collection-pages` and `detail-pages` as stronger replacements. `detail-pages` is explicitly marked `candidate` so the status lifecycle is real. The nav's status indicator was redesigned from a colored dot to compact `C`/`E` badge tokens.
 
 **What was produced:**
 - `research/outputs/part3/P3_S1.md` — FL FAC board/agency chapter-to-domain mapping (150+ chapters, 9 boards/agencies), FL-specific keyword additions (47 phrases), FAC citation parser spec. Reconciled: 47 domain code fixes, workforce.* gap resolved, FL-XC-10 updated.
@@ -55,7 +57,10 @@ Notes:
 
 ## Next Session Priority
 
-**1. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
+**1. `PRPs/active/PRP-01_classification-foundation.md`** (active PRP — default next session scope):
+   Classification foundation implementation is now the repository’s active PRP and should take precedence unless product/design work is explicitly requested again.
+
+**2. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
    - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
    - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
@@ -63,14 +68,19 @@ Notes:
    - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
    - Update Playwright spec selectors
 
-**3. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
+**3. UI library follow-up** (design-ops/product UX support):
+   - Add more stateful fragments once their APIs stabilize (`SlideOverPanel`, richer review surfaces, collection sort headers)
+   - Add visual examples for additional Cedar-native composites as they are introduced during MVP screen work
+   - Keep `/system/ui` aligned with the 6 design-system docs and the actual product implementation
+
+**4. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
    All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research. Likely first PRPs:
    - `classification-pipeline-v1` — Stage 1–4 pipeline, classification_rules seed data, authority_level schema (draws from P2-S1, P2-S2, P2-S3, P2-S4, P3-S4)
    - `kg-entity-schema-v1` — taxonomy versioning, authority_level_transitions table, kg_classification_log extensions (draws from P3-S6, P3-S7)
    - `fl-fac-ingestion-v1` — FAC citation parser, board chapter→domain mapping, FL keyword set (draws from P3-S1, P3-S5)
    - `state-onboarding-framework-v1` — CitationParserRegistry, NormalizedCitation interface, seeds directory structure (draws from P3-S5)
 
-**4. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
+**5. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
    - `cedar/corpus.classify` → `cedar/corpus.authority-classify` → `cedar/corpus.practice-score` → `cedar/corpus.service-line-map`
    - Start dev server: `env -u ANTHROPIC_API_KEY npx next dev --port 3000`, trigger via Inngest dashboard
 

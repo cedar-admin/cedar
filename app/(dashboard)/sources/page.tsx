@@ -1,5 +1,6 @@
 import { createServerClient } from '../../../lib/db/client'
 import { Badge, Card, Box, Flex, Heading, Text, Callout, Table } from '@radix-ui/themes'
+import { CedarTable } from '@/components/CedarTable'
 import { timeAgo } from '@/lib/format'
 
 export const metadata = { title: 'Sources — Cedar' }
@@ -107,7 +108,7 @@ export default async function SourcesPage() {
         </Card>
       ) : (
         <Card variant="surface">
-          <Table.Root variant="ghost">
+          <CedarTable surface="nested">
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Source</Table.ColumnHeaderCell>
@@ -151,7 +152,7 @@ export default async function SourcesPage() {
                 </Table.Row>
               ))}
             </Table.Body>
-          </Table.Root>
+          </CedarTable>
         </Card>
       )}
     </Flex>
