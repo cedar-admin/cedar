@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      cfr_allowlist: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          part_number: number
+          title_number: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          part_number: number
+          title_number: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          part_number?: number
+          title_number?: number
+        }
+        Relationships: []
+      }
       changes: {
         Row: {
           agent_version: string | null
@@ -386,18 +410,24 @@ export type Database = {
       classification_rules: {
         Row: {
           action: Json
+          ai_refinement_needed: boolean
           conditions: Json
           confidence_threshold: number
           created_at: string
           created_by: string
           description: string | null
+          domain_code: string | null
           id: string
           is_active: boolean
+          jurisdiction: string
           last_matched_at: string | null
           name: string
+          notes: string | null
           priority: number
+          rule_config: Json | null
           rule_set_id: string | null
           rule_type: string
+          secondary_domain_codes: string[] | null
           stage: number
           stop_on_match: boolean
           times_matched: number
@@ -406,18 +436,24 @@ export type Database = {
         }
         Insert: {
           action?: Json
+          ai_refinement_needed?: boolean
           conditions?: Json
           confidence_threshold?: number
           created_at?: string
           created_by?: string
           description?: string | null
+          domain_code?: string | null
           id?: string
           is_active?: boolean
+          jurisdiction?: string
           last_matched_at?: string | null
           name: string
+          notes?: string | null
           priority?: number
+          rule_config?: Json | null
           rule_set_id?: string | null
           rule_type?: string
+          secondary_domain_codes?: string[] | null
           stage?: number
           stop_on_match?: boolean
           times_matched?: number
@@ -426,18 +462,24 @@ export type Database = {
         }
         Update: {
           action?: Json
+          ai_refinement_needed?: boolean
           conditions?: Json
           confidence_threshold?: number
           created_at?: string
           created_by?: string
           description?: string | null
+          domain_code?: string | null
           id?: string
           is_active?: boolean
+          jurisdiction?: string
           last_matched_at?: string | null
           name?: string
+          notes?: string | null
           priority?: number
+          rule_config?: Json | null
           rule_set_id?: string | null
           rule_type?: string
+          secondary_domain_codes?: string[] | null
           stage?: number
           stop_on_match?: boolean
           times_matched?: number
@@ -801,11 +843,13 @@ export type Database = {
           change_id: string | null
           citation: string | null
           classification_confidence: number | null
+          classification_stage: string | null
           comment_close_date: string | null
           created_at: string
           current_classification_id: string | null
           description: string | null
           document_type: string | null
+          domain_codes: Json | null
           effective_date: string | null
           entity_type: string
           entity_type_id: string | null
@@ -833,11 +877,13 @@ export type Database = {
           change_id?: string | null
           citation?: string | null
           classification_confidence?: number | null
+          classification_stage?: string | null
           comment_close_date?: string | null
           created_at?: string
           current_classification_id?: string | null
           description?: string | null
           document_type?: string | null
+          domain_codes?: Json | null
           effective_date?: string | null
           entity_type: string
           entity_type_id?: string | null
@@ -865,11 +911,13 @@ export type Database = {
           change_id?: string | null
           citation?: string | null
           classification_confidence?: number | null
+          classification_stage?: string | null
           comment_close_date?: string | null
           created_at?: string
           current_classification_id?: string | null
           description?: string | null
           document_type?: string | null
+          domain_codes?: Json | null
           effective_date?: string | null
           entity_type?: string
           entity_type_id?: string | null
