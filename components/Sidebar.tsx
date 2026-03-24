@@ -23,7 +23,6 @@ const ADMIN_NAV = [
   { href: '/practices', label: 'Practices',     icon: 'ri-building-line' },
   { href: '/reviews',   label: 'Review Queue',  icon: 'ri-inbox-line' },
   { href: '/system',    label: 'System Health', icon: 'ri-server-line' },
-  { href: '/system/ui', label: 'UI library',    icon: 'ri-palette-line' },
 ]
 
 interface SidebarProps {
@@ -154,6 +153,18 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
                     <SidebarLink href={item.href} label={item.label} icon={item.icon} />
                   </li>
                 ))}
+                <li className="pt-1">
+                  <Link
+                    href="/system/ui"
+                    className="flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm text-[var(--cedar-text-secondary)] border border-[var(--cedar-border)] hover:border-[var(--cedar-border-strong)] hover:text-[var(--cedar-text-primary)] hover:bg-[var(--cedar-interactive-hover)] transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <i className="ri-palette-line text-base" aria-hidden="true" />
+                      UI library
+                    </span>
+                    <i className="ri-arrow-right-up-line text-xs text-[var(--cedar-text-muted)]" aria-hidden="true" />
+                  </Link>
+                </li>
               </>
             )}
           </ul>
