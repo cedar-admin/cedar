@@ -1,10 +1,10 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 38
+Last updated: March 24, 2026 by Session 39
 
 ## Module Status
 | Module | Status | Notes |
 |--------|--------|-------|
-| 1. Data Layer | ✅ Complete | 26 migrations, RLS, config tables, 10 seed sources |
+| 1. Data Layer | ✅ Complete | 28 migrations (028 adds cfr_allowlist + classification foundation), RLS, config tables, 10 seed sources |
 | 2. Orchestration | ✅ Complete | 10 Inngest functions registered (fr-daily-poll + ecfr-daily-check added) |
 | 3. Source Fetching | ✅ Complete | Gov APIs + Oxylabs + BrowserBase + auto-escalating dispatcher |
 | 4. Doc Processing | 🔲 Blocked | Railway/Docling deploy needed for PDF extraction |
@@ -17,13 +17,26 @@ Last updated: March 24, 2026 by Session 38
 
 ## Codebase Stats
 - **~21,272 lines** TypeScript/TSX
-- **27** Supabase migrations (001-027)
+- **28** Supabase migrations (001-028)
 - **16** dashboard routes, **9** API routes, **27** UI library detail pages (+ `/system/ui` overview)
 - **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
 - **180** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
+Session 39 executed PRP-01 (classification-foundation). Migration 028 was written, verified, and applied to production. Deliverables:
+- **`cfr_allowlist` table created and seeded** — 407 rows (all relevant CFR parts from P1-S2F `RELEVANT_PARTS` dict) acting as the relevance gate before classification
+- **`classification_rules` schema extended** — 6 new columns: `jurisdiction`, `domain_code`, `secondary_domain_codes`, `rule_config`, `ai_refinement_needed`, `notes`; unique index on `name` for idempotent seeding
+- **`kg_entities` schema extended** — 2 new columns: `domain_codes` (JSONB), `classification_stage` (text)
+- **417 structural rules seeded** — one per CFR allowlist part with section-level splits for 8 high-complexity parts (Stark Law, HIPAA subparts, CLIA, MIPS, etc.); all `rule_config` JSONB includes title/part/sections/confidence
+- **20 agency rules seeded** — covering all major healthcare regulatory agencies (FDA, CMS, DEA, OSHA, OIG, HHS/OCR, CDC, EPA, etc.) with tier and A-score metadata
+- **15 dataset rules seeded** — covering all major openFDA endpoints (drug/event, drug/label, device/event, device/recall, etc.)
+- **26 authority level rules seeded** — binding_federal through informational tiers with rule_config encoding source_type, document_subtype, authority_level, confidence
+- **All domain slugs validated** — 17 invalid slugs corrected against 024_taxonomy_seed.sql before push
+- **Build passes clean** — 0 errors, 0 warnings; migration applied via `npx supabase db push`
+- **Verification counts**: cfr_allowlist=407, structural=417, agency=20, dataset=15, authority_level=26, total classification_rules=487
+- **PRP-01 moved to completed**
+
 Session 38 expanded the admin-only UI Library from a small curated index into a much more operational design workspace modeled more closely on the usefulness of Supabase/Radix docs while staying Cedar-native. The IA now splits cleanly into `Foundations`, `Atom components`, `Fragment components`, and `UI patterns`; `nav-config` gained stable reference IDs plus canonical implementation-file metadata surfaced in every page header; and the overview/getting-started pages now explain the naming system and how to use the library as a build/audit reference. New routed documentation was added for 7 atom pages and 8 fragment pages, with live examples for Cedar’s actual buttons, badges, cards, callouts, tables, form controls, tabs/tooltips, trust fragments, metadata fragments, shell fragments, regulation fragments, and settings/admin fragments.
 
 This session also fixed the lingering table double-border issue by introducing `components/CedarTable.tsx` as the canonical wrapper around Radix `Table.Root`. Real product tables on `/changes`, `/sources`, `/audit`, `/admin/practices`, `/admin/system`, and the regulation detail audit table now use the wrapper, and the UI library’s table/foundation/pattern pages document `surface="nested"` as the standard nested-table contract. Legacy `/system/ui/components/*` routes now redirect to `/system/ui/fragments/*` so old links still work while the IA evolves.
@@ -57,8 +70,13 @@ Notes:
 
 ## Next Session Priority
 
-**1. `PRPs/active/PRP-01_classification-foundation.md`** (active PRP — default next session scope):
-   Classification foundation implementation is now the repository’s active PRP and should take precedence unless product/design work is explicitly requested again.
+**1. PRP-02: Classification Engine** (next PRP — build the engine that reads the 028 rules):
+   The 028 migration provides the database foundation (cfr_allowlist, 478 rules). PRP-02 should build:
+   - `lib/intelligence/classify.ts` — classification engine reading structural/agency/dataset/authority_level rules
+   - `inngest/corpus.classify.ts` — fan-out function running Stage 1 classification over all 98K kg_entities
+   - `lib/intelligence/cfr-allowlist.ts` — title+part lookup helper used by classifier + monitor pipeline
+   - Populate `domain_codes` and `classification_stage` on kg_entities via batch job
+   - Target: Stage 1 structural classification achieves ≥90% precision on a 500-entity spot sample
 
 **2. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
@@ -131,6 +149,6 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 ## Environment
 - Vercel: cedar-beta.vercel.app (auto-deploy from main)
 - Credentials configured in Vercel: Oxylabs ✅, Browserbase ✅, Resend ✅, WorkOS ✅, Inngest ✅, Stripe ✅, GITHUB_PAT ✅, SUPABASE_ACCESS_TOKEN ✅, VERCEL_TOKEN ✅, ADMIN_SECRET ✅
-- Supabase migrations: 26 applied to production ✅
+- Supabase migrations: 28 applied to production ✅
 - Practices in production: 2 (delivery recipients configured)
 - kg_entities in production: 98,777 (seeded March 19, 2026)
