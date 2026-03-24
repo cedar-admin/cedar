@@ -15,7 +15,7 @@ export default function UILibraryOverviewPage() {
       <Flex direction="column" gap="3">
         <Heading as="h2" size="4" weight="medium">What this is</Heading>
         <Text as="p" size="2" color="gray" className="leading-relaxed">
-          The UI Library is a design operations workspace — not a component gallery. Inspired by
+          The UI library is a design operations workspace — not a component gallery. Inspired by
           Supabase&rsquo;s design system documentation, every page answers three questions: when should
           you use this pattern, what are the rules, and what does the approved version look like?
           That rigor is what separates a useful reference from a screenshot dump.

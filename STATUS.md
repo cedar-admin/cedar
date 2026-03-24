@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 34
+Last updated: March 24, 2026 by Session 35
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,18 +13,18 @@ Last updated: March 24, 2026 by Session 34
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui — 16-page standalone design ops workspace. |
 
 ## Codebase Stats
-- **~18,507 lines** TypeScript/TSX
+- **~21,318 lines** TypeScript/TSX
 - **27** Supabase migrations (001-027)
-- **16** dashboard routes, **9** API routes
+- **16** dashboard routes, **9** API routes, **16** UI library pages
 - **0** shadcn/ui components, **25** Radix Themes composite components (4 new: SectionHeading, AiBadge, HashWithCopy, FilterPills)
-- **172** git commits on main
+- **179** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 34 completed the full P3 research pipeline (Non-Federal Sources, Authority Levels, Ingestion Protocol). All 7 P3 sessions delivered and reconciled. The entire 3-part research pipeline is now complete.
+Session 35 built and shipped the admin-only UI Library at `/system/ui` — a 16-page standalone design ops workspace modeled after Supabase's design system interface. The library covers 4 sections (Getting Started, Foundations, Components, UI Patterns) with 4 detail pages each, all following a standard content model (when to use, rules, live examples). The layout is completely standalone — no Cedar platform sidebar — with its own `Back to platform` ghost link. The Cedar sidebar received a distinct portal button (`ri-palette-line` + `ri-arrow-right-up-line`) to distinguish the library entry point from regular nav items. A full design system audit against all 6 design docs (`design-standards.md`, `frontend-standards.md`, `ux-standards.md`, `information-density.md`, `art-direction.md`, `content-standards.md`) caught and fixed 6 violations: nested surface on `/system` page, 5× `<Heading as="h1">` in preview frames, raw Tailwind colors in status dots, fake `<Box>` Select mockup, expand chevron visible when sidebar expanded, and "UI Library" title-case in body copy. Typography demo section-heading spec also corrected to match `art-direction.md §4` (`size="4" weight="medium"` not `size="5" weight="bold"`).
 
 **What was produced:**
 - `research/outputs/part3/P3_S1.md` — FL FAC board/agency chapter-to-domain mapping (150+ chapters, 9 boards/agencies), FL-specific keyword additions (47 phrases), FAC citation parser spec. Reconciled: 47 domain code fixes, workforce.* gap resolved, FL-XC-10 updated.
@@ -53,7 +53,15 @@ Notes:
 
 ## Next Session Priority
 
-**1. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
+**1. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
+   Based on `research/ui-audit/design-audit-delta.md §6`:
+   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
+   - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
+   - Suppress false click affordance on `/sources` table rows
+   - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
+   - Update Playwright spec selectors
+
+**2. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
    All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research. Likely first PRPs:
    - `classification-pipeline-v1` — Stage 1–4 pipeline, classification_rules seed data, authority_level schema (draws from P2-S1, P2-S2, P2-S3, P2-S4, P3-S4)
    - `kg-entity-schema-v1` — taxonomy versioning, authority_level_transitions table, kg_classification_log extensions (draws from P3-S6, P3-S7)

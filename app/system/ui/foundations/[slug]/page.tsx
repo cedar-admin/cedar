@@ -45,8 +45,8 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
                 <Text as="span" size="1" color="gray">size=&quot;6&quot; weight=&quot;bold&quot; — 24px</Text>
               </Flex>
               <Flex align="baseline" gap="4">
-                <Heading as="h2" size="5" weight="bold">Section heading</Heading>
-                <Text as="span" size="1" color="gray">size=&quot;5&quot; weight=&quot;bold&quot; — 20px</Text>
+                <Heading as="h2" size="4" weight="medium">Section heading</Heading>
+                <Text as="span" size="1" color="gray">size=&quot;4&quot; weight=&quot;medium&quot; — 16px</Text>
               </Flex>
               <Flex align="baseline" gap="4">
                 <Heading as="h3" size="4" weight="medium">Card title</Heading>
