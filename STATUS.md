@@ -1,29 +1,31 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 45
+Last updated: March 24, 2026 by Session 46
 
 ## Module Status
 | Module | Status | Notes |
 |--------|--------|-------|
 | 1. Data Layer | ✅ Complete | 28 migrations (028 adds cfr_allowlist + classification foundation), RLS, config tables, 10 seed sources |
-| 2. Orchestration | ✅ Complete | 10 Inngest functions registered (fr-daily-poll + ecfr-daily-check added) |
+| 2. Orchestration | ✅ Complete | 11 Inngest functions registered (classified-seed added) |
 | 3. Source Fetching | ✅ Complete | Gov APIs + Oxylabs + BrowserBase + auto-escalating dispatcher |
 | 4. Doc Processing | 🔲 Blocked | Railway/Docling deploy needed for PDF extraction |
 | 5. Change Detection | ✅ Complete | SHA-256, chain hash, structured diff (DiffBlock[] JSONB) |
 | 6. Intelligence | ⚙️ MVP Complete | 2-agent pipeline (relevance filter + classifier). Agent 3 (Ontology) deferred to 1.0 Full |
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
-| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub. **PRP-02 classification engine built** — lib/classification/ module (7 files, pure function, 487 DB rules) |
+| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub. **PRP-02 classification engine built** — lib/classification/ module (7 files, pure function, 487 DB rules). **PRP-03 classified corpus seed built** — cedar/corpus.classified-seed Inngest function; pipeline not yet triggered. |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
 | 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now includes denser Supabase-style navigation, 36 documented atom detail pages matching the current Radix Themes component catalog, interactive Radix-faithful menu/overlay demos, and broader live reference coverage across foundations, fragments, and patterns with collapsible implementation blocks and shared `CedarTable` usage on real product tables. |
 
 ## Codebase Stats
-- **~24,127 lines** TypeScript/TSX
+- **~25,083 lines** TypeScript/TSX
 - **28** Supabase migrations (001-028)
 - **16** dashboard routes, **9** API routes, **56** UI library detail pages (+ group landing pages for atoms, foundations, fragments, patterns)
 - **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
-- **190** git commits on main
+- **192** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
+Session 46 executed PRP-03 (Classified Corpus Seed). Built `inngest/classified-seed.ts` — the `cedar/corpus.classified-seed` Inngest function that fetches, filters, classifies, and stores the full regulatory corpus baseline in a single retriable pipeline. eCFR ingestion was generalized from Title 21 only to all 15 allowlist titles via a new `lib/corpus/classified-ecfr-ingest.ts` module; only parts present in `cfr_allowlist` are ingested (~407 parts total). Federal Register ingest was expanded with a `cfrTitles` filter to narrow results to healthcare-relevant documents across all 15 titles. openFDA was expanded from 2 enforcement endpoints to all 15 dataset-rule endpoints (drug/enforcement, drug/event, drug/label, drug/ndc, drug/drugsfda, device/enforcement, device/event, device/recall, device/510k, device/pma, device/registrationlisting, device/udi, food/enforcement, food/event, other/nsde), with date filters applied to high-volume event endpoints. Every ingested entity is classified inline using the PRP-02 `classify()` engine — domain assignments written to `kg_entity_domains`, audit trail to `kg_classification_log`, denormalized `domain_codes` + `classification_stage` + `authority_level` updated on `kg_entities`. Entities matching zero rules are flagged `needs_review=true` for HITL pickup. Pipeline is fully idempotent (upsert on identifier+source_id; existing enforcement entities match old corpus-seed identifiers). `classifiedSeed` registered in the Inngest route handler. **Pipeline has not yet been triggered** — must be run manually from the Inngest dashboard to populate classified corpus data for the Library page.
+
 Session 45 executed PRP-02 (Classification Engine). Built `lib/classification/` — a 7-file, pure-function Stage 1 classification module that reads the 487 database rules seeded by PRP-01 and classifies any Cedar corpus entity: eCFR regulations (structural matching via CFR title+part), Federal Register notices (agency matching via 20-agency slug→pattern map), openFDA reports (dataset matching via endpoint normalization), and FL board content (authority rules + sourceName fallback). The engine is stateless — `classify(entity, context)` takes pre-loaded rules and returns a `ClassificationResult` with deduplicated `DomainAssignment[]`, an `AuthorityAssignment`, and `domainCodes`. `loadClassificationContext()` loads rules, 407-row allowlist, domain slug→UUID map, and source map in parallel. The CFR allowlist gates structural matching only; agency, dataset, and authority rules fire regardless of CFR citations. Supabase generated types were regenerated to include the 028 migration columns. Build passes clean (0 errors, 0 warnings). PRP-02 moved to completed.
 
 Session 44 tightened three UI-library fidelity issues in `/system/ui`. First, the nested table contract was hardened in `globals.css` so `CedarTable surface="nested"` strips remaining container chrome instead of still reading as a card-inside-a-card. Second, the surfaces foundation page now lets inline code wrap inside its rule lists, preventing the forbidden-pattern bullets from generating ugly overflow artifacts. Third, the interactive menu demos were corrected to explicitly opt into neutral gray at the menu-content level, preventing Radix’s accent green from leaking into Cedar’s interaction examples.
@@ -84,14 +86,19 @@ Notes:
 
 ## Next Session Priority
 
-**1. PRP-03: Classification Pipeline (Inngest)** — wire the `lib/classification/` engine into production:
-   - New Inngest function `cedar/corpus.classify-v2` — batch loop calling `classify()` for all 98K kg_entities
-   - Writes `kg_entity_domains` rows (upsert on conflict entity_id+domain_id), `kg_classification_log` rows (stage='rule'), updates `kg_entities.domain_codes` + `classification_stage`
-   - Loads `ClassificationContext` once per run (not per entity) via `loadClassificationContext()`
-   - Reports classified / unclassified / skipped counts per batch
-   - Smoke test: trigger manually from Inngest dashboard, verify domain_codes populated on a sample of entities
+**1. Trigger cedar/corpus.classified-seed** — run the pipeline from the Inngest dashboard:
+   - Start dev server: `env -u ANTHROPIC_API_KEY npx next dev --port 3000`
+   - Open Inngest dashboard (http://localhost:8288), trigger `cedar/corpus.classified-seed`
+   - Monitor all 21 steps; watch for errors in FR pagination or openFDA endpoints
+   - Verify in Supabase: `SELECT count(*) FROM kg_entity_domains` (expect >0), `SELECT count(*) FROM kg_classification_log`, eCFR entities by title distribution
+   - Spot-check: Title 21 Part 1306 entity → should have `cs_prescribing` domain + `federal_regulation` authority
 
-**2. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
+**2. PRP-04: Library Wiring** — wire the Library page to display classified corpus data:
+   - `/library` page currently shows no domain breakdown because `kg_entity_domains` is empty
+   - After corpus seed runs, the Library page should show classified entities grouped by domain
+   - Generate PRP-04 from the library wireframe in `docs/wireframes/library-v2.jsx`
+
+**3. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
    - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
    - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
