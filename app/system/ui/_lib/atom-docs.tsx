@@ -12,6 +12,7 @@ import {
   CheckboxGroup,
   DataList,
   Flex,
+  Inset,
   IconButton,
   Progress,
   Radio,
@@ -34,6 +35,13 @@ import {
   Tooltip,
 } from '@radix-ui/themes'
 import { CedarTable } from '@/components/CedarTable'
+import {
+  ContextMenuDemo,
+  DropdownMenuDemo,
+  HoverCardDemo,
+  IconButtonDemo,
+  PopoverDemo,
+} from './InteractiveAtomDemos'
 import type { VariantRegistryRow } from './VariantRegistry'
 
 type PreviewSize = 'inline' | 'contained' | 'full-width'
@@ -56,7 +64,7 @@ export interface AtomDoc {
 export const ATOM_FAMILIES = [
   {
     label: 'Actions and navigation',
-    slugs: ['buttons', 'dropdown-menu', 'context-menu', 'popover', 'hover-card', 'tabs', 'tab-nav', 'tooltip'],
+    slugs: ['buttons', 'icon-button', 'dropdown-menu', 'context-menu', 'popover', 'hover-card', 'tabs', 'tab-nav', 'tooltip'],
   },
   {
     label: 'Inputs and selection',
@@ -68,55 +76,9 @@ export const ATOM_FAMILIES = [
   },
   {
     label: 'Surfaces and overlays',
-    slugs: ['cards', 'avatar', 'aspect-ratio', 'dialog', 'alert-dialog', 'separator'],
+    slugs: ['cards', 'avatar', 'aspect-ratio', 'dialog', 'alert-dialog', 'inset', 'separator'],
   },
 ]
-
-function StaticMenuSurface({ title, items }: { title: string; items: string[] }) {
-  return (
-    <Card variant="surface" className="max-w-xs">
-      <Box p="3">
-        <Flex direction="column" gap="3">
-          <Text as="span" size="1" weight="medium" className="uppercase tracking-[0.12em] text-[var(--cedar-text-muted)]">
-            {title}
-          </Text>
-          <Flex direction="column" gap="1">
-            {items.map((item) => (
-              <Box
-                key={item}
-                className="rounded-md border border-[var(--cedar-border-subtle)] bg-[var(--cedar-interactive-hover)] px-3 py-2"
-              >
-                <Text as="span" size="2">
-                  {item}
-                </Text>
-              </Box>
-            ))}
-          </Flex>
-        </Flex>
-      </Box>
-    </Card>
-  )
-}
-
-function StaticPopoverSurface({ title, body }: { title: string; body: string }) {
-  return (
-    <Flex direction="column" gap="3" className="max-w-sm">
-      <Button variant="soft" color="gray">Open detail</Button>
-      <Card variant="surface">
-        <Box p="3">
-          <Flex direction="column" gap="2">
-            <Text as="span" size="2" weight="medium">
-              {title}
-            </Text>
-            <Text as="p" size="2" color="gray">
-              {body}
-            </Text>
-          </Flex>
-        </Box>
-      </Card>
-    </Flex>
-  )
-}
 
 function StaticModalSurface({
   eyebrow,
@@ -234,6 +196,35 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
           </Flex>
         ),
       },
+    ],
+  },
+  'icon-button': {
+    whenToUse: 'Icon Button is the compact action atom for single-purpose controls where a visible text label would add more noise than value. Every usage must still be legible via `aria-label` and, when needed, tooltip support.',
+    hardRules: [
+      'Default Cedar icon buttons use `variant="ghost" color="gray"`.',
+      'Use `variant="soft"` only when the icon action needs persistent surface emphasis.',
+      'Destructive icon-only actions may use `solid red`, but only for truly dangerous actions.',
+      'Always provide an `aria-label`; icon-only controls never rely on the glyph alone.',
+    ],
+    registry: [
+      { code: 'BTN-ICON-GHOST', name: 'Ghost icon button', purpose: 'Quiet utility action', contract: 'IconButton variant="ghost" color="gray" aria-label="<label>"' },
+      { code: 'BTN-ICON-SOFT', name: 'Soft icon button', purpose: 'Persistent utility chrome', contract: 'IconButton variant="soft" color="gray" aria-label="<label>"' },
+      { code: 'BTN-ICON-DESTRUCT', name: 'Destructive icon button', purpose: 'Compact destructive action', contract: 'IconButton variant="solid" color="red" aria-label="<label>"' },
+    ],
+    examples: [
+      {
+        title: 'Ghost, soft, and destructive icon buttons',
+        size: 'inline',
+        code: `<Flex gap="2" align="center">
+  <IconButton variant="ghost" color="gray" aria-label="Search">...</IconButton>
+  <IconButton variant="soft" color="gray" aria-label="Pin">...</IconButton>
+  <IconButton variant="solid" color="red" aria-label="Delete">...</IconButton>
+</Flex>`,
+        render: () => <IconButtonDemo />,
+      },
+    ],
+    notes: [
+      'If the action label is important to task comprehension, use a full Button instead of icon-only chrome.',
     ],
   },
   badges: {
@@ -839,7 +830,7 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>...</DropdownMenu.Content>
 </DropdownMenu.Root>`,
-        render: () => <StaticMenuSurface title="Dropdown menu" items={['Inspect', 'Edit', 'Archive']} />,
+        render: () => <DropdownMenuDemo />,
       },
     ],
   },
@@ -847,17 +838,36 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
     whenToUse: 'Context Menu is the contextual action-list atom for row-level or region-level power-user actions, typically on right click.',
     registry: [
       { code: 'MNU-CONTEXT', name: 'Context menu', purpose: 'Contextual action list', contract: 'ContextMenu.Root + Trigger + Content + Item' },
+      { code: 'MNU-CONTEXT-SUB', name: 'Context submenu', purpose: 'Nested action branch', contract: 'ContextMenu.Sub + SubTrigger + SubContent' },
+      { code: 'MNU-CONTEXT-DESTRUCT', name: 'Context destructive item', purpose: 'Dangerous contextual action', contract: 'ContextMenu.Item color="red"' },
     ],
     examples: [
       {
         title: 'Context menu anatomy',
         size: 'contained',
         code: `<ContextMenu.Root>
-  <ContextMenu.Trigger>...</ContextMenu.Trigger>
-  <ContextMenu.Content>...</ContextMenu.Content>
+  <ContextMenu.Trigger>
+    <RightClickZone />
+  </ContextMenu.Trigger>
+  <ContextMenu.Content variant="soft">
+    <ContextMenu.Item shortcut="⌘ E">Edit</ContextMenu.Item>
+    <ContextMenu.Item shortcut="⌘ D">Duplicate</ContextMenu.Item>
+    <ContextMenu.Separator />
+    <ContextMenu.Sub>
+      <ContextMenu.SubTrigger>More</ContextMenu.SubTrigger>
+      <ContextMenu.SubContent>
+        <ContextMenu.Item>Move to project…</ContextMenu.Item>
+      </ContextMenu.SubContent>
+    </ContextMenu.Sub>
+    <ContextMenu.Separator />
+    <ContextMenu.Item color="red">Delete</ContextMenu.Item>
+  </ContextMenu.Content>
 </ContextMenu.Root>`,
-        render: () => <StaticMenuSurface title="Context menu" items={['Open change', 'Copy source link', 'Mark as reviewed']} />,
+        render: () => <ContextMenuDemo />,
       },
+    ],
+    notes: [
+      'Cedar’s default context menu presentation is `variant="soft"` in the neutral gray family, with red reserved for destructive items only.',
     ],
   },
   popover: {
@@ -875,12 +885,7 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
   </Popover.Trigger>
   <Popover.Content>...</Popover.Content>
 </Popover.Root>`,
-        render: () => (
-          <StaticPopoverSurface
-            title="Quick metadata"
-            body="Use popover for anchored, lightweight detail that supports the current action without becoming a full panel."
-          />
-        ),
+        render: () => <PopoverDemo />,
       },
     ],
   },
@@ -897,12 +902,7 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
   <HoverCard.Trigger href="#">Hover me</HoverCard.Trigger>
   <HoverCard.Content>...</HoverCard.Content>
 </HoverCard.Root>`,
-        render: () => (
-          <StaticPopoverSurface
-            title="Source snapshot"
-            body="Hover card is for secondary preview context only. If the information matters to task completion, move it into the visible layout."
-          />
-        ),
+        render: () => <HoverCardDemo />,
       },
     ],
   },
@@ -1017,6 +1017,46 @@ export const ATOM_DOCS: Record<string, AtomDoc> = {
             <Spinner />
             <Text as="span" size="2">Syncing…</Text>
           </Flex>
+        ),
+      },
+    ],
+  },
+  inset: {
+    whenToUse: 'Inset is the card-bleed atom for letting media, illustration, or preview content extend to a card edge without reaching for one-off negative margin hacks.',
+    hardRules: [
+      'Use Inset inside a containing surface such as `Card`.',
+      'Use Inset to create intentional bleed, not as a general layout spacing fix.',
+      'Prefer `clip="padding-box"` so the bleed respects the parent card radius and padding edge.',
+    ],
+    registry: [
+      { code: 'INS-TOP', name: 'Top inset bleed', purpose: 'Media or preview bleeds to top edge of a card', contract: 'Inset side="top" clip="padding-box" pb="current"' },
+      { code: 'INS-ALL', name: 'Full inset bleed', purpose: 'Content bleeds to all card edges', contract: 'Inset side="all" clip="padding-box"' },
+    ],
+    examples: [
+      {
+        title: 'Card media bleed with inset',
+        size: 'contained',
+        code: `<Card size="2">
+  <Inset clip="padding-box" side="top" pb="current">
+    <Box className="h-32 w-full bg-[var(--cedar-interactive-hover)]" />
+  </Inset>
+  <Text as="p" size="3">Use Inset when media should reach the card edge.</Text>
+</Card>`,
+        render: () => (
+          <Box className="max-w-xs">
+            <Card size="2">
+              <Inset clip="padding-box" side="top" pb="current">
+                <Box className="flex h-32 w-full items-center justify-center border-b border-[var(--cedar-border-subtle)] bg-[var(--cedar-interactive-hover)]">
+                  <Text as="span" size="2" color="gray">
+                    Bleeding preview region
+                  </Text>
+                </Box>
+              </Inset>
+              <Text as="p" size="3">
+                Use Inset when preview content should reach the card edge without breaking the surrounding card contract.
+              </Text>
+            </Card>
+          </Box>
         ),
       },
     ],

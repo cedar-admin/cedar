@@ -165,8 +165,34 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
           { label: 'Admin reviews', href: '/admin/reviews' },
         ],
         related: [
+          { label: 'Icon button', href: '/system/ui/atoms/icon-button' },
           { label: 'Dropdown menu', href: '/system/ui/atoms/dropdown-menu' },
           { label: 'Dialog', href: '/system/ui/atoms/dialog' },
+        ],
+      },
+      {
+        referenceId: 'ATM-035',
+        slug: 'icon-button',
+        label: 'Icon Button',
+        status: 'approved',
+        description: 'Compact icon-only action atom built from Radix IconButton, with Cedar naming and accessibility rules.',
+        implementationFiles: [
+          'components/ThemeToggle.tsx',
+          'components/HashWithCopy.tsx',
+          'components/admin/SlideOverPanel.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §6 — Buttons & interactive elements', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §8 — Tooltip and aria labels', file: 'docs/design-system/frontend-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Dashboard shell', href: '/home' },
+          { label: 'Audit', href: '/audit' },
+          { label: 'Admin panels', href: '/admin/reviews' },
+        ],
+        related: [
+          { label: 'Button', href: '/system/ui/atoms/buttons' },
+          { label: 'Tooltip', href: '/system/ui/atoms/tooltip' },
         ],
       },
       {
@@ -612,6 +638,23 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       },
       {
         referenceId: 'ATM-034',
+        slug: 'inset',
+        label: 'Inset',
+        status: 'candidate',
+        description: 'Card-bleed helper from Radix Themes for media and preview surfaces that intentionally reach a container edge.',
+        implementationFiles: [
+          'app/system/ui/_lib/atom-docs.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §8 — Cards', file: 'docs/design-system/design-standards.md' },
+          { label: 'information-density.md §4 — Tables, cards, and lists', file: 'docs/design-system/information-density.md' },
+        ],
+        related: [
+          { label: 'Card', href: '/system/ui/atoms/cards' },
+        ],
+      },
+      {
+        referenceId: 'ATM-036',
         slug: 'separator',
         label: 'Separator',
         status: 'candidate',
