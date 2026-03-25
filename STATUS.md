@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 42
+Last updated: March 24, 2026 by Session 44
 
 ## Module Status
 | Module | Status | Notes |
@@ -24,6 +24,10 @@ Last updated: March 24, 2026 by Session 42
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
+Session 44 tightened three UI-library fidelity issues in `/system/ui`. First, the nested table contract was hardened in `globals.css` so `CedarTable surface="nested"` strips remaining container chrome instead of still reading as a card-inside-a-card. Second, the surfaces foundation page now lets inline code wrap inside its rule lists, preventing the forbidden-pattern bullets from generating ugly overflow artifacts. Third, the interactive menu demos were corrected to explicitly opt into neutral gray at the menu-content level, preventing Radix’s accent green from leaking into Cedar’s interaction examples.
+
+Session 43 corrected a design-system styling leak in the new interactive atom demos. The `Context Menu` and `Dropdown Menu` examples in `/system/ui` were inheriting Radix’s accent color because the menu content surfaces did not explicitly set `color="gray"`. The demos now set neutral gray at the menu-content layer so Cedar’s “gray for interaction, color for information” rule stays intact and submenu highlight states no longer render as green.
+
 Session 42 closed the remaining gap between Cedar’s atom registry and the current Radix Themes component catalog. `/system/ui/atoms` now documents 36 atom detail pages instead of 34 by adding `Icon Button` and `Inset` as first-class atoms, bringing the Cedar registry in line with the components listed in the live Radix Themes docs. The `Context Menu` page was also rebuilt from a static mock into a real interactive Radix demo with a right-click trigger zone, submenu, separators, and destructive action treatment, and the dropdown menu, popover, and hover card examples now use real interactive demos as well.
 
 This session kept the Cedar-specific naming layer intact while making the docs more faithful to the underlying primitives. The shared atom docs source now exposes explicit Cedar shorthand references for the new atoms and richer menu contracts, while the left-nav atom count and route generation automatically pick up the expanded registry. Build verification passed cleanly after the changes.

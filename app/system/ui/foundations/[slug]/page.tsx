@@ -183,7 +183,7 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
         </ContentSection>
 
         <ContentSection heading="Hard rules">
-          <ul className="flex flex-col gap-2 ml-4 list-disc">
+          <ul className="ml-4 flex list-disc flex-col gap-2 [&_code]:break-all [&_code]:whitespace-normal">
             <li><Text as="span" size="2" color="gray"><strong>Nested surface rule:</strong> an inner component uses <code className="font-mono text-xs">variant=&quot;ghost&quot;</code> when inside another surfaced component. A table inside a card must be ghost, not surface</Text></li>
             <li><Text as="span" size="2" color="gray">Quick test: if removing the inner surface looks cleaner without losing information, use ghost</Text></li>
             <li><Text as="span" size="2" color="gray">Default card is <code className="font-mono text-xs">variant=&quot;surface&quot;</code> — never <code className="font-mono text-xs">variant=&quot;classic&quot;</code> without a specific reason</Text></li>
@@ -257,7 +257,7 @@ export default async function FoundationsPage({ params }: { params: Promise<{ sl
         </ContentSection>
 
         <ContentSection heading="Forbidden patterns">
-          <ul className="flex flex-col gap-2 ml-4 list-disc">
+          <ul className="ml-4 flex list-disc flex-col gap-2 [&_code]:break-all [&_code]:whitespace-normal">
             <li><Text as="span" size="2" color="gray"><code className="font-mono text-xs">Table.Root variant=&quot;surface&quot;</code> inside <code className="font-mono text-xs">Card variant=&quot;surface&quot;</code> — double borders, visual noise</Text></li>
             <li><Text as="span" size="2" color="gray">Custom background colors on cards via <code className="font-mono text-xs">className</code></Text></li>
             <li><Text as="span" size="2" color="gray">Ad-hoc margin or padding values — use Radix gap/p/m tokens</Text></li>

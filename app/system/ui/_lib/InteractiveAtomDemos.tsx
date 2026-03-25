@@ -12,7 +12,7 @@ export function ContextMenuDemo() {
           </Text>
         </Box>
       </ContextMenu.Trigger>
-      <ContextMenu.Content variant="soft">
+      <ContextMenu.Content variant="soft" color="gray">
         <ContextMenu.Item shortcut="⌘ E">Edit</ContextMenu.Item>
         <ContextMenu.Item shortcut="⌘ D">Duplicate</ContextMenu.Item>
         <ContextMenu.Separator />
@@ -43,7 +43,7 @@ export function DropdownMenuDemo() {
           Open menu
         </Button>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content variant="soft">
+      <DropdownMenu.Content variant="soft" color="gray">
         <DropdownMenu.Item shortcut="⌘ E">Edit</DropdownMenu.Item>
         <DropdownMenu.Item shortcut="⌘ D">Duplicate</DropdownMenu.Item>
         <DropdownMenu.Separator />

@@ -720,6 +720,17 @@
   border-bottom: none !important;
 }
 
+.cedar-table--nested {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.cedar-table--nested :where(.rt-TableRootTable) {
+  background: transparent !important;
+}
+
 
 /* =============================================================================
    REDUCED MOTION
