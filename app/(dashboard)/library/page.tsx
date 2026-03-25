@@ -3,7 +3,7 @@ import { getLayoutData } from '@/lib/layout-data'
 import { UpgradeBanner } from '@/components/UpgradeBanner'
 import { DomainCard } from '@/components/DomainCard'
 import { EmptyState } from '@/components/EmptyState'
-import { FilterPills } from '@/components/FilterPills'
+import { PracticeTypeSelect } from '@/components/PracticeTypeSelect'
 import { Flex, Heading, Text, Box, Grid } from '@radix-ui/themes'
 
 export const dynamic = 'force-dynamic'
@@ -35,57 +35,74 @@ export default async function LibraryPage({ searchParams }: Props) {
 
   const supabase = createServerClient()
 
-  // Fetch practice types for filter pills
-  const { data: practiceTypes } = await supabase
-    .from('kg_practice_types')
-    .select('id, slug, display_name, sort_order')
+  // ── Query 1: practice types + practice type filter map ────────────────────
+  const [{ data: practiceTypes }, practiceTypeDomainMap] = await Promise.all([
+    supabase
+      .from('kg_practice_types')
+      .select('id, slug, display_name, sort_order')
+      .eq('is_active', true)
+      .order('sort_order'),
+    practiceTypeSlug
+      ? supabase
+          .from('kg_domain_practice_type_map')
+          .select('domain_slug')
+          .eq('practice_type_slug', practiceTypeSlug)
+      : Promise.resolve({ data: null }),
+  ])
+
+  const relevantDomainSlugs: Set<string> | null = practiceTypeDomainMap.data
+    ? new Set(practiceTypeDomainMap.data.map((d) => d.domain_slug))
+    : null
+
+  // ── Query 2: all domains (root + children) in one pass ────────────────────
+  // Fetch every active domain so we can roll child counts up to L1 parents.
+  // Guard against duplicate root rows: only rows where parent_id IS NULL count
+  // as L1 cards — depth=0 alone is insufficient if the seed ran more than once.
+  const { data: allDomains } = await supabase
+    .from('kg_domains')
+    .select('id, name, slug, description, color, depth, parent_id, sort_order')
     .eq('is_active', true)
     .order('sort_order')
 
-  // Fetch active domains (depth 0 only — top-level categories)
-  const { data: domains } = await supabase
-    .from('kg_domains')
-    .select('id, name, slug, description, color, depth, parent_id')
-    .eq('is_active', true)
-    .eq('depth', 0)
-    .order('sort_order')
-
-  // Get regulation counts per domain
-  const domainStats: Record<string, { count: number }> = {}
-
-  // When practice type filter is active, only show domains that map to that practice type
-  let relevantDomainSlugs: Set<string> | null = null
-  if (practiceTypeSlug) {
-    const { data: domainMap } = await supabase
-      .from('kg_domain_practice_type_map')
-      .select('domain_slug')
-      .eq('practice_type_slug', practiceTypeSlug)
-
-    relevantDomainSlugs = new Set((domainMap ?? []).map((d) => d.domain_slug))
-  }
-
-  // Get entity counts per domain (top-level + children rolled up)
-  const domainIds = (domains ?? []).map((d) => d.id)
-  const { data: childDomains } = await supabase
-    .from('kg_domains')
-    .select('id, parent_id')
-    .in('parent_id', domainIds)
-
-  await Promise.all(
-    (domains ?? []).map(async (domain) => {
-      const childIds = (childDomains ?? [])
-        .filter((c) => c.parent_id === domain.id)
-        .map((c) => c.id)
-      const idsToCount = [domain.id, ...childIds]
-      const { count } = await supabase
-        .from('kg_entity_domains')
-        .select('entity_id', { count: 'exact', head: true })
-        .in('domain_id', idsToCount)
-      domainStats[domain.id] = { count: count ?? 0 }
-    })
+  const rootDomains = (allDomains ?? []).filter(
+    (d) => d.depth === 0 && d.parent_id === null,
   )
 
-  // Total entity count
+  // Build a map: domain_id → root ancestor id (for count rollup)
+  const domainToRoot = new Map<string, string>()
+  const rootById = new Map<string, (typeof rootDomains)[0]>()
+  for (const d of rootDomains) {
+    rootById.set(d.id, d)
+    domainToRoot.set(d.id, d.id)
+  }
+  for (const d of allDomains ?? []) {
+    if (d.parent_id && rootById.has(d.parent_id)) {
+      domainToRoot.set(d.id, d.parent_id)
+    }
+  }
+
+  // ── Query 3: entity counts per domain — one round trip ───────────────────
+  // Pull all entity_domain rows grouped by domain_id from the DB via RPC-style
+  // query. Supabase doesn't expose raw GROUP BY on the client, so we fetch
+  // entity counts using a single aggregate-friendly call per root domain IDs
+  // by getting all kg_entity_domains rows and grouping in JS.
+  // This replaces the previous N individual count queries.
+  const allDomainIds = (allDomains ?? []).map((d) => d.id)
+  const { data: entityDomainRows } = await supabase
+    .from('kg_entity_domains')
+    .select('domain_id, entity_id')
+    .in('domain_id', allDomainIds)
+
+  // Roll up: count unique entity_ids per root ancestor
+  const rootEntitySets = new Map<string, Set<string>>()
+  for (const row of entityDomainRows ?? []) {
+    const rootId = domainToRoot.get(row.domain_id)
+    if (!rootId) continue
+    if (!rootEntitySets.has(rootId)) rootEntitySets.set(rootId, new Set())
+    rootEntitySets.get(rootId)!.add(row.entity_id)
+  }
+
+  // ── Query 4 (lightweight): total entity count ─────────────────────────────
   const { count: totalEntities } = await supabase
     .from('kg_entities')
     .select('id', { count: 'exact', head: true })
@@ -101,29 +118,22 @@ export default async function LibraryPage({ searchParams }: Props) {
         </Text>
       </Box>
 
-      {/* Practice type filter pills */}
+      {/* Practice type filter — Select dropdown */}
       {(practiceTypes ?? []).length > 0 && (
-        <FilterPills
-          pills={[
-            { label: 'All', href: '/library', isActive: !practiceTypeSlug },
-            ...(practiceTypes ?? []).map((pt) => ({
-              label: pt.display_name,
-              href: `/library?practice_type=${pt.slug}`,
-              isActive: practiceTypeSlug === pt.slug,
-            })),
-          ]}
+        <PracticeTypeSelect
+          practiceTypes={practiceTypes ?? []}
+          selected={practiceTypeSlug}
         />
       )}
 
       {/* Domain card grid */}
       <section aria-labelledby="browse-heading">
         <Heading id="browse-heading" as="h2" size="3" weight="bold" mb="4">Browse by Category</Heading>
-        {(domains ?? []).length > 0 ? (
+        {rootDomains.length > 0 ? (
           <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="4">
-            {(domains ?? []).map((domain) => {
-              const stats = domainStats[domain.id]
-              const count = stats?.count ?? 0
+            {rootDomains.map((domain) => {
               if (relevantDomainSlugs && !relevantDomainSlugs.has(domain.slug)) return null
+              const count = rootEntitySets.get(domain.id)?.size ?? 0
               return (
                 <DomainCard
                   key={domain.id}
