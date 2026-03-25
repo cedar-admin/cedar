@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 44
+Last updated: March 24, 2026 by Session 45
 
 ## Module Status
 | Module | Status | Notes |
@@ -11,19 +11,21 @@ Last updated: March 24, 2026 by Session 44
 | 5. Change Detection | ✅ Complete | SHA-256, chain hash, structured diff (DiffBlock[] JSONB) |
 | 6. Intelligence | ⚙️ MVP Complete | 2-agent pipeline (relevance filter + classifier). Agent 3 (Ontology) deferred to 1.0 Full |
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
-| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
+| 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub. **PRP-02 classification engine built** — lib/classification/ module (7 files, pure function, 487 DB rules) |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
 | 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now includes denser Supabase-style navigation, 36 documented atom detail pages matching the current Radix Themes component catalog, interactive Radix-faithful menu/overlay demos, and broader live reference coverage across foundations, fragments, and patterns with collapsible implementation blocks and shared `CedarTable` usage on real product tables. |
 
 ## Codebase Stats
-- **~21,272 lines** TypeScript/TSX
+- **~24,127 lines** TypeScript/TSX
 - **28** Supabase migrations (001-028)
 - **16** dashboard routes, **9** API routes, **56** UI library detail pages (+ group landing pages for atoms, foundations, fragments, patterns)
 - **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
-- **180** git commits on main
+- **190** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
+Session 45 executed PRP-02 (Classification Engine). Built `lib/classification/` — a 7-file, pure-function Stage 1 classification module that reads the 487 database rules seeded by PRP-01 and classifies any Cedar corpus entity: eCFR regulations (structural matching via CFR title+part), Federal Register notices (agency matching via 20-agency slug→pattern map), openFDA reports (dataset matching via endpoint normalization), and FL board content (authority rules + sourceName fallback). The engine is stateless — `classify(entity, context)` takes pre-loaded rules and returns a `ClassificationResult` with deduplicated `DomainAssignment[]`, an `AuthorityAssignment`, and `domainCodes`. `loadClassificationContext()` loads rules, 407-row allowlist, domain slug→UUID map, and source map in parallel. The CFR allowlist gates structural matching only; agency, dataset, and authority rules fire regardless of CFR citations. Supabase generated types were regenerated to include the 028 migration columns. Build passes clean (0 errors, 0 warnings). PRP-02 moved to completed.
+
 Session 44 tightened three UI-library fidelity issues in `/system/ui`. First, the nested table contract was hardened in `globals.css` so `CedarTable surface="nested"` strips remaining container chrome instead of still reading as a card-inside-a-card. Second, the surfaces foundation page now lets inline code wrap inside its rule lists, preventing the forbidden-pattern bullets from generating ugly overflow artifacts. Third, the interactive menu demos were corrected to explicitly opt into neutral gray at the menu-content level, preventing Radix’s accent green from leaking into Cedar’s interaction examples.
 
 Session 43 corrected a design-system styling leak in the new interactive atom demos. The `Context Menu` and `Dropdown Menu` examples in `/system/ui` were inheriting Radix’s accent color because the menu content surfaces did not explicitly set `color="gray"`. The demos now set neutral gray at the menu-content layer so Cedar’s “gray for interaction, color for information” rule stays intact and submenu highlight states no longer render as green.
@@ -82,13 +84,12 @@ Notes:
 
 ## Next Session Priority
 
-**1. PRP-02: Classification Engine** (next PRP — build the engine that reads the 028 rules):
-   The 028 migration provides the database foundation (cfr_allowlist, 478 rules). PRP-02 should build:
-   - `lib/intelligence/classify.ts` — classification engine reading structural/agency/dataset/authority_level rules
-   - `inngest/corpus.classify.ts` — fan-out function running Stage 1 classification over all 98K kg_entities
-   - `lib/intelligence/cfr-allowlist.ts` — title+part lookup helper used by classifier + monitor pipeline
-   - Populate `domain_codes` and `classification_stage` on kg_entities via batch job
-   - Target: Stage 1 structural classification achieves ≥90% precision on a 500-entity spot sample
+**1. PRP-03: Classification Pipeline (Inngest)** — wire the `lib/classification/` engine into production:
+   - New Inngest function `cedar/corpus.classify-v2` — batch loop calling `classify()` for all 98K kg_entities
+   - Writes `kg_entity_domains` rows (upsert on conflict entity_id+domain_id), `kg_classification_log` rows (stage='rule'), updates `kg_entities.domain_codes` + `classification_stage`
+   - Loads `ClassificationContext` once per run (not per entity) via `loadClassificationContext()`
+   - Reports classified / unclassified / skipped counts per batch
+   - Smoke test: trigger manually from Inngest dashboard, verify domain_codes populated on a sample of entities
 
 **2. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
    Based on `research/ui-audit/design-audit-delta.md §6`:
