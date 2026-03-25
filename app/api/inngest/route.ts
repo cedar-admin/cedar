@@ -13,6 +13,7 @@ import { ecfrDailyCheck } from '../../../inngest/ecfr-daily-check'
 import { corpusAuthorityClassify } from '../../../inngest/corpus-authority-classify'
 import { corpusPracticeScore } from '../../../inngest/corpus-practice-score'
 import { corpusServiceLineMap } from '../../../inngest/corpus-service-line-map'
+import { classifiedSeed } from '../../../inngest/classified-seed'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -31,6 +32,7 @@ export const { GET, POST, PUT } = serve({
     corpusAuthorityClassify,
     corpusPracticeScore,
     corpusServiceLineMap,
+    classifiedSeed,
   ],
   signingKey: process.env.INNGEST_SIGNING_KEY,
 })
