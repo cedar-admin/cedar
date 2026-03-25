@@ -147,9 +147,9 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       {
         referenceId: 'ATM-001',
         slug: 'buttons',
-        label: 'Buttons and icon buttons',
+        label: 'Button',
         status: 'approved',
-        description: 'Primary, secondary, tertiary, destructive, and icon-only actions built from Radix Button and IconButton.',
+        description: 'Primary, secondary, destructive, and icon-only action atoms built from Radix Button and IconButton.',
         implementationFiles: [
           'components/SignOutButton.tsx',
           'components/ThemeToggle.tsx',
@@ -165,13 +165,14 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
           { label: 'Admin reviews', href: '/admin/reviews' },
         ],
         related: [
-          { label: 'Form controls', href: '/system/ui/atoms/form-controls' },
+          { label: 'Dropdown menu', href: '/system/ui/atoms/dropdown-menu' },
+          { label: 'Dialog', href: '/system/ui/atoms/dialog' },
         ],
       },
       {
         referenceId: 'ATM-002',
         slug: 'badges',
-        label: 'Badges',
+        label: 'Badge',
         status: 'approved',
         description: 'Raw Radix Badge variants for semantic states, labels, and supporting metadata.',
         implementationFiles: [
@@ -195,7 +196,7 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       {
         referenceId: 'ATM-003',
         slug: 'cards',
-        label: 'Cards',
+        label: 'Card',
         status: 'approved',
         description: 'Surface, classic, and ghost card treatments used as Cedar’s primary containment primitive.',
         implementationFiles: [
@@ -218,7 +219,7 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       {
         referenceId: 'ATM-004',
         slug: 'callouts',
-        label: 'Callouts',
+        label: 'Callout',
         status: 'approved',
         description: 'Informational, warning, and success messaging using Radix Callout and Cedar copy rules.',
         implementationFiles: [
@@ -239,7 +240,7 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       {
         referenceId: 'ATM-005',
         slug: 'tables',
-        label: 'Tables',
+        label: 'Table',
         status: 'approved',
         description: 'Radix Table primitives as Cedar’s core comparison surface before pattern-specific row behavior is applied.',
         implementationFiles: [
@@ -263,14 +264,14 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
       },
       {
         referenceId: 'ATM-006',
-        slug: 'form-controls',
-        label: 'Form controls',
+        slug: 'text-field',
+        label: 'Text Field',
         status: 'approved',
-        description: 'TextField, Select, Switch, and related form primitives used in onboarding, settings, and review actions.',
+        description: 'Single-line text input built from Radix TextField for search, filtering, and simple form capture.',
         implementationFiles: [
           'app/onboarding/OnboardingForm.tsx',
           'components/NotificationsForm.tsx',
-          'app/(admin)/reviews/ReviewActions.tsx',
+          'app/(dashboard)/library/[slug]/page.tsx',
         ],
         governingDocs: [
           { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
@@ -278,16 +279,30 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
         ],
         usedIn: [
           { label: 'Onboarding', href: '/onboarding' },
+          { label: 'Library', href: '/library' },
           { label: 'Settings', href: '/settings' },
-          { label: 'Admin reviews', href: '/admin/reviews' },
         ],
       },
       {
         referenceId: 'ATM-007',
+        slug: 'textarea',
+        label: 'Textarea',
+        status: 'approved',
+        description: 'Multi-line text input built from Radix TextArea for notes, longer explanations, and freeform capture.',
+        implementationFiles: [
+          'app/system/ui/atoms/page.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-008',
         slug: 'select',
         label: 'Select',
         status: 'approved',
-        description: 'Radix Select as Cedar’s standard triggered choice control for forms and filters.',
+        description: 'Triggered single-choice control built from Radix Select for filters and bounded form choices.',
         implementationFiles: [
           'components/NotificationsForm.tsx',
           'app/onboarding/OnboardingForm.tsx',
@@ -303,11 +318,300 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
           { label: 'Admin practices', href: '/admin/practices' },
         ],
         related: [
-          { label: 'Form controls', href: '/system/ui/atoms/form-controls' },
+          { label: 'Text field', href: '/system/ui/atoms/text-field' },
         ],
       },
       {
-        referenceId: 'ATM-008',
+        referenceId: 'ATM-009',
+        slug: 'checkbox',
+        label: 'Checkbox',
+        status: 'approved',
+        description: 'Single boolean choice built from Radix Checkbox for opt-ins and binary preferences.',
+        implementationFiles: [
+          'app/system/ui/atoms/page.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-010',
+        slug: 'checkbox-cards',
+        label: 'Checkbox Cards',
+        status: 'candidate',
+        description: 'Card-based multi-select atom for visually scannable choices where each option needs more surface area.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-011',
+        slug: 'checkbox-group',
+        label: 'Checkbox Group',
+        status: 'candidate',
+        description: 'Stacked multi-select list built from Radix CheckboxGroup when card chrome is unnecessary.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-012',
+        slug: 'radio',
+        label: 'Radio',
+        status: 'candidate',
+        description: 'Single radio control for inline mutually exclusive choices with short labels.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-013',
+        slug: 'radio-group',
+        label: 'Radio Group',
+        status: 'candidate',
+        description: 'Grouped radio set for mutually exclusive choices when the set needs an explicit container.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-014',
+        slug: 'radio-cards',
+        label: 'Radio Cards',
+        status: 'candidate',
+        description: 'Card-based single-choice atom for plan selection, mode selection, and other high-visibility options.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-015',
+        slug: 'switch',
+        label: 'Switch',
+        status: 'approved',
+        description: 'Immediate on/off toggle atom for settings and small boolean controls.',
+        implementationFiles: [
+          'components/NotificationsForm.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §6 — Forms', file: 'docs/design-system/frontend-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Settings', href: '/settings' },
+        ],
+      },
+      {
+        referenceId: 'ATM-016',
+        slug: 'segmented-control',
+        label: 'Segmented Control',
+        status: 'candidate',
+        description: 'Inline segmented chooser for compact mutually exclusive filters and mode toggles.',
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §5 — Navigation and URL state', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-017',
+        slug: 'tabs',
+        label: 'Tabs',
+        status: 'approved',
+        description: 'Tabbed content atom for switching between co-equal sections within the same page context.',
+        implementationFiles: [
+          'app/(dashboard)/library/[slug]/[id]/RegulationTabs.tsx',
+        ],
+        governingDocs: [
+          { label: 'information-density.md §5 — Progressive disclosure', file: 'docs/design-system/information-density.md' },
+          { label: 'frontend-standards.md §8 — Tooltip and aria labels', file: 'docs/design-system/frontend-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Regulation detail', href: '/library' },
+        ],
+      },
+      {
+        referenceId: 'ATM-018',
+        slug: 'tab-nav',
+        label: 'Tab Nav',
+        status: 'candidate',
+        description: 'Nav-style tab strip for switching routes or sub-views with stronger navigation affordance than content tabs.',
+        governingDocs: [
+          { label: 'ux-standards.md §5 — Navigation consistency', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-019',
+        slug: 'tooltip',
+        label: 'Tooltip',
+        status: 'approved',
+        description: 'Hover/focus affordance for terse helper text and icon-only actions.',
+        implementationFiles: [
+          'components/HashWithCopy.tsx',
+        ],
+        governingDocs: [
+          { label: 'frontend-standards.md §8 — Tooltip and aria labels', file: 'docs/design-system/frontend-standards.md' },
+        ],
+        usedIn: [
+          { label: 'Audit', href: '/audit' },
+        ],
+      },
+      {
+        referenceId: 'ATM-020',
+        slug: 'avatar',
+        label: 'Avatar',
+        status: 'candidate',
+        description: 'Compact identity atom for people and practices when image-or-initial presence helps scanning.',
+        governingDocs: [
+          { label: 'design-standards.md §8 — Cards', file: 'docs/design-system/design-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-021',
+        slug: 'aspect-ratio',
+        label: 'Aspect Ratio',
+        status: 'candidate',
+        description: 'Media containment atom for screenshots, previews, and image frames that must keep a fixed ratio.',
+        governingDocs: [
+          { label: 'design-standards.md §8 — Cards', file: 'docs/design-system/design-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-022',
+        slug: 'data-list',
+        label: 'Data List',
+        status: 'approved',
+        description: 'Key/value metadata atom for short structured detail clusters.',
+        implementationFiles: [
+          'components/DataList.tsx',
+        ],
+        governingDocs: [
+          { label: 'information-density.md §2 — Metadata chunking', file: 'docs/design-system/information-density.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-023',
+        slug: 'dialog',
+        label: 'Dialog',
+        status: 'candidate',
+        description: 'Modal atom for interruptive confirmation or focused input when the user must resolve a task before continuing.',
+        governingDocs: [
+          { label: 'design-standards.md §11 — Alerts and feedback', file: 'docs/design-system/design-standards.md' },
+          { label: 'frontend-standards.md §2 — Landmarks', file: 'docs/design-system/frontend-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-024',
+        slug: 'alert-dialog',
+        label: 'Alert Dialog',
+        status: 'candidate',
+        description: 'High-stakes confirmation atom reserved for destructive or irreversible actions.',
+        governingDocs: [
+          { label: 'design-standards.md §11 — Alerts and feedback', file: 'docs/design-system/design-standards.md' },
+          { label: 'content-standards.md §4 — Button and action labels', file: 'docs/design-system/content-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-025',
+        slug: 'dropdown-menu',
+        label: 'Dropdown Menu',
+        status: 'candidate',
+        description: 'Compact action list atom for secondary actions anchored to a trigger button.',
+        governingDocs: [
+          { label: 'ux-standards.md §5 — Navigation consistency', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-026',
+        slug: 'context-menu',
+        label: 'Context Menu',
+        status: 'experimental',
+        description: 'Right-click action list atom for power-user surfaces where contextual actions belong to a specific row or region.',
+        governingDocs: [
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-027',
+        slug: 'popover',
+        label: 'Popover',
+        status: 'candidate',
+        description: 'Anchored floating surface for lightweight controls and supporting information.',
+        governingDocs: [
+          { label: 'information-density.md §5 — Progressive disclosure', file: 'docs/design-system/information-density.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-028',
+        slug: 'hover-card',
+        label: 'Hover Card',
+        status: 'experimental',
+        description: 'Hover-revealed preview surface for secondary context that should not compete with the primary layout.',
+        governingDocs: [
+          { label: 'information-density.md §5 — Progressive disclosure', file: 'docs/design-system/information-density.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-029',
+        slug: 'progress',
+        label: 'Progress',
+        status: 'candidate',
+        description: 'Progress bar atom for bounded completion and workflow feedback.',
+        governingDocs: [
+          { label: 'design-standards.md §11 — Alerts and feedback', file: 'docs/design-system/design-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-030',
+        slug: 'scroll-area',
+        label: 'Scroll Area',
+        status: 'candidate',
+        description: 'Contained scrolling surface for dense, bounded content where the surrounding layout must remain stable.',
+        governingDocs: [
+          { label: 'information-density.md §4 — Tables, cards, and lists', file: 'docs/design-system/information-density.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-031',
+        slug: 'skeleton',
+        label: 'Skeleton',
+        status: 'candidate',
+        description: 'Loading placeholder atom for preserving layout while content is still being fetched.',
+        governingDocs: [
+          { label: 'design-standards.md §11 — Alerts and feedback', file: 'docs/design-system/design-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-032',
+        slug: 'slider',
+        label: 'Slider',
+        status: 'candidate',
+        description: 'Range input for numeric tuning where direct drag is clearer than a dropdown or text field.',
+        implementationFiles: [
+          'app/system/ui/atoms/page.tsx',
+        ],
+        governingDocs: [
+          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
+          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-033',
+        slug: 'spinner',
+        label: 'Spinner',
+        status: 'candidate',
+        description: 'Minimal loading atom for short-running background actions and inline wait states.',
+        governingDocs: [
+          { label: 'design-standards.md §11 — Alerts and feedback', file: 'docs/design-system/design-standards.md' },
+        ],
+      },
+      {
+        referenceId: 'ATM-034',
         slug: 'separator',
         label: 'Separator',
         status: 'candidate',
@@ -323,39 +627,6 @@ export const LIBRARY_NAV: LibraryNavGroup[] = [
         usedIn: [
           { label: 'Admin system', href: '/admin/system' },
           { label: 'Dashboard shell', href: '/home' },
-        ],
-      },
-      {
-        referenceId: 'ATM-009',
-        slug: 'slider',
-        label: 'Slider',
-        status: 'candidate',
-        description: 'Range input for numeric tuning where direct drag is clearer than a dropdown or text field.',
-        implementationFiles: [
-          'app/system/ui/atoms/page.tsx',
-        ],
-        governingDocs: [
-          { label: 'design-standards.md §10 — Forms and inputs', file: 'docs/design-system/design-standards.md' },
-          { label: 'ux-standards.md §1 — Component purpose and intent', file: 'docs/design-system/ux-standards.md' },
-        ],
-      },
-      {
-        referenceId: 'ATM-010',
-        slug: 'tabs-and-tooltips',
-        label: 'Tabs and tooltips',
-        status: 'candidate',
-        description: 'Radix Tabs, Tooltip, and the Cedar rules for progressive disclosure and compact affordances.',
-        implementationFiles: [
-          'app/(dashboard)/library/[slug]/[id]/RegulationTabs.tsx',
-          'components/HashWithCopy.tsx',
-        ],
-        governingDocs: [
-          { label: 'information-density.md §5 — Progressive disclosure', file: 'docs/design-system/information-density.md' },
-          { label: 'frontend-standards.md §8 — Tooltip and aria labels', file: 'docs/design-system/frontend-standards.md' },
-        ],
-        usedIn: [
-          { label: 'Regulation detail', href: '/library' },
-          { label: 'Audit trail', href: '/audit' },
         ],
       },
     ],

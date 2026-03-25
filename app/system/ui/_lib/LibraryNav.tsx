@@ -20,7 +20,7 @@ function NavItem({ href, item, isActive }: { href: string; item: LibraryNavItem;
   return (
     <Link
       href={href}
-      className={`flex items-start gap-3 px-3 py-2.5 rounded-lg text-[15px] leading-5 transition-colors ${
+      className={`flex items-start gap-2.5 px-3 py-1.5 rounded-md text-[15px] leading-5 transition-colors ${
         isActive
           ? 'bg-[var(--cedar-interactive-selected)] font-medium text-[var(--cedar-text-primary)]'
           : 'text-[var(--cedar-text-secondary)] hover:bg-[var(--cedar-interactive-hover)] hover:text-[var(--cedar-text-primary)]'
@@ -38,12 +38,12 @@ export function LibraryNav() {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="UI library" className="flex flex-col gap-7 py-1">
+    <nav aria-label="UI library" className="flex flex-col gap-4 py-1">
       {LIBRARY_NAV.map((group) => (
-        <div key={group.key} className="flex flex-col gap-1.5">
+        <div key={group.key} className="flex flex-col gap-1">
           <Link
             href={group.basePath}
-            className={`flex items-center justify-between px-3 rounded-md transition-colors ${
+            className={`flex items-center justify-between px-3 py-1 rounded-md transition-colors ${
               pathname === group.basePath
                 ? 'text-[var(--cedar-text-primary)]'
                 : 'text-[var(--cedar-text-muted)] hover:text-[var(--cedar-text-primary)]'

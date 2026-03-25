@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 40
+Last updated: March 24, 2026 by Session 41
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,20 +13,20 @@ Last updated: March 24, 2026 by Session 40
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now includes broader browseable landing pages plus 31 documented detail pages across foundations, atoms, fragments, and patterns with live examples, collapsible implementation blocks, and shared `CedarTable` usage on real product tables. |
+| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now includes denser Supabase-style navigation, 34 documented atom detail pages, and broader live reference coverage across foundations, fragments, and patterns with collapsible implementation blocks and shared `CedarTable` usage on real product tables. |
 
 ## Codebase Stats
 - **~21,272 lines** TypeScript/TSX
 - **28** Supabase migrations (001-028)
-- **16** dashboard routes, **9** API routes, **31** UI library detail pages (+ group landing pages for atoms, foundations, fragments, patterns)
+- **16** dashboard routes, **9** API routes, **55** UI library detail pages (+ group landing pages for atoms, foundations, fragments, patterns)
 - **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
 - **180** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 
 ## Last Session Summary
-Session 40 tightened the UI Library toward a more Supabase-style design-docs experience without breaking Cedar’s own design standards. The library shell was widened, nav and metadata typography were made more readable, preview frames gained more breathing room, and implementation/code is now collapsed by default instead of always visible. `/system/ui/atoms`, `/system/ui/foundations`, `/system/ui/fragments`, and `/system/ui/patterns` now render real browseable landing pages instead of 404ing, with visual index cards that let admins scan the system before diving into detail pages.
+Session 41 turned the atoms section of `/system/ui` from a small curated subset into a much broader actual build catalog. The atom nav now documents 34 atom detail pages instead of 10, covering the Radix Themes surface Cedar can build with: buttons, badges, cards, callouts, tables, text fields, textarea, select, checkbox family, radio family, switch, segmented control, tabs, tab nav, tooltip, avatar, aspect ratio, data list, dialog, alert dialog, dropdown menu, context menu, popover, hover card, progress, scroll area, skeleton, slider, spinner, and separator. The old broad-bucket model was replaced with a more Supabase-like atom inventory where each page has a clearer singular component identity.
 
-This session also expanded the documented component surface: dedicated atom detail pages were added for `Select`, `Separator`, and `Slider`, and a dedicated fragment page was added for Cedar’s `Sheets and panels` pattern so slide-over behavior is no longer hidden inside implementation-file references. The atoms landing page now exposes a broader Radix Themes inventory so Cedar can treat the full available atom set as visible building blocks, not just a handful of hand-picked pages. The `CedarTable` wrapper was further tightened with a nested-table bottom-border rule so table-in-card chrome is cleaner and closer to the intended design.
+This session also rebuilt the atom documentation model itself. A new shared atom-docs source now drives the atom index and atom detail pages together so the library can stay internally consistent. Each documented atom page now includes a Cedar registry table with shorthand references such as `BTN-CLASSIC`, `BTN-SOFT`, `BTN-GHOST`, `BTN-ICON`, `BTN-DESTRUCT`, `TBL-NESTED`, `SEL-DEFAULT`, and related atom contracts, plus live visual examples and collapsed implementation snippets. The UI library nav was compressed to read more like a real docs system and less like an oversized admin menu, and the sidebar width was reduced slightly to keep the left rail denser.
 
 Session 39 executed PRP-01 (classification-foundation). Migration 028 was written, verified, and applied to production. Deliverables:
 - **`cfr_allowlist` table created and seeded** — 407 rows (all relevant CFR parts from P1-S2F `RELEVANT_PARTS` dict) acting as the relevance gate before classification
@@ -91,8 +91,8 @@ Notes:
    - Update Playwright spec selectors
 
 **3. UI library follow-up** (design-ops/product UX support):
-   - Add more dedicated atom pages for Radix Themes components Cedar can plausibly use (`Dialog`, `DropdownMenu`, `ScrollArea`, `Progress`, `Skeleton`, `DataList`, etc.)
-   - Split large fragment buckets into more explicit Cedar composites where helpful (`SlideOverPanel`, richer review surfaces, collection sort headers, page container/shell primitives)
+   - Split large fragment buckets into explicit Cedar composites so built components are as browseable as atoms (`DomainCard`, `RegulationRow`, `RelationshipCard`, `Sidebar`, `SidebarShell`, `SlideOverPanel`, etc.)
+   - Add a docs-first view for Cedar custom primitives that fill Radix Themes gaps (accordion, sheet/slide-over, breadcrumb, pagination, command palette, toast)
    - Add local design-doc links/group at the top of `/system/ui` once the library IA stabilizes
    - Keep `/system/ui` aligned with the 6 design-system docs and the actual product implementation
 

@@ -18,7 +18,7 @@ export default async function UILibraryLayout({ children }: { children: React.Re
       <aside
         aria-label="UI library navigation"
         className="shrink-0 flex flex-col h-screen border-r border-[var(--cedar-border-subtle)] bg-[var(--cedar-panel-bg)] overflow-y-auto"
-        style={{ width: '304px' }}
+        style={{ width: '288px' }}
       >
         {/* Back to platform */}
         <div className="shrink-0 px-4 py-4 border-b border-[var(--cedar-border-subtle)]">
