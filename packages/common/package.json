@@ -1,0 +1,29 @@
+{
+  "name": "common",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "license": "MIT",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "clean": "rimraf node_modules"
+  },
+  "dependencies": {
+    "lodash": "catalog:",
+    "react-use": "^17.4.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.17.5",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tsconfig": "workspace:*",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}

@@ -32,7 +32,13 @@
       "Write(*.md)",
       "Write(*.sql)",
       "Write(*.json)",
-      "Write(*.css)"
+      "Write(*.css)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(ln -s /Users/anthonyrilling/dev/cedar/.env.local /Users/anthonyrilling/dev/cedar/apps/web/.env.local)",
+      "Bash(source /Users/anthonyrilling/.zshrc 2)",
+      "Bash(/dev/null curl:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)"
     ],
     "deny": [
       "Write(.env*)",

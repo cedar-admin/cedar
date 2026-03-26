@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "ui": ["../../packages/ui"],
+      "ui/*": ["../../packages/ui/*"],
+      "ui-patterns": ["../../packages/ui-patterns"],
+      "ui-patterns/*": ["../../packages/ui-patterns/*"],
+      "config": ["../../packages/config"],
+      "config/*": ["../../packages/config/*"],
+      "common": ["../../packages/common"],
+      "common/*": ["../../packages/common/*"],
+      "icons": ["../../packages/icons"],
+      "icons/*": ["../../packages/icons/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules", "research"]
+}
