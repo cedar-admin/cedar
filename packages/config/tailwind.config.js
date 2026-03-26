@@ -2,7 +2,7 @@ const ui = require('./ui.config.js')
 const deepMerge = require('deepmerge')
 const plugin = require('tailwindcss/plugin')
 
-const color = require('./../ui/build/css/tw-extend/color')
+const color = require('./tw-extend-color')
 
 /**
  *
