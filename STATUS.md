@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 25, 2026 by Session 47
+Last updated: March 26, 2026 by Session 48
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,20 +13,23 @@ Last updated: March 25, 2026 by Session 47
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub. **PRP-02 classification engine built** — lib/classification/ module (7 files, pure function, 487 DB rules). **PRP-03 classified corpus seed built** — cedar/corpus.classified-seed Inngest function; pipeline not yet triggered. |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Broken (design system transplant) | **Supabase design system transplant complete.** Monorepo conversion done (pnpm + Turborepo). All UI components stripped of @radix-ui/themes + --cedar-* tokens + remixicon. Components render plain HTML — must be rebuilt with Supabase shadcn components. /system/ui directory deleted. Design system test page at /design-system-test confirms new system works. Build passes clean. Vercel deploys successfully from monorepo. |
+| 9. Dashboard | ⚙️ Broken (design system transplant) | **Supabase design system transplant complete.** Monorepo conversion done (pnpm + Turborepo). All UI components stripped of @radix-ui/themes + --cedar-* tokens + remixicon. Components render plain HTML — must be rebuilt with Supabase shadcn components. /system/ui directory deleted. Design system test page at /design-system-test confirms new system works. Build passes clean. Vercel deploys successfully from monorepo. **Design system docs app extracted** — `apps/design-system/` runs locally at localhost:3003 with 58 atom docs, 21 fragment docs, 278 live examples, MDX pipeline, dark mode. |
 
 ## Codebase Stats
-- **pnpm monorepo** — apps/web/ + 9 packages/
+- **pnpm monorepo** — apps/web/ + apps/design-system/ + 9 packages/
 - **28** Supabase migrations (001-028)
 - **16** dashboard routes, **9** API routes
 - **28** Cedar components (all stripped of old design system, rendering plain HTML)
-- **~197** git commits on main
+- **~204** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
 - Vercel: ✅ Deploying from monorepo (rootDirectory=apps/web)
 - Design system: Supabase UI (packages/ui) — shadcn components on Tailwind v3
+- Design system docs: `pnpm dev:design-system` → localhost:3003/design-system (58 atom docs, 21 fragments, 278 examples)
 - Upstream baseline: Supabase commit `87c61d8`
 
 ## Last Session Summary
+Session 48 executed the Design System Docs App PRP. Extracted Supabase's `apps/design-system/` Next.js app into Cedar's monorepo — a living component reference with 58 atom component docs, 21 fragment docs, 278 live example components, syntax-highlighted MDX, and dark mode. Key fixes: restored `packages/ui/build/css/` theme files (blanket `build` gitignore was excluding them), created a lightweight JSON registry index to avoid contentlayer2 ESM resolution failures on 286 React.lazy imports, inlined typography SCSS into globals.css (Turbopack processes SCSS imports as separate CSS modules), added formik as explicit `packages/ui` dependency (was undeclared, relied on hoisting), renamed tailwind.config.js to .cjs for ESM package compat. All Supabase branding replaced with Cedar. App runs locally via `pnpm dev:design-system` at localhost:3003/design-system. Web app build passes clean, Vercel deploys successfully.
+
 Session 47 executed the Supabase Design System Transplant plan. Converted Cedar from a flat Next.js app to a pnpm monorepo with Turborepo. Ported Supabase's packages/ui, packages/config, packages/ui-patterns, packages/common, packages/icons, packages/build-icons, and packages/tsconfig into Cedar's packages/ directory. Aggressively pruned all Supabase-specific code from copied packages (auth, telemetry, PostHog, ConfigCat, DocsSearch, AI chat, SQL editor components, Monaco editor). Stripped @radix-ui/themes, remixicon, --cedar-* CSS tokens, and Tailwind v4 from the entire apps/web/ codebase. Rewired to Tailwind v3 with Supabase pre-built theme CSS. All 52 component/page files were converted from Radix Themes JSX to plain HTML elements. Created design system test page confirming shadcn Button, Badge, Card, Input render correctly with all semantic color tokens. Fixed three Vercel deployment issues: cross-package CSS imports (copied theme CSS locally), fragile tailwind.config.js color.js path (copied locally), and Turborepo env passthrough. Build passes clean, Vercel deploys successfully.
 
 Session 46 executed PRP-03 (Classified Corpus Seed). Built `inngest/classified-seed.ts` — the `cedar/corpus.classified-seed` Inngest function that fetches, filters, classifies, and stores the full regulatory corpus baseline in a single retriable pipeline. eCFR ingestion was generalized from Title 21 only to all 15 allowlist titles via a new `lib/corpus/classified-ecfr-ingest.ts` module; only parts present in `cfr_allowlist` are ingested (~407 parts total). Federal Register ingest was expanded with a `cfrTitles` filter to narrow results to healthcare-relevant documents across all 15 titles. openFDA was expanded from 2 enforcement endpoints to all 15 dataset-rule endpoints (drug/enforcement, drug/event, drug/label, drug/ndc, drug/drugsfda, device/enforcement, device/event, device/recall, device/510k, device/pma, device/registrationlisting, device/udi, food/enforcement, food/event, other/nsde), with date filters applied to high-volume event endpoints. Every ingested entity is classified inline using the PRP-02 `classify()` engine — domain assignments written to `kg_entity_domains`, audit trail to `kg_classification_log`, denormalized `domain_codes` + `classification_stage` + `authority_level` updated on `kg_entities`. Entities matching zero rules are flagged `needs_review=true` for HITL pickup. Pipeline is fully idempotent (upsert on identifier+source_id; existing enforcement entities match old corpus-seed identifiers). `classifiedSeed` registered in the Inngest route handler. **Pipeline has not yet been triggered** — must be run manually from the Inngest dashboard to populate classified corpus data for the Library page.
@@ -96,23 +99,16 @@ Notes:
    - Core data display: `CedarTable`, `SeverityBadge`, `StatusBadge`, `FilterPills`
    - Page layouts: `home/page.tsx`, `changes/page.tsx`, `library/page.tsx`
    - Import from `ui/src/components/shadcn/ui/` (Button, Badge, Card, Input, Table, etc.)
-   - Reference: `/design-system-test` page shows working component imports
+   - Reference: design system docs at `pnpm dev:design-system` (localhost:3003) + `/design-system-test` page
 
 **2. Trigger cedar/corpus.classified-seed** — run the pipeline from the Inngest dashboard:
    - Start dev server: `pnpm dev` (or `cd apps/web && env -u ANTHROPIC_API_KEY npx next dev --port 3000`)
    - Open Inngest dashboard (http://localhost:8288), trigger `cedar/corpus.classified-seed`
 
 **3. PRP-04: Library Wiring** — wire the Library page to display classified corpus data
-   - Add a docs-first view for Cedar custom primitives that fill Radix Themes gaps (accordion, sheet/slide-over, breadcrumb, pagination, command palette, toast)
-   - Add local design-doc links/group at the top of `/system/ui` once the library IA stabilizes
-   - Keep `/system/ui` aligned with the 6 design-system docs and the actual product implementation
 
 **4. Research synthesis → implementation PRPs** (research pipeline complete, ready to build):
-   All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research. Likely first PRPs:
-   - `classification-pipeline-v1` — Stage 1–4 pipeline, classification_rules seed data, authority_level schema (draws from P2-S1, P2-S2, P2-S3, P2-S4, P3-S4)
-   - `kg-entity-schema-v1` — taxonomy versioning, authority_level_transitions table, kg_classification_log extensions (draws from P3-S6, P3-S7)
-   - `fl-fac-ingestion-v1` — FAC citation parser, board chapter→domain mapping, FL keyword set (draws from P3-S1, P3-S5)
-   - `state-onboarding-framework-v1` — CitationParserRegistry, NormalizedCitation interface, seeds directory structure (draws from P3-S5)
+   All P1+P2+P3 outputs are in `research/outputs/`. Next step is generating implementation PRPs from the research.
 
 **5. Phase 3 scoring pipeline** (still pending — library category counts show 0 until triggered):
    - `cedar/corpus.classify` → `cedar/corpus.authority-classify` → `cedar/corpus.practice-score` → `cedar/corpus.service-line-map`
