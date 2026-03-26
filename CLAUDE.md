@@ -30,6 +30,28 @@ Cedar shrinks the delay between a regulation being updated and a practice owner 
 - **Fetching:** Gov APIs → Oxylabs → BrowserBase (auto-escalating)
 - **AI:** Anthropic Claude API (`claude-sonnet-4-5-20250929`)
 - **Push:** OneSignal (1.0 Full, Intelligence tier only)
+- **Monorepo:** pnpm workspaces + Turborepo
+- **Design System:** Supabase UI (packages/ui — shadcn/radix primitives, Tailwind v3)
+
+## Monorepo Structure
+
+Cedar is a pnpm monorepo with Turborepo:
+
+| Directory | Purpose |
+|-----------|---------|
+| `apps/web/` | Cedar's Next.js app (all routes, components, lib, inngest, supabase) |
+| `packages/ui/` | Supabase design system primitives (shadcn components, theme CSS) |
+| `packages/config/` | Shared Tailwind v3 config + color generation engine |
+| `packages/ui-patterns/` | Complex composed UI patterns (pruned of Supabase-specific code) |
+| `packages/common/` | Utility hooks (useBreakpoint, useDebounce, etc.) |
+| `packages/icons/` | SVG product icons |
+| `packages/build-icons/` | Icon build tooling |
+| `packages/tsconfig/` | Shared TypeScript configs |
+| `packages/api-types/` | Stub package (empty — satisfies workspace references) |
+
+**Package manager:** Always use `pnpm` (never npm or yarn). Lockfile: `pnpm-lock.yaml`.
+**Commands:** `pnpm dev` (start dev server), `pnpm build` (build all), `pnpm typecheck`.
+**Env files:** `.env.local` must be symlinked into `apps/web/` (it lives at monorepo root).
 
 ## Session Startup — Read in This Order
 
@@ -150,6 +172,9 @@ git commit --amend --reset-author --no-edit
 - Project ID: `prj_YykyqY89BoocNV2xV3MUWcDjpdxv`
 - Production URL: `cedar-beta.vercel.app`
 - GitHub repo: `cedar-admin/cedar` (main branch → production)
+- Root Directory: `apps/web`
+- Build Command: `cd ../.. && pnpm turbo build --filter=web`
+- Install Command: `pnpm install`
 
 ## Module Test Criteria
 
@@ -230,18 +255,21 @@ A module is not complete until its test criteria pass.
 
 | Thing | Path |
 |-------|------|
-| Migrations | `supabase/migrations/` |
-| Declarative schema   | `supabase/schemas/`              |
-| Inngest functions | `inngest/` |
-| Fetchers | `lib/fetchers/` |
-| Intelligence agents | `lib/intelligence/` |
-| Agent prompts (MVP) | `lib/intelligence/prompts/` |
-| Cost tracking | `lib/cost-tracker.ts` |
-| Feature flags | `lib/features.ts` |
-| Env validation | `lib/env.ts` |
-| Supabase types | `lib/db/types.ts` (regenerate after schema changes) |
-| Dashboard routes | `app/(dashboard)/` |
-| Admin routes | `app/(admin)/` |
+| Migrations | `apps/web/supabase/migrations/` |
+| Declarative schema   | `apps/web/supabase/schemas/`              |
+| Inngest functions | `apps/web/inngest/` |
+| Fetchers | `apps/web/lib/fetchers/` |
+| Intelligence agents | `apps/web/lib/intelligence/` |
+| Agent prompts (MVP) | `apps/web/lib/intelligence/prompts/` |
+| Cost tracking | `apps/web/lib/cost-tracker.ts` |
+| Feature flags | `apps/web/lib/features.ts` |
+| Env validation | `apps/web/lib/env.ts` |
+| Supabase types | `apps/web/lib/db/types.ts` (regenerate after schema changes) |
+| Dashboard routes | `apps/web/app/(dashboard)/` |
+| Admin routes | `apps/web/app/(admin)/` |
+| Design system packages | `packages/ui/` |
+| Theme CSS | `apps/web/app/theme-css/` |
+| Tailwind config | `apps/web/tailwind.config.js` |
 | Build status | `STATUS.md` |
 | Active PRP | `PRPs/active/` |
 | Completed PRPs | `PRPs/completed/` |
@@ -296,10 +324,18 @@ Success criteria: All sources producing real regulatory data, AI summaries accur
 When running inside Claude Code, its shell environment injects `ANTHROPIC_API_KEY=` (empty string). Next.js follows shell env priority over `.env.local`, so the key would be empty in Inngest step callbacks. **Always start the dev server with:**
 
 ```bash
-env -u ANTHROPIC_API_KEY npx next dev --port 3000
+pnpm dev
 ```
 
-This unsets the shell variable so `.env.local` takes precedence. Without this, Claude API calls in intelligence agents will fail with authentication errors.
+This runs `turbo dev --filter=web` which handles the env unset via the launch config.
+
+Or use the explicit form:
+
+```bash
+cd apps/web && env -u ANTHROPIC_API_KEY npx next dev --port 3000
+```
+
+Without unsetting the shell variable, Claude API calls in intelligence agents will fail with authentication errors.
 
 ## Access Tokens and API Keys
 
@@ -315,36 +351,32 @@ All secrets are stored in `.env.local` (local dev) and Vercel environment variab
 
 ## Design System
 
-Cedar follows a **neutral-interactive, colorful-informational** design philosophy. Gray for interaction, color for information.
+Cedar uses Supabase's open-source design system (packages/ui). The old Radix Themes + `--cedar-*` token system was removed entirely.
 
-### Before writing or modifying ANY UI code:
-1. Read `docs/design-system/design-standards.md` — the comprehensive reference for all component styling, variant choices, color decisions, token usage, shared component inventory, forbidden patterns, and quality checklist
-2. Walk the decision tree in `.claude/skills/design-tokens/SKILL.md` to choose the right styling approach for the value you need
-3. Follow the component routing in `.claude/skills/ui-components/SKILL.md` to determine whether to use a Radix Themes component, a custom build, or an existing Cedar composite
-4. Read `docs/design-system/frontend-standards.md` for semantic HTML structure — heading hierarchy (`as` prop on every `<Heading>`), landmark elements, `<Text>` nesting rules (`as="span"`), keyboard/focus management, and forbidden structural patterns
+### Key conventions
+- Components import from `ui/src/components/shadcn/ui/` (shadcn-only path, React 19 compatible)
+- Styling uses Tailwind v3 utility classes (`tailwindcss: 3.4.1`)
+- Theme CSS files are in `apps/web/app/theme-css/` (copied from packages/ui/build/css)
+- Theme switching uses `.dark` class via next-themes (light / dark / classic-dark)
+- Brand colors are Supabase green (customize later in `packages/config/default-colors.js`)
 
-### Two styling systems (quick orientation)
+### Semantic color tokens
+- `text-foreground`, `text-foreground-light`, `text-foreground-muted`
+- `text-brand`, `text-destructive`, `text-warning`
+- `bg-studio` (canvas) → `bg-surface-100` (panels) → `bg-surface-200` (cards) → `bg-surface-300` (hover)
+- `border-default`, `border-strong`
 
-- **Radix Themes components** (Button, Badge, Card, Table, etc.) → style via props (`variant`, `size`, `color`, `highContrast`). Layout via `<Flex>`, `<Box>`, `<Grid>`. Typography via `<Heading>`, `<Text>`. Import from `@radix-ui/themes`.
-- **Custom Primitive-based components** (Sidebar, Sheet/SlideOver, Accordion, etc.) → style with Tailwind classes referencing **Cedar semantic tokens** (`--cedar-*`). Never reference raw Radix step variables (`var(--gray-6)`) in component files. Portalled custom components must wrap content in `<Theme>`.
+### Removed systems (do NOT use)
+- `@radix-ui/themes` — gone entirely
+- `--cedar-*` CSS tokens — gone entirely
+- Tailwind v4 `@import "tailwindcss"` — replaced by v3 `@tailwind` directives
+- `remixicon` — replaced by `lucide-react` from packages/ui
+- `tw-animate-css` — replaced by `tailwindcss-animate` in packages/config
 
 ### Role vs Tier
 - **Role** (admin, intelligence, monitor) — determines permissions and nav visibility
 - **Tier** (monitor, intelligence) — determines subscription features and billing
 - Never conflate these. Admin accounts have no subscription tier.
-
-### Key file locations
-
-| What | Where |
-|------|-------|
-| All `--cedar-*` token definitions | `app/globals.css` |
-| Design standards (full reference) | `docs/design-system/design-standards.md` |
-| Design tokens skill (decision tree) | `.claude/skills/design-tokens/SKILL.md` |
-| UI components skill (build routing) | `.claude/skills/ui-components/SKILL.md` |
-| Shared color/status mappings | `lib/ui-constants.ts` |
-| Shared format utilities | `lib/format.ts` |
-| Cedar composite components | `components/` |
-| Frontend structural standards | `docs/design-system/frontend-standards.md` |
 
 ## Frontend Structure
 

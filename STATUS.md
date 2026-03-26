@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 24, 2026 by Session 46
+Last updated: March 25, 2026 by Session 47
 
 ## Module Status
 | Module | Status | Notes |
@@ -13,17 +13,22 @@ Last updated: March 24, 2026 by Session 46
 | 6B. HITL Review | ⚙️ Partial | Reviews page + approve/reject API routes work. review_rules table exists but rule-matching logic incomplete. |
 | 7. Audit Trail + KG | ⚙️ Partial | Append-only trigger, chain validator, weekly cron all work. KG entity writes inline in monitor.ts. Corpus seed COMPLETE — 98,777 entities. Phase 2 relationship enrichment + daily pipelines complete. Phase 3 scoring functions built (not yet triggered). audit/snapshot.ts is a stub. **PRP-02 classification engine built** — lib/classification/ module (7 files, pure function, 487 DB rules). **PRP-03 classified corpus seed built** — cedar/corpus.classified-seed Inngest function; pipeline not yet triggered. |
 | 8. Delivery | ✅ Complete | HTML/plaintext email, HMAC-signed acknowledge links, AI disclaimer, structured diff rendering |
-| 9. Dashboard | ⚙️ Partial | 16 pages rendering with real data. Design system Phases 1–4 complete + UX normalization pass. Settings toggles persist. UI Library at /system/ui now includes denser Supabase-style navigation, 36 documented atom detail pages matching the current Radix Themes component catalog, interactive Radix-faithful menu/overlay demos, and broader live reference coverage across foundations, fragments, and patterns with collapsible implementation blocks and shared `CedarTable` usage on real product tables. |
+| 9. Dashboard | ⚙️ Broken (design system transplant) | **Supabase design system transplant complete.** Monorepo conversion done (pnpm + Turborepo). All UI components stripped of @radix-ui/themes + --cedar-* tokens + remixicon. Components render plain HTML — must be rebuilt with Supabase shadcn components. /system/ui directory deleted. Design system test page at /design-system-test confirms new system works. Build passes clean. Vercel deploys successfully from monorepo. |
 
 ## Codebase Stats
-- **~25,083 lines** TypeScript/TSX
+- **pnpm monorepo** — apps/web/ + 9 packages/
 - **28** Supabase migrations (001-028)
-- **16** dashboard routes, **9** API routes, **56** UI library detail pages (+ group landing pages for atoms, foundations, fragments, patterns)
-- **0** shadcn/ui components, **26** Cedar/Radix composite components (5 new: SectionHeading, AiBadge, HashWithCopy, FilterPills, CedarTable)
-- **192** git commits on main
+- **16** dashboard routes, **9** API routes
+- **28** Cedar components (all stripped of old design system, rendering plain HTML)
+- **~197** git commits on main
 - Build: ✅ Clean (0 errors, 0 warnings)
+- Vercel: ✅ Deploying from monorepo (rootDirectory=apps/web)
+- Design system: Supabase UI (packages/ui) — shadcn components on Tailwind v3
+- Upstream baseline: Supabase commit `87c61d8`
 
 ## Last Session Summary
+Session 47 executed the Supabase Design System Transplant plan. Converted Cedar from a flat Next.js app to a pnpm monorepo with Turborepo. Ported Supabase's packages/ui, packages/config, packages/ui-patterns, packages/common, packages/icons, packages/build-icons, and packages/tsconfig into Cedar's packages/ directory. Aggressively pruned all Supabase-specific code from copied packages (auth, telemetry, PostHog, ConfigCat, DocsSearch, AI chat, SQL editor components, Monaco editor). Stripped @radix-ui/themes, remixicon, --cedar-* CSS tokens, and Tailwind v4 from the entire apps/web/ codebase. Rewired to Tailwind v3 with Supabase pre-built theme CSS. All 52 component/page files were converted from Radix Themes JSX to plain HTML elements. Created design system test page confirming shadcn Button, Badge, Card, Input render correctly with all semantic color tokens. Fixed three Vercel deployment issues: cross-package CSS imports (copied theme CSS locally), fragile tailwind.config.js color.js path (copied locally), and Turborepo env passthrough. Build passes clean, Vercel deploys successfully.
+
 Session 46 executed PRP-03 (Classified Corpus Seed). Built `inngest/classified-seed.ts` — the `cedar/corpus.classified-seed` Inngest function that fetches, filters, classifies, and stores the full regulatory corpus baseline in a single retriable pipeline. eCFR ingestion was generalized from Title 21 only to all 15 allowlist titles via a new `lib/corpus/classified-ecfr-ingest.ts` module; only parts present in `cfr_allowlist` are ingested (~407 parts total). Federal Register ingest was expanded with a `cfrTitles` filter to narrow results to healthcare-relevant documents across all 15 titles. openFDA was expanded from 2 enforcement endpoints to all 15 dataset-rule endpoints (drug/enforcement, drug/event, drug/label, drug/ndc, drug/drugsfda, device/enforcement, device/event, device/recall, device/510k, device/pma, device/registrationlisting, device/udi, food/enforcement, food/event, other/nsde), with date filters applied to high-volume event endpoints. Every ingested entity is classified inline using the PRP-02 `classify()` engine — domain assignments written to `kg_entity_domains`, audit trail to `kg_classification_log`, denormalized `domain_codes` + `classification_stage` + `authority_level` updated on `kg_entities`. Entities matching zero rules are flagged `needs_review=true` for HITL pickup. Pipeline is fully idempotent (upsert on identifier+source_id; existing enforcement entities match old corpus-seed identifiers). `classifiedSeed` registered in the Inngest route handler. **Pipeline has not yet been triggered** — must be run manually from the Inngest dashboard to populate classified corpus data for the Library page.
 
 Session 45 executed PRP-02 (Classification Engine). Built `lib/classification/` — a 7-file, pure-function Stage 1 classification module that reads the 487 database rules seeded by PRP-01 and classifies any Cedar corpus entity: eCFR regulations (structural matching via CFR title+part), Federal Register notices (agency matching via 20-agency slug→pattern map), openFDA reports (dataset matching via endpoint normalization), and FL board content (authority rules + sourceName fallback). The engine is stateless — `classify(entity, context)` takes pre-loaded rules and returns a `ClassificationResult` with deduplicated `DomainAssignment[]`, an `AuthorityAssignment`, and `domainCodes`. `loadClassificationContext()` loads rules, 407-row allowlist, domain slug→UUID map, and source map in parallel. The CFR allowlist gates structural matching only; agency, dataset, and authority rules fire regardless of CFR citations. Supabase generated types were regenerated to include the 028 migration columns. Build passes clean (0 errors, 0 warnings). PRP-02 moved to completed.
@@ -86,28 +91,18 @@ Notes:
 
 ## Next Session Priority
 
-**1. Trigger cedar/corpus.classified-seed** — run the pipeline from the Inngest dashboard:
-   - Start dev server: `env -u ANTHROPIC_API_KEY npx next dev --port 3000`
+**1. Rebuild UI components with Supabase design system** — All 28 Cedar components and 16 page files currently render plain HTML after the design system transplant. Priority rebuild order:
+   - Shell components first: `Sidebar`, `SidebarShell`, `SidebarLink`, `BreadcrumbNav` (unlocks all pages)
+   - Core data display: `CedarTable`, `SeverityBadge`, `StatusBadge`, `FilterPills`
+   - Page layouts: `home/page.tsx`, `changes/page.tsx`, `library/page.tsx`
+   - Import from `ui/src/components/shadcn/ui/` (Button, Badge, Card, Input, Table, etc.)
+   - Reference: `/design-system-test` page shows working component imports
+
+**2. Trigger cedar/corpus.classified-seed** — run the pipeline from the Inngest dashboard:
+   - Start dev server: `pnpm dev` (or `cd apps/web && env -u ANTHROPIC_API_KEY npx next dev --port 3000`)
    - Open Inngest dashboard (http://localhost:8288), trigger `cedar/corpus.classified-seed`
-   - Monitor all 21 steps; watch for errors in FR pagination or openFDA endpoints
-   - Verify in Supabase: `SELECT count(*) FROM kg_entity_domains` (expect >0), `SELECT count(*) FROM kg_classification_log`, eCFR entities by title distribution
-   - Spot-check: Title 21 Part 1306 entity → should have `cs_prescribing` domain + `federal_regulation` authority
 
-**2. PRP-04: Library Wiring** — wire the Library page to display classified corpus data:
-   - `/library` page currently shows no domain breakdown because `kg_entity_domains` is empty
-   - After corpus seed runs, the Library page should show classified entities grouped by domain
-   - Generate PRP-04 from the library wireframe in `docs/wireframes/library-v2.jsx`
-
-**3. secondary-path-polish-v1 PRP** (UX sprint — ready to execute):
-   Based on `research/ui-audit/design-audit-delta.md §6`:
-   - Apply `SectionHeading` to all tab section headings in `RegulationTabs.tsx`
-   - Fix stat card metric values on `/home` to use `<Text size="5" weight="bold">` / `<Text size="1">`
-   - Suppress false click affordance on `/sources` table rows
-   - Fix FAQ page card link wrapper (pseudo-element pattern, same as `DomainCard`)
-   - Update Playwright spec selectors
-
-**3. UI library follow-up** (design-ops/product UX support):
-   - Split large fragment buckets into explicit Cedar composites so built components are as browseable as atoms (`DomainCard`, `RegulationRow`, `RelationshipCard`, `Sidebar`, `SidebarShell`, `SlideOverPanel`, etc.)
+**3. PRP-04: Library Wiring** — wire the Library page to display classified corpus data
    - Add a docs-first view for Cedar custom primitives that fill Radix Themes gaps (accordion, sheet/slide-over, breadcrumb, pagination, command palette, toast)
    - Add local design-doc links/group at the top of `/system/ui` once the library IA stabilizes
    - Keep `/system/ui` aligned with the 6 design-system docs and the actual product implementation
