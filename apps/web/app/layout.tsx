@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Providers } from './providers'
 // Supabase design system CSS (pre-built theme files — pure CSS vars, no Tailwind directives)
-import '../../../packages/ui/build/css/source/global.css'
-import '../../../packages/ui/build/css/themes/dark.css'
-import '../../../packages/ui/build/css/themes/classic-dark.css'
-import '../../../packages/ui/build/css/themes/light.css'
+import 'ui/build/css/source/global.css'
+import 'ui/build/css/themes/dark.css'
+import 'ui/build/css/themes/classic-dark.css'
+import 'ui/build/css/themes/light.css'
 import './globals.css'
 
 const geistSans = Geist({

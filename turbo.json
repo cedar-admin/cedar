@@ -1,6 +1,30 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalPassThroughEnv": [
+    "SUPABASE_SECRET_KEY",
+    "WORKOS_API_KEY",
+    "WORKOS_COOKIE_PASSWORD",
+    "WORKOS_CLIENT_ID",
+    "INNGEST_EVENT_KEY",
+    "INNGEST_SIGNING_KEY",
+    "ANTHROPIC_API_KEY",
+    "OXYLABS_USERNAME",
+    "OXYLABS_PASSWORD",
+    "BROWSERBASE_API_KEY",
+    "RESEND_API_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_MONITOR_PRICE_ID",
+    "STRIPE_INTELLIGENCE_PRICE_ID",
+    "ADMIN_SECRET",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_WORKOS_REDIRECT_URI",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_APP_URL",
+    "NEXT_PUBLIC_BROWSERBASE_PROJECT_ID"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

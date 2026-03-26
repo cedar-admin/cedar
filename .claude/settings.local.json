@@ -38,7 +38,9 @@
       "Bash(source /Users/anthonyrilling/.zshrc 2)",
       "Bash(/dev/null curl:*)",
       "Bash(git status:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [
       "Write(.env*)",
