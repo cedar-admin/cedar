@@ -1,0 +1,1434 @@
+{
+  "default": {
+    "ConfirmationModal": {
+      "files": [
+        "registry/default//Dialogs/ConfirmationModal.tsx"
+      ]
+    },
+    "EmptyStatePresentational": {
+      "files": [
+        "registry/default//EmptyStatePresentational/index.tsx"
+      ]
+    },
+    "TextConfirmModal": {
+      "files": [
+        "registry/default//Dialogs/TextConfirmModal.tsx"
+      ]
+    },
+    "PageContainer": {
+      "files": [
+        "registry/default//PageContainer/index.tsx"
+      ]
+    },
+    "PageHeader": {
+      "files": [
+        "registry/default//PageHeader/index.tsx"
+      ]
+    },
+    "PageSection": {
+      "files": [
+        "registry/default//PageSection/index.tsx"
+      ]
+    },
+    "StatusCode": {
+      "files": [
+        "registry/default//StatusCode/index.tsx"
+      ]
+    },
+    "accordion-demo": {
+      "files": [
+        "registry/default/example/accordion-demo.tsx"
+      ]
+    },
+    "admonition-demo": {
+      "files": [
+        "registry/default/example/admonition-demo.tsx"
+      ]
+    },
+    "admonition-responsive": {
+      "files": [
+        "registry/default/example/admonition-responsive.tsx"
+      ]
+    },
+    "admonition-button": {
+      "files": [
+        "registry/default/example/admonition-button.tsx"
+      ]
+    },
+    "admonition-warning": {
+      "files": [
+        "registry/default/example/admonition-warning.tsx"
+      ]
+    },
+    "admonition-destructive": {
+      "files": [
+        "registry/default/example/admonition-destructive.tsx"
+      ]
+    },
+    "admonition-sandwiched": {
+      "files": [
+        "registry/default/example/admonition-sandwiched.tsx"
+      ]
+    },
+    "alert-demo": {
+      "files": [
+        "registry/default/example/alert-demo.tsx"
+      ]
+    },
+    "alert-collapsible-demo": {
+      "files": [
+        "registry/default/example/alert-collapsible-demo.tsx"
+      ]
+    },
+    "alert-dialog-demo": {
+      "files": [
+        "registry/default/example/alert-dialog-demo.tsx"
+      ]
+    },
+    "alert-dialog-close-only": {
+      "files": [
+        "registry/default/example/alert-dialog-close-only.tsx"
+      ]
+    },
+    "alert-dialog-destructive": {
+      "files": [
+        "registry/default/example/alert-dialog-destructive.tsx"
+      ]
+    },
+    "alert-dialog-warning": {
+      "files": [
+        "registry/default/example/alert-dialog-warning.tsx"
+      ]
+    },
+    "aspect-ratio-demo": {
+      "files": [
+        "registry/default/example/aspect-ratio-demo.tsx"
+      ]
+    },
+    "avatar-demo": {
+      "files": [
+        "registry/default/example/avatar-demo.tsx"
+      ]
+    },
+    "badge-demo": {
+      "files": [
+        "registry/default/example/badge-demo.tsx"
+      ]
+    },
+    "badge-state": {
+      "files": [
+        "registry/default/example/badge-state.tsx"
+      ]
+    },
+    "badge-secondary": {
+      "files": [
+        "registry/default/example/badge-secondary.tsx"
+      ]
+    },
+    "button-demo": {
+      "files": [
+        "registry/default/example/button-demo.tsx"
+      ]
+    },
+    "button-sizes": {
+      "files": [
+        "registry/default/example/button-sizes.tsx"
+      ]
+    },
+    "button-default": {
+      "files": [
+        "registry/default/example/button-default.tsx"
+      ]
+    },
+    "button-warning": {
+      "files": [
+        "registry/default/example/button-warning.tsx"
+      ]
+    },
+    "button-secondary": {
+      "files": [
+        "registry/default/example/button-secondary.tsx"
+      ]
+    },
+    "button-destructive": {
+      "files": [
+        "registry/default/example/button-destructive.tsx"
+      ]
+    },
+    "button-outline": {
+      "files": [
+        "registry/default/example/button-outline.tsx"
+      ]
+    },
+    "button-ghost": {
+      "files": [
+        "registry/default/example/button-ghost.tsx"
+      ]
+    },
+    "button-link": {
+      "files": [
+        "registry/default/example/button-link.tsx"
+      ]
+    },
+    "button-with-icon": {
+      "files": [
+        "registry/default/example/button-with-icon.tsx"
+      ]
+    },
+    "button-loading": {
+      "files": [
+        "registry/default/example/button-loading.tsx"
+      ]
+    },
+    "button-icon": {
+      "files": [
+        "registry/default/example/button-icon.tsx"
+      ]
+    },
+    "button-as-child": {
+      "files": [
+        "registry/default/example/button-as-child.tsx"
+      ]
+    },
+    "calendar-demo": {
+      "files": [
+        "registry/default/example/calendar-demo.tsx"
+      ]
+    },
+    "calendar-form": {
+      "files": [
+        "registry/default/example/calendar-form.tsx"
+      ]
+    },
+    "checkbox-demo": {
+      "files": [
+        "registry/default/example/checkbox-demo.tsx"
+      ]
+    },
+    "checkbox-disabled": {
+      "files": [
+        "registry/default/example/checkbox-disabled.tsx"
+      ]
+    },
+    "checkbox-form-multiple": {
+      "files": [
+        "registry/default/example/checkbox-form-multiple.tsx"
+      ]
+    },
+    "checkbox-form-single": {
+      "files": [
+        "registry/default/example/checkbox-form-single.tsx"
+      ]
+    },
+    "checkbox-with-text": {
+      "files": [
+        "registry/default/example/checkbox-with-text.tsx"
+      ]
+    },
+    "collapsible-demo": {
+      "files": [
+        "registry/default/example/collapsible-demo.tsx"
+      ]
+    },
+    "combobox-demo": {
+      "files": [
+        "registry/default/example/combobox-demo.tsx"
+      ]
+    },
+    "combobox-dropdown-menu": {
+      "files": [
+        "registry/default/example/combobox-dropdown-menu.tsx"
+      ]
+    },
+    "combobox-form": {
+      "files": [
+        "registry/default/example/combobox-form.tsx"
+      ]
+    },
+    "combobox-popover": {
+      "files": [
+        "registry/default/example/combobox-popover.tsx"
+      ]
+    },
+    "combobox-responsive": {
+      "files": [
+        "registry/default/example/combobox-responsive.tsx"
+      ]
+    },
+    "command-demo": {
+      "files": [
+        "registry/default/example/command-demo.tsx"
+      ]
+    },
+    "command-dialog": {
+      "files": [
+        "registry/default/example/command-dialog.tsx"
+      ]
+    },
+    "commandmenu-demo": {
+      "files": [
+        "registry/default/example/commandmenu-demo.tsx"
+      ]
+    },
+    "commandmenu-badge": {
+      "files": [
+        "registry/default/example/commandmenu-badge.tsx"
+      ]
+    },
+    "commandmenu-icon": {
+      "files": [
+        "registry/default/example/commandmenu-icon.tsx"
+      ]
+    },
+    "commandmenu-hidden": {
+      "files": [
+        "registry/default/example/commandmenu-hidden.tsx"
+      ]
+    },
+    "commandmenu-force": {
+      "files": [
+        "registry/default/example/commandmenu-force.tsx"
+      ]
+    },
+    "commandmenu-conditional": {
+      "files": [
+        "registry/default/example/commandmenu-conditional.tsx"
+      ]
+    },
+    "commandmenu-subpage": {
+      "files": [
+        "registry/default/example/commandmenu-subpage.tsx"
+      ]
+    },
+    "commandmenu-subpage-custom": {
+      "files": [
+        "registry/default/example/commandmenu-subpage-custom.tsx"
+      ]
+    },
+    "context-menu-demo": {
+      "files": [
+        "registry/default/example/context-menu-demo.tsx"
+      ]
+    },
+    "data-input-demo": {
+      "files": [
+        "registry/default/example/data-input-demo.tsx"
+      ]
+    },
+    "data-input-with-copy": {
+      "files": [
+        "registry/default/example/data-input-with-copy.tsx"
+      ]
+    },
+    "data-input-with-copy-secret": {
+      "files": [
+        "registry/default/example/data-input-with-copy-secret.tsx"
+      ]
+    },
+    "data-input-with-reveal-copy": {
+      "files": [
+        "registry/default/example/data-input-with-reveal-copy.tsx"
+      ]
+    },
+    "date-picker-demo": {
+      "files": [
+        "registry/default/example/date-picker-demo.tsx"
+      ]
+    },
+    "date-picker-form": {
+      "files": [
+        "registry/default/example/date-picker-form.tsx"
+      ]
+    },
+    "date-picker-with-presets": {
+      "files": [
+        "registry/default/example/date-picker-with-presets.tsx"
+      ]
+    },
+    "date-picker-with-range": {
+      "files": [
+        "registry/default/example/date-picker-with-range.tsx"
+      ]
+    },
+    "dialog-demo": {
+      "files": [
+        "registry/default/example/dialog-demo.tsx"
+      ]
+    },
+    "dialog-close-button": {
+      "files": [
+        "registry/default/example/dialog-close-button.tsx"
+      ]
+    },
+    "dialog-centered-off": {
+      "files": [
+        "registry/default/example/dialog-centered-off.tsx"
+      ]
+    },
+    "drawer-demo": {
+      "files": [
+        "registry/default/example/drawer-demo.tsx"
+      ]
+    },
+    "drawer-dialog": {
+      "files": [
+        "registry/default/example/drawer-dialog.tsx"
+      ]
+    },
+    "dropdown-menu-demo": {
+      "files": [
+        "registry/default/example/dropdown-menu-demo.tsx"
+      ]
+    },
+    "dropdown-menu-checkboxes": {
+      "files": [
+        "registry/default/example/dropdown-menu-checkboxes.tsx"
+      ]
+    },
+    "dropdown-menu-radio-group": {
+      "files": [
+        "registry/default/example/dropdown-menu-radio-group.tsx"
+      ]
+    },
+    "filter-bar-demo": {
+      "files": [
+        "registry/default/example/filter-bar-demo.tsx"
+      ]
+    },
+    "hover-card-demo": {
+      "files": [
+        "registry/default/example/hover-card-demo.tsx"
+      ]
+    },
+    "input-demo": {
+      "files": [
+        "registry/default/example/input-demo.tsx"
+      ]
+    },
+    "input-disabled": {
+      "files": [
+        "registry/default/example/input-disabled.tsx"
+      ]
+    },
+    "input-file": {
+      "files": [
+        "registry/default/example/input-file.tsx"
+      ]
+    },
+    "input-form": {
+      "files": [
+        "registry/default/example/input-form.tsx"
+      ]
+    },
+    "input-with-button": {
+      "files": [
+        "registry/default/example/input-with-button.tsx"
+      ]
+    },
+    "input-with-label": {
+      "files": [
+        "registry/default/example/input-with-label.tsx"
+      ]
+    },
+    "input-with-text": {
+      "files": [
+        "registry/default/example/input-with-text.tsx"
+      ]
+    },
+    "input-otp-demo": {
+      "files": [
+        "registry/default/example/input-otp-demo.tsx"
+      ]
+    },
+    "input-otp-pattern": {
+      "files": [
+        "registry/default/example/input-otp-pattern.tsx"
+      ]
+    },
+    "input-otp-separator": {
+      "files": [
+        "registry/default/example/input-otp-separator.tsx"
+      ]
+    },
+    "input-otp-controlled": {
+      "files": [
+        "registry/default/example/input-otp-controlled.tsx"
+      ]
+    },
+    "input-otp-form": {
+      "files": [
+        "registry/default/example/input-otp-form.tsx"
+      ]
+    },
+    "label-demo": {
+      "files": [
+        "registry/default/example/label-demo.tsx"
+      ]
+    },
+    "menubar-demo": {
+      "files": [
+        "registry/default/example/menubar-demo.tsx"
+      ]
+    },
+    "navigation-menu-demo": {
+      "files": [
+        "registry/default/example/navigation-menu-demo.tsx"
+      ]
+    },
+    "navigation-menu-responsive": {
+      "files": [
+        "registry/default/example/navigation-menu-responsive.tsx"
+      ]
+    },
+    "nav-menu-demo": {
+      "files": [
+        "registry/default/example/nav-menu-demo.tsx"
+      ]
+    },
+    "nav-menu-badges": {
+      "files": [
+        "registry/default/example/nav-menu-badges.tsx"
+      ]
+    },
+    "nav-menu-icons": {
+      "files": [
+        "registry/default/example/nav-menu-icons.tsx"
+      ]
+    },
+    "popover-demo": {
+      "files": [
+        "registry/default/example/popover-demo.tsx"
+      ]
+    },
+    "progress-demo": {
+      "files": [
+        "registry/default/example/progress-demo.tsx"
+      ]
+    },
+    "radio-group-demo": {
+      "files": [
+        "registry/default/example/radio-group-demo.tsx"
+      ]
+    },
+    "radio-group-form": {
+      "files": [
+        "registry/default/example/radio-group-form.tsx"
+      ]
+    },
+    "radio-group-stacked-demo": {
+      "files": [
+        "registry/default/example/radio-group-stacked-demo.tsx"
+      ]
+    },
+    "radio-group-stacked-form": {
+      "files": [
+        "registry/default/example/radio-group-stacked-form.tsx"
+      ]
+    },
+    "radio-group-card-demo": {
+      "files": [
+        "registry/default/example/radio-group-card-demo.tsx"
+      ]
+    },
+    "radio-group-card-form": {
+      "files": [
+        "registry/default/example/radio-group-card-form.tsx"
+      ]
+    },
+    "radio-group-card-with-children": {
+      "files": [
+        "registry/default/example/radio-group-card-with-children.tsx"
+      ]
+    },
+    "resizable-demo": {
+      "files": [
+        "registry/default/example/resizable-demo.tsx"
+      ]
+    },
+    "resizable-demo-with-handle": {
+      "files": [
+        "registry/default/example/resizable-demo-with-handle.tsx"
+      ]
+    },
+    "resizable-vertical": {
+      "files": [
+        "registry/default/example/resizable-vertical.tsx"
+      ]
+    },
+    "resizable-handle": {
+      "files": [
+        "registry/default/example/resizable-handle.tsx"
+      ]
+    },
+    "scroll-area-demo": {
+      "files": [
+        "registry/default/example/scroll-area-demo.tsx"
+      ]
+    },
+    "scroll-area-horizontal-demo": {
+      "files": [
+        "registry/default/example/scroll-area-horizontal-demo.tsx"
+      ]
+    },
+    "select-demo": {
+      "files": [
+        "registry/default/example/select-demo.tsx"
+      ]
+    },
+    "select-scrollable": {
+      "files": [
+        "registry/default/example/select-scrollable.tsx"
+      ]
+    },
+    "select-form": {
+      "files": [
+        "registry/default/example/select-form.tsx"
+      ]
+    },
+    "separator-demo": {
+      "files": [
+        "registry/default/example/separator-demo.tsx"
+      ]
+    },
+    "sheet-confirm-on-close-demo": {
+      "files": [
+        "registry/default/example/sheet-confirm-on-close-demo.tsx"
+      ]
+    },
+    "sheet-demo": {
+      "files": [
+        "registry/default/example/sheet-demo.tsx"
+      ]
+    },
+    "sheet-nonmodal": {
+      "files": [
+        "registry/default/example/sheet-nonmodal.tsx"
+      ]
+    },
+    "sheet-side": {
+      "files": [
+        "registry/default/example/sheet-side.tsx"
+      ]
+    },
+    "skeleton-demo": {
+      "files": [
+        "registry/default/example/skeleton-demo.tsx"
+      ]
+    },
+    "skeleton-card": {
+      "files": [
+        "registry/default/example/skeleton-card.tsx"
+      ]
+    },
+    "slider-demo": {
+      "files": [
+        "registry/default/example/slider-demo.tsx"
+      ]
+    },
+    "slider-minMax-range": {
+      "files": [
+        "registry/default/example/slider-minMax-range.tsx"
+      ]
+    },
+    "sonner-demo": {
+      "files": [
+        "registry/default/example/sonner-demo.tsx"
+      ]
+    },
+    "sonner-types": {
+      "files": [
+        "registry/default/example/sonner-types.tsx"
+      ]
+    },
+    "sonner-upload": {
+      "files": [
+        "registry/default/example/sonner-upload.tsx"
+      ]
+    },
+    "switch-demo": {
+      "files": [
+        "registry/default/example/switch-demo.tsx"
+      ]
+    },
+    "switch-form": {
+      "files": [
+        "registry/default/example/switch-form.tsx"
+      ]
+    },
+    "table-cross-link": {
+      "files": [
+        "registry/default/example/table-cross-link.tsx"
+      ]
+    },
+    "table-demo": {
+      "files": [
+        "registry/default/example/table-demo.tsx"
+      ]
+    },
+    "table-actions": {
+      "files": [
+        "registry/default/example/table-actions.tsx"
+      ]
+    },
+    "table-icons": {
+      "files": [
+        "registry/default/example/table-icons.tsx"
+      ]
+    },
+    "table-row-link": {
+      "files": [
+        "registry/default/example/table-row-link.tsx"
+      ]
+    },
+    "table-row-link-actions": {
+      "files": [
+        "registry/default/example/table-row-link-actions.tsx"
+      ]
+    },
+    "table-sort": {
+      "files": [
+        "registry/default/example/table-sort.tsx"
+      ]
+    },
+    "tabs-demo": {
+      "files": [
+        "registry/default/example/tabs-demo.tsx"
+      ]
+    },
+    "textarea-demo": {
+      "files": [
+        "registry/default/example/textarea-demo.tsx"
+      ]
+    },
+    "textarea-disabled": {
+      "files": [
+        "registry/default/example/textarea-disabled.tsx"
+      ]
+    },
+    "textarea-form": {
+      "files": [
+        "registry/default/example/textarea-form.tsx"
+      ]
+    },
+    "textarea-with-button": {
+      "files": [
+        "registry/default/example/textarea-with-button.tsx"
+      ]
+    },
+    "textarea-with-label": {
+      "files": [
+        "registry/default/example/textarea-with-label.tsx"
+      ]
+    },
+    "textarea-with-text": {
+      "files": [
+        "registry/default/example/textarea-with-text.tsx"
+      ]
+    },
+    "toggle-group-demo": {
+      "files": [
+        "registry/default/example/toggle-group-demo.tsx"
+      ]
+    },
+    "toggle-group-disabled": {
+      "files": [
+        "registry/default/example/toggle-group-disabled.tsx"
+      ]
+    },
+    "toggle-group-lg": {
+      "files": [
+        "registry/default/example/toggle-group-lg.tsx"
+      ]
+    },
+    "toggle-group-outline": {
+      "files": [
+        "registry/default/example/toggle-group-outline.tsx"
+      ]
+    },
+    "toggle-group-sm": {
+      "files": [
+        "registry/default/example/toggle-group-sm.tsx"
+      ]
+    },
+    "toggle-group-single": {
+      "files": [
+        "registry/default/example/toggle-group-single.tsx"
+      ]
+    },
+    "toggle-demo": {
+      "files": [
+        "registry/default/example/toggle-demo.tsx"
+      ]
+    },
+    "toggle-disabled": {
+      "files": [
+        "registry/default/example/toggle-disabled.tsx"
+      ]
+    },
+    "toggle-lg": {
+      "files": [
+        "registry/default/example/toggle-lg.tsx"
+      ]
+    },
+    "toggle-outline": {
+      "files": [
+        "registry/default/example/toggle-outline.tsx"
+      ]
+    },
+    "toggle-sm": {
+      "files": [
+        "registry/default/example/toggle-sm.tsx"
+      ]
+    },
+    "toggle-with-text": {
+      "files": [
+        "registry/default/example/toggle-with-text.tsx"
+      ]
+    },
+    "tooltip-demo": {
+      "files": [
+        "registry/default/example/tooltip-demo.tsx"
+      ]
+    },
+    "typography-blockquote": {
+      "files": [
+        "registry/default/example/typography-blockquote.tsx"
+      ]
+    },
+    "typography-demo": {
+      "files": [
+        "registry/default/example/typography-demo.tsx"
+      ]
+    },
+    "typography-h1": {
+      "files": [
+        "registry/default/example/typography-h1.tsx"
+      ]
+    },
+    "typography-h2": {
+      "files": [
+        "registry/default/example/typography-h2.tsx"
+      ]
+    },
+    "typography-h3": {
+      "files": [
+        "registry/default/example/typography-h3.tsx"
+      ]
+    },
+    "typography-h4": {
+      "files": [
+        "registry/default/example/typography-h4.tsx"
+      ]
+    },
+    "typography-inline-code": {
+      "files": [
+        "registry/default/example/typography-inline-code.tsx"
+      ]
+    },
+    "typography-large": {
+      "files": [
+        "registry/default/example/typography-large.tsx"
+      ]
+    },
+    "typography-lead": {
+      "files": [
+        "registry/default/example/typography-lead.tsx"
+      ]
+    },
+    "typography-list": {
+      "files": [
+        "registry/default/example/typography-list.tsx"
+      ]
+    },
+    "typography-muted": {
+      "files": [
+        "registry/default/example/typography-muted.tsx"
+      ]
+    },
+    "typography-p": {
+      "files": [
+        "registry/default/example/typography-p.tsx"
+      ]
+    },
+    "typography-small": {
+      "files": [
+        "registry/default/example/typography-small.tsx"
+      ]
+    },
+    "typography-table": {
+      "files": [
+        "registry/default/example/typography-table.tsx"
+      ]
+    },
+    "mode-toggle": {
+      "files": [
+        "registry/default/example/mode-toggle.tsx"
+      ]
+    },
+    "text-confirm-dialog-demo": {
+      "files": [
+        "registry/default/example/text-confirm-dialog-demo.tsx"
+      ]
+    },
+    "text-confirm-dialog-with-size": {
+      "files": [
+        "registry/default/example/text-confirm-dialog-with-size.tsx"
+      ]
+    },
+    "text-confirm-dialog-with-children": {
+      "files": [
+        "registry/default/example/text-confirm-dialog-with-children.tsx"
+      ]
+    },
+    "text-confirm-dialog-with-cancel-button": {
+      "files": [
+        "registry/default/example/text-confirm-dialog-with-cancel-button.tsx"
+      ]
+    },
+    "form-item-layout-demo": {
+      "files": [
+        "registry/default/example/form-item-layout-demo.tsx"
+      ]
+    },
+    "key-value-field-array-demo": {
+      "files": [
+        "registry/default/example/key-value-field-array-demo.tsx"
+      ]
+    },
+    "field-choice-card": {
+      "files": [
+        "registry/default/example/field-choice-card.tsx"
+      ]
+    },
+    "field-checkbox": {
+      "files": [
+        "registry/default/example/field-checkbox.tsx"
+      ]
+    },
+    "field-demo": {
+      "files": [
+        "registry/default/example/field-demo.tsx"
+      ]
+    },
+    "field-fieldset": {
+      "files": [
+        "registry/default/example/field-fieldset.tsx"
+      ]
+    },
+    "field-input": {
+      "files": [
+        "registry/default/example/field-input.tsx"
+      ]
+    },
+    "field-group": {
+      "files": [
+        "registry/default/example/field-group.tsx"
+      ]
+    },
+    "field-radio": {
+      "files": [
+        "registry/default/example/field-radio.tsx"
+      ]
+    },
+    "field-responsive": {
+      "files": [
+        "registry/default/example/field-responsive.tsx"
+      ]
+    },
+    "field-select": {
+      "files": [
+        "registry/default/example/field-select.tsx"
+      ]
+    },
+    "field-slider": {
+      "files": [
+        "registry/default/example/field-slider.tsx"
+      ]
+    },
+    "field-switch": {
+      "files": [
+        "registry/default/example/field-switch.tsx"
+      ]
+    },
+    "field-textarea": {
+      "files": [
+        "registry/default/example/field-textarea.tsx"
+      ]
+    },
+    "form-patterns-pagelayout": {
+      "files": [
+        "registry/default/example/form-patterns-pagelayout.tsx"
+      ]
+    },
+    "form-patterns-sidepanel": {
+      "files": [
+        "registry/default/example/form-patterns-sidepanel.tsx"
+      ]
+    },
+    "form-item-layout-with-select": {
+      "files": [
+        "registry/default/example/form-item-layout-with-select.tsx"
+      ]
+    },
+    "form-item-layout-with-horizontal": {
+      "files": [
+        "registry/default/example/form-item-layout-with-horizontal.tsx"
+      ]
+    },
+    "form-item-layout-with-switch": {
+      "files": [
+        "registry/default/example/form-item-layout-with-switch.tsx"
+      ]
+    },
+    "form-item-layout-with-checkbox": {
+      "files": [
+        "registry/default/example/form-item-layout-with-switch.tsx"
+      ]
+    },
+    "form-item-layout-with-checkbox-list": {
+      "files": [
+        "registry/default/example/form-item-layout-with-switch.tsx"
+      ]
+    },
+    "form-item-layout-before-label": {
+      "files": [
+        "registry/default/example/form-item-layout-before-label.tsx"
+      ]
+    },
+    "form-item-layout-after-label": {
+      "files": [
+        "registry/default/example/form-item-layout-after-label.tsx"
+      ]
+    },
+    "info-tooltip-demo": {
+      "files": [
+        "registry/default/example/info-tooltip-demo.tsx"
+      ]
+    },
+    "page-container-demo": {
+      "files": [
+        "registry/default/example/page-container-demo.tsx"
+      ]
+    },
+    "page-layout-detail": {
+      "files": [
+        "registry/default/example/page-layout-detail.tsx"
+      ]
+    },
+    "page-layout-list": {
+      "files": [
+        "registry/default/example/page-layout-list.tsx"
+      ]
+    },
+    "page-layout-list-simple": {
+      "files": [
+        "registry/default/example/page-layout-list-simple.tsx"
+      ]
+    },
+    "page-layout-settings": {
+      "files": [
+        "registry/default/example/page-layout-settings.tsx"
+      ]
+    },
+    "page-header-demo": {
+      "files": [
+        "registry/default/example/page-header-demo.tsx"
+      ]
+    },
+    "page-section-demo": {
+      "files": [
+        "registry/default/example/page-section-demo.tsx"
+      ]
+    },
+    "page-section-horizontal": {
+      "files": [
+        "registry/default/example/page-section-horizontal.tsx"
+      ]
+    },
+    "page-section-title-only": {
+      "files": [
+        "registry/default/example/page-section-title-only.tsx"
+      ]
+    },
+    "page-section-with-aside": {
+      "files": [
+        "registry/default/example/page-section-with-aside.tsx"
+      ]
+    },
+    "inner-side-menu-demo": {
+      "files": [
+        "registry/default/example/inner-side-menu-demo.tsx"
+      ]
+    },
+    "inner-side-menu-static-titles": {
+      "files": [
+        "registry/default/example/inner-side-menu-static-titles.tsx"
+      ]
+    },
+    "inner-side-menu-loading": {
+      "files": [
+        "registry/default/example/inner-side-menu-loading.tsx"
+      ]
+    },
+    "inner-side-menu-multiple-sections": {
+      "files": [
+        "registry/default/example/inner-side-menu-multiple-sections.tsx"
+      ]
+    },
+    "inner-side-menu-empty": {
+      "files": [
+        "registry/default/example/inner-side-menu-empty.tsx"
+      ]
+    },
+    "inner-side-menu-with-search": {
+      "files": [
+        "registry/default/example/inner-side-menu-with-search.tsx"
+      ]
+    },
+    "toc-demo": {
+      "files": [
+        "registry/default/example/toc-demo.tsx"
+      ]
+    },
+    "toc-single-demo": {
+      "files": [
+        "registry/default/example/toc-single-demo.tsx"
+      ]
+    },
+    "multi-select-demo": {
+      "files": [
+        "registry/default/example/multi-select-demo.tsx"
+      ]
+    },
+    "multi-select-disabled": {
+      "files": [
+        "registry/default/example/multi-select-disabled.tsx"
+      ]
+    },
+    "multi-select-badge-limit-wrap": {
+      "files": [
+        "registry/default/example/multi-select-badge-limit-wrap.tsx"
+      ]
+    },
+    "multi-select-badge-limit": {
+      "files": [
+        "registry/default/example/multi-select-badge-limit.tsx"
+      ]
+    },
+    "multi-select-combobox": {
+      "files": [
+        "registry/default/example/multi-select-combobox.tsx"
+      ]
+    },
+    "multi-select-combobox-creatable": {
+      "files": [
+        "registry/default/example/multi-select-combobox-creatable.tsx"
+      ]
+    },
+    "multi-select-deletable-badge": {
+      "files": [
+        "registry/default/example/multi-select-deletable-badge.tsx"
+      ]
+    },
+    "multi-select-inline-search-input": {
+      "files": [
+        "registry/default/example/multi-select-inline-search-input.tsx"
+      ]
+    },
+    "tree-view-demo": {
+      "files": [
+        "registry/default/example/tree-view-demo.tsx"
+      ]
+    },
+    "tree-view-edit": {
+      "files": [
+        "registry/default/example/tree-view-edit.tsx"
+      ]
+    },
+    "tree-view-directories": {
+      "files": [
+        "registry/default/example/tree-view-directories.tsx"
+      ]
+    },
+    "tree-view-multi-select": {
+      "files": [
+        "registry/default/example/tree-view-multi-select.tsx"
+      ]
+    },
+    "confirmation-modal-demo": {
+      "files": [
+        "registry/default/example/confirmation-modal-demo.tsx"
+      ]
+    },
+    "assistant-chat-demo": {
+      "files": [
+        "registry/default/example/assistant-chat-demo.tsx"
+      ]
+    },
+    "assistant-chat-commands": {
+      "files": [
+        "registry/default/example/assistant-chat-commands.tsx"
+      ]
+    },
+    "color-usage-surface-www-and-docs": {
+      "files": [
+        "registry/default/example/color-usage-surface-www-and-docs.tsx"
+      ]
+    },
+    "color-usage-surface-studio": {
+      "files": [
+        "registry/default/example/color-usage-surface-studio.tsx"
+      ]
+    },
+    "color-usage-surface-studio-frame": {
+      "files": [
+        "registry/default/example/color-usage-surface-studio-frame.tsx"
+      ]
+    },
+    "chart-bar-demo": {
+      "files": [
+        "registry/default/example/chart-bar-demo.tsx"
+      ]
+    },
+    "chart-bar-demo-grid": {
+      "files": [
+        "registry/default/example/chart-bar-demo-grid.tsx"
+      ]
+    },
+    "chart-bar-demo-axis": {
+      "files": [
+        "registry/default/example/chart-bar-demo-axis.tsx"
+      ]
+    },
+    "chart-bar-demo-tooltip": {
+      "files": [
+        "registry/default/example/chart-bar-demo-tooltip.tsx"
+      ]
+    },
+    "chart-bar-demo-legend": {
+      "files": [
+        "registry/default/example/chart-bar-demo-legend.tsx"
+      ]
+    },
+    "chart-tooltip-demo": {
+      "files": [
+        "registry/default/example/chart-tooltip-demo.tsx"
+      ]
+    },
+    "expanding-textarea-demo": {
+      "files": [
+        "registry/default/example/expanding-textarea-demo.tsx"
+      ]
+    },
+    "error-display-demo": {
+      "files": [
+        "registry/default/example/error-display-demo.tsx"
+      ]
+    },
+    "error-display-with-children": {
+      "files": [
+        "registry/default/example/error-display-with-children.tsx"
+      ]
+    },
+    "logs-bar-chart": {
+      "files": [
+        "registry/default/example/logs-bar-chart.tsx"
+      ]
+    },
+    "empty-state-missing-route": {
+      "files": [
+        "registry/default/example/empty-state-missing-route.tsx"
+      ]
+    },
+    "empty-state-zero-items-table": {
+      "files": [
+        "registry/default/example/empty-state-zero-items-table.tsx"
+      ]
+    },
+    "empty-state-presentational-demo": {
+      "files": [
+        "registry/default/example/empty-state-presentational-demo.tsx"
+      ]
+    },
+    "empty-state-presentational-buttons": {
+      "files": [
+        "registry/default/example/empty-state-presentational-buttons.tsx"
+      ]
+    },
+    "empty-state-presentational-icon": {
+      "files": [
+        "registry/default/example/empty-state-presentational-icon.tsx"
+      ]
+    },
+    "empty-state-initial-state-informational": {
+      "files": [
+        "registry/default/example/empty-state-initial-state-informational.tsx"
+      ]
+    },
+    "data-grid-demo": {
+      "files": [
+        "registry/default/example/data-grid-demo.tsx"
+      ]
+    },
+    "data-grid-empty-state": {
+      "files": [
+        "registry/default/example/data-grid-empty-state.tsx"
+      ]
+    },
+    "data-table-demo": {
+      "files": [
+        "registry/default/example/data-table-demo.tsx"
+      ]
+    },
+    "metric-card": {
+      "files": [
+        "registry/default/example/metric-card.tsx"
+      ]
+    },
+    "metric-card-minimal": {
+      "files": [
+        "registry/default/example/metric-card-minimal.tsx"
+      ]
+    },
+    "metric-card-minimal-horizontal": {
+      "files": [
+        "registry/default/example/metric-card-minimal-horizontal.tsx"
+      ]
+    },
+    "metric-card-with-icon-link-tooltip": {
+      "files": [
+        "registry/default/example/metric-card-with-icon-link-tooltip.tsx"
+      ]
+    },
+    "mermaid-demo": {
+      "files": [
+        "registry/default/example/mermaid-demo.tsx"
+      ]
+    },
+    "mermaid-flowchart": {
+      "files": [
+        "registry/default/example/mermaid-flowchart.tsx"
+      ]
+    },
+    "mermaid-er-diagram": {
+      "files": [
+        "registry/default/example/mermaid-er-diagram.tsx"
+      ]
+    },
+    "mermaid-sequence-async": {
+      "files": [
+        "registry/default/example/mermaid-sequence-async.tsx"
+      ]
+    },
+    "mermaid-sequence-sync": {
+      "files": [
+        "registry/default/example/mermaid-sequence-sync.tsx"
+      ]
+    },
+    "mermaid-oauth-flow": {
+      "files": [
+        "registry/default/example/mermaid-oauth-flow.tsx"
+      ]
+    },
+    "mermaid-flowchart-subgraph": {
+      "files": [
+        "registry/default/example/mermaid-flowchart-subgraph.tsx"
+      ]
+    },
+    "mermaid-sequence-api": {
+      "files": [
+        "registry/default/example/mermaid-sequence-api.tsx"
+      ]
+    },
+    "mermaid-er-simple": {
+      "files": [
+        "registry/default/example/mermaid-er-simple.tsx"
+      ]
+    },
+    "mermaid-basic": {
+      "files": [
+        "registry/default/example/mermaid-basic.tsx"
+      ]
+    },
+    "status-code-demo": {
+      "files": [
+        "registry/default/example/status-code-demo.tsx"
+      ]
+    },
+    "chart-bar-interactive": {
+      "files": [
+        "registry/default/block/chart-bar-interactive.tsx"
+      ]
+    },
+    "chart-composed-demo": {
+      "files": [
+        "registry/default/block/chart-composed-demo.tsx"
+      ]
+    },
+    "chart-composed-basic": {
+      "files": [
+        "registry/default/block/chart-composed-basic.tsx"
+      ]
+    },
+    "chart-composed-states": {
+      "files": [
+        "registry/default/block/chart-composed-states.tsx"
+      ]
+    },
+    "chart-composed-table": {
+      "files": [
+        "registry/default/block/chart-composed-table.tsx"
+      ]
+    },
+    "chart-composed-metrics": {
+      "files": [
+        "registry/default/block/chart-composed-metrics.tsx"
+      ]
+    },
+    "chart-composed-actions": {
+      "files": [
+        "registry/default/block/chart-composed-actions.tsx"
+      ]
+    },
+    "copy-button-verbs": {
+      "files": [
+        "registry/default/example/copy-button-verbs.tsx"
+      ]
+    },
+    "copy-form-labels": {
+      "files": [
+        "registry/default/example/copy-form-labels.tsx"
+      ]
+    },
+    "copy-error-messages": {
+      "files": [
+        "registry/default/example/copy-error-messages.tsx"
+      ]
+    },
+    "copy-success-messages": {
+      "files": [
+        "registry/default/example/copy-success-messages.tsx"
+      ]
+    },
+    "copy-tooltips": {
+      "files": [
+        "registry/default/example/copy-tooltips.tsx"
+      ]
+    },
+    "copy-loading-states": {
+      "files": [
+        "registry/default/example/copy-loading-states.tsx"
+      ]
+    },
+    "copy-empty-states": {
+      "files": [
+        "registry/default/example/copy-empty-states.tsx"
+      ]
+    },
+    "copy-confirmations": {
+      "files": [
+        "registry/default/example/copy-confirmations.tsx"
+      ]
+    }
+  }
+}

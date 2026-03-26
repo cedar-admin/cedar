@@ -5,8 +5,11 @@ import React from 'react'
 import { u } from 'unist-builder'
 import { visit } from 'unist-util-visit'
 
-import { Index } from '../__registry__'
+import registryFiles from '../__registry__/files.json'
 import { styles } from '../registry/styles'
+
+// Use the lightweight JSON index for file lookups (no component imports needed at build time)
+const Index: Record<string, Record<string, { files: string[] }>> = registryFiles
 import { UnistNode, UnistTree } from '@/types/unist'
 
 // ComponentType
