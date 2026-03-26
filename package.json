@@ -9,7 +9,8 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "dev:design-system": "turbo run dev:full --filter=design-system"
   },
   "devDependencies": {
     "turbo": "^2.3.3"

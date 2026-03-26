@@ -40,6 +40,10 @@
     "typecheck": {
       "dependsOn": ["^build"]
     },
-    "test": {}
+    "test": {},
+    "dev:full": {
+      "cache": false,
+      "persistent": true
+    }
   }
 }

@@ -12,9 +12,18 @@ export function SiteFooter() {
             rel="noreferrer"
             className="font-medium underline underline-offset-4 hover:text-foreground-lighter"
           >
-            Supabase
+            Cedar
           </a>
-          . The source code is available on{' '}
+          . Based on the{' '}
+          <a
+            href="https://supabase-design-system.vercel.app/design-system"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium underline underline-offset-4 hover:text-foreground-lighter"
+          >
+            Supabase Design System
+          </a>
+          . Source code on{' '}
           <a
             href={siteConfig.links.github}
             target="_blank"
