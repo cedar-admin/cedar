@@ -17,6 +17,7 @@ out/
 
 # production
 build
+!packages/ui/build/css/
 dist
 
 # misc
