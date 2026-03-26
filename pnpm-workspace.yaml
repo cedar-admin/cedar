@@ -20,11 +20,14 @@ catalog:
   vitest: ^3.2.0
   zod: 3.25.76
 
+onlyBuiltDependencies:
+  - contentlayer2
+
 overrides:
   esbuild: ^0.25.2
 
 pnpm:
   peerDependencyRules:
     allowedVersions:
-      react: ">=18"
-      react-dom: ">=18"
+      react: '>=18'
+      react-dom: '>=18'
