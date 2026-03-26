@@ -32,6 +32,7 @@ Cedar shrinks the delay between a regulation being updated and a practice owner 
 - **Push:** OneSignal (1.0 Full, Intelligence tier only)
 - **Monorepo:** pnpm workspaces + Turborepo
 - **Design System:** Supabase UI (packages/ui — shadcn/radix primitives, Tailwind v3)
+- **Design System Docs:** apps/design-system (Next.js, contentlayer2, MDX, port 3003)
 
 ## Monorepo Structure
 
@@ -40,9 +41,10 @@ Cedar is a pnpm monorepo with Turborepo:
 | Directory | Purpose |
 |-----------|---------|
 | `apps/web/` | Cedar's Next.js app (all routes, components, lib, inngest, supabase) |
+| `apps/design-system/` | Design system docs app (component reference, live previews, MDX, port 3003) |
 | `packages/ui/` | Supabase design system primitives (shadcn components, theme CSS) |
 | `packages/config/` | Shared Tailwind v3 config + color generation engine |
-| `packages/ui-patterns/` | Complex composed UI patterns (pruned of Supabase-specific code) |
+| `packages/ui-patterns/` | Complex composed UI patterns (fragments — modals, page layouts, form patterns) |
 | `packages/common/` | Utility hooks (useBreakpoint, useDebounce, etc.) |
 | `packages/icons/` | SVG product icons |
 | `packages/build-icons/` | Icon build tooling |
@@ -50,15 +52,8 @@ Cedar is a pnpm monorepo with Turborepo:
 | `packages/api-types/` | Stub package (empty — satisfies workspace references) |
 
 **Package manager:** Always use `pnpm` (never npm or yarn). Lockfile: `pnpm-lock.yaml`.
-**Commands:** `pnpm dev` (start dev server), `pnpm build` (build all), `pnpm typecheck`.
+**Commands:** `pnpm dev` (start dev server), `pnpm run dev:design-system` (start design system docs), `pnpm build` (build all), `pnpm typecheck`.
 **Env files:** `.env.local` must be symlinked into `apps/web/` (it lives at monorepo root).
-
-## Session Startup — Read in This Order
-
-1. Read this file (automatic)
-2. Read `STATUS.md` for current build state, last session summary, and next priority
-3. If a PRP exists in `PRPs/active/`, read it — that is your task for this session
-4. Read relevant source files before modifying them — always verify against the actual codebase
 
 ## Module Build Order
 
@@ -251,12 +246,17 @@ A module is not complete until its test criteria pass.
 
 **Declarative schema:** `supabase/schemas/` contains the desired final state of the database schema. When making schema changes: (1) update the relevant file in `supabase/schemas/`, (2) generate a migration with `supabase db diff -f <migration_name>`, (3) review the generated migration before applying. RLS policies and DML must still be written as versioned migrations per the declarative-schema.md caveats.
 
+**App components:** Before creating a new component in `apps/web/components/`, check
+`apps/web/components/index.ts` for an existing one. After creating a component, add it to
+the barrel file with a JSDoc description. For design system components (atoms/fragments
+shared across apps), see `apps/design-system/AUTHORING.md` instead.
+
 ## Where Things Live
 
 | Thing | Path |
 |-------|------|
 | Migrations | `apps/web/supabase/migrations/` |
-| Declarative schema   | `apps/web/supabase/schemas/`              |
+| Declarative schema | `apps/web/supabase/schemas/` |
 | Inngest functions | `apps/web/inngest/` |
 | Fetchers | `apps/web/lib/fetchers/` |
 | Intelligence agents | `apps/web/lib/intelligence/` |
@@ -267,8 +267,11 @@ A module is not complete until its test criteria pass.
 | Supabase types | `apps/web/lib/db/types.ts` (regenerate after schema changes) |
 | Dashboard routes | `apps/web/app/(dashboard)/` |
 | Admin routes | `apps/web/app/(admin)/` |
-| Design system packages | `packages/ui/` |
-| Theme CSS | `apps/web/app/theme-css/` |
+| Cedar app components | `apps/web/components/index.ts` (check before creating new ones) |
+| Design system packages | `packages/ui/` (atoms), `packages/ui-patterns/` (fragments) |
+| Design system docs app | `apps/design-system/` (run with `pnpm run dev:design-system`) |
+| Design system authoring | `apps/design-system/AUTHORING.md` |
+| Theme CSS (canonical) | `packages/ui/build/css/` |
 | Tailwind config | `apps/web/tailwind.config.js` |
 | Build status | `STATUS.md` |
 | Active PRP | `PRPs/active/` |
@@ -351,19 +354,20 @@ All secrets are stored in `.env.local` (local dev) and Vercel environment variab
 
 ## Design System
 
-Cedar uses Supabase's open-source design system (packages/ui). The old Radix Themes + `--cedar-*` token system was removed entirely.
+Cedar uses Supabase's open-source design system (packages/ui), with a live documentation app at `apps/design-system/`.
 
 ### Key conventions
-- Components import from `ui/src/components/shadcn/ui/` (shadcn-only path, React 19 compatible)
+- Components import from `'ui'` (atoms) and `'ui-patterns/...'` (fragments)
 - Styling uses Tailwind v3 utility classes (`tailwindcss: 3.4.1`)
-- Theme CSS files are in `apps/web/app/theme-css/` (copied from packages/ui/build/css)
+- Theme CSS canonical location is `packages/ui/build/css/` (gitignore negation preserves it)
 - Theme switching uses `.dark` class via next-themes (light / dark / classic-dark)
 - Brand colors are Supabase green (customize later in `packages/config/default-colors.js`)
+- For adding/modifying design system components, see `apps/design-system/AUTHORING.md`
 
 ### Semantic color tokens
 - `text-foreground`, `text-foreground-light`, `text-foreground-muted`
 - `text-brand`, `text-destructive`, `text-warning`
-- `bg-studio` (canvas) → `bg-surface-100` (panels) → `bg-surface-200` (cards) → `bg-surface-300` (hover)
+- `bg-background` (page) → `bg-surface-75` (subtle) → `bg-surface-100` (panels) → `bg-surface-200` (cards/hover)
 - `border-default`, `border-strong`
 
 ### Removed systems (do NOT use)
@@ -413,5 +417,6 @@ Before writing any Supabase-related code — migrations, RLS policies, database 
 | Edge Functions                             | `docs/supabase-prompts/edge-functions.md`     |
 | Supabase Auth (client, server, proxy)      | `docs/supabase-prompts/nextjs-auth.md`        |
 | Realtime (broadcast, presence, triggers)   | `docs/supabase-prompts/realtime.md`           |
+| Adding/modifying a UI component            | `apps/design-system/AUTHORING.md`             |
 
 Multiple files may apply to a single task. For example, writing a migration that adds a table with RLS policies requires reading `sql-style-guide.md`, `create-migration.md`, and `create-rls-policies.md`.

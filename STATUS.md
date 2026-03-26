@@ -1,5 +1,5 @@
 # Cedar — Build Status
-Last updated: March 26, 2026 by Session 48
+Last updated: March 26, 2026 by Session 49
 
 ## Module Status
 | Module | Status | Notes |
@@ -28,6 +28,10 @@ Last updated: March 26, 2026 by Session 48
 - Upstream baseline: Supabase commit `87c61d8`
 
 ## Last Session Summary
+Session 49 added a Cedar app-layer authoring guide at `apps/web/components/AUTHORING.md` to complement the new design system docs app. The guide defines the boundary between `packages/ui` / `packages/ui-patterns` and `apps/web/components`, including layering rules, import conventions, barrel export expectations, data-wiring rules, semantic-token guidance, and when to wrap `ui` primitives versus using them directly. This gives future Cedar rebuild work a concrete app-layer playbook similar to `apps/design-system/AUTHORING.md`.
+
+This session also confirmed a design-system docs gap: several docs pages reference examples or source previews that are not present in the local registry index. The Sidebar page is the clearest case — `sidebar.mdx` references `sidebar-07` and multiple `sidebar-*` previews that are not registered locally, while the underlying `packages/ui/src/components/shadcn/ui/sidebar.tsx` primitive still exists and is exported from `packages/ui/index.tsx`. Some of these missing previews appear to be inherited from upstream Supabase docs rather than Cedar-specific regressions.
+
 Session 48 executed the Design System Docs App PRP. Extracted Supabase's `apps/design-system/` Next.js app into Cedar's monorepo — a living component reference with 58 atom component docs, 21 fragment docs, 278 live example components, syntax-highlighted MDX, and dark mode. Key fixes: restored `packages/ui/build/css/` theme files (blanket `build` gitignore was excluding them), created a lightweight JSON registry index to avoid contentlayer2 ESM resolution failures on 286 React.lazy imports, inlined typography SCSS into globals.css (Turbopack processes SCSS imports as separate CSS modules), added formik as explicit `packages/ui` dependency (was undeclared, relied on hoisting), renamed tailwind.config.js to .cjs for ESM package compat. All Supabase branding replaced with Cedar. App runs locally via `pnpm dev:design-system` at localhost:3003/design-system. Web app build passes clean, Vercel deploys successfully.
 
 Session 47 executed the Supabase Design System Transplant plan. Converted Cedar from a flat Next.js app to a pnpm monorepo with Turborepo. Ported Supabase's packages/ui, packages/config, packages/ui-patterns, packages/common, packages/icons, packages/build-icons, and packages/tsconfig into Cedar's packages/ directory. Aggressively pruned all Supabase-specific code from copied packages (auth, telemetry, PostHog, ConfigCat, DocsSearch, AI chat, SQL editor components, Monaco editor). Stripped @radix-ui/themes, remixicon, --cedar-* CSS tokens, and Tailwind v4 from the entire apps/web/ codebase. Rewired to Tailwind v3 with Supabase pre-built theme CSS. All 52 component/page files were converted from Radix Themes JSX to plain HTML elements. Created design system test page confirming shadcn Button, Badge, Card, Input render correctly with all semantic color tokens. Fixed three Vercel deployment issues: cross-package CSS imports (copied theme CSS locally), fragile tailwind.config.js color.js path (copied locally), and Turborepo env passthrough. Build passes clean, Vercel deploys successfully.
@@ -143,6 +147,7 @@ env -u ANTHROPIC_API_KEY npx next dev --port 3000
 | FDA Compounding Guidance | `08770aca-1aad-4f2e-abe8-3ed90ab9f630` | `227eebd4-aae3-4bde-a0a8-1a38b883a59c` |
 
 ## Known Issues
+- Design system docs registry is incomplete for some imported docs pages: `sidebar-07` and multiple `sidebar-*` previews are missing from the local registry, and several `ComponentSource` references are not indexed in `apps/design-system/__registry__/files.json`. The underlying primitives still exist in `packages/ui`, but some docs previews/source panels cannot render until registry entries or demo files are restored.
 - FAQ page has 8 hardcoded items (intentional — gated to Intelligence tier)
 - Zero test files in the project (notable gap for a compliance platform)
 - FL Administrative Register URL (`flrules.org`) has an empty `id=` param — likely needs a real rule number
